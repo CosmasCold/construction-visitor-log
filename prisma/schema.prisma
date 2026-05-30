@@ -1,0 +1,22 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model VisitorLog {
+  id                String   @id @default(cuid())
+  fullName          String
+  company           String
+  phone             String?
+  email             String?
+  hostName          String?
+  safetyAcknowledged Boolean  @default(false)
+  signedInAt        DateTime @default(now())
+  signedOutAt       DateTime?
+}
+
+// Optional: Add User model later for admin authentication
