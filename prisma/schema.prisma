@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,16 +6,37 @@ datasource db {
   provider = "postgresql"
 }
 
-model VisitorLog {
-  id                String   @id @default(cuid())
-  fullName          String
-  company           String
-  phone             String?
-  email             String?
-  hostName          String?
-  safetyAcknowledged Boolean  @default(false)
-  signedInAt        DateTime @default(now())
-  signedOutAt       DateTime?
+model Site {
+  id                 String        @id @default(cuid())
+  slug               String        @unique
+  name               String
+  address            String?
+  safetyBriefingText String        @default("Hard hat, high-vis vest, and safety glasses required. Stay in walkways.")
+  createdAt          DateTime      @default(now())
+  visitors           VisitorLog[]
+  managers           User[]
 }
 
-// Optional: Add User model later for admin authentication
+model VisitorLog {
+  id                  String    @id @default(cuid())
+  fullName            String
+  company             String
+  phone               String?
+  email               String?
+  hostName            String?
+  safetyAcknowledged  Boolean   @default(false)
+  signedInAt          DateTime  @default(now())
+  signedOutAt         DateTime?
+  siteId              String
+  site                Site      @relation(fields: [siteId], references: [id])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("site_manager") // "super_admin" or "site_manager"
+  siteId       String?
+  site         Site?    @relation(fields: [siteId], references: [id])
+  createdAt    DateTime @default(now())
+}
