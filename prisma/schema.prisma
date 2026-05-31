@@ -1,3 +1,4 @@
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -6,21 +7,59 @@ datasource db {
   provider = "postgresql"
 }
 
+// -------------------------------
+// COMPANY & SUBSCRIPTIONS
+// -------------------------------
+model Company {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  createdAt    DateTime      @default(now())
+  sites        Site[]
+  users        User[]
+  subscription Subscription?
+}
+
+model Plan {
+  id            String         @id @default(cuid())
+  name          String         // e.g. "Pro Monthly"
+  stripePriceId String         @unique
+  maxSites      Int            @default(10)
+  features      String[]       // ["unlimited_visitors", "export_csv_excel"]
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id               String    @id @default(cuid())
+  companyId        String    @unique
+  company          Company   @relation(fields: [companyId], references: [id])
+  planId           String
+  plan             Plan      @relation(fields: [planId], references: [id])
+  stripeSubId      String?   // Stripe subscription ID
+  status           String    @default("incomplete") // active, canceled, past_due
+  currentPeriodEnd DateTime?
+  createdAt        DateTime  @default(now())
+}
+
+// -------------------------------
+// SITES & VISITORS
+// -------------------------------
 model Site {
   id                 String        @id @default(cuid())
   slug               String        @unique
   name               String
   address            String?
-  safetyBriefingText String        @default("Hard hat, high-vis vest, and safety glasses required. Stay in walkways.")
-  createdAt          DateTime      @default(now())
+  safetyBriefingText String        @default("Hard hat, high-vis vest, and safety glasses are mandatory. Stay in designated walkways.")
+  companyId          String
+  company            Company       @relation(fields: [companyId], references: [id])
   visitors           VisitorLog[]
-  managers           User[]
+  createdAt          DateTime      @default(now())
 }
 
 model VisitorLog {
   id                  String    @id @default(cuid())
   fullName            String
-  company             String
+  company             String    // visitor's company name, not a relation
   phone               String?
   email               String?
   hostName            String?
@@ -31,12 +70,15 @@ model VisitorLog {
   site                Site      @relation(fields: [siteId], references: [id])
 }
 
+// -------------------------------
+// USERS (admins / company owners)
+// -------------------------------
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id           String    @id @default(cuid())
+  email        String    @unique
   passwordHash String
-  role         String   @default("site_manager") // "super_admin" or "site_manager"
-  siteId       String?
-  site         Site?    @relation(fields: [siteId], references: [id])
-  createdAt    DateTime @default(now())
+  role         String    @default("company_owner") // "super_admin" or "company_owner"
+  companyId    String?
+  company      Company?  @relation(fields: [companyId], references: [id])
+  createdAt    DateTime  @default(now())
 }

@@ -1,7 +1,7 @@
-// proxy.ts
+// middleware.ts
 import { withAuth } from "next-auth/middleware";
 
-export const proxy = withAuth({
+export default withAuth({
   callbacks: {
     authorized({ token }) {
       return !!token;
@@ -10,5 +10,5 @@ export const proxy = withAuth({
 });
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/dashboard/:path*", "/api/sites/:path*"],
 };

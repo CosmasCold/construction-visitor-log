@@ -12,23 +12,20 @@ async function main() {
   const superEmail = process.env.SUPER_ADMIN_EMAIL || "admin@example.com";
   const superPassword = process.env.SUPER_ADMIN_PASSWORD || "changeme";
 
-  const site = await prisma.site.upsert({
-    where: { slug: "main-site" },
-    update: {},
-    create: {
-      slug: "main-site",
-      name: "Main Construction Site",
-      address: "123 Builders Ave",
-      safetyBriefingText:
-        "Hard hat, high-vis vest, and safety glasses are mandatory. Stay in designated walkways.",
-    },
-  });
+  await prisma.plan.upsert({
+  where: { stripePriceId: "price_placeholder" },
+  update: {},
+  create: {
+    name: "Pro Monthly",
+    stripePriceId: "price_placeholder",
+    maxSites: 10,
+    features: ["unlimited_visitors", "export_csv_excel"],
+  },
+});
 
   const passwordHash = await bcrypt.hash(superPassword, 12);
-  await prisma.user.upsert({
-    where: { email: superEmail },
-    update: {},
-    create: {
+  await prisma.user.create({
+    data: {
       email: superEmail,
       passwordHash,
       role: "super_admin",
