@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function LandingPage() {
   return (
     <div className="min-h-screen text-white">
-      {/* Hero – inherits body background */}
+      {/* Hero */}
       <div className="max-w-6xl mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
           <span className="text-sky-400">SiteSafe</span>
@@ -27,10 +27,16 @@ export default function LandingPage() {
           >
             How it works
           </a>
+          <Link
+            href="/admin/login"
+            className="inline-flex items-center justify-center px-8 py-3 border border-white/30 text-base font-medium rounded-xl text-white hover:bg-white/10 transition-colors"
+          >
+            Sign in
+          </Link>
         </div>
       </div>
 
-      {/* How it works – semi‑transparent glass panel */}
+      {/* How it works */}
       <div id="how-it-works" className="max-w-6xl mx-auto px-4 py-24 sm:px-6 lg:px-8 scroll-mt-20">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-white">How SiteSafe works</h2>
@@ -82,11 +88,6 @@ export default function LandingPage() {
             Get started for free
           </Link>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className="bg-black/20 text-slate-400 py-8 text-center text-sm border-t border-white/5">
-        &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
       </div>
     </div>
   );
