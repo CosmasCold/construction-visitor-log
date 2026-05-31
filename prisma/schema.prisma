@@ -15,6 +15,7 @@ model Company {
   slug         String        @unique
   name         String
   email        String        @unique
+  stripeCustomerId String?
   createdAt    DateTime      @default(now())
   sites        Site[]
   users        User[]

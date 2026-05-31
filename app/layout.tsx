@@ -19,13 +19,12 @@ export default async function RootLayout({
 }) {
   const session = await getServerSession(authOptions);
 
-  // Determine the logo link based on the user's role
-  let logoHref = "/"; // default for logged‑out visitors
+  // Dynamic logo link
+  let logoHref = "/";
   if (session?.user) {
     if (session.user.role === "super_admin") {
       logoHref = "/admin";
     } else if (session.user.role === "company_owner") {
-      // Try to get the company slug for a direct dashboard link
       const user = await prisma.user.findUnique({
         where: { email: session.user.email! },
         include: { company: { select: { slug: true } } },
@@ -41,7 +40,6 @@ export default async function RootLayout({
       <body className="flex flex-col min-h-screen">
         <header className="bg-black/30 backdrop-blur-md border-b border-white/10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
-            {/* Logo – now points to the appropriate home area */}
             <Link
               href={logoHref}
               className="text-white font-semibold text-lg tracking-tight hover:text-sky-300 transition-colors"
@@ -65,6 +63,12 @@ export default async function RootLayout({
                       Admin
                     </Link>
                   )}
+                  <Link
+                    href="/settings"
+                    className="text-slate-300 hover:text-white transition-colors"
+                  >
+                    Settings
+                  </Link>
                   <form action="/api/auth/signout" method="POST">
                     <button
                       type="submit"

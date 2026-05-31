@@ -15,21 +15,59 @@ export async function DELETE(
   const site = await prisma.site.findUnique({ where: { id: siteId } });
   if (!site) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  // Allow super admins or the company owner of this site
-  if (session.user.role === "super_admin") {
-    // allowed
-  } else if (session.user.role === "company_owner") {
+  if (session.user.role !== "super_admin") {
     const user = await prisma.user.findUnique({ where: { email: session.user.email! } });
     if (!user || user.companyId !== site.companyId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
-  } else {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Delete visitors first, then the site
   await prisma.visitorLog.deleteMany({ where: { siteId } });
   await prisma.site.delete({ where: { id: siteId } });
-
   return NextResponse.json({ success: true });
+}
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ siteId: string }> }
+) {
+  const { siteId } = await params;
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const site = await prisma.site.findUnique({ where: { id: siteId } });
+  if (!site) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  // Only company owner of that site or super admin can edit
+  if (session.user.role !== "super_admin") {
+    const user = await prisma.user.findUnique({ where: { email: session.user.email! } });
+    if (!user || user.companyId !== site.companyId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
+
+  const body = await request.json();
+  const { name, slug, address, safetyBriefingText } = body;
+
+  // Sanitize slug if changed
+  let newSlug = slug || site.slug;
+  newSlug = newSlug
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  if (!newSlug) return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
+
+  const updated = await prisma.site.update({
+    where: { id: siteId },
+    data: {
+      name: name ?? site.name,
+      slug: newSlug,
+      address: address ?? site.address,
+      safetyBriefingText: safetyBriefingText ?? site.safetyBriefingText,
+    },
+  });
+
+  return NextResponse.json(updated);
 }
