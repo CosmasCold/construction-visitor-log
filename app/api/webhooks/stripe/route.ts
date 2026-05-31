@@ -31,7 +31,13 @@ export async function POST(req: NextRequest) {
     // Find or create the company
     let company = await prisma.company.findUnique({ where: { email } });
     if (!company) {
-      const slug =
+      // Generate slugs
+      const siteSlug =
+        companyName.toLowerCase().replace(/\s+/g, "-") +
+        "-" +
+        Math.random().toString(36).substring(2, 6);
+
+      const companySlug =
         companyName.toLowerCase().replace(/\s+/g, "-") +
         "-" +
         Math.random().toString(36).substring(2, 6);
@@ -39,10 +45,11 @@ export async function POST(req: NextRequest) {
       company = await prisma.company.create({
         data: {
           name: companyName,
+          slug: companySlug,              // ✅ now included
           email,
           sites: {
             create: {
-              slug,
+              slug: siteSlug,
               name: "Default Site",
               address: "",
             },
@@ -50,7 +57,7 @@ export async function POST(req: NextRequest) {
           users: {
             create: {
               email,
-              passwordHash: "", // placeholder – will be set later
+              passwordHash: "",           // placeholder – will be set later
               role: "company_owner",
             },
           },
@@ -65,7 +72,7 @@ export async function POST(req: NextRequest) {
         session.subscription as string
       );
 
-      // Dynamically access current_period_end (works with any Stripe SDK version)
+      // Dynamically access current_period_end to stay compatible
       const subData = subscription as unknown as Record<string, unknown>;
       const currentPeriodEnd = subData.current_period_end as number | undefined;
 
@@ -90,7 +97,7 @@ export async function POST(req: NextRequest) {
         },
       });
     }
-  } // end of if checkout.session.completed
+  }
 
   return NextResponse.json({ received: true });
-} // end of function POST
+}
