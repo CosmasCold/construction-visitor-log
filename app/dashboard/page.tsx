@@ -9,13 +9,14 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: { slug?: string };
+  searchParams: Promise<{ slug?: string }>;
 }) {
+  const { slug } = await searchParams;   // ✅ await the Promise
+
   const session = await getServerSession(authOptions);
   if (!session) redirect("/admin/login");
   if (!session.user?.email) redirect("/admin/login");
 
-  const slug = searchParams.slug;
   if (!slug) {
     return (
       <div className="min-h-screen flex items-center justify-center">
