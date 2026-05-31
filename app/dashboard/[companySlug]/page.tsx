@@ -13,8 +13,11 @@ export default async function CompanyDashboardPage({
   const session = await getServerSession(authOptions);
   if (!session) redirect("/admin/login");
 
+  // Only company owners can access, or super admin
+  if (!session.user.email) redirect("/admin/login");
+
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email! },
+    where: { email: session.user.email },
     include: {
       company: {
         include: {
@@ -40,12 +43,10 @@ export default async function CompanyDashboardPage({
   if (!user) redirect("/admin/login");
   if (user.role === "super_admin") redirect("/admin");
 
-  // TypeScript guard — user.company must exist for a company_owner
   if (!user.company || user.company.slug !== params.companySlug) {
     notFound();
   }
 
-  // Serialize dates for the client component
   const company = {
     id: user.company.id,
     name: user.company.name,

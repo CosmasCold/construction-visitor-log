@@ -11,10 +11,9 @@ export default async function AdminDashboard() {
   if (!session) redirect("/admin/login");
 
   const isSuperAdmin = session.user.role === "super_admin";
-  const managerSiteId = session.user.siteId;
 
   let logs;
-  let sites: Site[] = [];   // 👈 typed, no implicit any
+  let sites: Site[] = [];
 
   if (isSuperAdmin) {
     logs = await prisma.visitorLog.findMany({
@@ -23,13 +22,25 @@ export default async function AdminDashboard() {
     });
     sites = await prisma.site.findMany();
   } else {
-    if (!managerSiteId) {
-      return <p className="p-8 text-center">You are not assigned to any site.</p>;
+    // Company owner: show logs only for their company
+    if (!session.user.companyId) {
+      return <p className="p-8 text-center">You are not assigned to any company.</p>;
     }
+    const companySites = await prisma.site.findMany({
+      where: { companyId: session.user.companyId },
+      select: { id: true },
+    });
+    const siteIds = companySites.map((s) => s.id);
+
     logs = await prisma.visitorLog.findMany({
-      where: { siteId: managerSiteId },
+      where: { siteId: { in: siteIds } },
       orderBy: { signedInAt: "desc" },
       include: { site: true },
+    });
+
+    // Sites list for admins (only super admins see sites, but we'll keep it for consistency)
+    sites = await prisma.site.findMany({
+      where: { companyId: session.user.companyId },
     });
   }
 
