@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 type Visitor = {
   id: string;
@@ -132,8 +132,7 @@ export default function AdminClient({
       v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "On site",
     ]);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-(doc as any).autoTable({
+    autoTable(doc, {
       head: [headers],
       body: rows,
       startY: 20,
