@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-05-27.dahlia",
@@ -17,7 +16,10 @@ export async function GET(req: NextRequest) {
   try {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    if (session.payment_status !== "paid" && session.payment_status !== "no_payment_required") {
+    if (
+      session.payment_status !== "paid" &&
+      session.payment_status !== "no_payment_required"
+    ) {
       return NextResponse.json({ error: "Payment not completed" }, { status: 402 });
     }
 
@@ -28,11 +30,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
     }
 
-    // Create the company if not already created (webhook may have already created it)
+    // Create the company if not already created (webhook may have created it)
     let company = await prisma.company.findUnique({ where: { email } });
     if (!company) {
-      // Use the password hash from metadata (hashed earlier) to create the user
-      const finalPasswordHash = passwordHash || ""; // fallback if webhook didn't have it
       company = await prisma.company.create({
         data: {
           name: companyName,
@@ -48,15 +48,14 @@ export async function GET(req: NextRequest) {
           users: {
             create: {
               email,
-              passwordHash: finalPasswordHash,
+              passwordHash: passwordHash || "",
               role: "company_owner",
             },
           },
         },
       });
     } else {
-      // If the company already exists (created by webhook), ensure the user has the correct password hash
-      // The webhook might have stored an empty hash; update it with the real hash from metadata.
+      // Update password hash if the webhook created the user with an empty hash
       if (passwordHash) {
         await prisma.user.update({
           where: { email },
@@ -65,14 +64,14 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Return company slug and the plain password so the success page can auto‑login
     return NextResponse.json({
       companySlug: company.slug,
       email,
-      passwordPlain: passwordPlain || "",   // will be empty if not present (shouldn't happen)
+      passwordPlain: passwordPlain || "",
     });
   } catch (error) {
-    console.error("Failed to retrieve session", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Internal server error.";
+    console.error("Failed to retrieve session:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

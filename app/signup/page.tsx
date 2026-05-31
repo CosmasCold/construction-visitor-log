@@ -8,23 +8,36 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
+    setError("");
 
+    // Basic email validation
+    if (!email.includes("@") || !email.includes(".")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!companyName.trim()) {
+      setError("Company name is required.");
+      return;
+    }
+
+    setLoading(true);
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, companyName }),
+      body: JSON.stringify({ email, companyName: companyName.trim() }),
     });
 
-    if (res.ok) {
-      const { url } = await res.json();
-      router.push(url); // redirect to Stripe Checkout
+    const data = await res.json();
+    if (res.ok && data.url) {
+      router.push(data.url); // redirect to Stripe Checkout
     } else {
-      alert("Something went wrong");
+      setError(data.error || "Something went wrong. Please try again.");
     }
     setLoading(false);
   }
@@ -40,20 +53,21 @@ export default function SignupPage() {
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             required
-            className="w-full rounded-xl border px-4 py-3 text-sm"
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
           />
           <input
             type="email"
-            placeholder="Your email"
+            placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full rounded-xl border px-4 py-3 text-sm"
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
           />
+          {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl px-6 py-3 text-sm transition-colors"
+            className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white font-medium rounded-xl px-6 py-3 text-sm transition-colors"
           >
             {loading ? "Redirecting…" : "Continue to Payment"}
           </button>

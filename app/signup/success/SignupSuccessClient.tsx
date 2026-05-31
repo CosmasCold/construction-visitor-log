@@ -12,17 +12,15 @@ export default function SignupSuccessClient() {
   });
 
   const [error, setError] = useState(!sessionId);
-  const [loggingIn, setLoggingIn] = useState(false);
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId) return; // error already set by initial state
 
-    // First, get company slug and password from our verification endpoint
     fetch(`/api/checkout/session?session_id=${sessionId}`)
       .then((res) => res.json())
       .then(async (data) => {
         if (data.companySlug && data.email && data.passwordPlain) {
-          // Auto‑login with credentials
+          // Auto‑login with the credentials we created
           const result = await signIn("credentials", {
             email: data.email,
             password: data.passwordPlain,
@@ -32,7 +30,6 @@ export default function SignupSuccessClient() {
           if (result?.error) {
             setError(true);
           } else {
-            // Redirect to dashboard
             window.location.href = `/dashboard/${data.companySlug}`;
           }
         } else {

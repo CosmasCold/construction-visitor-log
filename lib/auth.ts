@@ -40,21 +40,23 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-        token.companyId = user.companyId;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role;
-        session.user.companyId = token.companyId;
-      }
-      return session;
-    },
+  async jwt({ token, user }) {
+    if (user) {
+      token.role = user.role;
+      token.companyId = user.companyId;
+      token.email = user.email;   // ✅ add email
+    }
+    return token;
   },
+  async session({ session, token }) {
+    if (session.user) {
+      session.user.role = token.role;
+      session.user.companyId = token.companyId;
+      session.user.email = token.email;   // ✅ add email
+    }
+    return session;
+  },
+},
   pages: {
     signIn: "/admin/login",
   },
