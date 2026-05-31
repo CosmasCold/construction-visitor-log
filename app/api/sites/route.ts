@@ -10,33 +10,36 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Parse URL‑encoded form data
   const formData = await request.formData();
   const name = formData.get("name") as string;
   const address = formData.get("address") as string;
-  const slug = formData.get("slug") as string;
+  let slug = (formData.get("slug") as string) || "";
   const companyId = formData.get("companyId") as string;
 
   if (!name || !slug || !companyId) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  // Ensure the user belongs to the company they're creating the site for
+  // Sanitize slug: lowercase, replace spaces and special chars with dashes
+  slug = slug
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")   // replace non-alphanumeric with single dash
+    .replace(/^-|-$/g, "");        // trim leading/trailing dashes
+
+  if (!slug) {
+    return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
+  }
+
   const user = await prisma.user.findUnique({ where: { email: session.user.email! } });
   if (!user || user.companyId !== companyId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {
-    const site = await prisma.site.create({
-      data: {
-        name,
-        address: address || null,
-        slug,
-        companyId,
-      },
+    await prisma.site.create({
+      data: { name, address: address || null, slug, companyId },
     });
-    // Redirect to the company dashboard after successful creation
     const company = await prisma.company.findUnique({ where: { id: companyId } });
     return NextResponse.redirect(
       new URL(`/dashboard?slug=${company?.slug || ""}`, request.url)

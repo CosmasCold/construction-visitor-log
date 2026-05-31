@@ -10,11 +10,29 @@ export default async function CheckinPage({
 }) {
   const { siteSlug } = await params;
 
-  const site = await prisma.site.findUnique({
+  let site = await prisma.site.findUnique({
     where: { slug: siteSlug },
   });
 
+  // If not found, try sanitizing the slug as a fallback
+  if (!site) {
+    const cleanSlug = siteSlug
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+    if (cleanSlug !== siteSlug) {
+      site = await prisma.site.findUnique({ where: { slug: cleanSlug } });
+    }
+  }
+
   if (!site) notFound();
 
-  return <CheckinClient siteId={site.id} siteName={site.name} safetyBriefing={site.safetyBriefingText} />;
+  return (
+    <CheckinClient
+      siteId={site.id}
+      siteName={site.name}
+      safetyBriefing={site.safetyBriefingText}
+    />
+  );
 }
