@@ -12,7 +12,7 @@ datasource db {
 // -------------------------------
 model Company {
   id           String        @id @default(cuid())
-  slug         String        @unique   //
+  slug         String        @unique
   name         String
   email        String        @unique
   createdAt    DateTime      @default(now())

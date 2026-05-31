@@ -4,20 +4,18 @@
 import { useEffect, useState } from "react";
 
 export default function SignupSuccessClient() {
-  // Read session_id once from the URL (no hook, no Suspense)
+  // Read session_id once from the URL
   const [sessionId] = useState(() => {
     if (typeof window === "undefined") return null;
     const params = new URLSearchParams(window.location.search);
     return params.get("session_id");
   });
 
-  // Initial status: error if sessionId is missing, otherwise loading
-  const [status, setStatus] = useState<"loading" | "done" | "error">(
-    sessionId ? "loading" : "error"
-  );
+  // If sessionId is missing, immediately set error state – no effect needed
+  const [error, setError] = useState(!sessionId);
 
   useEffect(() => {
-    if (!sessionId) return; // already in error state, nothing to do
+    if (!sessionId) return; // error already set by initial state
 
     fetch(`/api/checkout/session?session_id=${sessionId}`)
       .then((res) => res.json())
@@ -25,16 +23,28 @@ export default function SignupSuccessClient() {
         if (data.companySlug) {
           window.location.href = `/dashboard/${data.companySlug}`;
         } else {
-          setStatus("error");
+          setError(true);
         }
       })
-      .catch(() => setStatus("error"));
+      .catch(() => setError(true));
   }, [sessionId]);
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg font-medium">Something went wrong</p>
+          <p className="text-sm text-slate-500 mt-2">
+            Please contact support. Your payment may have succeeded but account setup failed.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      {status === "loading" && <p>Setting up your account…</p>}
-      {status === "error" && <p>Something went wrong. Contact support.</p>}
+      <p>Setting up your account…</p>
     </div>
   );
 }
