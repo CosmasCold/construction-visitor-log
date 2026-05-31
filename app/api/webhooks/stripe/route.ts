@@ -22,16 +22,15 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const { companyName, email, companySlug, siteSlug } = session.metadata || {};
+    const { companyName, email, companySlug, siteSlug, passwordHash } =
+      session.metadata || {};
 
     if (!companyName || !email) {
       return NextResponse.json({ received: true });
     }
 
-    // Find or create the company
     let company = await prisma.company.findUnique({ where: { email } });
     if (!company) {
-      // Generate sanitized slugs if not already provided by metadata (e.g. old sessions)
       const safeName = companyName
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
@@ -52,6 +51,8 @@ export async function POST(req: NextRequest) {
           name: companyName,
           slug: newCompanySlug,
           email,
+          // Save the Stripe customer ID directly from the session
+          stripeCustomerId: session.customer as string,
           sites: {
             create: {
               slug: newSiteSlug,
@@ -62,15 +63,20 @@ export async function POST(req: NextRequest) {
           users: {
             create: {
               email,
-              passwordHash: "", // placeholder – will be updated by session endpoint
+              passwordHash: passwordHash || "",
               role: "company_owner",
             },
           },
         },
       });
+    } else if (session.customer) {
+      // Update existing company's customer ID if not already set
+      await prisma.company.update({
+        where: { id: company.id },
+        data: { stripeCustomerId: session.customer as string },
+      });
     }
 
-    // Attach subscription if available
     const plan = await prisma.plan.findFirst();
     if (plan && session.subscription) {
       const subscription = await stripe.subscriptions.retrieve(

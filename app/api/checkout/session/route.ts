@@ -20,17 +20,26 @@ export async function GET(req: NextRequest) {
       session.payment_status !== "paid" &&
       session.payment_status !== "no_payment_required"
     ) {
-      return NextResponse.json({ error: "Payment not completed" }, { status: 402 });
+      return NextResponse.json(
+        { error: "Payment not completed" },
+        { status: 402 }
+      );
     }
 
-    const { companyName, email, companySlug, siteSlug, passwordHash, passwordPlain } =
-      session.metadata || {};
+    const {
+      companyName,
+      email,
+      companySlug,
+      siteSlug,
+      passwordHash,
+      passwordPlain,
+    } = session.metadata || {};
 
     if (!companyName || !email || !companySlug || !siteSlug) {
       return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
     }
 
-    // Create the company if not already created (webhook may have created it)
+    // Find or create the company
     let company = await prisma.company.findUnique({ where: { email } });
     if (!company) {
       company = await prisma.company.create({
@@ -38,6 +47,8 @@ export async function GET(req: NextRequest) {
           name: companyName,
           slug: companySlug,
           email,
+          // Save the Stripe customer ID directly from the session
+          stripeCustomerId: (session.customer as string) || null,
           sites: {
             create: {
               slug: siteSlug,
@@ -62,6 +73,14 @@ export async function GET(req: NextRequest) {
           data: { passwordHash },
         });
       }
+      // Update stripeCustomerId if it's not set yet
+      if (!company.stripeCustomerId && session.customer) {
+        await prisma.company.update({
+          where: { id: company.id },
+          data: { stripeCustomerId: session.customer as string },
+        });
+        company.stripeCustomerId = session.customer as string;
+      }
     }
 
     return NextResponse.json({
@@ -70,7 +89,8 @@ export async function GET(req: NextRequest) {
       passwordPlain: passwordPlain || "",
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Internal server error.";
+    const message =
+      error instanceof Error ? error.message : "Internal server error.";
     console.error("Failed to retrieve session:", message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
