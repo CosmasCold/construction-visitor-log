@@ -13,27 +13,27 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+  if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+  const user = await prisma.user.findUnique({
+    where: { email: credentials.email },
+  });
 
-        if (!user) return null;
+  if (!user) return null;
 
-        const passwordValid = await bcrypt.compare(
-          credentials.password,
-          user.passwordHash
-        );
-        if (!passwordValid) return null;
+  const passwordValid = await bcrypt.compare(
+    credentials.password,
+    user.passwordHash
+  );
+  if (!passwordValid) return null;
 
-        return {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          companyId: user.companyId,
-        };
-      },
+  return {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    companyId: user.companyId ?? undefined,   // ✅ null → undefined
+  };
+}
     }),
   ],
   session: {
