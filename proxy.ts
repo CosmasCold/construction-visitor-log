@@ -4,11 +4,15 @@ import { withAuth } from "next-auth/middleware";
 export default withAuth({
   callbacks: {
     authorized({ token }) {
-      return !!token; // only allow authenticated users
+      return !!token;
     },
   },
 });
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*", "/api/sites/:path*"],
+  matcher: [
+    "/admin/((?!login).*)", // protects /admin/* but skips /admin/login
+    "/dashboard/:path*",
+    "/api/sites/:path*",
+  ],
 };
