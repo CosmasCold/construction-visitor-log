@@ -2,26 +2,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { signIn } from "next-auth/react";
 
 export default function SignupSuccessClient() {
-  // Read session_id once from the URL
   const [sessionId] = useState(() => {
     if (typeof window === "undefined") return null;
     const params = new URLSearchParams(window.location.search);
     return params.get("session_id");
   });
 
-  // If sessionId is missing, immediately set error state – no effect needed
   const [error, setError] = useState(!sessionId);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   useEffect(() => {
-    if (!sessionId) return; // error already set by initial state
+    if (!sessionId) return;
 
+    // First, get company slug and password from our verification endpoint
     fetch(`/api/checkout/session?session_id=${sessionId}`)
       .then((res) => res.json())
-      .then((data) => {
-        if (data.companySlug) {
-          window.location.href = `/dashboard/${data.companySlug}`;
+      .then(async (data) => {
+        if (data.companySlug && data.email && data.passwordPlain) {
+          // Auto‑login with credentials
+          const result = await signIn("credentials", {
+            email: data.email,
+            password: data.passwordPlain,
+            redirect: false,
+          });
+
+          if (result?.error) {
+            setError(true);
+          } else {
+            // Redirect to dashboard
+            window.location.href = `/dashboard/${data.companySlug}`;
+          }
         } else {
           setError(true);
         }
@@ -35,7 +48,7 @@ export default function SignupSuccessClient() {
         <div className="text-center">
           <p className="text-lg font-medium">Something went wrong</p>
           <p className="text-sm text-slate-500 mt-2">
-            Please contact support. Your payment may have succeeded but account setup failed.
+            Your account may have been created. Please contact support if you need immediate access.
           </p>
         </div>
       </div>
