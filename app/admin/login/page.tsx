@@ -3,6 +3,7 @@
 
 import { signIn } from "next-auth/react";
 import { useState, FormEvent } from "react";
+import Link from "next/link";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -59,6 +60,11 @@ export default function AdminLogin() {
           >
             {loading ? "Signing in…" : "Sign In"}
           </button>
+          <p className="text-center text-sm text-slate-500 mt-4">
+  <Link href="/forgot-password" className="text-sky-500 hover:underline">
+    Forgot password?
+  </Link>
+</p>
         </form>
       </div>
     </div>

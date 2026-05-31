@@ -83,3 +83,12 @@ model User {
   company      Company?  @relation(fields: [companyId], references: [id])
   createdAt    DateTime  @default(now())
 }
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

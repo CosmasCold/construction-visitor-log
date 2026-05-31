@@ -9,33 +9,33 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: Request) {
   try {
-    const { email, companyName } = await request.json();
+    const { email, companyName, password } = await request.json();
 
-    if (!email || !companyName) {
+    if (!email || !companyName || !password) {
       return NextResponse.json(
-        { error: "Email and company name are required" },
+        { error: "Email, company name, and password are required." },
         { status: 400 }
       );
     }
 
     if (!email.includes("@") || !email.includes(".")) {
-      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
     }
 
-    // Generate sanitized slugs – no special characters, only a‑z, 0‑9, and hyphens
+    if (password.length < 8) {
+      return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
+    }
+
+    // Generate sanitized slugs
     const safeName = companyName
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-") // replace non‑alphanumeric with single dash
-      .replace(/^-|-$/g, "");      // trim leading/trailing dashes
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
 
-    const companySlug =
-      safeName + "-" + Math.random().toString(36).substring(2, 6);
+    const companySlug = safeName + "-" + Math.random().toString(36).substring(2, 6);
+    const siteSlug = safeName + "-default-" + Math.random().toString(36).substring(2, 6);
 
-    const siteSlug =
-      safeName + "-default-" + Math.random().toString(36).substring(2, 6);
-
-    // Generate a random password for the company owner
-    const password = Math.random().toString(36).slice(-12);
+    // Hash the password for storage
     const passwordHash = await bcrypt.hash(password, 12);
 
     const session = await stripe.checkout.sessions.create({
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
         companySlug,
         siteSlug,
         passwordHash,
-        passwordPlain: password,
+        passwordPlain: password, // used for auto‑login after payment
       },
     });
 
