@@ -31,8 +31,8 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="max-w-sm w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="max-w-sm w-full bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20">
         <h1 className="text-xl font-semibold text-slate-800 mb-6">Admin Login</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -41,7 +41,7 @@ export default function AdminLogin() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
           />
           <input
             type="password"
@@ -49,13 +49,13 @@ export default function AdminLogin() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white font-medium rounded-xl px-6 py-3 text-sm transition-colors"
+            className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-300 text-white font-medium rounded-xl px-6 py-3 text-sm transition-colors"
           >
             {loading ? "Signing in…" : "Sign In"}
           </button>
