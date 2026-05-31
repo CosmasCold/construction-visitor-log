@@ -2,6 +2,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "SiteSafe – Construction Visitor Log",
@@ -9,11 +11,13 @@ export const metadata: Metadata = {
     "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen">
@@ -26,19 +30,43 @@ export default function RootLayout({
             >
               SiteSafe
             </Link>
-            <nav className="flex gap-4 text-sm">
-              <Link
-                href="/"
-                className="text-slate-300 hover:text-white transition-colors"
-              >
+            <nav className="flex gap-4 text-sm items-center">
+              <Link href="/" className="text-slate-300 hover:text-white transition-colors">
                 Home
               </Link>
-              <Link
-                href="/admin/login"
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                Sign in
-              </Link>
+              {session ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="text-slate-300 hover:text-white transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  {session.user?.role === "super_admin" && (
+                    <Link
+                      href="/admin"
+                      className="text-slate-300 hover:text-white transition-colors"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <form action="/api/auth/signout" method="POST">
+                    <button
+                      type="submit"
+                      className="text-slate-300 hover:text-white transition-colors bg-transparent border-none cursor-pointer text-sm"
+                    >
+                      Logout
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <Link
+                  href="/admin/login"
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  Sign in
+                </Link>
+              )}
             </nav>
           </div>
         </header>

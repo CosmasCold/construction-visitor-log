@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Parse URL-encoded form data (sent by the simple HTML form)
+  // Parse URL‑encoded form data
   const formData = await request.formData();
   const name = formData.get("name") as string;
   const address = formData.get("address") as string;
@@ -36,12 +36,14 @@ export async function POST(request: Request) {
         companyId,
       },
     });
-    return NextResponse.json(site, { status: 200 });
-    } catch (error: unknown) {
+    // Redirect to the company dashboard after successful creation
+    const company = await prisma.company.findUnique({ where: { id: companyId } });
+    return NextResponse.redirect(
+      new URL(`/dashboard?slug=${company?.slug || ""}`, request.url)
+    );
+  } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Site creation error:", message);
-
-    // Prisma unique constraint violation
     if (
       typeof error === "object" &&
       error !== null &&
@@ -53,7 +55,6 @@ export async function POST(request: Request) {
         { status: 409 }
       );
     }
-
     return NextResponse.json({ error: "Failed to create site" }, { status: 500 });
   }
 }
