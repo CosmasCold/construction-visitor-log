@@ -22,16 +22,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
     }
 
-    // Generate slugs
+    // Generate sanitized slugs – no special characters, only a‑z, 0‑9, and hyphens
+    const safeName = companyName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-") // replace non‑alphanumeric with single dash
+      .replace(/^-|-$/g, "");      // trim leading/trailing dashes
+
     const companySlug =
-      companyName.toLowerCase().replace(/\s+/g, "-") +
-      "-" +
-      Math.random().toString(36).substring(2, 6);
+      safeName + "-" + Math.random().toString(36).substring(2, 6);
 
     const siteSlug =
-      companyName.toLowerCase().replace(/\s+/g, "-") +
-      "-default-" +
-      Math.random().toString(36).substring(2, 6);
+      safeName + "-default-" + Math.random().toString(36).substring(2, 6);
 
     // Generate a random password for the company owner
     const password = Math.random().toString(36).slice(-12);

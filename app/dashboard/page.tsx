@@ -1,18 +1,28 @@
-// app/dashboard/[companySlug]/page.tsx
+// app/dashboard/page.tsx
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
-export default async function CompanyDashboardPage({
-  params,
+export const dynamic = "force-dynamic";
+
+export default async function DashboardPage({
+  searchParams,
 }: {
-  params: { companySlug: string };
+  searchParams: { slug?: string };
 }) {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/admin/login");
-
   if (!session.user?.email) redirect("/admin/login");
+
+  const slug = searchParams.slug;
+  if (!slug) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-white text-lg">No company selected.</p>
+      </div>
+    );
+  }
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
@@ -42,32 +52,36 @@ export default async function CompanyDashboardPage({
   if (user.role === "super_admin") redirect("/admin");
 
   const company = user.company;
-  if (!company || !company.slug || company.slug !== params.companySlug) {
-    notFound();
+  if (!company || !company.slug || company.slug !== slug) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-white text-lg">Company not found or access denied.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-10 px-4">
+    <div className="min-h-screen py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-800">{company.name}</h1>
-            <p className="text-sm text-slate-500">Site Management</p>
+            <h1 className="text-2xl font-semibold text-white">{company.name}</h1>
+            <p className="text-sm text-slate-300">Site Management</p>
           </div>
           <form action="/api/auth/signout" method="POST">
-            <button type="submit" className="bg-gray-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-300">
+            <button type="submit" className="bg-white/10 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-white/20 backdrop-blur-sm border border-white/20">
               Logout
             </button>
           </form>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold mb-4">Create New Site</h2>
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-6">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">Create New Site</h2>
           <form action="/api/sites" method="POST" className="space-y-4">
             <input type="hidden" name="companyId" value={company.id} />
-            <input type="text" name="name" placeholder="Site Name" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm" />
-            <input type="text" name="address" placeholder="Address" className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm" />
-            <input type="text" name="slug" placeholder="URL Slug (e.g., downtown)" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm" />
+            <input type="text" name="name" placeholder="Site Name" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70" />
+            <input type="text" name="address" placeholder="Address" className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70" />
+            <input type="text" name="slug" placeholder="URL Slug (e.g., downtown)" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70" />
             <button type="submit" className="bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700">
               Create Site
             </button>
@@ -76,7 +90,7 @@ export default async function CompanyDashboardPage({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {company.sites.map((site) => (
-            <a key={site.id} href={`/checkin/${site.slug}`} className="block bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+            <a key={site.id} href={`/checkin/${site.slug}`} className="block bg-white/90 backdrop-blur-md rounded-2xl shadow-md border border-white/20 p-6 hover:shadow-lg transition-shadow">
               <h3 className="font-semibold text-slate-800">{site.name}</h3>
               <p className="text-sm text-slate-500 mt-1">Check-in: /checkin/{site.slug}</p>
               <p className="text-xs text-slate-400 mt-2">

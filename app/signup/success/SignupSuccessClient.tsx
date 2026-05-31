@@ -30,7 +30,7 @@ export default function SignupSuccessClient() {
           if (result?.error) {
             setError(true);
           } else {
-            window.location.href = `/dashboard/${data.companySlug}`;
+            window.location.href = `/dashboard?slug=${data.companySlug}`;
           }
         } else {
           setError(true);

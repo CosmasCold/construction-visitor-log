@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const { companyName, email } = session.metadata || {};
+    const { companyName, email, companySlug, siteSlug } = session.metadata || {};
 
     if (!companyName || !email) {
       return NextResponse.json({ received: true });
@@ -31,25 +31,30 @@ export async function POST(req: NextRequest) {
     // Find or create the company
     let company = await prisma.company.findUnique({ where: { email } });
     if (!company) {
-      // Generate slugs
-      const siteSlug =
-        companyName.toLowerCase().replace(/\s+/g, "-") +
-        "-" +
-        Math.random().toString(36).substring(2, 6);
+      // Generate sanitized slugs if not already provided by metadata (e.g. old sessions)
+      const safeName = companyName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
 
-      const companySlug =
-        companyName.toLowerCase().replace(/\s+/g, "-") +
-        "-" +
-        Math.random().toString(36).substring(2, 6);
+      const newCompanySlug =
+        companySlug && companySlug.length > 0
+          ? companySlug
+          : safeName + "-" + Math.random().toString(36).substring(2, 6);
+
+      const newSiteSlug =
+        siteSlug && siteSlug.length > 0
+          ? siteSlug
+          : safeName + "-default-" + Math.random().toString(36).substring(2, 6);
 
       company = await prisma.company.create({
         data: {
           name: companyName,
-          slug: companySlug,              // ✅ now included
+          slug: newCompanySlug,
           email,
           sites: {
             create: {
-              slug: siteSlug,
+              slug: newSiteSlug,
               name: "Default Site",
               address: "",
             },
@@ -57,7 +62,7 @@ export async function POST(req: NextRequest) {
           users: {
             create: {
               email,
-              passwordHash: "",           // placeholder – will be set later
+              passwordHash: "", // placeholder – will be updated by session endpoint
               role: "company_owner",
             },
           },
@@ -72,7 +77,6 @@ export async function POST(req: NextRequest) {
         session.subscription as string
       );
 
-      // Dynamically access current_period_end to stay compatible
       const subData = subscription as unknown as Record<string, unknown>;
       const currentPeriodEnd = subData.current_period_end as number | undefined;
 
