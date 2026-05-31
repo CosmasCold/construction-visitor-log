@@ -18,7 +18,7 @@ export default async function DashboardPage({
 
   const { slug, dateFrom, dateTo } = await searchParams;
 
-  // If no slug, redirect to user's company slug
+  // If no slug, redirect to the user's company slug
   if (!slug) {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -29,7 +29,7 @@ export default async function DashboardPage({
     }
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-white text-lg">No company found.</p>
+        <p className="text-white text-lg">No company found. Please contact support.</p>
       </div>
     );
   }
@@ -55,6 +55,7 @@ export default async function DashboardPage({
               },
             },
           },
+          subscription: true,
         },
       },
     },
@@ -68,6 +69,33 @@ export default async function DashboardPage({
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-white text-lg">Company not found or access denied.</p>
+      </div>
+    );
+  }
+
+  // Check subscription status – block access if not active or trialing
+  const subscription = company.subscription;
+  const isTrialing = subscription?.status === "trialing";
+  const isActive = subscription?.status === "active";
+
+  if (!isActive && !isTrialing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 max-w-md text-center">
+          <h2 className="text-xl font-semibold text-slate-800 mb-4">
+            Trial ended
+          </h2>
+          <p className="text-slate-600 mb-6">
+            Your free trial has expired. To continue using SiteSafe, please set up a
+            payment method.
+          </p>
+          <a
+            href="/settings"
+            className="inline-block bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 transition-colors"
+          >
+            Manage subscription
+          </a>
+        </div>
       </div>
     );
   }
@@ -89,7 +117,7 @@ export default async function DashboardPage({
     dateFilter = { gte: start, lte: end };
   }
 
-  // Flatten visitors across all sites of this company, applying date filter
+  // Combine visitors across all sites and apply date filter
   const allVisitors = company.sites.flatMap((site) =>
     site.visitors
       .filter((v) => {
@@ -98,7 +126,11 @@ export default async function DashboardPage({
         if (dateFilter.lte && time > dateFilter.lte.getTime()) return false;
         return true;
       })
-      .map((v) => ({ ...v, siteName: site.name, siteId: site.id }))
+      .map((v) => ({
+        ...v,
+        siteName: site.name,
+        siteId: site.id,
+      }))
   );
 
   allVisitors.sort(
