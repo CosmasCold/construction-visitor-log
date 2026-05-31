@@ -23,20 +23,24 @@ export default function LandingPage() {
               >
                 Start Free Trial
               </Link>
-              <Link
+              <a
                 href="#how-it-works"
                 className="inline-flex items-center justify-center px-8 py-3 border border-white/30 text-base font-medium rounded-xl text-white hover:bg-white/10 transition-colors"
               >
                 How it works
-              </Link>
+              </a>
             </div>
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-slate-50" />
       </div>
 
-      {/* Features */}
-      <div className="max-w-6xl mx-auto px-4 py-24 sm:px-6 lg:px-8">
+      {/* How it works */}
+      <div id="how-it-works" className="max-w-6xl mx-auto px-4 py-24 sm:px-6 lg:px-8 scroll-mt-20">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold text-slate-800">How SiteSafe works</h2>
+          <p className="mt-4 text-lg text-slate-500">Three simple steps to replace your clipboard forever.</p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 mb-4 text-2xl font-bold">1</div>
