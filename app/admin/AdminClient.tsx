@@ -1,8 +1,12 @@
 // app/admin/AdminClient.tsx
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 type Visitor = {
   id: string;
@@ -29,23 +33,47 @@ export default function AdminClient({
   logs,
   sites,
   isSuperAdmin,
+  currentDateFrom,
+  currentDateTo,
 }: {
   logs: Visitor[];
   sites: Site[];
   isSuperAdmin: boolean;
+  currentDateFrom?: string;
+  currentDateTo?: string;
 }) {
+  const router = useRouter();
+  const [dateFrom, setDateFrom] = useState(currentDateFrom || "");
+  const [dateTo, setDateTo] = useState(currentDateTo || "");
+
+  function applyFilter() {
+    const params = new URLSearchParams();
+    if (dateFrom) params.set("dateFrom", dateFrom);
+    if (dateTo) params.set("dateTo", dateTo);
+    router.push(`/admin?${params.toString()}`);
+  }
+
+  function clearFilter() {
+    setDateFrom("");
+    setDateTo("");
+    router.push("/admin");
+  }
+
   async function handleDeleteSite(siteId: string) {
     if (!confirm("Delete this site and all its visitor records?")) return;
     const res = await fetch(`/api/sites/${siteId}`, { method: "DELETE" });
     if (res.ok) {
-      window.location.reload();
+      router.refresh();
     } else {
       alert("Failed to delete site.");
     }
   }
 
   function exportCSV() {
-    const headers = ["Site", "Name", "Company", "Phone", "Email", "Host", "Safety OK", "Signed In", "Signed Out"];
+    const headers = [
+      "Site", "Name", "Company", "Phone", "Email", "Host",
+      "Safety OK", "Signed In", "Signed Out",
+    ];
     const rows = logs.map((v) => [
       v.site.name,
       v.fullName,
@@ -63,7 +91,7 @@ export default function AdminClient({
     const blob = new Blob([csvContent], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `visitor_log_${new Date().toISOString()}.csv`;
+    link.download = `visitor_log_${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(link.href);
   }
@@ -83,28 +111,100 @@ export default function AdminClient({
     const ws = XLSX.utils.json_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Visitor Log");
-    XLSX.writeFile(wb, `visitor_log_${new Date().toISOString()}.xlsx`);
+    XLSX.writeFile(wb, `visitor_log_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  }
+
+  function exportPDF() {
+    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+    const headers = [
+      "Site", "Name", "Company", "Phone", "Email", "Host",
+      "Safety OK", "Signed In", "Signed Out",
+    ];
+    const rows = logs.map((v) => [
+      v.site.name,
+      v.fullName,
+      v.company,
+      v.phone || "",
+      v.email || "",
+      v.hostName || "",
+      v.safetyAcknowledged ? "Yes" : "No",
+      new Date(v.signedInAt).toLocaleString(),
+      v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "On site",
+    ]);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+(doc as any).autoTable({
+      head: [headers],
+      body: rows,
+      startY: 20,
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [15, 23, 42] },
+    });
+
+    doc.text(
+      `Visitor Log – ${dateFrom || "start"} to ${dateTo || "end"}`,
+      14,
+      15
+    );
+    doc.save(`visitor_log_${new Date().toISOString().slice(0, 10)}.pdf`);
   }
 
   return (
     <div className="min-h-screen bg-slate-50 py-10 px-4">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <div className="flex justify-between items-center">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-semibold text-slate-800">Admin Dashboard</h1>
             <p className="text-sm text-slate-500">Full audit trail</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => router.refresh()}
+              className="bg-gray-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-300"
+              title="Refresh data"
+            >
+              🔄 Refresh
+            </button>
             <button onClick={exportCSV} className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-700">
-              Export CSV
+              CSV
             </button>
             <button onClick={exportExcel} className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700">
-              Export Excel
+              Excel
             </button>
-            <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-gray-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-300">
+            <button onClick={exportPDF} className="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-700">
+              PDF
+            </button>
+            <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium border hover:bg-gray-100">
               Logout
             </button>
           </div>
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-sm border p-4 flex flex-wrap items-end gap-3">
+          <div>
+            <label className="block text-xs text-slate-500 mb-1">From</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-slate-500 mb-1">To</label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm"
+            />
+          </div>
+          <button onClick={applyFilter} className="bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700">
+            Apply
+          </button>
+          <button onClick={clearFilter} className="text-slate-500 hover:text-slate-700 text-sm">
+            Clear
+          </button>
         </div>
 
         {isSuperAdmin && sites.length > 0 && (
@@ -156,7 +256,9 @@ export default function AdminClient({
             <tbody>
               {logs.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="p-6 text-center text-slate-500">No records yet</td>
+                  <td colSpan={9} className="p-6 text-center text-slate-500">
+                    No records for this period
+                  </td>
                 </tr>
               ) : (
                 logs.map((v) => (
@@ -168,7 +270,11 @@ export default function AdminClient({
                     <td className="p-3">{v.email || "—"}</td>
                     <td className="p-3">{v.hostName || "—"}</td>
                     <td className="p-3">{new Date(v.signedInAt).toLocaleString()}</td>
-                    <td className="p-3">{v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "✓ On site"}</td>
+                    <td className="p-3">
+                      {v.signedOutAt
+                        ? new Date(v.signedOutAt).toLocaleString()
+                        : "✓ On site"}
+                    </td>
                     <td className="p-3">{v.safetyAcknowledged ? "✅" : "❌"}</td>
                   </tr>
                 ))

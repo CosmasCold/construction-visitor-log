@@ -10,14 +10,15 @@ export const dynamic = "force-dynamic";
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ slug?: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { slug } = await searchParams;
   const session = await getServerSession(authOptions);
   if (!session) redirect("/admin/login");
   if (!session.user?.email) redirect("/admin/login");
 
-  // If no slug, redirect to the user's company slug
+  const { slug, dateFrom, dateTo } = await searchParams;
+
+  // If no slug, redirect to user's company slug
   if (!slug) {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -28,7 +29,7 @@ export default async function DashboardPage({
     }
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-white text-lg">No company found. Please contact support.</p>
+        <p className="text-white text-lg">No company found.</p>
       </div>
     );
   }
@@ -71,16 +72,40 @@ export default async function DashboardPage({
     );
   }
 
-  // Combine all visitors from all sites into one array for the table
+  // Build date filter – default to today
+  let dateFilter: { gte?: Date; lte?: Date } = {};
+  if (dateFrom || dateTo) {
+    if (typeof dateFrom === "string") dateFilter.gte = new Date(dateFrom);
+    if (typeof dateTo === "string") {
+      const endDate = new Date(dateTo);
+      endDate.setHours(23, 59, 59, 999);
+      dateFilter.lte = endDate;
+    }
+  } else {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    dateFilter = { gte: start, lte: end };
+  }
+
+  // Flatten visitors across all sites of this company, applying date filter
   const allVisitors = company.sites.flatMap((site) =>
-    site.visitors.map((v) => ({ ...v, siteName: site.name, siteId: site.id }))
+    site.visitors
+      .filter((v) => {
+        const time = new Date(v.signedInAt).getTime();
+        if (dateFilter.gte && time < dateFilter.gte.getTime()) return false;
+        if (dateFilter.lte && time > dateFilter.lte.getTime()) return false;
+        return true;
+      })
+      .map((v) => ({ ...v, siteName: site.name, siteId: site.id }))
   );
 
-  // Sort by signed in time desc
-  allVisitors.sort((a, b) => new Date(b.signedInAt).getTime() - new Date(a.signedInAt).getTime());
+  allVisitors.sort(
+    (a, b) => new Date(b.signedInAt).getTime() - new Date(a.signedInAt).getTime()
+  );
 
-  // Serialize dates for the client component
-  const logs = allVisitors.map((v) => ({
+  const serializedLogs = allVisitors.map((v) => ({
     ...v,
     signedInAt: v.signedInAt.toISOString(),
     signedOutAt: v.signedOutAt?.toISOString() ?? null,
@@ -102,8 +127,10 @@ export default async function DashboardPage({
       companyId={company.id}
       companySlug={company.slug}
       companyName={company.name}
-      logs={logs}
+      logs={serializedLogs}
       sites={sites}
+      currentDateFrom={typeof dateFrom === "string" ? dateFrom : ""}
+      currentDateTo={typeof dateTo === "string" ? dateTo : ""}
     />
   );
 }
