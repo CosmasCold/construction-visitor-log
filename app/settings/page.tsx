@@ -34,11 +34,30 @@ export default async function SettingsPage() {
       companyName={company.name}
       companyEmail={company.email}
       companySlug={company.slug}
-      subscriptionStatus={company.subscription?.status ?? (company.trialEndsAt && company.trialEndsAt > new Date() ? "trialing" : "inactive")}
-      planName={company.subscription?.plan?.name ?? (company.trialEndsAt && company.trialEndsAt > new Date() ? "Free Trial" : "No Plan")}
-      currentPeriodEnd={company.subscription?.currentPeriodEnd?.toISOString() ?? company.trialEndsAt?.toISOString() ?? null}
+      subscriptionStatus={
+        company.subscription?.status ??
+        (company.trialEndsAt && company.trialEndsAt > new Date()
+          ? "trialing"
+          : "inactive")
+      }
+      planName={
+        company.subscription?.plan?.name ??
+        (company.trialEndsAt && company.trialEndsAt > new Date()
+          ? "Free Trial"
+          : "No Plan")
+      }
+      currentPeriodEnd={
+        company.subscription?.currentPeriodEnd?.toISOString() ??
+        company.trialEndsAt?.toISOString() ??
+        null
+      }
       hasStripeCustomer={!!company.stripeCustomerId}
-      isTrialing={!company.subscription && company.trialEndsAt != null && company.trialEndsAt > new Date()}
+      hasSubscription={!!company.subscription}
+      isTrialing={
+        !company.subscription &&
+        company.trialEndsAt != null &&
+        company.trialEndsAt > new Date()
+      }
     />
   );
 }

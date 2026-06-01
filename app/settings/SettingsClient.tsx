@@ -13,6 +13,7 @@ export default function SettingsClient({
   planName,
   currentPeriodEnd,
   hasStripeCustomer,
+  hasSubscription,
   isTrialing,
 }: {
   companyName: string;
@@ -22,6 +23,7 @@ export default function SettingsClient({
   planName: string;
   currentPeriodEnd: string | null;
   hasStripeCustomer: boolean;
+  hasSubscription: boolean;    // ✅ whether a Stripe subscription actually exists
   isTrialing: boolean;
 }) {
   const router = useRouter();
@@ -55,9 +57,9 @@ export default function SettingsClient({
     setLoading(false);
   }
 
-  // Determine which billing button to show
-  const showManageBilling = !!hasStripeCustomer && subscriptionStatus !== "inactive";
-  const showSubscribe = !showManageBilling; // includes trial users and expired
+  // Show Manage Billing only if they actually have a subscription (active or trialing via Stripe)
+  const showManageBilling = hasStripeCustomer && hasSubscription;
+  const showSubscribe = !showManageBilling;
 
   return (
     <div className="min-h-screen py-10 px-4">
