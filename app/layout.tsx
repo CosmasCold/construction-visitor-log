@@ -6,6 +6,8 @@ import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import NavWrapper from "@/components/NavWrapper";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
   title: "SiteSafe – Construction Visitor Log",
@@ -42,97 +44,106 @@ export default async function RootLayout({
     }
   }
 
+  const header = (
+    <header className="bg-black/30 backdrop-blur-md border-b border-white/10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
+        <Link
+          href={logoHref}
+          className="flex items-center gap-2 text-white font-semibold text-lg tracking-tight hover:text-sky-300 transition-colors"
+        >
+          <Image
+            src="/logo.png"
+            alt="SiteSafe"
+            width={32}
+            height={32}
+            className="h-8 w-auto"
+          />
+          <span>SiteSafe</span>
+        </Link>
+        <nav className="flex gap-4 text-sm items-center">
+          {session ? (
+            <>
+              <Link
+                href={logoHref}
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Dashboard
+              </Link>
+              {session.user?.role === "super_admin" && (
+                <Link
+                  href="/admin"
+                  className="text-slate-300 hover:text-white transition-colors"
+                >
+                  Admin
+                </Link>
+              )}
+              <Link
+                href="/settings"
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Settings
+              </Link>
+              <form action="/api/auth/signout" method="POST">
+                <button
+                  type="submit"
+                  className="text-slate-300 hover:text-white bg-transparent border-none cursor-pointer text-sm"
+                >
+                  Logout
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/"
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Home
+              </Link>
+              <Link
+                href="/admin/login"
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                Sign in
+              </Link>
+            </>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
+
+  const footer = (
+    <footer className="bg-black/20 border-t border-white/5 text-slate-400 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="text-sm">
+          &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
+        </div>
+        <div className="flex gap-6 text-sm">
+          <Link href="/terms" className="hover:text-white transition-colors">
+            Terms of Service
+          </Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">
+            Privacy Policy
+          </Link>
+          <a
+            href="mailto:cloudandclipboard@gmail.com"
+            className="hover:text-white transition-colors"
+          >
+            Contact
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
+
   return (
     <html lang="en">
       <body className="flex flex-col min-h-screen">
-        <header className="bg-black/30 backdrop-blur-md border-b border-white/10">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
-            <Link
-              href={logoHref}
-              className="flex items-center gap-2 text-white font-semibold text-lg tracking-tight hover:text-sky-300 transition-colors"
-            >
-              <Image
-                src="/logo.png"
-                alt="SiteSafe"
-                width={32}
-                height={32}
-                className="h-8 w-auto"
-              />
-              <span>SiteSafe</span>
-            </Link>
-            <nav className="flex gap-4 text-sm items-center">
-              {session ? (
-                <>
-                  <Link
-                    href={logoHref}
-                    className="text-slate-300 hover:text-white transition-colors"
-                  >
-                    Dashboard
-                  </Link>
-                  {session.user?.role === "super_admin" && (
-                    <Link
-                      href="/admin"
-                      className="text-slate-300 hover:text-white transition-colors"
-                    >
-                      Admin
-                    </Link>
-                  )}
-                  <Link
-                    href="/settings"
-                    className="text-slate-300 hover:text-white transition-colors"
-                  >
-                    Settings
-                  </Link>
-                  <form action="/api/auth/signout" method="POST">
-                    <button
-                      type="submit"
-                      className="text-slate-300 hover:text-white bg-transparent border-none cursor-pointer text-sm"
-                    >
-                      Logout
-                    </button>
-                  </form>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/"
-                    className="text-slate-300 hover:text-white transition-colors"
-                  >
-                    Home
-                  </Link>
-                  <Link
-                    href="/admin/login"
-                    className="text-slate-300 hover:text-white transition-colors"
-                  >
-                    Sign in
-                  </Link>
-                </>
-              )}
-            </nav>
-          </div>
-        </header>
-        <main className="flex-1">{children}</main>
-        <footer className="bg-black/20 border-t border-white/5 text-slate-400 py-8">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="text-sm">
-              &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
-            </div>
-            <div className="flex gap-6 text-sm">
-              <Link href="/terms" className="hover:text-white transition-colors">
-                Terms of Service
-              </Link>
-              <Link href="/privacy" className="hover:text-white transition-colors">
-                Privacy Policy
-              </Link>
-              <a
-                href="mailto:cloudandclipboard@gmail.com"
-                className="hover:text-white transition-colors"
-              >
-                Contact
-              </a>
-            </div>
-          </div>
-        </footer>
+        <NavWrapper header={header} footer={footer}>
+          <main className="flex-1">{children}</main>
+        </NavWrapper>
+        <Analytics />
       </body>
     </html>
   );
