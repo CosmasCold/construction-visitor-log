@@ -123,6 +123,9 @@ export default async function RootLayout({
           &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
         </div>
         <div className="flex gap-6 text-sm">
+          <Link href="/blog" className="hover:text-white transition-colors">
+  Blog
+</Link>
           <Link href="/terms" className="hover:text-white transition-colors">
             Terms of Service
           </Link>

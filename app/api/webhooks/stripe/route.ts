@@ -20,6 +20,37 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  // ---- subscription lifecycle events ----
+  if (
+    event.type === "customer.subscription.updated" ||
+    event.type === "customer.subscription.deleted"
+  ) {
+    const subscription = event.data.object as Stripe.Subscription;
+    const customerId = subscription.customer as string;
+
+    // Find the company by Stripe customer ID
+    const company = await prisma.company.findFirst({
+      where: { stripeCustomerId: customerId },
+    });
+
+    if (company) {
+      // Access current_period_end dynamically to avoid SDK type mismatch
+      const subData = subscription as unknown as Record<string, unknown>;
+      const currentPeriodEnd = subData.current_period_end
+        ? new Date((subData.current_period_end as number) * 1000)
+        : null;
+
+      await prisma.subscription.updateMany({
+        where: { companyId: company.id, stripeSubId: subscription.id },
+        data: {
+          status: subscription.status,
+          currentPeriodEnd,
+        },
+      });
+    }
+  }
+
+  // ---- checkout completed (new subscription) ----
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const { companyName, email, companySlug, siteSlug, passwordHash } =
@@ -51,8 +82,7 @@ export async function POST(req: NextRequest) {
           name: companyName,
           slug: newCompanySlug,
           email,
-          // Save the Stripe customer ID directly from the session
-          stripeCustomerId: session.customer as string,
+          stripeCustomerId: (session.customer as string) || null,
           sites: {
             create: {
               slug: newSiteSlug,
@@ -70,7 +100,6 @@ export async function POST(req: NextRequest) {
         },
       });
     } else if (session.customer) {
-      // Update existing company's customer ID if not already set
       await prisma.company.update({
         where: { id: company.id },
         data: { stripeCustomerId: session.customer as string },
@@ -84,7 +113,9 @@ export async function POST(req: NextRequest) {
       );
 
       const subData = subscription as unknown as Record<string, unknown>;
-      const currentPeriodEnd = subData.current_period_end as number | undefined;
+      const currentPeriodEnd = subData.current_period_end
+        ? new Date((subData.current_period_end as number) * 1000)
+        : null;
 
       await prisma.subscription.upsert({
         where: { companyId: company.id },
@@ -92,18 +123,14 @@ export async function POST(req: NextRequest) {
           planId: plan.id,
           stripeSubId: subscription.id,
           status: subscription.status,
-          currentPeriodEnd: currentPeriodEnd
-            ? new Date(currentPeriodEnd * 1000)
-            : null,
+          currentPeriodEnd,
         },
         create: {
           companyId: company.id,
           planId: plan.id,
           stripeSubId: subscription.id,
           status: subscription.status,
-          currentPeriodEnd: currentPeriodEnd
-            ? new Date(currentPeriodEnd * 1000)
-            : null,
+          currentPeriodEnd,
         },
       });
     }
