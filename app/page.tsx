@@ -16,7 +16,7 @@ export default function LandingPage() {
             Know exactly who’s on site, enforce safety briefings, and stay audit‑ready — without the clipboard.
           </p>
           <p className="mt-4 text-sm text-slate-300">
-            14‑day free trial, then $29/mo per company. Cancel anytime.
+            14‑day free trial, then $49/mo per company. Cancel anytime.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
