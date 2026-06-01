@@ -19,6 +19,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Company not found" }, { status: 404 });
     }
 
+    // If the company already has a Stripe customer ID, check for existing subscriptions
+    if (company.stripeCustomerId) {
+      const existingSubs = await stripe.subscriptions.list({
+        customer: company.stripeCustomerId,
+        status: "all",
+        limit: 1,
+      });
+
+      if (existingSubs.data.length > 0) {
+        const status = existingSubs.data[0].status;
+        if (status === "active" || status === "trialing" || status === "past_due") {
+          return NextResponse.json(
+            {
+              error:
+                "You already have an active subscription. Please use 'Manage Billing' to make changes.",
+            },
+            { status: 409 }
+          );
+        }
+      }
+    }
+
+    // Create or retrieve customer
     let customerId = company.stripeCustomerId;
     if (!customerId) {
       const customer = await stripe.customers.create({ email, name: company.name });
@@ -29,7 +52,6 @@ export async function POST(request: Request) {
       });
     }
 
-    // Build the session parameters
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       mode: "subscription",
@@ -47,13 +69,12 @@ export async function POST(request: Request) {
       },
     };
 
-    // ---- apply test coupon if it exists ----
+    // Apply test coupon if set
     if (process.env.STRIPE_TEST_COUPON_ID) {
       sessionParams.discounts = [{ coupon: process.env.STRIPE_TEST_COUPON_ID }];
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
-
     return NextResponse.json({ url: session.url });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to start checkout.";

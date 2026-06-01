@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-05-27.dahlia",
 });
 
-export async function POST() {
+export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -26,26 +26,31 @@ export async function POST() {
 
   const company = user.company;
 
-  // Determine the Stripe customer ID – we might need to fetch it
+  // Determine the Stripe customer ID
   let customerId = company.stripeCustomerId;
   if (!customerId && company.subscription?.stripeSubId) {
-    // Retrieve the subscription to get the customer
-    const sub = await stripe.subscriptions.retrieve(company.subscription.stripeSubId);
-    customerId = sub.customer as string;
-    // Save it for future
-    await prisma.company.update({
-      where: { id: company.id },
-      data: { stripeCustomerId: customerId },
-    });
+    try {
+      const sub = await stripe.subscriptions.retrieve(company.subscription.stripeSubId);
+      customerId = sub.customer as string;
+      await prisma.company.update({
+        where: { id: company.id },
+        data: { stripeCustomerId: customerId },
+      });
+    } catch (error) {
+      console.error("Could not retrieve subscription:", error);
+    }
   }
 
   if (!customerId) {
     return NextResponse.json({ error: "No billing information available" }, { status: 400 });
   }
 
+  // Use the actual request origin (works with any custom domain)
+  const origin = request.headers.get("origin") || "https://sitesafe.thesift.space";
+
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: customerId,
-    return_url: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/settings`,
+    return_url: `${origin}/settings`,
   });
 
   return NextResponse.json({ url: portalSession.url });
