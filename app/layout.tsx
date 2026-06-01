@@ -19,6 +19,9 @@ export const metadata: Metadata = {
       "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
+  icons: {
+    icon: "/favicon.svg",   // or "/logo.png"
+  },
 };
 
 export default async function RootLayout({
