@@ -6,36 +6,38 @@ export default function LandingPage() {
     <div className="min-h-screen text-white">
       {/* Hero */}
       <div className="max-w-6xl mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
-          <span className="text-sky-400">SiteSafe</span>
-          <span className="block mt-2 text-white">Construction Visitor Log</span>
-        </h1>
-        <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-slate-300">
-          Replace paper logs with digital check‑in across all your construction sites.
-          Know exactly who’s on site, enforce safety briefings, and stay audit‑ready — without the clipboard.
-        </p>
-        <p className="mt-4 text-sm text-slate-400">
-          14‑day free trial, then $29/mo per company. Cancel anytime.
-        </p>
-        <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            href="/signup"
-            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-colors shadow-lg"
-          >
-            Start Free Trial
-          </Link>
-          <a
-            href="#how-it-works"
-            className="inline-flex items-center justify-center px-8 py-3 border border-white/30 text-base font-medium rounded-xl text-white hover:bg-white/10 transition-colors"
-          >
-            How it works
-          </a>
-          <Link
-            href="/admin/login"
-            className="inline-flex items-center justify-center px-8 py-3 border border-white/30 text-base font-medium rounded-xl text-white hover:bg-white/10 transition-colors"
-          >
-            Sign in
-          </Link>
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 sm:p-12 border border-white/20 shadow-2xl">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
+            <span className="text-sky-400">SiteSafe</span>
+            <span className="block mt-2 text-white">Construction Visitor Log</span>
+          </h1>
+          <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-slate-200">
+            Replace paper logs with digital check‑in across all your construction sites.
+            Know exactly who’s on site, enforce safety briefings, and stay audit‑ready — without the clipboard.
+          </p>
+          <p className="mt-4 text-sm text-slate-300">
+            14‑day free trial, then $29/mo per company. Cancel anytime.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-colors shadow-lg"
+            >
+              Start Free Trial
+            </Link>
+            <a
+              href="#how-it-works"
+              className="inline-flex items-center justify-center px-8 py-3 border border-white/30 text-base font-medium rounded-xl text-white hover:bg-white/10 transition-colors"
+            >
+              How it works
+            </a>
+            <Link
+              href="/admin/login"
+              className="inline-flex items-center justify-center px-8 py-3 border border-white/30 text-base font-medium rounded-xl text-white hover:bg-white/10 transition-colors"
+            >
+              Sign in
+            </Link>
+          </div>
         </div>
       </div>
 
