@@ -19,6 +19,7 @@ model Company {
   createdAt    DateTime      @default(now())
   sites        Site[]
   users        User[]
+  trialEndsAt  DateTime?      
   subscription Subscription?
 }
 

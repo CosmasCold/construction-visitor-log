@@ -74,11 +74,11 @@ export default async function DashboardPage({
   }
 
   // Check subscription status – block access if not active or trialing
-  const subscription = company.subscription;
-  const isTrialing = subscription?.status === "trialing";
-  const isActive = subscription?.status === "active";
+  const now = new Date();
+  const trialValid = company.trialEndsAt && company.trialEndsAt > now;
+  const subscriptionActive = company.subscription?.status === "active" || company.subscription?.status === "trialing";
 
-  if (!isActive && !isTrialing) {
+  if (!trialValid && !subscriptionActive) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 max-w-md text-center">

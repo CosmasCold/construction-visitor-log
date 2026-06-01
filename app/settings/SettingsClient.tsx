@@ -13,6 +13,7 @@ export default function SettingsClient({
   planName,
   currentPeriodEnd,
   hasStripeCustomer,
+  isTrialing,
 }: {
   companyName: string;
   companyEmail: string;
@@ -21,9 +22,26 @@ export default function SettingsClient({
   planName: string;
   currentPeriodEnd: string | null;
   hasStripeCustomer: boolean;
+  isTrialing: boolean;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  async function handleSubscribe() {
+    setLoading(true);
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: companyEmail, companyName }),
+    });
+    if (res.ok) {
+      const { url } = await res.json();
+      router.push(url);
+    } else {
+      alert("Failed to start subscription. Please try again.");
+    }
+    setLoading(false);
+  }
 
   async function handleManageBilling() {
     setLoading(true);
@@ -67,7 +85,7 @@ export default function SettingsClient({
           </div>
           {currentPeriodEnd && (
             <div>
-              <p className="text-sm text-slate-500">Next billing date</p>
+              <p className="text-sm text-slate-500">Next billing / trial end date</p>
               <p className="text-slate-800 font-medium text-sm">
                 {new Date(currentPeriodEnd).toLocaleDateString()}
               </p>
@@ -77,16 +95,46 @@ export default function SettingsClient({
 
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-6">
           <h2 className="text-lg font-semibold text-slate-800 mb-2">Billing</h2>
-          <p className="text-sm text-slate-600 mb-4">
-            Update your payment method, view invoices, or cancel your plan.
-          </p>
-          <button
-            onClick={handleManageBilling}
-            disabled={loading}
-            className="bg-red-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-red-700 disabled:bg-red-400 transition-colors"
-          >
-            {loading ? "Redirecting…" : "Manage Billing"}
-          </button>
+          {subscriptionStatus === "active" || subscriptionStatus === "trialing" || (hasStripeCustomer && !isTrialing) ? (
+            <>
+              <p className="text-sm text-slate-600 mb-4">
+                Update your payment method, view invoices, or cancel your plan.
+              </p>
+              <button
+                onClick={handleManageBilling}
+                disabled={loading}
+                className="bg-red-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-red-700 disabled:bg-red-400 transition-colors"
+              >
+                {loading ? "Redirecting…" : "Manage Billing"}
+              </button>
+            </>
+          ) : isTrialing ? (
+            <>
+              <p className="text-sm text-slate-600 mb-4">
+                You&apos;re on a free trial. When ready, subscribe to keep using SiteSafe.
+              </p>
+              <button
+                onClick={handleSubscribe}
+                disabled={loading}
+                className="bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 disabled:bg-sky-400 transition-colors"
+              >
+                {loading ? "Redirecting…" : "Subscribe Now"}
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-slate-600 mb-4">
+                No active plan. Subscribe to continue using SiteSafe.
+              </p>
+              <button
+                onClick={handleSubscribe}
+                disabled={loading}
+                className="bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 disabled:bg-sky-400 transition-colors"
+              >
+                {loading ? "Redirecting…" : "Subscribe Now"}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

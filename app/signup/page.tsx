@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -40,7 +41,7 @@ export default function SignupPage() {
     setErrors({});
     setLoading(true);
 
-    const res = await fetch("/api/checkout", {
+    const res = await fetch("/api/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -51,10 +52,22 @@ export default function SignupPage() {
     });
 
     const data = await res.json();
-    if (res.ok && data.url) {
-      router.push(data.url);
+    if (res.ok && data.success) {
+      // Auto‑login with the credentials
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password, // received back from the API
+        redirect: false,
+        callbackUrl: `/dashboard?slug=${data.companySlug}`,
+      });
+
+      if (result?.error) {
+        setErrors({ form: "Signup succeeded but login failed. Please use the sign in page." });
+      } else {
+        router.push(`/dashboard?slug=${data.companySlug}`);
+      }
     } else {
-      setErrors({ form: data.error || "Something went wrong." });
+      setErrors({ form: data.error || "Signup failed." });
     }
     setLoading(false);
   }
@@ -64,7 +77,6 @@ export default function SignupPage() {
       <div className="max-w-sm w-full bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20">
         <h2 className="text-xl font-semibold text-slate-800 mb-4">Create your account</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Company name */}
           <div>
             <input
               type="text"
@@ -75,8 +87,6 @@ export default function SignupPage() {
             />
             {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}
           </div>
-
-          {/* Email */}
           <div>
             <input
               type="email"
@@ -87,8 +97,6 @@ export default function SignupPage() {
             />
             {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
-
-          {/* Password */}
           <div>
             <input
               type="password"
@@ -99,8 +107,6 @@ export default function SignupPage() {
             />
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
           </div>
-
-          {/* Confirm password */}
           <div>
             <input
               type="password"
@@ -111,15 +117,13 @@ export default function SignupPage() {
             />
             {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
           </div>
-
           {errors.form && <p className="text-red-500 text-sm">{errors.form}</p>}
-
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-300 text-white font-medium rounded-xl px-6 py-3 text-sm transition-colors"
           >
-            {loading ? "Redirecting…" : "Continue to Payment"}
+            {loading ? "Creating account…" : "Start Free Trial"}
           </button>
         </form>
       </div>
