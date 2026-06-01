@@ -64,7 +64,7 @@ export default function SignupPage() {
       if (result?.error) {
         setErrors({ form: "Signup succeeded but login failed. Please use the sign in page." });
       } else {
-        router.push(`/dashboard?slug=${data.companySlug}`);
+        window.location.href = `/dashboard?slug=${data.companySlug}`;
       }
     } else {
       setErrors({ form: data.error || "Signup failed." });

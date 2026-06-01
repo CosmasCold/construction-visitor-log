@@ -18,7 +18,6 @@ export default async function DashboardPage({
 
   const { slug, dateFrom, dateTo } = await searchParams;
 
-  // If no slug, redirect to the user's company slug
   if (!slug) {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -73,21 +72,20 @@ export default async function DashboardPage({
     );
   }
 
-  // Check subscription status – block access if not active or trialing
   const now = new Date();
   const trialValid = company.trialEndsAt && company.trialEndsAt > now;
-  const subscriptionActive = company.subscription?.status === "active" || company.subscription?.status === "trialing";
+  const subscriptionActive =
+    company.subscription?.status === "active" ||
+    company.subscription?.status === "trialing";
 
+  // Block access if trial expired and no active subscription
   if (!trialValid && !subscriptionActive) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 max-w-md text-center">
-          <h2 className="text-xl font-semibold text-slate-800 mb-4">
-            Trial ended
-          </h2>
+          <h2 className="text-xl font-semibold text-slate-800 mb-4">Trial ended</h2>
           <p className="text-slate-600 mb-6">
-            Your free trial has expired. To continue using SiteSafe, please set up a
-            payment method.
+            Your free trial has expired. To continue using SiteSafe, please set up a payment method.
           </p>
           <a
             href="/settings"
@@ -100,7 +98,7 @@ export default async function DashboardPage({
     );
   }
 
-  // Build date filter – default to today
+  // Build date filter
   let dateFilter: { gte?: Date; lte?: Date } = {};
   if (dateFrom || dateTo) {
     if (typeof dateFrom === "string") dateFilter.gte = new Date(dateFrom);
@@ -117,7 +115,7 @@ export default async function DashboardPage({
     dateFilter = { gte: start, lte: end };
   }
 
-  // Combine visitors across all sites and apply date filter
+  // Visitors across all sites
   const allVisitors = company.sites.flatMap((site) =>
     site.visitors
       .filter((v) => {
@@ -154,15 +152,38 @@ export default async function DashboardPage({
     ).length,
   }));
 
+  // Compute trial days remaining for the banner
+  const trialDaysLeft = trialValid
+    ? Math.ceil((company.trialEndsAt!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+
   return (
-    <CompanyDashboardClient
-      companyId={company.id}
-      companySlug={company.slug}
-      companyName={company.name}
-      logs={serializedLogs}
-      sites={sites}
-      currentDateFrom={typeof dateFrom === "string" ? dateFrom : ""}
-      currentDateTo={typeof dateTo === "string" ? dateTo : ""}
-    />
+    <>
+      {/* Trial banner – only shown when on free trial */}
+      {trialValid && !company.subscription && (
+        <div className="bg-sky-600/90 backdrop-blur-sm border-b border-sky-400/50">
+          <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-white text-sm">
+            <span>
+              🎉 You&apos;re on the <strong>14‑day free trial</strong> – {trialDaysLeft} day{trialDaysLeft !== 1 ? 's' : ''} remaining.
+            </span>
+            <a
+              href="/settings"
+              className="bg-white text-sky-700 px-4 py-1.5 rounded-full text-xs font-semibold hover:bg-sky-50 transition-colors"
+            >
+              Subscribe now
+            </a>
+          </div>
+        </div>
+      )}
+      <CompanyDashboardClient
+        companyId={company.id}
+        companySlug={company.slug}
+        companyName={company.name}
+        logs={serializedLogs}
+        sites={sites}
+        currentDateFrom={typeof dateFrom === "string" ? dateFrom : ""}
+        currentDateTo={typeof dateTo === "string" ? dateTo : ""}
+      />
+    </>
   );
 }

@@ -55,10 +55,17 @@ export default function SettingsClient({
     setLoading(false);
   }
 
+  // Determine which billing button to show
+  const showManageBilling = !!hasStripeCustomer && subscriptionStatus !== "inactive";
+  const showSubscribe = !showManageBilling; // includes trial users and expired
+
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-2xl mx-auto space-y-6">
-        <Link href={`/dashboard?slug=${companySlug}`} className="text-sky-400 hover:text-sky-300 text-sm inline-flex items-center gap-1">
+        <Link
+          href={`/dashboard?slug=${companySlug}`}
+          className="text-sky-400 hover:text-sky-300 text-sm inline-flex items-center gap-1"
+        >
           ← Back to Dashboard
         </Link>
         <h1 className="text-2xl font-semibold text-white">Settings</h1>
@@ -95,7 +102,7 @@ export default function SettingsClient({
 
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-6">
           <h2 className="text-lg font-semibold text-slate-800 mb-2">Billing</h2>
-          {subscriptionStatus === "active" || subscriptionStatus === "trialing" || (hasStripeCustomer && !isTrialing) ? (
+          {showManageBilling ? (
             <>
               <p className="text-sm text-slate-600 mb-4">
                 Update your payment method, view invoices, or cancel your plan.
@@ -108,23 +115,12 @@ export default function SettingsClient({
                 {loading ? "Redirecting…" : "Manage Billing"}
               </button>
             </>
-          ) : isTrialing ? (
-            <>
-              <p className="text-sm text-slate-600 mb-4">
-                You&apos;re on a free trial. When ready, subscribe to keep using SiteSafe.
-              </p>
-              <button
-                onClick={handleSubscribe}
-                disabled={loading}
-                className="bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 disabled:bg-sky-400 transition-colors"
-              >
-                {loading ? "Redirecting…" : "Subscribe Now"}
-              </button>
-            </>
           ) : (
             <>
               <p className="text-sm text-slate-600 mb-4">
-                No active plan. Subscribe to continue using SiteSafe.
+                {isTrialing
+                  ? "You&apos;re on a free trial. When ready, subscribe to keep using SiteSafe."
+                  : "No active plan. Subscribe to continue using SiteSafe."}
               </p>
               <button
                 onClick={handleSubscribe}
