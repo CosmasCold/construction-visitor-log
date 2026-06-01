@@ -9,18 +9,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: Request) {
   try {
-    const { email, companyName } = await request.json();
+    const { email } = await request.json();
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find the company
     const company = await prisma.company.findUnique({ where: { email } });
     if (!company) {
       return NextResponse.json({ error: "Company not found" }, { status: 404 });
     }
 
-    // Ensure a Stripe customer exists
     let customerId = company.stripeCustomerId;
     if (!customerId) {
       const customer = await stripe.customers.create({ email, name: company.name });
@@ -31,7 +29,8 @@ export async function POST(request: Request) {
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
+    // Build the session parameters
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       mode: "subscription",
       payment_method_types: ["card"],
@@ -46,7 +45,14 @@ export async function POST(request: Request) {
       metadata: {
         companyId: company.id,
       },
-    });
+    };
+
+    // ---- apply test coupon if it exists ----
+    if (process.env.STRIPE_TEST_COUPON_ID) {
+      sessionParams.discounts = [{ coupon: process.env.STRIPE_TEST_COUPON_ID }];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
