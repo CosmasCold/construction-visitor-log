@@ -1,4 +1,9 @@
 // app/blog/page.tsx
+export const metadata = {
+  title: "SiteSafe Blog – Construction Safety & Visitor Management",
+  description:
+    "Tips and insights on construction site safety, OSHA compliance, and digital visitor logs.",
+};
 import Link from "next/link";
 
 const posts = [

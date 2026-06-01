@@ -1,4 +1,9 @@
 // app/blog/page.tsx
+export const metadata = {
+  title: "Why Paper Sign‑In Sheets Are a Safety Risk – SiteSafe Blog",
+  description:
+    "Paper visitor logs get lost, ruined, and are illegible. A digital check‑in is safer and audit‑ready.",
+};
 export default function BlogPage() {
   return (
     <div className="min-h-screen py-12 px-4">

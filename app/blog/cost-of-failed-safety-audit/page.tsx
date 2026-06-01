@@ -1,4 +1,9 @@
 // app/blog/cost-of-failed-safety-audit/page.tsx
+export const metadata = {
+  title: "The Real Cost of a Failed Safety Audit – SiteSafe Blog",
+  description:
+    "OSHA fines are just the start. A failed audit can cost contracts, reputation, and months of work.",
+};
 export default function BlogPost() {
   return (
     <div className="min-h-screen py-12 px-4">

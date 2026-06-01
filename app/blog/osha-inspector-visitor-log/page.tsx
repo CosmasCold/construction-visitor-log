@@ -1,4 +1,9 @@
 // app/blog/osha-inspector-visitor-log/page.tsx
+export const metadata = {
+  title: "What an OSHA Inspector Actually Looks For – SiteSafe Blog",
+  description:
+    "A complete visitor log can make or break an inspection. Learn what inspectors check and how to prepare.",
+};
 export default function BlogPost() {
   return (
     <div className="min-h-screen py-12 px-4">
