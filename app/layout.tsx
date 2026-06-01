@@ -2,15 +2,20 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "SiteSafe – Construction Visitor Log",
-  description: "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
-  icons: {
-    icon: "/favicon.svg",
+  description:
+    "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
+  openGraph: {
+    title: "SiteSafe – Construction Visitor Log",
+    description:
+      "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
 };
 
@@ -44,9 +49,16 @@ export default async function RootLayout({
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
             <Link
               href={logoHref}
-              className="text-white font-semibold text-lg tracking-tight hover:text-sky-300 transition-colors"
+              className="flex items-center gap-2 text-white font-semibold text-lg tracking-tight hover:text-sky-300 transition-colors"
             >
-              SiteSafe
+              <Image
+                src="/logo.png"
+                alt="SiteSafe"
+                width={32}
+                height={32}
+                className="h-8 w-auto"
+              />
+              <span>SiteSafe</span>
             </Link>
             <nav className="flex gap-4 text-sm items-center">
               {session ? (
