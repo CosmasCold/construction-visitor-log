@@ -119,7 +119,7 @@ export default function SettingsClient({
             <>
               <p className="text-sm text-slate-600 mb-4">
                 {isTrialing
-                  ? "You&apos;re on a free trial. When ready, subscribe to keep using SiteSafe."
+                  ? "You are on a free trial. When ready, subscribe to keep using SiteSafe."
                   : "No active plan. Subscribe to continue using SiteSafe."}
               </p>
               <button
