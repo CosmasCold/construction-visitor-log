@@ -53,6 +53,7 @@ export default function CompanyDashboardClient({
   const [sites, setSites] = useState(initialSites);
   const [showNewSite, setShowNewSite] = useState(false);
   const [editingSiteId, setEditingSiteId] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(true);
 
   // Edit form fields
   const [editName, setEditName] = useState("");
@@ -128,6 +129,15 @@ export default function CompanyDashboardClient({
     }
   }
 
+  function copyCheckinUrl(slug: string) {
+    const url = `${window.location.origin}/checkin/${slug}`;
+    navigator.clipboard.writeText(url).then(() => {
+      alert("Check-in URL copied to clipboard!");
+    }).catch(() => {
+      prompt("Copy this URL:", url);
+    });
+  }
+
   function exportCSV() {
     const headers = ["Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out"];
     const rows = logs.map((v) => [
@@ -194,6 +204,9 @@ export default function CompanyDashboardClient({
     doc.save(`visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.pdf`);
   }
 
+  // Onboarding: show a welcome hint if there's only a "Default Site"
+  const showOnboarding = showWelcome && sites.length === 1 && sites[0].name === "Default Site";
+
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -213,6 +226,16 @@ export default function CompanyDashboardClient({
             <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-white/10 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-white/20 border border-white/20">Logout</button>
           </div>
         </div>
+
+        {/* Onboarding banner */}
+        {showOnboarding && (
+          <div className="bg-sky-500/10 backdrop-blur-sm border border-sky-400/30 rounded-2xl p-4 flex justify-between items-start">
+            <p className="text-sm text-sky-100">
+              👋 Welcome! Start by renaming your first site or adding a new one below. Click <strong>Edit</strong> next to your site to change its name, slug, or safety briefing.
+            </p>
+            <button onClick={() => setShowWelcome(false)} className="text-sky-300 hover:text-white ml-3 text-lg leading-none">&times;</button>
+          </div>
+        )}
 
         {/* Two‑column row: date filter + new site */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -238,10 +261,10 @@ export default function CompanyDashboardClient({
             {showNewSite && (
               <form action="/api/sites" method="POST" className="space-y-4 mt-3">
                 <input type="hidden" name="companyId" value={companyId} />
-                <input type="text" name="name" placeholder="Site Name" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400" />
-                <input type="text" name="address" placeholder="Address" className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400" />
-                <input type="text" name="slug" placeholder="URL Slug (e.g., downtown)" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400" />
-                <button type="submit" className="bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 transition-colors">Create</button>
+                <input type="text" name="name" placeholder="Site Name" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70" />
+                <input type="text" name="address" placeholder="Address" className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70" />
+                <input type="text" name="slug" placeholder="URL Slug" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70" />
+                <button type="submit" className="bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700">Create</button>
               </form>
             )}
           </div>
@@ -256,34 +279,10 @@ export default function CompanyDashboardClient({
               <div key={site.id} className="bg-white/90 backdrop-blur-md rounded-2xl shadow-md border border-white/20 p-4">
                 {editingSiteId === site.id ? (
                   <div className="space-y-3">
-                    <input
-                      type="text"
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      placeholder="Site Name"
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white/70"
-                    />
-                    <input
-                      type="text"
-                      value={editSlug}
-                      onChange={(e) => setEditSlug(e.target.value)}
-                      placeholder="Slug"
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white/70"
-                    />
-                    <input
-                      type="text"
-                      value={editAddress}
-                      onChange={(e) => setEditAddress(e.target.value)}
-                      placeholder="Address"
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white/70"
-                    />
-                    <textarea
-                      value={editBriefing}
-                      onChange={(e) => setEditBriefing(e.target.value)}
-                      placeholder="Safety Briefing"
-                      rows={2}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white/70"
-                    />
+                    <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Site Name" className="w-full rounded-lg border px-3 py-2 text-sm bg-white/70" />
+                    <input type="text" value={editSlug} onChange={(e) => setEditSlug(e.target.value)} placeholder="Slug" className="w-full rounded-lg border px-3 py-2 text-sm bg-white/70" />
+                    <input type="text" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} placeholder="Address" className="w-full rounded-lg border px-3 py-2 text-sm bg-white/70" />
+                    <textarea value={editBriefing} onChange={(e) => setEditBriefing(e.target.value)} placeholder="Safety Briefing" rows={2} className="w-full rounded-lg border px-3 py-2 text-sm bg-white/70" />
                     <div className="flex gap-2">
                       <button onClick={() => saveEdit(site.id)} className="bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium">Save</button>
                       <button onClick={cancelEdit} className="bg-gray-300 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium">Cancel</button>
@@ -293,8 +292,20 @@ export default function CompanyDashboardClient({
                   <div className="flex justify-between items-start">
                     <a href={`/checkin/${encodeURIComponent(site.slug)}`} target="_blank" className="flex-1">
                       <h3 className="font-semibold text-slate-800">{site.name}</h3>
-                      <p className="text-xs text-slate-500">/{site.slug}</p>
+                      <p className="text-xs text-slate-500 flex items-center gap-1">
+                        /{site.slug}
+                        <button
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); copyCheckinUrl(site.slug); }}
+                          className="text-sky-500 hover:text-sky-700 inline-flex items-center"
+                          title="Copy check-in URL"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                          </svg>
+                        </button>
+                      </p>
                       <p className="text-xs text-slate-400 mt-1">{site.visitorsToday} today</p>
+                      <p className="text-xs text-slate-400 mt-0.5 italic">Click Edit to change name, slug, or safety briefing.</p>
                     </a>
                     <div className="flex gap-1 ml-2">
                       <button onClick={() => startEdit(site)} className="text-sky-600 hover:text-sky-800 text-xs">Edit</button>
@@ -324,7 +335,11 @@ export default function CompanyDashboardClient({
             </thead>
             <tbody>
               {logs.length === 0 ? (
-                <tr><td colSpan={8} className="p-4 text-center text-slate-500">No records for this period</td></tr>
+                <tr>
+                  <td colSpan={8} className="p-4 text-center text-slate-500">
+                    No visitors yet. Share the check‑in link with your team to get started!
+                  </td>
+                </tr>
               ) : (
                 logs.map((v) => (
                   <tr key={v.id} className="border-t border-gray-100">

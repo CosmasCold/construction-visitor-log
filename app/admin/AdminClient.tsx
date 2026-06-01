@@ -18,7 +18,7 @@ type Visitor = {
   safetyAcknowledged: boolean;
   signedInAt: string;
   signedOutAt: string | null;
-  site: { name: string; slug: string };
+  site: { name: string; slug: string; companyId: string };
 };
 
 type Site = {
@@ -29,33 +29,45 @@ type Site = {
   safetyBriefingText: string;
 };
 
+type Company = {
+  id: string;
+  name: string;
+};
+
 export default function AdminClient({
   logs,
   sites,
+  companies,
   isSuperAdmin,
   currentDateFrom,
   currentDateTo,
+  currentCompanyId,
 }: {
   logs: Visitor[];
   sites: Site[];
+  companies: Company[];
   isSuperAdmin: boolean;
   currentDateFrom?: string;
   currentDateTo?: string;
+  currentCompanyId?: string;
 }) {
   const router = useRouter();
   const [dateFrom, setDateFrom] = useState(currentDateFrom || "");
   const [dateTo, setDateTo] = useState(currentDateTo || "");
+  const [selectedCompanyId, setSelectedCompanyId] = useState(currentCompanyId || "");
 
   function applyFilter() {
     const params = new URLSearchParams();
     if (dateFrom) params.set("dateFrom", dateFrom);
     if (dateTo) params.set("dateTo", dateTo);
+    if (selectedCompanyId) params.set("companyId", selectedCompanyId);
     router.push(`/admin?${params.toString()}`);
   }
 
   function clearFilter() {
     setDateFrom("");
     setDateTo("");
+    setSelectedCompanyId("");
     router.push("/admin");
   }
 
@@ -70,10 +82,7 @@ export default function AdminClient({
   }
 
   function exportCSV() {
-    const headers = [
-      "Site", "Name", "Company", "Phone", "Email", "Host",
-      "Safety OK", "Signed In", "Signed Out",
-    ];
+    const headers = ["Site", "Name", "Company", "Phone", "Email", "Host", "Safety OK", "Signed In", "Signed Out"];
     const rows = logs.map((v) => [
       v.site.name,
       v.fullName,
@@ -116,10 +125,7 @@ export default function AdminClient({
 
   function exportPDF() {
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-    const headers = [
-      "Site", "Name", "Company", "Phone", "Email", "Host",
-      "Safety OK", "Signed In", "Signed Out",
-    ];
+    const headers = ["Site", "Name", "Company", "Phone", "Email", "Host", "Safety OK", "Signed In", "Signed Out"];
     const rows = logs.map((v) => [
       v.site.name,
       v.fullName,
@@ -140,11 +146,7 @@ export default function AdminClient({
       headStyles: { fillColor: [15, 23, 42] },
     });
 
-    doc.text(
-      `Visitor Log – ${dateFrom || "start"} to ${dateTo || "end"}`,
-      14,
-      15
-    );
+    doc.text(`Visitor Log – ${dateFrom || "start"} to ${dateTo || "end"}`, 14, 15);
     doc.save(`visitor_log_${new Date().toISOString().slice(0, 10)}.pdf`);
   }
 
@@ -157,55 +159,44 @@ export default function AdminClient({
             <p className="text-sm text-slate-500">Full audit trail</p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={() => router.refresh()}
-              className="bg-gray-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-300"
-              title="Refresh data"
-            >
+            <button onClick={() => router.refresh()} className="bg-gray-200 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-300">
               🔄 Refresh
             </button>
-            <button onClick={exportCSV} className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-700">
-              CSV
-            </button>
-            <button onClick={exportExcel} className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700">
-              Excel
-            </button>
-            <button onClick={exportPDF} className="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-700">
-              PDF
-            </button>
-            <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium border hover:bg-gray-100">
-              Logout
-            </button>
+            <button onClick={exportCSV} className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-700">CSV</button>
+            <button onClick={exportExcel} className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700">Excel</button>
+            <button onClick={exportPDF} className="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-700">PDF</button>
+            <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-white text-slate-700 px-4 py-2 rounded-xl text-sm font-medium border hover:bg-gray-100">Logout</button>
           </div>
         </div>
 
+        {/* Filters */}
         <div className="bg-white rounded-2xl shadow-sm border p-4 flex flex-wrap items-end gap-3">
           <div>
             <label className="block text-xs text-slate-500 mb-1">From</label>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm"
-            />
+            <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="border rounded-lg px-3 py-2 text-sm" />
           </div>
           <div>
             <label className="block text-xs text-slate-500 mb-1">To</label>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              className="border rounded-lg px-3 py-2 text-sm"
-            />
+            <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="border rounded-lg px-3 py-2 text-sm" />
           </div>
-          <button onClick={applyFilter} className="bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700">
-            Apply
-          </button>
-          <button onClick={clearFilter} className="text-slate-500 hover:text-slate-700 text-sm">
-            Clear
-          </button>
+          <div>
+            <label className="block text-xs text-slate-500 mb-1">Company</label>
+            <select
+              value={selectedCompanyId}
+              onChange={(e) => setSelectedCompanyId(e.target.value)}
+              className="border rounded-lg px-3 py-2 text-sm bg-white"
+            >
+              <option value="">All companies</option>
+              {companies.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <button onClick={applyFilter} className="bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700">Apply</button>
+          <button onClick={clearFilter} className="text-slate-500 hover:text-slate-700 text-sm">Clear</button>
         </div>
 
+        {/* Sites list */}
         {isSuperAdmin && sites.length > 0 && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <h2 className="text-lg font-semibold mb-4">Sites</h2>
@@ -213,30 +204,20 @@ export default function AdminClient({
               {sites.map((site) => (
                 <li key={site.id} className="py-3 flex justify-between items-center">
                   <div>
-                    <a
-                      href={`/checkin/${encodeURIComponent(site.slug)}`}
-                      target="_blank"
-                      className="font-medium text-sky-600 hover:underline"
-                    >
+                    <a href={`/checkin/${encodeURIComponent(site.slug)}`} target="_blank" className="font-medium text-sky-600 hover:underline">
                       {site.name}
                     </a>
                     <p className="text-sm text-slate-500">Check-in: /checkin/{site.slug}</p>
-                    {site.address && (
-                      <p className="text-xs text-slate-400">{site.address}</p>
-                    )}
+                    {site.address && <p className="text-xs text-slate-400">{site.address}</p>}
                   </div>
-                  <button
-                    onClick={() => handleDeleteSite(site.id)}
-                    className="text-red-500 hover:text-red-700 text-xs"
-                  >
-                    Delete
-                  </button>
+                  <button onClick={() => handleDeleteSite(site.id)} className="text-red-500 hover:text-red-700 text-xs">Delete</button>
                 </li>
               ))}
             </ul>
           </div>
         )}
 
+        {/* Visitors table */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-left">
@@ -256,7 +237,7 @@ export default function AdminClient({
               {logs.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="p-6 text-center text-slate-500">
-                    No records for this period
+                    No visitors yet. Share the check‑in link with your team to get started!
                   </td>
                 </tr>
               ) : (
@@ -269,11 +250,7 @@ export default function AdminClient({
                     <td className="p-3">{v.email || "—"}</td>
                     <td className="p-3">{v.hostName || "—"}</td>
                     <td className="p-3">{new Date(v.signedInAt).toLocaleString()}</td>
-                    <td className="p-3">
-                      {v.signedOutAt
-                        ? new Date(v.signedOutAt).toLocaleString()
-                        : "✓ On site"}
-                    </td>
+                    <td className="p-3">{v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "✓ On site"}</td>
                     <td className="p-3">{v.safetyAcknowledged ? "✅" : "❌"}</td>
                   </tr>
                 ))

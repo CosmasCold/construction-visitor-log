@@ -16,7 +16,11 @@ export default async function SettingsPage() {
     where: { email: session.user.email },
     include: {
       company: {
-        include: { subscription: true },
+        include: {
+          subscription: {
+            include: { plan: true },
+          },
+        },
       },
     },
   });
@@ -31,7 +35,10 @@ export default async function SettingsPage() {
     <SettingsClient
       companyName={company.name}
       companyEmail={company.email}
+      companySlug={company.slug}
       subscriptionStatus={company.subscription?.status ?? "inactive"}
+      planName={company.subscription?.plan?.name ?? "Free"}
+      currentPeriodEnd={company.subscription?.currentPeriodEnd?.toISOString() ?? null}
       hasStripeCustomer={!!company.stripeCustomerId}
     />
   );

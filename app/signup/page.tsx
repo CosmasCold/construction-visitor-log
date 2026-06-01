@@ -10,50 +10,51 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
+
+  function validate() {
+    const newErrors: Record<string, string> = {};
+    if (!email.includes("@") || !email.includes(".")) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+    if (!companyName.trim()) {
+      newErrors.companyName = "Company name is required.";
+    }
+    if (!password || password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters.";
+    }
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match.";
+    }
+    return newErrors;
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
-
-    // Basic email validation
-    if (!email.includes("@") || !email.includes(".")) {
-      setError("Please enter a valid email address.");
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
-
-    if (!companyName.trim()) {
-      setError("Company name is required.");
-      return;
-    }
-
-    if (!password || password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
+    setErrors({});
     setLoading(true);
+
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email,
         companyName: companyName.trim(),
-        password,           // send plain password to backend
+        password,
       }),
     });
 
     const data = await res.json();
     if (res.ok && data.url) {
-      router.push(data.url); // redirect to Stripe Checkout
+      router.push(data.url);
     } else {
-      setError(data.error || "Something went wrong. Please try again.");
+      setErrors({ form: data.error || "Something went wrong." });
     }
     setLoading(false);
   }
@@ -63,39 +64,56 @@ export default function SignupPage() {
       <div className="max-w-sm w-full bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20">
         <h2 className="text-xl font-semibold text-slate-800 mb-4">Create your account</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Company name"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            required
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
-          />
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
-          />
-          <input
-            type="password"
-            placeholder="Password (min. 8 characters)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
-          />
-          <input
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
-          />
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {/* Company name */}
+          <div>
+            <input
+              type="text"
+              placeholder="Company name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            />
+            {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}
+          </div>
+
+          {/* Email */}
+          <div>
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          </div>
+
+          {/* Password */}
+          <div>
+            <input
+              type="password"
+              placeholder="Password (min. 8 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+          </div>
+
+          {/* Confirm password */}
+          <div>
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
+            />
+            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+          </div>
+
+          {errors.form && <p className="text-red-500 text-sm">{errors.form}</p>}
+
           <button
             type="submit"
             disabled={loading}

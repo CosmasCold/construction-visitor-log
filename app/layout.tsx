@@ -8,8 +8,10 @@ import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "SiteSafe – Construction Visitor Log",
-  description:
-    "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
+  description: "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default async function RootLayout({

@@ -16,9 +16,8 @@ export default async function AdminDashboard({
   if (!session) redirect("/admin/login");
   if (session.user?.role !== "super_admin") redirect("/");
 
-  const { dateFrom, dateTo } = await searchParams;
+  const { dateFrom, dateTo, companyId } = await searchParams;
 
-  // Build date filter – default to today
   let dateFilter: { gte?: Date; lte?: Date } = {};
   if (dateFrom || dateTo) {
     if (typeof dateFrom === "string") dateFilter.gte = new Date(dateFrom);
@@ -28,7 +27,6 @@ export default async function AdminDashboard({
       dateFilter.lte = endDate;
     }
   } else {
-    // Default: today
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
     const endOfToday = new Date();
@@ -36,29 +34,50 @@ export default async function AdminDashboard({
     dateFilter = { gte: startOfToday, lte: endOfToday };
   }
 
+  // Build where clause for logs
+    // Build where clause for logs
+  const whereClause: {
+    signedInAt: { gte?: Date; lte?: Date };
+    site?: { companyId: string };
+  } = {
+    signedInAt: dateFilter,
+  };
+  if (typeof companyId === "string" && companyId.length > 0) {
+    whereClause.site = { companyId };
+  }
+
   const logs = await prisma.visitorLog.findMany({
-    where: {
-      signedInAt: dateFilter,
-    },
+    where: whereClause,
     orderBy: { signedInAt: "desc" },
-    include: { site: true },
+    include: {
+      site: {
+        select: { name: true, slug: true, companyId: true },
+      },
+    },
   });
 
   const sites = await prisma.site.findMany({ orderBy: { name: "asc" } });
+  const companies = await prisma.company.findMany({
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
 
   const serializedLogs = logs.map((log) => ({
     ...log,
     signedInAt: log.signedInAt.toISOString(),
     signedOutAt: log.signedOutAt?.toISOString() ?? null,
+    site: log.site, // already has name, slug, companyId
   }));
 
   return (
     <AdminClient
       logs={serializedLogs}
       sites={sites}
+      companies={companies}
       isSuperAdmin={true}
       currentDateFrom={typeof dateFrom === "string" ? dateFrom : ""}
       currentDateTo={typeof dateTo === "string" ? dateTo : ""}
+      currentCompanyId={typeof companyId === "string" ? companyId : ""}
     />
   );
 }

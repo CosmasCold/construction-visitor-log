@@ -14,6 +14,9 @@ export default function LandingPage() {
           Replace paper logs with digital check‑in across all your construction sites.
           Know exactly who’s on site, enforce safety briefings, and stay audit‑ready — without the clipboard.
         </p>
+        <p className="mt-4 text-sm text-slate-400">
+          14‑day free trial, then $29/mo per company. Cancel anytime.
+        </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/signup"
@@ -57,7 +60,7 @@ export default function LandingPage() {
             {
               step: "3",
               title: "Stay compliant",
-              text: "Digital audit trail, mandatory safety acknowledgments, and instant CSV/Excel exports keep you inspection‑ready.",
+              text: "Digital audit trail, mandatory safety acknowledgments, and instant CSV/Excel/PDF exports keep you inspection‑ready.",
             },
           ].map((item) => (
             <div
