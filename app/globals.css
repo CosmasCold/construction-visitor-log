@@ -22,11 +22,6 @@ html {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Slow background zoom */
-@keyframes slow-zoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.05); }
-}
 body {
   background-image: linear-gradient(
       rgba(15, 23, 42, 0.65),
@@ -36,7 +31,6 @@ body {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  animation: slow-zoom 30s ease-in-out infinite alternate;
 }
 
 /* Focus ring for all interactive elements */
