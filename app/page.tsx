@@ -1,7 +1,6 @@
 // app/page.tsx
 import Link from "next/link";
 import {
-  Construction,
   ClipboardCheck,
   BarChart3,
   ShieldCheck,
@@ -12,17 +11,17 @@ const steps = [
   {
     icon: <ClipboardCheck className="w-6 h-6 text-sky-300" />,
     title: "Sign in visitors",
-    text: "Workers enter their name, company, and acknowledge safety rules — no paper, no hassle.",
+    text: "Guests enter their name, company, and acknowledge your safety or policy briefing — no paper, no hassle.",
   },
   {
     icon: <BarChart3 className="w-6 h-6 text-sky-300" />,
     title: "Real‑time dashboard",
-    text: "See who’s on site right now, export logs for audits, and manage multiple projects from one place.",
+    text: "See who’s on‑site right now, export logs for audits, and manage multiple locations from one place.",
   },
   {
     icon: <ShieldCheck className="w-6 h-6 text-sky-300" />,
     title: "Stay compliant",
-    text: "Digital audit trail, mandatory safety acknowledgments, and instant CSV/Excel/PDF exports keep you inspection‑ready.",
+    text: "Digital audit trail, mandatory policy acknowledgments, and instant CSV/Excel/PDF exports keep you inspection‑ready.",
   },
 ];
 
@@ -32,19 +31,17 @@ export default function LandingPage() {
       {/* Hero */}
       <div className="max-w-6xl mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8 text-center">
         <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-[0_25px_50px_rgba(0,0,0,0.25)] p-10 sm:p-14">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight flex flex-col items-center gap-3">
-            <Construction className="w-12 h-12 text-sky-400" />
-            <span>
-              <span className="text-sky-400">SiteSafe</span>
-              <span className="block mt-2 text-white">Construction Visitor Log</span>
-            </span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight">
+            <span className="text-sky-400">SiteSafe</span>
+            <span className="block mt-2 text-white">Digital Visitor Log</span>
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-slate-300 leading-relaxed">
-            Replace paper logs with digital check‑in across all your construction sites.
-            Know exactly who’s on site, enforce safety briefings, and stay audit‑ready — without the clipboard.
+            Replace paper sign‑in sheets with a secure, digital check‑in system that works
+            for any workplace. Know who’s on site, enforce your safety or conduct policy,
+            and stay audit‑ready — without the clipboard.
           </p>
           <p className="mt-4 text-sm text-slate-400">
-            14‑day free trial, then $49/mo per company. Cancel anytime.
+            14‑day free trial, then $49/mo per organization. Cancel anytime.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -96,7 +93,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">Ready to ditch the clipboard?</h2>
           <p className="mt-4 text-lg text-slate-300 leading-relaxed">
-            Set up your company in 2 minutes. Free trial, no credit card required until you decide to stay.
+            Set up your organization in 2 minutes. Free trial, no credit card required until you decide to stay.
           </p>
           <Link
             href="/signup"

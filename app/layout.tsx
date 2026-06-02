@@ -10,17 +10,14 @@ import NavWrapper from "@/components/NavWrapper";
 import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
-  title: "SiteSafe – Construction Visitor Log",
+  title: "SiteSafe – Digital Visitor Log",
   description:
-    "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
+    "Replace paper sign‑in sheets with a secure, digital check‑in for any workplace. Real‑time dashboard, audit‑ready exports, and customizable policy acknowledgments.",
   openGraph: {
-    title: "SiteSafe – Construction Visitor Log",
+    title: "SiteSafe – Digital Visitor Log",
     description:
-      "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
+      "Replace paper sign‑in sheets with a secure, digital check‑in for any workplace.",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
-  },
-  icons: {
-    icon: "/logo.png",
   },
 };
 
