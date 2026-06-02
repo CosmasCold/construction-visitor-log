@@ -47,7 +47,7 @@ export default async function RootLayout({
   }
 
   const header = (
-    <header className="bg-black/20 backdrop-blur-lg border-b border-white/5">
+    <header className="bg-gradient-to-b from-black/30 to-transparent backdrop-blur-lg border-b border-white/5">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
         <Link
           href={logoHref}
