@@ -1,29 +1,41 @@
 // app/blog/page.tsx
-export const metadata = {
+import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: "SiteSafe Blog – Construction Safety & Visitor Management",
   description:
     "Tips and insights on construction site safety, OSHA compliance, and digital visitor logs.",
 };
-import Link from "next/link";
 
 const posts = [
   {
     slug: "paper-sign-in-sheets-safety-risk",
     title: "Why Paper Sign‑In Sheets Are a Safety Risk",
     date: "2026-06-01",
-    excerpt: "Paper logs get lost, ruined, and are illegible. Here's why a digital check‑in is safer.",
+    excerpt:
+      "Paper logs get lost, ruined, and are illegible. Here is why a digital check‑in is safer.",
   },
   {
     slug: "osha-inspector-visitor-log",
-    title: "What an OSHA Inspector Actually Looks for in a Visitor Log",
+    title: "What an OSHA Inspector Actually Looks For in a Visitor Log",
     date: "2026-06-02",
-    excerpt: "A complete visitor log can make or break an inspection. Here's what inspectors check.",
+    excerpt:
+      "A complete visitor log can make or break an inspection. Here is what inspectors check.",
   },
   {
     slug: "cost-of-failed-safety-audit",
     title: "The Real Cost of a Failed Safety Audit",
     date: "2026-06-03",
-    excerpt: "Fines are just the start. A failed audit can cost you contracts, reputation, and months of work.",
+    excerpt:
+      "Fines are just the start. A failed audit can cost contracts, reputation, and months of work.",
+  },
+  {
+    slug: "feedback-wanted",
+    title: "Help Us Improve SiteSafe – Feedback Wanted",
+    date: "2026-06-04",
+    excerpt:
+      "We built a simple digital visitor log and need your honest feedback to make it better.",
   },
 ];
 
@@ -31,16 +43,24 @@ export default function BlogIndex() {
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-2xl mx-auto space-y-8">
-        <h1 className="text-3xl font-bold text-white">Blog</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white">Blog</h1>
         {posts.map((post) => (
-          <div key={post.slug} className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20 text-slate-800">
-            <h2 className="text-xl font-semibold">
-              <Link href={`/blog/${post.slug}`} className="hover:text-sky-600 transition-colors">
+          <div
+            key={post.slug}
+            className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.16)] transition-shadow duration-300 p-8"
+          >
+            <h2 className="text-xl font-semibold tracking-tight">
+              <Link
+                href={`/blog/${post.slug}`}
+                className="text-white hover:text-sky-400 transition-colors duration-150"
+              >
                 {post.title}
               </Link>
             </h2>
-            <p className="text-sm text-slate-500 mt-1">{post.date}</p>
-            <p className="text-sm text-slate-600 mt-3">{post.excerpt}</p>
+            <p className="text-xs text-slate-400 mt-1">{post.date}</p>
+            <p className="text-sm text-slate-300 mt-3 leading-relaxed">
+              {post.excerpt}
+            </p>
           </div>
         ))}
       </div>

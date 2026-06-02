@@ -29,7 +29,21 @@ export default function AdminLogin() {
     if (result?.error) {
       setError("Invalid email or password");
       setLoading(false);
-    } else {
+      return;
+    }
+
+    // Fetch session to determine role
+    try {
+      const sessionRes = await fetch("/api/auth/session");
+      const sessionData = await sessionRes.json();
+
+      if (sessionData?.user?.role === "company_owner") {
+        window.location.href = "/dashboard";
+      } else {
+        window.location.href = "/admin";
+      }
+    } catch {
+      // Fallback to the original callback URL
       window.location.href = callbackUrl;
     }
   }

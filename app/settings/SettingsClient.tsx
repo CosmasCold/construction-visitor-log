@@ -23,7 +23,7 @@ export default function SettingsClient({
   planName: string;
   currentPeriodEnd: string | null;
   hasStripeCustomer: boolean;
-  hasSubscription: boolean;    // ✅ whether a Stripe subscription actually exists
+  hasSubscription: boolean;
   isTrialing: boolean;
 }) {
   const router = useRouter();
@@ -57,7 +57,6 @@ export default function SettingsClient({
     setLoading(false);
   }
 
-  // Show Manage Billing only if they actually have a subscription (active or trialing via Stripe)
   const showManageBilling = hasStripeCustomer && hasSubscription;
   const showSubscribe = !showManageBilling;
 
@@ -66,60 +65,60 @@ export default function SettingsClient({
       <div className="max-w-2xl mx-auto space-y-6">
         <Link
           href={`/dashboard?slug=${companySlug}`}
-          className="text-sky-400 hover:text-sky-300 text-sm inline-flex items-center gap-1"
+          className="text-sky-400 hover:text-sky-300 text-sm inline-flex items-center gap-1 transition-colors duration-150"
         >
           ← Back to Dashboard
         </Link>
-        <h1 className="text-2xl font-semibold text-white">Settings</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-white">Settings</h1>
 
-        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-6 space-y-4">
-          <h2 className="text-lg font-semibold text-slate-800">Company</h2>
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6 space-y-4">
+          <h2 className="text-lg font-semibold tracking-tight text-white">Company</h2>
           <div>
-            <p className="text-sm text-slate-500">Name</p>
-            <p className="text-slate-800 font-medium">{companyName}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Name</p>
+            <p className="text-white font-medium">{companyName}</p>
           </div>
           <div>
-            <p className="text-sm text-slate-500">Email</p>
-            <p className="text-slate-800 font-medium">{companyEmail}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Email</p>
+            <p className="text-white font-medium">{companyEmail}</p>
           </div>
           <div>
-            <p className="text-sm text-slate-500">Plan</p>
-            <p className="text-slate-800 font-medium">{planName}</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Plan</p>
+            <p className="text-white font-medium">{planName}</p>
           </div>
           <div>
-            <p className="text-sm text-slate-500">Status</p>
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-800">
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Status</p>
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300">
               {subscriptionStatus}
             </span>
           </div>
           {currentPeriodEnd && (
             <div>
-              <p className="text-sm text-slate-500">Next billing / trial end date</p>
-              <p className="text-slate-800 font-medium text-sm">
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Next billing / trial end date</p>
+              <p className="text-white font-medium text-sm">
                 {new Date(currentPeriodEnd).toLocaleDateString()}
               </p>
             </div>
           )}
         </div>
 
-        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-6">
-          <h2 className="text-lg font-semibold text-slate-800 mb-2">Billing</h2>
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6">
+          <h2 className="text-lg font-semibold tracking-tight text-white mb-2">Billing</h2>
           {showManageBilling ? (
             <>
-              <p className="text-sm text-slate-600 mb-4">
+              <p className="text-sm text-slate-300 leading-relaxed mb-4">
                 Update your payment method, view invoices, or cancel your plan.
               </p>
               <button
                 onClick={handleManageBilling}
                 disabled={loading}
-                className="bg-red-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-red-700 disabled:bg-red-400 transition-colors"
+                className="bg-rose-600 hover:bg-rose-700 disabled:bg-rose-400/50 text-white px-6 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200 active:scale-[0.98]"
               >
                 {loading ? "Redirecting…" : "Manage Billing"}
               </button>
             </>
           ) : (
             <>
-              <p className="text-sm text-slate-600 mb-4">
+              <p className="text-sm text-slate-300 leading-relaxed mb-4">
                 {isTrialing
                   ? "You are on a free trial. When ready, subscribe to keep using SiteSafe."
                   : "No active plan. Subscribe to continue using SiteSafe."}
@@ -127,7 +126,7 @@ export default function SettingsClient({
               <button
                 onClick={handleSubscribe}
                 disabled={loading}
-                className="bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 disabled:bg-sky-400 transition-colors"
+                className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white px-6 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200 active:scale-[0.98]"
               >
                 {loading ? "Redirecting…" : "Subscribe Now"}
               </button>

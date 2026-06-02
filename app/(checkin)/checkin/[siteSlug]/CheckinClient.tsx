@@ -92,79 +92,67 @@ export default function CheckinClient({
   }
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center py-10 px-4"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?q=80&w=2070&auto=format&fit=crop')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
+    <div className="min-h-screen flex items-center justify-center py-10 px-4 bg-slate-950/60">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white drop-shadow-md">{siteName}</h1>
-          <p className="text-white/80 text-sm mt-1">Visitor sign‑in</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white">{siteName}</h1>
+          <p className="text-slate-400 text-sm mt-1">Visitor sign‑in</p>
         </div>
 
-        {/* Safety briefing – glass card with sky accent */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl border-l-4 border-sky-400 p-5 shadow-xl">
-          <h2 className="text-sm font-semibold text-sky-300 uppercase tracking-wide mb-1">
-            Safety Briefing
-          </h2>
+        {/* Safety briefing */}
+        <div className="bg-sky-500/10 backdrop-blur-md rounded-2xl border-l-4 border-sky-400 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-sky-300 mb-1">Safety Briefing</h2>
           <p className="text-sm text-slate-200 leading-relaxed">{safetyBriefing}</p>
         </div>
 
-        {/* Sign‑in form – glass card */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 p-6 shadow-2xl">
-          <form onSubmit={handleSignIn} className="space-y-5">
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Full name"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                className="w-full rounded-xl bg-white/80 border border-white/60 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/60 focus:bg-white"
-              />
-              <input
-                type="text"
-                placeholder="Company / Trade"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-                required
-                className="w-full rounded-xl bg-white/80 border border-white/60 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/60 focus:bg-white"
-              />
-              <input
-                type="tel"
-                placeholder="Phone (optional)"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full rounded-xl bg-white/80 border border-white/60 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/60 focus:bg-white"
-              />
-              <input
-                type="email"
-                placeholder="Email (optional)"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl bg-white/80 border border-white/60 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/60 focus:bg-white"
-              />
-              <input
-                type="text"
-                placeholder="Host name (optional)"
-                value={hostName}
-                onChange={(e) => setHostName(e.target.value)}
-                className="w-full rounded-xl bg-white/80 border border-white/60 px-4 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/60 focus:bg-white"
-              />
-            </div>
+        {/* Sign‑in form */}
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6">
+          <form onSubmit={handleSignIn} className="space-y-4">
+            <input
+              type="text"
+              placeholder="Full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-transparent transition-all duration-200"
+            />
+            <input
+              type="text"
+              placeholder="Company / Trade"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              required
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-transparent transition-all duration-200"
+            />
+            <input
+              type="tel"
+              placeholder="Phone (optional)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-transparent transition-all duration-200"
+            />
+            <input
+              type="email"
+              placeholder="Email (optional)"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-transparent transition-all duration-200"
+            />
+            <input
+              type="text"
+              placeholder="Host name (optional)"
+              value={hostName}
+              onChange={(e) => setHostName(e.target.value)}
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-transparent transition-all duration-200"
+            />
 
-            <label className="flex items-start gap-2 text-sm text-slate-800">
+            <label className="flex items-start gap-2 text-sm text-slate-200">
               <input
                 type="checkbox"
                 checked={safetyAcknowledged}
                 onChange={(e) => setSafetyAcknowledged(e.target.checked)}
                 required
-                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-sky-500 focus:ring-sky-400"
+                className="mt-0.5 h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
               />
               <span>I have read and understand the site safety briefing.</span>
             </label>
@@ -172,46 +160,37 @@ export default function CheckinClient({
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-300 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-colors shadow-md"
+              className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white font-medium tracking-wide rounded-xl px-6 py-3 text-sm transition-all duration-200 active:scale-[0.98]"
             >
               {loading ? "Signing in…" : "Sign In"}
             </button>
           </form>
         </div>
 
-        {/* Active visitors – glass card */}
-        <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/40 p-6 shadow-2xl">
+        {/* Active visitors */}
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-slate-800 uppercase tracking-wide">
-              Currently on Site
-            </h2>
-            <span className="inline-flex items-center justify-center min-w-[24px] h-6 rounded-full bg-sky-100 text-sky-800 text-xs font-bold px-2">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200">Currently on Site</h2>
+            <span className="inline-flex items-center justify-center min-w-[24px] h-6 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold px-2">
               {activeVisitors.length}
             </span>
           </div>
           {activeVisitors.length === 0 ? (
-            <p className="text-sm text-slate-500 italic">No active visitors</p>
+            <p className="text-sm text-slate-400 italic">No active visitors</p>
           ) : (
-            <ul className="divide-y divide-white/30">
+            <ul className="divide-y divide-white/5">
               {activeVisitors.map((v) => (
-                <li
-                  key={v.id}
-                  className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-                >
+                <li key={v.id} className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
-                    <p className="text-sm font-medium text-slate-800">{v.fullName}</p>
-                    <p className="text-xs text-slate-500">{v.company}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      In since{" "}
-                      {new Date(v.signedInAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                    <p className="text-sm font-medium text-white">{v.fullName}</p>
+                    <p className="text-xs text-slate-400">{v.company}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      In since {new Date(v.signedInAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </p>
                   </div>
                   <button
                     onClick={() => handleSignOut(v.id)}
-                    className="self-start sm:self-center inline-flex items-center rounded-xl border border-white/50 bg-white/40 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-white/70 transition-colors"
+                    className="self-start sm:self-center inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200 active:scale-[0.98]"
                   >
                     Sign out
                   </button>
@@ -221,7 +200,7 @@ export default function CheckinClient({
           )}
         </div>
 
-        <p className="text-center text-xs text-white/70">Secure digital log – replaces paper forms</p>
+        <p className="text-center text-xs text-slate-500">Secure digital log – replaces paper forms</p>
       </div>
     </div>
   );
