@@ -1,5 +1,30 @@
 // app/page.tsx
 import Link from "next/link";
+import {
+  Construction,
+  ClipboardCheck,
+  BarChart3,
+  ShieldCheck,
+  ArrowRight,
+} from "lucide-react";
+
+const steps = [
+  {
+    icon: <ClipboardCheck className="w-6 h-6 text-sky-300" />,
+    title: "Sign in visitors",
+    text: "Workers enter their name, company, and acknowledge safety rules — no paper, no hassle.",
+  },
+  {
+    icon: <BarChart3 className="w-6 h-6 text-sky-300" />,
+    title: "Real‑time dashboard",
+    text: "See who’s on site right now, export logs for audits, and manage multiple projects from one place.",
+  },
+  {
+    icon: <ShieldCheck className="w-6 h-6 text-sky-300" />,
+    title: "Stay compliant",
+    text: "Digital audit trail, mandatory safety acknowledgments, and instant CSV/Excel/PDF exports keep you inspection‑ready.",
+  },
+];
 
 export default function LandingPage() {
   return (
@@ -7,9 +32,12 @@ export default function LandingPage() {
       {/* Hero */}
       <div className="max-w-6xl mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8 text-center">
         <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-[0_25px_50px_rgba(0,0,0,0.25)] p-10 sm:p-14">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight">
-            <span className="text-sky-400">SiteSafe</span>
-            <span className="block mt-2 text-white">Construction Visitor Log</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight flex flex-col items-center gap-3">
+            <Construction className="w-12 h-12 text-sky-400" />
+            <span>
+              <span className="text-sky-400">SiteSafe</span>
+              <span className="block mt-2 text-white">Construction Visitor Log</span>
+            </span>
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-slate-300 leading-relaxed">
             Replace paper logs with digital check‑in across all your construction sites.
@@ -23,7 +51,7 @@ export default function LandingPage() {
               href="/signup"
               className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
             >
-              Start Free Trial
+              Start Free Trial <ArrowRight className="ml-2 w-4 h-4" />
             </Link>
             <a
               href="#how-it-works"
@@ -48,29 +76,13 @@ export default function LandingPage() {
           <p className="mt-4 text-lg text-slate-300">Three simple steps to replace your clipboard forever.</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              step: "1",
-              title: "Sign in visitors",
-              text: "Workers enter their name, company, and acknowledge safety rules — no paper, no hassle.",
-            },
-            {
-              step: "2",
-              title: "Real‑time dashboard",
-              text: "See who’s on site right now, export logs for audits, and manage multiple projects from one place.",
-            },
-            {
-              step: "3",
-              title: "Stay compliant",
-              text: "Digital audit trail, mandatory safety acknowledgments, and instant CSV/Excel/PDF exports keep you inspection‑ready.",
-            },
-          ].map((item) => (
+          {steps.map((item, idx) => (
             <div
-              key={item.step}
+              key={idx}
               className="text-center bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.16)] transition-shadow duration-300 p-8"
             >
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-sky-500/20 text-sky-300 mb-4 text-xl font-bold">
-                {item.step}
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-sky-500/20 mb-4">
+                {item.icon}
               </div>
               <h3 className="text-lg font-semibold tracking-tight text-white">{item.title}</h3>
               <p className="mt-2 text-slate-300 text-sm leading-relaxed">{item.text}</p>
@@ -90,7 +102,7 @@ export default function LandingPage() {
             href="/signup"
             className="inline-flex items-center justify-center mt-8 px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
           >
-            Get started for free
+            Get started for free <ArrowRight className="ml-2 w-4 h-4" />
           </Link>
         </div>
       </div>

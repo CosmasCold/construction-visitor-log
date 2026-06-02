@@ -1,12 +1,30 @@
 // app/dashboard/CompanyDashboardClient.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import {
+  RefreshCw,
+  FileSpreadsheet,
+  FileText,
+  FileDown,
+  LogOut,
+  Copy,
+  Pencil,
+  Trash2,
+  Plus,
+  X,
+  Users,
+  Construction,
+  ClipboardList,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import ConfirmModal from "@/components/ConfirmModal";
 
 type Visitor = {
   id: string;
@@ -54,6 +72,7 @@ export default function CompanyDashboardClient({
   const [showNewSite, setShowNewSite] = useState(false);
   const [editingSiteId, setEditingSiteId] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const [editName, setEditName] = useState("");
   const [editSlug, setEditSlug] = useState("");
@@ -75,10 +94,10 @@ export default function CompanyDashboardClient({
   }
 
   async function handleDeleteSite(siteId: string) {
-    if (!confirm("Delete this site and all its visitor records?")) return;
     const res = await fetch(`/api/sites/${siteId}`, { method: "DELETE" });
     if (res.ok) {
       setSites((prev) => prev.filter((s) => s.id !== siteId));
+      setDeleteTarget(null);
     } else {
       alert("Failed to delete site.");
     }
@@ -130,11 +149,7 @@ export default function CompanyDashboardClient({
 
   function copyCheckinUrl(slug: string) {
     const url = `${window.location.origin}/checkin/${slug}`;
-    navigator.clipboard.writeText(url).then(() => {
-      alert("Check-in URL copied to clipboard!");
-    }).catch(() => {
-      prompt("Copy this URL:", url);
-    });
+    navigator.clipboard.writeText(url).then(() => alert("Check-in URL copied!")).catch(() => prompt("Copy this URL:", url));
   }
 
   function exportCSV() {
@@ -150,7 +165,7 @@ export default function CompanyDashboardClient({
       v.signedOutAt || "Still on site",
     ]);
     const csvContent = [headers, ...rows]
-      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(","))
       .join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const link = document.createElement("a");
@@ -211,17 +226,27 @@ export default function CompanyDashboardClient({
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">{companyName}</h1>
-            <p className="text-sm text-slate-400">Visitor Log & Site Management</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-white flex items-center gap-2">
+              <Construction className="w-6 h-6 text-sky-400" /> {companyName}
+            </h1>
+            <p className="text-sm text-slate-400 mt-1">Visitor Log & Site Management</p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <button onClick={() => router.refresh()} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98]">
-              🔄 Refresh
+            <button onClick={() => router.refresh()} title="Refresh" className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <RefreshCw className="w-4 h-4" /> Refresh
             </button>
-            <button onClick={exportCSV} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">CSV</button>
-            <button onClick={exportExcel} className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">Excel</button>
-            <button onClick={exportPDF} className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">PDF</button>
-            <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98]">Logout</button>
+            <button onClick={exportCSV} title="CSV" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <FileText className="w-4 h-4" /> CSV
+            </button>
+            <button onClick={exportExcel} title="Excel" className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <FileSpreadsheet className="w-4 h-4" /> Excel
+            </button>
+            <button onClick={exportPDF} title="PDF" className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <FileDown className="w-4 h-4" /> PDF
+            </button>
+            <button onClick={() => signOut({ callbackUrl: "/" })} title="Logout" className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <LogOut className="w-4 h-4" /> Logout
+            </button>
           </div>
         </div>
 
@@ -229,13 +254,16 @@ export default function CompanyDashboardClient({
         {showOnboarding && (
           <div className="bg-sky-500/10 backdrop-blur-sm border border-sky-400/30 rounded-2xl p-4 flex justify-between items-start">
             <p className="text-sm text-sky-100">
-              👋 Welcome! Start by renaming your first site or adding a new one below. Click <strong>Edit</strong> next to your site to change its name, slug, or safety briefing.
+              <ClipboardList className="w-4 h-4 inline-block mr-1" />
+              Welcome! Start by renaming your first site or adding a new one below. Click <strong>Edit</strong> next to your site to change its name, slug, or safety briefing.
             </p>
-            <button onClick={() => setShowWelcome(false)} className="text-sky-300 hover:text-white ml-3 text-lg leading-none transition-colors duration-150">&times;</button>
+            <button onClick={() => setShowWelcome(false)} className="text-sky-300 hover:text-white ml-3 text-xl leading-none transition-colors duration-150">
+              <X className="w-5 h-5" />
+            </button>
           </div>
         )}
 
-        {/* Two‑column row: date filter + new site */}
+        {/* Two‑column row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Date filter */}
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-4 flex flex-wrap items-end gap-3">
@@ -253,8 +281,9 @@ export default function CompanyDashboardClient({
 
           {/* New Site */}
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-4">
-            <button onClick={() => setShowNewSite(!showNewSite)} className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150">
-              {showNewSite ? "– Cancel" : "+ New Site"}
+            <button onClick={() => setShowNewSite(!showNewSite)} className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150 flex items-center gap-1">
+              {showNewSite ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {showNewSite ? "Cancel" : "New Site"}
             </button>
             {showNewSite && (
               <form action="/api/sites" method="POST" className="space-y-4 mt-3">
@@ -271,7 +300,11 @@ export default function CompanyDashboardClient({
         {/* Sites grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sites.length === 0 ? (
-            <p className="text-slate-400 col-span-2 text-center">No sites yet.</p>
+            <div className="col-span-2 text-center py-12 text-slate-400">
+              <Construction className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p className="text-lg font-medium">No sites yet</p>
+              <p className="text-sm mt-1">Create your first site to start checking in visitors.</p>
+            </div>
           ) : (
             sites.map((site) => (
               <div key={site.id} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.16)] transition-shadow duration-300 p-4">
@@ -297,17 +330,19 @@ export default function CompanyDashboardClient({
                           className="text-sky-400 hover:text-sky-300 inline-flex items-center transition-colors duration-150"
                           title="Copy check-in URL"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                          </svg>
+                          <Copy className="w-4 h-4" />
                         </button>
                       </p>
                       <p className="text-xs text-slate-500 mt-1">{site.visitorsToday} today</p>
                       <p className="text-xs text-slate-500 mt-0.5 italic">Click Edit to change name, slug, or safety briefing.</p>
                     </a>
                     <div className="flex gap-1 ml-2">
-                      <button onClick={() => startEdit(site)} className="text-sky-400 hover:text-sky-300 text-xs transition-colors duration-150">Edit</button>
-                      <button onClick={() => handleDeleteSite(site.id)} className="text-rose-400 hover:text-rose-300 text-xs transition-colors duration-150">Delete</button>
+                      <button onClick={() => startEdit(site)} className="text-sky-400 hover:text-sky-300 text-xs transition-colors duration-150 flex items-center gap-0.5" title="Edit site">
+                        <Pencil className="w-3.5 h-3.5" /> Edit
+                      </button>
+                      <button onClick={() => setDeleteTarget(site.id)} className="text-rose-400 hover:text-rose-300 text-xs transition-colors duration-150 flex items-center gap-0.5" title="Delete site">
+                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                      </button>
                     </div>
                   </div>
                 )}
@@ -335,7 +370,8 @@ export default function CompanyDashboardClient({
               {logs.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="p-4 text-center text-slate-500">
-                    No visitors yet. Share the check‑in link with your team to get started!
+                    <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p>No visitors yet. Share the check‑in link with your team to get started!</p>
                   </td>
                 </tr>
               ) : (
@@ -348,7 +384,7 @@ export default function CompanyDashboardClient({
                     <td className="p-3">{v.hostName || "—"}</td>
                     <td className="p-3">{new Date(v.signedInAt).toLocaleString()}</td>
                     <td className="p-3">{v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "✓ On site"}</td>
-                    <td className="p-3">{v.safetyAcknowledged ? "✅" : "❌"}</td>
+                    <td className="p-3">{v.safetyAcknowledged ? <CheckCircle2 className="w-4 h-4 text-emerald-400 inline" /> : <XCircle className="w-4 h-4 text-rose-400 inline" />}</td>
                   </tr>
                 ))
               )}
@@ -356,6 +392,14 @@ export default function CompanyDashboardClient({
           </table>
         </div>
       </div>
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="Delete site"
+        message="This will permanently delete the site and all its visitor records. This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => deleteTarget && handleDeleteSite(deleteTarget)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

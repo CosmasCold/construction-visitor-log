@@ -7,6 +7,20 @@ import { signOut } from "next-auth/react";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import {
+  RefreshCw,
+  FileSpreadsheet,
+  FileText,
+  FileDown,
+  LogOut,
+  Trash2,
+  ExternalLink,
+  Building,
+  Users,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import ConfirmModal from "@/components/ConfirmModal";
 
 type Visitor = {
   id: string;
@@ -55,6 +69,7 @@ export default function AdminClient({
   const [dateFrom, setDateFrom] = useState(currentDateFrom || "");
   const [dateTo, setDateTo] = useState(currentDateTo || "");
   const [selectedCompanyId, setSelectedCompanyId] = useState(currentCompanyId || "");
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   function applyFilter() {
     const params = new URLSearchParams();
@@ -72,10 +87,10 @@ export default function AdminClient({
   }
 
   async function handleDeleteSite(siteId: string) {
-    if (!confirm("Delete this site and all its visitor records?")) return;
     const res = await fetch(`/api/sites/${siteId}`, { method: "DELETE" });
     if (res.ok) {
       router.refresh();
+      setDeleteTarget(null);
     } else {
       alert("Failed to delete site.");
     }
@@ -95,7 +110,7 @@ export default function AdminClient({
       v.signedOutAt || "Still on site",
     ]);
     const csvContent = [headers, ...rows]
-      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(","))
       .join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const link = document.createElement("a");
@@ -153,19 +168,30 @@ export default function AdminClient({
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Admin Dashboard</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-white flex items-center gap-2">
+              <Building className="w-6 h-6 text-sky-400" /> Admin Dashboard
+            </h1>
             <p className="text-sm text-slate-400">Full audit trail</p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <button onClick={() => router.refresh()} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98]">
-              🔄 Refresh
+            <button onClick={() => router.refresh()} title="Refresh" className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <RefreshCw className="w-4 h-4" /> Refresh
             </button>
-            <button onClick={exportCSV} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">CSV</button>
-            <button onClick={exportExcel} className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">Excel</button>
-            <button onClick={exportPDF} className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">PDF</button>
-            <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98]">Logout</button>
+            <button onClick={exportCSV} title="CSV" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <FileText className="w-4 h-4" /> CSV
+            </button>
+            <button onClick={exportExcel} title="Excel" className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <FileSpreadsheet className="w-4 h-4" /> Excel
+            </button>
+            <button onClick={exportPDF} title="PDF" className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <FileDown className="w-4 h-4" /> PDF
+            </button>
+            <button onClick={() => signOut({ callbackUrl: "/" })} title="Logout" className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
+              <LogOut className="w-4 h-4" /> Logout
+            </button>
           </div>
         </div>
 
@@ -181,11 +207,7 @@ export default function AdminClient({
           </div>
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">Company</label>
-            <select
-              value={selectedCompanyId}
-              onChange={(e) => setSelectedCompanyId(e.target.value)}
-              className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-            >
+            <select value={selectedCompanyId} onChange={(e) => setSelectedCompanyId(e.target.value)} className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200">
               <option value="">All companies</option>
               {companies.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
@@ -199,18 +221,22 @@ export default function AdminClient({
         {/* Sites list */}
         {isSuperAdmin && sites.length > 0 && (
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6">
-            <h2 className="text-lg font-semibold tracking-tight text-white mb-4">Sites</h2>
+            <h2 className="text-lg font-semibold tracking-tight text-white mb-4 flex items-center gap-2">
+              <Building className="w-5 h-5 text-sky-400" /> Sites
+            </h2>
             <ul className="divide-y divide-white/5">
               {sites.map((site) => (
                 <li key={site.id} className="py-3 flex justify-between items-center">
                   <div>
-                    <a href={`/checkin/${encodeURIComponent(site.slug)}`} target="_blank" className="font-medium text-sky-400 hover:text-sky-300 transition-colors duration-150">
-                      {site.name}
+                    <a href={`/checkin/${encodeURIComponent(site.slug)}`} target="_blank" className="font-medium text-sky-400 hover:text-sky-300 transition-colors duration-150 flex items-center gap-1">
+                      {site.name} <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                     <p className="text-sm text-slate-400">Check-in: /checkin/{site.slug}</p>
                     {site.address && <p className="text-xs text-slate-500">{site.address}</p>}
                   </div>
-                  <button onClick={() => handleDeleteSite(site.id)} className="text-rose-400 hover:text-rose-300 text-xs transition-colors duration-150">Delete</button>
+                  <button onClick={() => setDeleteTarget(site.id)} className="text-rose-400 hover:text-rose-300 text-xs transition-colors duration-150 flex items-center gap-0.5">
+                    <Trash2 className="w-3.5 h-3.5" /> Delete
+                  </button>
                 </li>
               ))}
             </ul>
@@ -237,7 +263,8 @@ export default function AdminClient({
               {logs.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="p-6 text-center text-slate-500">
-                    No records for this period
+                    <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p>No records for this period</p>
                   </td>
                 </tr>
               ) : (
@@ -251,7 +278,7 @@ export default function AdminClient({
                     <td className="p-3">{v.hostName || "—"}</td>
                     <td className="p-3">{new Date(v.signedInAt).toLocaleString()}</td>
                     <td className="p-3">{v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "✓ On site"}</td>
-                    <td className="p-3">{v.safetyAcknowledged ? "✅" : "❌"}</td>
+                    <td className="p-3">{v.safetyAcknowledged ? <CheckCircle2 className="w-4 h-4 text-emerald-400 inline" /> : <XCircle className="w-4 h-4 text-rose-400 inline" />}</td>
                   </tr>
                 ))
               )}
@@ -259,6 +286,14 @@ export default function AdminClient({
           </table>
         </div>
       </div>
+      <ConfirmModal
+        open={deleteTarget !== null}
+        title="Delete site"
+        message="This will permanently delete the site and all its visitor records. This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => deleteTarget && handleDeleteSite(deleteTarget)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

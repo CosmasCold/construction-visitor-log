@@ -4,6 +4,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ArrowLeft, Building, Mail, CreditCard, BadgeCheck, Calendar } from "lucide-react";
+
+interface SettingsClientProps {
+  companyName: string;
+  companyEmail: string;
+  companySlug: string;
+  subscriptionStatus: string;
+  planName: string;
+  currentPeriodEnd: string | null;
+  hasStripeCustomer: boolean;
+  hasSubscription: boolean;
+  isTrialing: boolean;
+}
 
 export default function SettingsClient({
   companyName,
@@ -15,17 +28,7 @@ export default function SettingsClient({
   hasStripeCustomer,
   hasSubscription,
   isTrialing,
-}: {
-  companyName: string;
-  companyEmail: string;
-  companySlug: string;
-  subscriptionStatus: string;
-  planName: string;
-  currentPeriodEnd: string | null;
-  hasStripeCustomer: boolean;
-  hasSubscription: boolean;
-  isTrialing: boolean;
-}) {
+}: SettingsClientProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +61,6 @@ export default function SettingsClient({
   }
 
   const showManageBilling = hasStripeCustomer && hasSubscription;
-  const showSubscribe = !showManageBilling;
 
   return (
     <div className="min-h-screen py-10 px-4">
@@ -67,22 +69,24 @@ export default function SettingsClient({
           href={`/dashboard?slug=${companySlug}`}
           className="text-sky-400 hover:text-sky-300 text-sm inline-flex items-center gap-1 transition-colors duration-150"
         >
-          ← Back to Dashboard
+          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight text-white">Settings</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-white flex items-center gap-2">
+          <BadgeCheck className="w-6 h-6 text-sky-400" /> Settings
+        </h1>
 
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6 space-y-4">
           <h2 className="text-lg font-semibold tracking-tight text-white">Company</h2>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Name</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400 flex items-center gap-1"><Building className="w-3.5 h-3.5" /> Name</p>
             <p className="text-white font-medium">{companyName}</p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Email</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400 flex items-center gap-1"><Mail className="w-3.5 h-3.5" /> Email</p>
             <p className="text-white font-medium">{companyEmail}</p>
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Plan</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400 flex items-center gap-1"><CreditCard className="w-3.5 h-3.5" /> Plan</p>
             <p className="text-white font-medium">{planName}</p>
           </div>
           <div>
@@ -93,10 +97,8 @@ export default function SettingsClient({
           </div>
           {currentPeriodEnd && (
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider text-slate-400">Next billing / trial end date</p>
-              <p className="text-white font-medium text-sm">
-                {new Date(currentPeriodEnd).toLocaleDateString()}
-              </p>
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-400 flex items-center gap-1"><Calendar className="w-3.5 h-3.5" /> Next billing / trial end</p>
+              <p className="text-white font-medium text-sm">{new Date(currentPeriodEnd).toLocaleDateString()}</p>
             </div>
           )}
         </div>
@@ -105,29 +107,17 @@ export default function SettingsClient({
           <h2 className="text-lg font-semibold tracking-tight text-white mb-2">Billing</h2>
           {showManageBilling ? (
             <>
-              <p className="text-sm text-slate-300 leading-relaxed mb-4">
-                Update your payment method, view invoices, or cancel your plan.
-              </p>
-              <button
-                onClick={handleManageBilling}
-                disabled={loading}
-                className="bg-rose-600 hover:bg-rose-700 disabled:bg-rose-400/50 text-white px-6 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200 active:scale-[0.98]"
-              >
+              <p className="text-sm text-slate-300 leading-relaxed mb-4">Update your payment method, view invoices, or cancel your plan.</p>
+              <button onClick={handleManageBilling} disabled={loading} className="bg-rose-600 hover:bg-rose-700 disabled:bg-rose-400/50 text-white px-6 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200 active:scale-[0.98]">
                 {loading ? "Redirecting…" : "Manage Billing"}
               </button>
             </>
           ) : (
             <>
               <p className="text-sm text-slate-300 leading-relaxed mb-4">
-                {isTrialing
-                  ? "You are on a free trial. When ready, subscribe to keep using SiteSafe."
-                  : "No active plan. Subscribe to continue using SiteSafe."}
+                {isTrialing ? "You are on a free trial. When ready, subscribe to keep using SiteSafe." : "No active plan. Subscribe to continue using SiteSafe."}
               </p>
-              <button
-                onClick={handleSubscribe}
-                disabled={loading}
-                className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white px-6 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200 active:scale-[0.98]"
-              >
+              <button onClick={handleSubscribe} disabled={loading} className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white px-6 py-2 rounded-xl text-sm font-medium tracking-wide transition-all duration-200 active:scale-[0.98]">
                 {loading ? "Redirecting…" : "Subscribe Now"}
               </button>
             </>
