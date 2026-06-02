@@ -55,7 +55,6 @@ export default function CompanyDashboardClient({
   const [editingSiteId, setEditingSiteId] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(true);
 
-  // Edit form fields
   const [editName, setEditName] = useState("");
   const [editSlug, setEditSlug] = useState("");
   const [editAddress, setEditAddress] = useState("");
@@ -204,7 +203,6 @@ export default function CompanyDashboardClient({
     doc.save(`visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.pdf`);
   }
 
-  // Onboarding: show a welcome hint if there's only a "Default Site"
   const showOnboarding = showWelcome && sites.length === 1 && sites[0].name === "Default Site";
 
   return (
@@ -213,17 +211,17 @@ export default function CompanyDashboardClient({
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-semibold text-white">{companyName}</h1>
-            <p className="text-sm text-slate-300">Visitor Log & Site Management</p>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">{companyName}</h1>
+            <p className="text-sm text-slate-400">Visitor Log & Site Management</p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <button onClick={() => router.refresh()} className="bg-white/10 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-white/20 border border-white/20">
+            <button onClick={() => router.refresh()} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98]">
               🔄 Refresh
             </button>
-            <button onClick={exportCSV} className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-green-700">CSV</button>
-            <button onClick={exportExcel} className="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-700">Excel</button>
-            <button onClick={exportPDF} className="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-700">PDF</button>
-            <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-white/10 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-white/20 border border-white/20">Logout</button>
+            <button onClick={exportCSV} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">CSV</button>
+            <button onClick={exportExcel} className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">Excel</button>
+            <button onClick={exportPDF} className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">PDF</button>
+            <button onClick={() => signOut({ callbackUrl: "/" })} className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98]">Logout</button>
           </div>
         </div>
 
@@ -233,38 +231,38 @@ export default function CompanyDashboardClient({
             <p className="text-sm text-sky-100">
               👋 Welcome! Start by renaming your first site or adding a new one below. Click <strong>Edit</strong> next to your site to change its name, slug, or safety briefing.
             </p>
-            <button onClick={() => setShowWelcome(false)} className="text-sky-300 hover:text-white ml-3 text-lg leading-none">&times;</button>
+            <button onClick={() => setShowWelcome(false)} className="text-sky-300 hover:text-white ml-3 text-lg leading-none transition-colors duration-150">&times;</button>
           </div>
         )}
 
         {/* Two‑column row: date filter + new site */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Date filter */}
-          <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-4 flex flex-wrap items-end gap-3">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-4 flex flex-wrap items-end gap-3">
             <div>
-              <label className="block text-xs text-slate-600 mb-1">From</label>
-              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="border rounded-lg px-3 py-2 text-sm bg-white/70" />
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">From</label>
+              <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
             </div>
             <div>
-              <label className="block text-xs text-slate-600 mb-1">To</label>
-              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="border rounded-lg px-3 py-2 text-sm bg-white/70" />
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">To</label>
+              <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
             </div>
-            <button onClick={applyFilter} className="bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-sky-700">Apply</button>
-            <button onClick={clearFilter} className="text-slate-600 hover:text-slate-800 text-sm">Clear</button>
+            <button onClick={applyFilter} className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98]">Apply</button>
+            <button onClick={clearFilter} className="text-slate-400 hover:text-slate-200 text-sm transition-colors duration-150">Clear</button>
           </div>
 
           {/* New Site */}
-          <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-4">
-            <button onClick={() => setShowNewSite(!showNewSite)} className="text-sky-600 font-medium text-sm mb-3">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-4">
+            <button onClick={() => setShowNewSite(!showNewSite)} className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150">
               {showNewSite ? "– Cancel" : "+ New Site"}
             </button>
             {showNewSite && (
               <form action="/api/sites" method="POST" className="space-y-4 mt-3">
                 <input type="hidden" name="companyId" value={companyId} />
-                <input type="text" name="name" placeholder="Site Name" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70" />
-                <input type="text" name="address" placeholder="Address" className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70" />
-                <input type="text" name="slug" placeholder="URL Slug" required className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70" />
-                <button type="submit" className="bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700">Create</button>
+                <input type="text" name="name" placeholder="Site Name" required className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
+                <input type="text" name="address" placeholder="Address" className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
+                <input type="text" name="slug" placeholder="URL Slug" required className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
+                <button type="submit" className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]">Create</button>
               </form>
             )}
           </div>
@@ -276,27 +274,27 @@ export default function CompanyDashboardClient({
             <p className="text-slate-400 col-span-2 text-center">No sites yet.</p>
           ) : (
             sites.map((site) => (
-              <div key={site.id} className="bg-white/90 backdrop-blur-md rounded-2xl shadow-md border border-white/20 p-4">
+              <div key={site.id} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.16)] transition-shadow duration-300 p-4">
                 {editingSiteId === site.id ? (
                   <div className="space-y-3">
-                    <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Site Name" className="w-full rounded-lg border px-3 py-2 text-sm bg-white/70" />
-                    <input type="text" value={editSlug} onChange={(e) => setEditSlug(e.target.value)} placeholder="Slug" className="w-full rounded-lg border px-3 py-2 text-sm bg-white/70" />
-                    <input type="text" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} placeholder="Address" className="w-full rounded-lg border px-3 py-2 text-sm bg-white/70" />
-                    <textarea value={editBriefing} onChange={(e) => setEditBriefing(e.target.value)} placeholder="Safety Briefing" rows={2} className="w-full rounded-lg border px-3 py-2 text-sm bg-white/70" />
+                    <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Site Name" className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
+                    <input type="text" value={editSlug} onChange={(e) => setEditSlug(e.target.value)} placeholder="Slug" className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
+                    <input type="text" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} placeholder="Address" className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
+                    <textarea value={editBriefing} onChange={(e) => setEditBriefing(e.target.value)} placeholder="Safety Briefing" rows={2} className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
                     <div className="flex gap-2">
-                      <button onClick={() => saveEdit(site.id)} className="bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium">Save</button>
-                      <button onClick={cancelEdit} className="bg-gray-300 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-medium">Cancel</button>
+                      <button onClick={() => saveEdit(site.id)} className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 active:scale-[0.98]">Save</button>
+                      <button onClick={cancelEdit} className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 active:scale-[0.98]">Cancel</button>
                     </div>
                   </div>
                 ) : (
                   <div className="flex justify-between items-start">
                     <a href={`/checkin/${encodeURIComponent(site.slug)}`} target="_blank" className="flex-1">
-                      <h3 className="font-semibold text-slate-800">{site.name}</h3>
-                      <p className="text-xs text-slate-500 flex items-center gap-1">
+                      <h3 className="font-semibold tracking-tight text-white">{site.name}</h3>
+                      <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
                         /{site.slug}
                         <button
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); copyCheckinUrl(site.slug); }}
-                          className="text-sky-500 hover:text-sky-700 inline-flex items-center"
+                          className="text-sky-400 hover:text-sky-300 inline-flex items-center transition-colors duration-150"
                           title="Copy check-in URL"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -304,12 +302,12 @@ export default function CompanyDashboardClient({
                           </svg>
                         </button>
                       </p>
-                      <p className="text-xs text-slate-400 mt-1">{site.visitorsToday} today</p>
-                      <p className="text-xs text-slate-400 mt-0.5 italic">Click Edit to change name, slug, or safety briefing.</p>
+                      <p className="text-xs text-slate-500 mt-1">{site.visitorsToday} today</p>
+                      <p className="text-xs text-slate-500 mt-0.5 italic">Click Edit to change name, slug, or safety briefing.</p>
                     </a>
                     <div className="flex gap-1 ml-2">
-                      <button onClick={() => startEdit(site)} className="text-sky-600 hover:text-sky-800 text-xs">Edit</button>
-                      <button onClick={() => handleDeleteSite(site.id)} className="text-red-500 hover:text-red-700 text-xs">Delete</button>
+                      <button onClick={() => startEdit(site)} className="text-sky-400 hover:text-sky-300 text-xs transition-colors duration-150">Edit</button>
+                      <button onClick={() => handleDeleteSite(site.id)} className="text-rose-400 hover:text-rose-300 text-xs transition-colors duration-150">Delete</button>
                     </div>
                   </div>
                 )}
@@ -319,10 +317,10 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Visitors table */}
-        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 overflow-x-auto">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-white/50">
-              <tr>
+            <thead className="bg-white/5">
+              <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
                 <th className="p-3 text-left">Site</th>
                 <th className="p-3 text-left">Name</th>
                 <th className="p-3 text-left">Company</th>
@@ -333,7 +331,7 @@ export default function CompanyDashboardClient({
                 <th className="p-3 text-left">Safety</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-white/5">
               {logs.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="p-4 text-center text-slate-500">
@@ -342,9 +340,9 @@ export default function CompanyDashboardClient({
                 </tr>
               ) : (
                 logs.map((v) => (
-                  <tr key={v.id} className="border-t border-gray-100">
+                  <tr key={v.id} className="text-slate-300 hover:bg-white/[0.03] transition-colors duration-150">
                     <td className="p-3">{v.siteName}</td>
-                    <td className="p-3 font-medium">{v.fullName}</td>
+                    <td className="p-3 font-medium text-white">{v.fullName}</td>
                     <td className="p-3">{v.company}</td>
                     <td className="p-3">{v.phone || "—"}</td>
                     <td className="p-3">{v.hostName || "—"}</td>

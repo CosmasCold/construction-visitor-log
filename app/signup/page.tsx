@@ -53,10 +53,9 @@ export default function SignupPage() {
 
     const data = await res.json();
     if (res.ok && data.success) {
-      // Auto‑login with the credentials
       const result = await signIn("credentials", {
         email: data.email,
-        password: data.password, // received back from the API
+        password: data.password,
         redirect: false,
         callbackUrl: `/dashboard?slug=${data.companySlug}`,
       });
@@ -74,8 +73,8 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-sm w-full bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-8 border border-white/20">
-        <h2 className="text-xl font-semibold text-slate-800 mb-4">Create your account</h2>
+      <div className="max-w-sm w-full bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-8">
+        <h2 className="text-xl font-semibold tracking-tight text-white mb-4">Create your account</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <input
@@ -83,9 +82,9 @@ export default function SignupPage() {
               placeholder="Company name"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-transparent transition-all duration-200"
             />
-            {errors.companyName && <p className="text-red-500 text-xs mt-1">{errors.companyName}</p>}
+            {errors.companyName && <p className="text-rose-400 text-xs mt-1">{errors.companyName}</p>}
           </div>
           <div>
             <input
@@ -93,9 +92,9 @@ export default function SignupPage() {
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-transparent transition-all duration-200"
             />
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            {errors.email && <p className="text-rose-400 text-xs mt-1">{errors.email}</p>}
           </div>
           <div>
             <input
@@ -103,9 +102,9 @@ export default function SignupPage() {
               placeholder="Password (min. 8 characters)"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-transparent transition-all duration-200"
             />
-            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+            {errors.password && <p className="text-rose-400 text-xs mt-1">{errors.password}</p>}
           </div>
           <div>
             <input
@@ -113,15 +112,15 @@ export default function SignupPage() {
               placeholder="Confirm password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm bg-white/70 focus:outline-none focus:ring-2 focus:ring-sky-400"
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-transparent transition-all duration-200"
             />
-            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && <p className="text-rose-400 text-xs mt-1">{errors.confirmPassword}</p>}
           </div>
-          {errors.form && <p className="text-red-500 text-sm">{errors.form}</p>}
+          {errors.form && <p className="text-rose-400 text-sm">{errors.form}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-300 text-white font-medium rounded-xl px-6 py-3 text-sm transition-colors"
+            className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white font-medium tracking-wide rounded-xl px-6 py-3 text-sm transition-all duration-200 active:scale-[0.98]"
           >
             {loading ? "Creating account…" : "Start Free Trial"}
           </button>

@@ -19,9 +19,6 @@ export const metadata: Metadata = {
       "Digital check‑in for construction sites. Replace paper logs with an audit‑ready visitor management system.",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
-  icons: {
-    icon: "/favicon.svg",   // or "/logo.png"
-  },
 };
 
 export default async function RootLayout({
@@ -31,7 +28,6 @@ export default async function RootLayout({
 }) {
   const session = await getServerSession(authOptions);
 
-  // Dynamic logo link
   let logoHref = "/";
   if (session?.user) {
     if (session.user.role === "super_admin") {
@@ -48,11 +44,11 @@ export default async function RootLayout({
   }
 
   const header = (
-    <header className="bg-black/30 backdrop-blur-md border-b border-white/10">
+    <header className="bg-black/20 backdrop-blur-lg border-b border-white/5">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
         <Link
           href={logoHref}
-          className="flex items-center gap-2 text-white font-semibold text-lg tracking-tight hover:text-sky-300 transition-colors"
+          className="flex items-center gap-2 text-white font-semibold text-lg tracking-tight hover:text-sky-300 transition-colors duration-150"
         >
           <Image
             src="/logo.png"
@@ -68,28 +64,28 @@ export default async function RootLayout({
             <>
               <Link
                 href={logoHref}
-                className="text-slate-300 hover:text-white transition-colors"
+                className="text-slate-300 hover:text-white transition-colors duration-150"
               >
                 Dashboard
               </Link>
               {session.user?.role === "super_admin" && (
                 <Link
                   href="/admin"
-                  className="text-slate-300 hover:text-white transition-colors"
+                  className="text-slate-300 hover:text-white transition-colors duration-150"
                 >
                   Admin
                 </Link>
               )}
               <Link
                 href="/settings"
-                className="text-slate-300 hover:text-white transition-colors"
+                className="text-slate-300 hover:text-white transition-colors duration-150"
               >
                 Settings
               </Link>
               <form action="/api/auth/signout" method="POST">
                 <button
                   type="submit"
-                  className="text-slate-300 hover:text-white bg-transparent border-none cursor-pointer text-sm"
+                  className="text-slate-300 hover:text-white bg-transparent border-none cursor-pointer text-sm transition-colors duration-150"
                 >
                   Logout
                 </button>
@@ -99,13 +95,13 @@ export default async function RootLayout({
             <>
               <Link
                 href="/"
-                className="text-slate-300 hover:text-white transition-colors"
+                className="text-slate-300 hover:text-white transition-colors duration-150"
               >
                 Home
               </Link>
               <Link
                 href="/admin/login"
-                className="text-slate-300 hover:text-white transition-colors"
+                className="text-slate-300 hover:text-white transition-colors duration-150"
               >
                 Sign in
               </Link>
@@ -123,18 +119,18 @@ export default async function RootLayout({
           &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
         </div>
         <div className="flex gap-6 text-sm">
-          <Link href="/blog" className="hover:text-white transition-colors">
-  Blog
-</Link>
-          <Link href="/terms" className="hover:text-white transition-colors">
+          <Link href="/terms" className="hover:text-white transition-colors duration-150">
             Terms of Service
           </Link>
-          <Link href="/privacy" className="hover:text-white transition-colors">
+          <Link href="/privacy" className="hover:text-white transition-colors duration-150">
             Privacy Policy
+          </Link>
+          <Link href="/blog" className="hover:text-white transition-colors duration-150">
+            Blog
           </Link>
           <a
             href="mailto:cloudandclipboard@gmail.com"
-            className="hover:text-white transition-colors"
+            className="hover:text-white transition-colors duration-150"
           >
             Contact
           </a>
