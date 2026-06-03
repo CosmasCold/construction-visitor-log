@@ -19,6 +19,9 @@ export const metadata: Metadata = {
       "Replace paper sign‑in sheets with a secure, digital check‑in for any workplace.",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default async function RootLayout({
