@@ -5,6 +5,7 @@ import {
   BarChart3,
   ShieldCheck,
   ArrowRight,
+  CheckCircle2,
 } from "lucide-react";
 
 const steps = [
@@ -40,16 +41,21 @@ export default function LandingPage() {
             for any workplace. Know who’s on site, enforce your policy, and stay audit‑ready.
           </p>
 
-          {/* Moved‑up CTA message with highlighted no‑credit‑card */}
+          {/* Moved‑up CTA message with highlighted badges */}
           <p className="mt-6 text-lg text-slate-200 font-medium">
             Set up your organization in 2 minutes.
           </p>
-          <p className="mt-2 inline-flex items-center gap-2 bg-sky-500/10 border border-sky-400/30 rounded-full px-4 py-1.5 text-sm text-sky-300 font-semibold">
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            No credit card required
-          </p>
+
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            <span className="inline-flex items-center gap-1.5 bg-sky-500/10 border border-sky-400/30 rounded-full px-4 py-1.5 text-sm text-sky-300 font-semibold">
+              <CheckCircle2 className="w-4 h-4" />
+              No credit card required
+            </span>
+            <span className="inline-flex items-center gap-1.5 bg-sky-500/10 border border-sky-400/30 rounded-full px-4 py-1.5 text-sm text-sky-300 font-semibold">
+              <CheckCircle2 className="w-4 h-4" />
+              No sales calls. No demos.
+            </span>
+          </div>
           <p className="mt-3 text-sm text-slate-400">
             Free trial, cancel anytime.
           </p>
