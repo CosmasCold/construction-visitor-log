@@ -37,12 +37,23 @@ export default function LandingPage() {
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl text-slate-300 leading-relaxed">
             Replace paper sign‑in sheets with a secure, digital check‑in system that works
-            for any workplace. Know who’s on site, enforce your safety or conduct policy,
-            and stay audit‑ready — without the clipboard.
+            for any workplace. Know who’s on site, enforce your policy, and stay audit‑ready.
           </p>
-          <p className="mt-4 text-sm text-slate-400">
-            14‑day free trial, then $49/mo per organization. Cancel anytime.
+
+          {/* Moved‑up CTA message with highlighted no‑credit‑card */}
+          <p className="mt-6 text-lg text-slate-200 font-medium">
+            Set up your organization in 2 minutes.
           </p>
+          <p className="mt-2 inline-flex items-center gap-2 bg-sky-500/10 border border-sky-400/30 rounded-full px-4 py-1.5 text-sm text-sky-300 font-semibold">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            No credit card required
+          </p>
+          <p className="mt-3 text-sm text-slate-400">
+            Free trial, cancel anytime.
+          </p>
+
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/signup"
