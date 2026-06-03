@@ -1,7 +1,7 @@
 // app/dashboard/CompanyDashboardClient.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import * as XLSX from "xlsx";
@@ -23,8 +23,10 @@ import {
   ClipboardList,
   CheckCircle2,
   XCircle,
+  QrCode,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
+import QRModal from "@/components/QRModal";
 
 type Visitor = {
   id: string;
@@ -73,6 +75,7 @@ export default function CompanyDashboardClient({
   const [editingSiteId, setEditingSiteId] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(null);
 
   const [editName, setEditName] = useState("");
   const [editSlug, setEditSlug] = useState("");
@@ -332,6 +335,13 @@ export default function CompanyDashboardClient({
                         >
                           <Copy className="w-4 h-4" />
                         </button>
+                        <button
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQrSite({ id: site.id, name: site.name }); }}
+                          className="text-sky-400 hover:text-sky-300 inline-flex items-center transition-colors duration-150"
+                          title="Show QR code"
+                        >
+                          <QrCode className="w-4 h-4" />
+                        </button>
                       </p>
                       <p className="text-xs text-slate-500 mt-1">{site.visitorsToday} today</p>
                       <p className="text-xs text-slate-500 mt-0.5 italic">Click Edit to change name, slug, or safety briefing.</p>
@@ -392,6 +402,7 @@ export default function CompanyDashboardClient({
           </table>
         </div>
       </div>
+
       <ConfirmModal
         open={deleteTarget !== null}
         title="Delete site"
@@ -399,6 +410,12 @@ export default function CompanyDashboardClient({
         confirmLabel="Delete"
         onConfirm={() => deleteTarget && handleDeleteSite(deleteTarget)}
         onCancel={() => setDeleteTarget(null)}
+      />
+      <QRModal
+        open={qrSite !== null}
+        siteName={qrSite?.name || ""}
+        qrUrl={qrSite ? `/api/sites/${qrSite.id}/qr` : ""}
+        onClose={() => setQrSite(null)}
       />
     </div>
   );
