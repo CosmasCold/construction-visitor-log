@@ -207,12 +207,18 @@ export default function AdminClient({
           </div>
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">Company</label>
-            <select value={selectedCompanyId} onChange={(e) => setSelectedCompanyId(e.target.value)} className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200">
-              <option value="">All companies</option>
-              {companies.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+            <select
+  value={selectedCompanyId}
+  onChange={(e) => setSelectedCompanyId(e.target.value)}
+  className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+>
+  <option value="">All companies</option>
+  {companies.map((c) => (
+    <option key={c.id} value={c.id}>
+      {c.name}
+    </option>
+  ))}
+</select>
           </div>
           <button onClick={applyFilter} className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98]">Apply</button>
           <button onClick={clearFilter} className="text-slate-400 hover:text-slate-200 text-sm transition-colors duration-150">Clear</button>
