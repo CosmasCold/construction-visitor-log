@@ -115,27 +115,38 @@ export default async function RootLayout({
     </header>
   );
 
-  const footer = (
+    const footer = (
     <footer className="bg-black/20 border-t border-white/5 text-slate-400 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-        <div className="text-sm">
+        <div className="text-sm text-center sm:text-left">
           &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
         </div>
-        <div className="flex gap-6 text-sm">
-          <Link href="/terms" className="hover:text-white transition-colors duration-150">
-            Terms of Service
-          </Link>
-          <Link href="/privacy" className="hover:text-white transition-colors duration-150">
-            Privacy Policy
-          </Link>
-          <Link href="/blog" className="hover:text-white transition-colors duration-150">
-            Blog
-          </Link>
-          <a
-            href="mailto:cloudandclipboard@gmail.com"
-            className="hover:text-white transition-colors duration-150"
-          >
-            Contact
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="flex gap-6 text-sm">
+            <Link href="/terms" className="hover:text-white transition-colors duration-150">
+              Terms of Service
+            </Link>
+            <Link href="/privacy" className="hover:text-white transition-colors duration-150">
+              Privacy Policy
+            </Link>
+            <Link href="/blog" className="hover:text-white transition-colors duration-150">
+              Blog
+            </Link>
+            <a
+              href="mailto:cloudandclipboard@gmail.com"
+              className="hover:text-white transition-colors duration-150"
+            >
+              Contact
+            </a>
+          </div>
+          {/* SaasDB badge */}
+          <a href="https://saasdb.net" rel="dofollow" className="inline-flex">
+            <img
+              src="https://saasdb.net/badge/featured-dark.svg"
+              alt="Featured on SaasDB"
+              width="150"
+              height="30"
+            />
           </a>
         </div>
       </div>
