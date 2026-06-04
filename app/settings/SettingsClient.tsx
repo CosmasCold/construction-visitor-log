@@ -75,7 +75,7 @@ export default function SettingsClient({
           <BadgeCheck className="w-6 h-6 text-sky-400" /> Settings
         </h1>
 
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6 space-y-4">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 space-y-4">
           <h2 className="text-lg font-semibold tracking-tight text-white">Company</h2>
           <div>
             <p className="text-xs font-medium uppercase tracking-wider text-slate-400 flex items-center gap-1"><Building className="w-3.5 h-3.5" /> Name</p>
@@ -103,7 +103,7 @@ export default function SettingsClient({
           )}
         </div>
 
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <h2 className="text-lg font-semibold tracking-tight text-white mb-2">Billing</h2>
           {showManageBilling ? (
             <>

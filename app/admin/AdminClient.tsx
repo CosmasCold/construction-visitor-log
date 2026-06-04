@@ -8,17 +8,8 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
-  RefreshCw,
-  FileSpreadsheet,
-  FileText,
-  FileDown,
-  LogOut,
-  Trash2,
-  ExternalLink,
-  Building,
-  Users,
-  CheckCircle2,
-  XCircle,
+  RefreshCw, FileSpreadsheet, FileText, FileDown, LogOut, Trash2, ExternalLink,
+  Building, Users, CheckCircle2, XCircle,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 
@@ -99,19 +90,10 @@ export default function AdminClient({
   function exportCSV() {
     const headers = ["Site", "Name", "Company", "Phone", "Email", "Host", "Safety OK", "Signed In", "Signed Out"];
     const rows = logs.map((v) => [
-      v.site.name,
-      v.fullName,
-      v.company,
-      v.phone || "",
-      v.email || "",
-      v.hostName || "",
-      v.safetyAcknowledged ? "Yes" : "No",
-      v.signedInAt,
-      v.signedOutAt || "Still on site",
+      v.site.name, v.fullName, v.company, v.phone || "", v.email || "", v.hostName || "",
+      v.safetyAcknowledged ? "Yes" : "No", v.signedInAt, v.signedOutAt || "Still on site",
     ]);
-    const csvContent = [headers, ...rows]
-      .map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(","))
-      .join("\n");
+    const csvContent = [headers, ...rows].map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -122,14 +104,8 @@ export default function AdminClient({
 
   function exportExcel() {
     const wsData = logs.map((v) => ({
-      Site: v.site.name,
-      Name: v.fullName,
-      Company: v.company,
-      Phone: v.phone || "",
-      Email: v.email || "",
-      Host: v.hostName || "",
-      "Safety OK": v.safetyAcknowledged ? "Yes" : "No",
-      "Signed In": v.signedInAt,
+      Site: v.site.name, Name: v.fullName, Company: v.company, Phone: v.phone || "", Email: v.email || "",
+      Host: v.hostName || "", "Safety OK": v.safetyAcknowledged ? "Yes" : "No", "Signed In": v.signedInAt,
       "Signed Out": v.signedOutAt || "Still on site",
     }));
     const ws = XLSX.utils.json_to_sheet(wsData);
@@ -142,25 +118,11 @@ export default function AdminClient({
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
     const headers = ["Site", "Name", "Company", "Phone", "Email", "Host", "Safety OK", "Signed In", "Signed Out"];
     const rows = logs.map((v) => [
-      v.site.name,
-      v.fullName,
-      v.company,
-      v.phone || "",
-      v.email || "",
-      v.hostName || "",
-      v.safetyAcknowledged ? "Yes" : "No",
-      new Date(v.signedInAt).toLocaleString(),
+      v.site.name, v.fullName, v.company, v.phone || "", v.email || "", v.hostName || "",
+      v.safetyAcknowledged ? "Yes" : "No", new Date(v.signedInAt).toLocaleString(),
       v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "On site",
     ]);
-
-    autoTable(doc, {
-      head: [headers],
-      body: rows,
-      startY: 20,
-      styles: { fontSize: 8, cellPadding: 2 },
-      headStyles: { fillColor: [15, 23, 42] },
-    });
-
+    autoTable(doc, { head: [headers], body: rows, startY: 20, styles: { fontSize: 8, cellPadding: 2 }, headStyles: { fillColor: [15, 23, 42] } });
     doc.text(`Visitor Log – ${dateFrom || "start"} to ${dateTo || "end"}`, 14, 15);
     doc.save(`visitor_log_${new Date().toISOString().slice(0, 10)}.pdf`);
   }
@@ -196,7 +158,7 @@ export default function AdminClient({
         </div>
 
         {/* Filters */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-4 flex flex-wrap items-end gap-3">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4 flex flex-wrap items-end gap-3">
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">From</label>
             <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
@@ -208,17 +170,15 @@ export default function AdminClient({
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">Company</label>
             <select
-  value={selectedCompanyId}
-  onChange={(e) => setSelectedCompanyId(e.target.value)}
-  className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
->
-  <option value="">All companies</option>
-  {companies.map((c) => (
-    <option key={c.id} value={c.id}>
-      {c.name}
-    </option>
-  ))}
-</select>
+              value={selectedCompanyId}
+              onChange={(e) => setSelectedCompanyId(e.target.value)}
+              className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+            >
+              <option value="">All companies</option>
+              {companies.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
           </div>
           <button onClick={applyFilter} className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 active:scale-[0.98]">Apply</button>
           <button onClick={clearFilter} className="text-slate-400 hover:text-slate-200 text-sm transition-colors duration-150">Clear</button>
@@ -226,7 +186,7 @@ export default function AdminClient({
 
         {/* Sites list */}
         {isSuperAdmin && sites.length > 0 && (
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-6">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
             <h2 className="text-lg font-semibold tracking-tight text-white mb-4 flex items-center gap-2">
               <Building className="w-5 h-5 text-sky-400" /> Sites
             </h2>
@@ -250,7 +210,7 @@ export default function AdminClient({
         )}
 
         {/* Visitors table */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-x-auto">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-white/5">
               <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">

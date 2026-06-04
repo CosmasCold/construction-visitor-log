@@ -31,7 +31,7 @@ export default function LandingPage() {
     <div className="min-h-screen text-white">
       {/* Hero */}
       <div className="max-w-6xl mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8 text-center">
-        <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-[0_25px_50px_rgba(0,0,0,0.25)] p-10 sm:p-14">
+        <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14">
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight">
             <span className="text-sky-400">SiteSafe</span>
             <span className="block mt-2 text-white">Digital Visitor Log</span>
@@ -93,7 +93,7 @@ export default function LandingPage() {
           {steps.map((item, idx) => (
             <div
               key={idx}
-              className="text-center bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.16)] transition-shadow duration-300 p-8"
+              className="text-center bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised hover:shadow-card-raised transition-shadow duration-300 p-8"
             >
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-sky-500/20 mb-4">
                 {item.icon}

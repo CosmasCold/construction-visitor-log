@@ -48,7 +48,7 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-sm w-full bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-8">
+      <div className="max-w-sm w-full bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8">
         <h2 className="text-xl font-semibold tracking-tight text-white flex items-center gap-2 mb-4">
           <UserPlus className="w-5 h-5 text-sky-400" /> Create your account
         </h2>

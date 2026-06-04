@@ -8,22 +8,8 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import {
-  RefreshCw,
-  FileSpreadsheet,
-  FileText,
-  FileDown,
-  LogOut,
-  Copy,
-  Pencil,
-  Trash2,
-  Plus,
-  X,
-  Users,
-  Construction,
-  ClipboardList,
-  CheckCircle2,
-  XCircle,
-  QrCode,
+  RefreshCw, FileSpreadsheet, FileText, FileDown, LogOut, Copy, Pencil, Trash2, Plus, X,
+  Users, Construction, ClipboardList, CheckCircle2, XCircle, QrCode,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
@@ -114,36 +100,17 @@ export default function CompanyDashboardClient({
     setEditBriefing(site.safetyBriefingText);
   }
 
-  function cancelEdit() {
-    setEditingSiteId(null);
-  }
+  function cancelEdit() { setEditingSiteId(null); }
 
   async function saveEdit(siteId: string) {
     const res = await fetch(`/api/sites/${siteId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: editName,
-        slug: editSlug,
-        address: editAddress,
-        safetyBriefingText: editBriefing,
-      }),
+      body: JSON.stringify({ name: editName, slug: editSlug, address: editAddress, safetyBriefingText: editBriefing }),
     });
     if (res.ok) {
       const updated = await res.json();
-      setSites((prev) =>
-        prev.map((s) =>
-          s.id === siteId
-            ? {
-                ...s,
-                name: updated.name,
-                slug: updated.slug,
-                address: updated.address,
-                safetyBriefingText: updated.safetyBriefingText,
-              }
-            : s
-        )
-      );
+      setSites((prev) => prev.map((s) => s.id === siteId ? { ...s, name: updated.name, slug: updated.slug, address: updated.address, safetyBriefingText: updated.safetyBriefingText } : s));
       setEditingSiteId(null);
     } else {
       alert("Failed to update site.");
@@ -157,19 +124,8 @@ export default function CompanyDashboardClient({
 
   function exportCSV() {
     const headers = ["Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out"];
-    const rows = logs.map((v) => [
-      v.siteName,
-      v.fullName,
-      v.company,
-      v.phone || "",
-      v.hostName || "",
-      v.safetyAcknowledged ? "Yes" : "No",
-      v.signedInAt,
-      v.signedOutAt || "Still on site",
-    ]);
-    const csvContent = [headers, ...rows]
-      .map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(","))
-      .join("\n");
+    const rows = logs.map((v) => [v.siteName, v.fullName, v.company, v.phone || "", v.hostName || "", v.safetyAcknowledged ? "Yes" : "No", v.signedInAt, v.signedOutAt || "Still on site"]);
+    const csvContent = [headers, ...rows].map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -179,16 +135,7 @@ export default function CompanyDashboardClient({
   }
 
   function exportExcel() {
-    const wsData = logs.map((v) => ({
-      Site: v.siteName,
-      Name: v.fullName,
-      Company: v.company,
-      Phone: v.phone || "",
-      Host: v.hostName || "",
-      "Safety OK": v.safetyAcknowledged ? "Yes" : "No",
-      "Signed In": v.signedInAt,
-      "Signed Out": v.signedOutAt || "Still on site",
-    }));
+    const wsData = logs.map((v) => ({ Site: v.siteName, Name: v.fullName, Company: v.company, Phone: v.phone || "", Host: v.hostName || "", "Safety OK": v.safetyAcknowledged ? "Yes" : "No", "Signed In": v.signedInAt, "Signed Out": v.signedOutAt || "Still on site" }));
     const ws = XLSX.utils.json_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Visitors");
@@ -198,25 +145,8 @@ export default function CompanyDashboardClient({
   function exportPDF() {
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
     const headers = ["Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out"];
-    const rows = logs.map((v) => [
-      v.siteName,
-      v.fullName,
-      v.company,
-      v.phone || "",
-      v.hostName || "",
-      v.safetyAcknowledged ? "Yes" : "No",
-      new Date(v.signedInAt).toLocaleString(),
-      v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "On site",
-    ]);
-
-    autoTable(doc, {
-      head: [headers],
-      body: rows,
-      startY: 20,
-      styles: { fontSize: 8, cellPadding: 2 },
-      headStyles: { fillColor: [15, 23, 42] },
-    });
-
+    const rows = logs.map((v) => [v.siteName, v.fullName, v.company, v.phone || "", v.hostName || "", v.safetyAcknowledged ? "Yes" : "No", new Date(v.signedInAt).toLocaleString(), v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "On site"]);
+    autoTable(doc, { head: [headers], body: rows, startY: 20, styles: { fontSize: 8, cellPadding: 2 }, headStyles: { fillColor: [15, 23, 42] } });
     doc.text(`Visitor Log – ${dateFrom || "start"} to ${dateTo || "end"}`, 14, 15);
     doc.save(`visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.pdf`);
   }
@@ -269,7 +199,7 @@ export default function CompanyDashboardClient({
         {/* Two‑column row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Date filter */}
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-4 flex flex-wrap items-end gap-3">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4 flex flex-wrap items-end gap-3">
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">From</label>
               <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
@@ -283,7 +213,7 @@ export default function CompanyDashboardClient({
           </div>
 
           {/* New Site */}
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-4">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
             <button onClick={() => setShowNewSite(!showNewSite)} className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150 flex items-center gap-1">
               {showNewSite ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
               {showNewSite ? "Cancel" : "New Site"}
@@ -310,7 +240,7 @@ export default function CompanyDashboardClient({
             </div>
           ) : (
             sites.map((site) => (
-              <div key={site.id} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.16)] transition-shadow duration-300 p-4">
+              <div key={site.id} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised hover:shadow-card-raised transition-shadow duration-300 p-4">
                 {editingSiteId === site.id ? (
                   <div className="space-y-3">
                     <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Site Name" className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200" />
@@ -362,7 +292,7 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Visitors table */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] overflow-x-auto">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-white/5">
               <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
