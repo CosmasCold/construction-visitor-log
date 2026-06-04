@@ -1,23 +1,13 @@
 // app/auth/signout/page.tsx
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { ArrowLeft } from "lucide-react";
 
 export default function SignOutPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
-  const { data: session } = useSession();
-
-  // Where to go if the user clicks Cancel
-  const safeReturn =
-    session?.user?.role === "company_owner"
-      ? "/dashboard"
-      : session?.user?.role === "super_admin"
-      ? "/admin"
-      : "/";
+  const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl") || "/";
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -28,7 +18,7 @@ export default function SignOutPage() {
         </p>
         <div className="flex gap-3 justify-center">
           <button
-            onClick={() => router.push(safeReturn)}
+            onClick={() => router.push("/")}
             className="px-5 py-2 rounded-xl text-sm font-medium bg-white/10 text-white hover:bg-white/20 border border-white/10 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 inline mr-1" />
