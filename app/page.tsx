@@ -113,12 +113,16 @@ export default function LandingPage() {
         </div>
       </div>
 
-      <p className="text-center mt-8 text-sm text-slate-400">
-  See how SiteSafe compares to Envoy, SwipedOn, and paper logs{" "}
-  <Link href="/compare" className="text-sky-400 hover:underline transition-colors">
-    side‑by‑side
-  </Link>.
-</p>
+            <div className="max-w-2xl mx-auto mb-12 px-4">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
+          <p className="text-sm text-slate-300">
+            See how SiteSafe compares to Envoy, SwipedOn, and paper logs{" "}
+            <Link href="/compare" className="text-sky-400 hover:underline transition-colors font-medium">
+              side‑by‑side
+            </Link>.
+          </p>
+        </div>
+      </div>
 
       {/* Benefits section */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
