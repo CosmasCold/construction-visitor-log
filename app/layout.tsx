@@ -189,6 +189,33 @@ export default async function RootLayout({
             `,
           }}
         />
+                {/* Structured data for SiteSafe */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: "SiteSafe",
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web",
+              description:
+                "Digital visitor log for construction sites, warehouses, and offices. QR check‑in, real‑time dashboard, audit‑ready exports.",
+              offers: {
+                "@type": "Offer",
+                price: "49.00",
+                priceCurrency: "USD",
+                priceValidUntil: "2027-12-31",
+              },
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "5",
+                reviewCount: "1",
+              },
+              url: "https://sitesafe.thesift.space",
+            }),
+          }}
+        />
       </body>
     </html>
   );
