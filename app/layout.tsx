@@ -19,9 +19,6 @@ export const metadata: Metadata = {
       "Replace paper sign‑in sheets with a secure, digital check‑in for any workplace.",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
-  icons: {
-    icon: "/favicon.svg",
-  },
 };
 
 export default async function RootLayout({
@@ -149,6 +146,23 @@ export default async function RootLayout({
           <main className="flex-1">{children}</main>
         </NavWrapper>
         <Analytics />
+        {/* Crisp chat widget */}
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.$crisp = [];
+              window.CRISP_WEBSITE_ID = "9ecf2637-4b7e-4c6d-8e92-5326ce566ebc";
+              (function() {
+                var d = document;
+                var s = d.createElement("script");
+                s.src = "https://client.crisp.chat/l.js";
+                s.async = 1;
+                d.getElementsByTagName("head")[0].appendChild(s);
+              })();
+            `,
+          }}
+        />
       </body>
     </html>
   );
