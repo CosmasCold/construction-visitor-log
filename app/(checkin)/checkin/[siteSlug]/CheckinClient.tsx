@@ -4,14 +4,33 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
-  ClipboardCheck, LogOut, Clock, AlertTriangle, Users, QrCode,
+  ClipboardCheck,
+  LogOut,
+  Clock,
+  AlertTriangle,
+  Users,
+  QrCode,
+  Printer,
 } from "lucide-react";
 
 type ActiveVisitor = {
   id: string;
   fullName: string;
   company: string;
+  hostName?: string | null;
   signedInAt: string;
+};
+
+type Host = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+type ExpectedVisitor = {
+  id: string;
+  name: string;
+  company: string;
 };
 
 export default function CheckinClient({
@@ -28,11 +47,31 @@ export default function CheckinClient({
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [hostName, setHostName] = useState("");
+  const [selectedHostId, setSelectedHostId] = useState<string>("");
+  const [hosts, setHosts] = useState<Host[]>([]);
   const [safetyAcknowledged, setSafetyAcknowledged] = useState(false);
   const [activeVisitors, setActiveVisitors] = useState<ActiveVisitor[]>([]);
   const [loading, setLoading] = useState(false);
   const [showQr, setShowQr] = useState(false);
+  const [expectedVisitors, setExpectedVisitors] = useState<ExpectedVisitor[]>([]);
 
+  // Fetch hosts
+  useEffect(() => {
+    fetch(`/api/sites/${siteId}/hosts`)
+      .then((res) => res.json())
+      .then((data) => setHosts(Array.isArray(data) ? data : []))
+      .catch(() => setHosts([]));
+  }, [siteId]);
+
+  // Fetch expected visitors
+  useEffect(() => {
+    fetch(`/api/sites/${siteId}/expected-visitors`)
+      .then((res) => res.json())
+      .then((data) => setExpectedVisitors(Array.isArray(data) ? data : []))
+      .catch(() => setExpectedVisitors([]));
+  }, [siteId]);
+
+  // Fetch active visitors + auto‑refresh
   useEffect(() => {
     async function fetchActiveVisitors() {
       const res = await fetch(`/api/checkin/${siteId}/active`);
@@ -52,24 +91,96 @@ export default function CheckinClient({
       alert("Full name and company are required.");
       return;
     }
+    if (!safetyAcknowledged) {
+      alert("You must acknowledge the safety briefing before signing in.");
+      return;
+    }
     setLoading(true);
+
+    const body: Record<string, string | boolean | null | undefined> = {
+      fullName,
+      company,
+      phone: phone || null,
+      email: email || null,
+      hostName: selectedHostId ? undefined : hostName || null,
+      hostId: selectedHostId || undefined,
+      safetyAcknowledged,
+      siteId,
+    };
+
     const res = await fetch("/api/checkin/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName, company, phone: phone || null, email: email || null,
-        hostName: hostName || null, safetyAcknowledged, siteId,
-      }),
+      body: JSON.stringify(body),
     });
+
     if (res.ok) {
       alert("Signed in successfully.");
-      setFullName(""); setCompany(""); setPhone(""); setEmail(""); setHostName(""); setSafetyAcknowledged(false);
+      setFullName("");
+      setCompany("");
+      setPhone("");
+      setEmail("");
+      setHostName("");
+      setSelectedHostId("");
+      setSafetyAcknowledged(false);
       const refresh = await fetch(`/api/checkin/${siteId}/active`);
       if (refresh.ok) setActiveVisitors(await refresh.json());
+
+      // Refresh expected visitors
+      const refreshExpected = await fetch(`/api/sites/${siteId}/expected-visitors`);
+      if (refreshExpected.ok) setExpectedVisitors(await refreshExpected.json());
     } else {
       alert("Sign‑in failed.");
     }
     setLoading(false);
+  }
+
+  async function handleQuickSignIn(visitor: ExpectedVisitor) {
+    if (!safetyAcknowledged) {
+      alert("You must acknowledge the safety briefing first.");
+      return;
+    }
+    const res = await fetch("/api/checkin/quick-signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        expectedVisitorId: visitor.id,
+        safetyAcknowledged: true,
+        siteId,
+      }),
+    });
+    if (res.ok) {
+      alert(`${visitor.name} signed in.`);
+      const refreshExpected = await fetch(`/api/sites/${siteId}/expected-visitors`);
+      if (refreshExpected.ok) setExpectedVisitors(await refreshExpected.json());
+      const refreshActive = await fetch(`/api/checkin/${siteId}/active`);
+      if (refreshActive.ok) setActiveVisitors(await refreshActive.json());
+      setSafetyAcknowledged(false);
+    } else {
+      alert("Sign‑in failed.");
+    }
+  }
+
+  function printBadgeForVisitor(visitorName: string, visitorCompany: string, visitorHost?: string | null) {
+    const win = window.open("", "_blank", "width=400,height=300");
+    if (win) {
+      win.document.write(`
+        <html>
+          <head><title>Visitor Badge</title></head>
+          <body style="font-family: sans-serif; padding: 20px; text-align: center;">
+            <h2 style="margin:0;">${siteName}</h2>
+            <hr />
+            <p><strong>${visitorName}</strong></p>
+            <p>${visitorCompany}</p>
+            ${visitorHost ? `<p>Host: ${visitorHost}</p>` : ""}
+            <p>${new Date().toLocaleString()}</p>
+            <small>SiteSafe visitor log</small>
+          </body>
+        </html>
+      `);
+      win.document.close();
+      win.print();
+    }
   }
 
   async function handleSignOut(id: string) {
@@ -89,14 +200,12 @@ export default function CheckinClient({
   return (
     <div className="min-h-screen flex items-center justify-center py-10 px-4 bg-slate-950/60">
       <div className="w-full max-w-md space-y-6">
-        {/* Header */}
+        {/* Header + QR */}
         <div className="text-center">
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
             <ClipboardCheck className="w-6 h-6 text-sky-400" /> {siteName}
           </h1>
           <p className="text-slate-400 text-sm mt-1">Visitor sign‑in</p>
-
-          {/* QR code toggle */}
           <button
             onClick={() => setShowQr(!showQr)}
             className="text-sky-400 hover:text-sky-300 text-xs underline underline-offset-2 transition-colors duration-150 mt-2 flex items-center justify-center gap-1 mx-auto"
@@ -118,7 +227,7 @@ export default function CheckinClient({
           )}
         </div>
 
-        {/* Safety briefing – dipped effect */}
+        {/* Safety briefing (dipped) */}
         <div className="bg-sky-500/10 backdrop-blur-md rounded-2xl border-l-4 border-sky-400 p-5 shadow-card-dipped flex gap-3">
           <AlertTriangle className="w-5 h-5 text-sky-400 flex-shrink-0 mt-0.5" />
           <div>
@@ -129,40 +238,114 @@ export default function CheckinClient({
           </div>
         </div>
 
-        {/* Sign‑in form – raised */}
+        {/* Safety acknowledgment checkbox (shared) */}
+        <label className="flex items-center gap-2 text-sm text-slate-200 justify-center">
+          <input
+            type="checkbox"
+            checked={safetyAcknowledged}
+            onChange={(e) => setSafetyAcknowledged(e.target.checked)}
+            className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
+          />
+          I have read and understand the site safety briefing.
+        </label>
+
+        {/* Expected visitors (quick sign‑in) */}
+        {expectedVisitors.length > 0 && (
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 mb-3">
+              Expected today
+            </h2>
+            <ul className="divide-y divide-white/5">
+              {expectedVisitors.map((visitor) => (
+                <li key={visitor.id} className="py-2 flex justify-between items-center">
+                  <div>
+                    <p className="text-sm font-medium text-white">{visitor.name}</p>
+                    <p className="text-xs text-slate-400">{visitor.company}</p>
+                  </div>
+                  <button
+                    onClick={() => handleQuickSignIn(visitor)}
+                    className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
+                  >
+                    Sign in
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Sign‑in form (raised) */}
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <form onSubmit={handleSignIn} className="space-y-4">
             <input
-              type="text" placeholder="Full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required
+              type="text"
+              placeholder="Full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
               className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
             />
             <input
-              type="text" placeholder="Company / Trade" value={company} onChange={(e) => setCompany(e.target.value)} required
+              type="text"
+              placeholder="Company / Trade"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              required
               className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
             />
             <input
-              type="tel" placeholder="Phone (optional)" value={phone} onChange={(e) => setPhone(e.target.value)}
+              type="tel"
+              placeholder="Phone (optional)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
             />
             <input
-              type="email" placeholder="Email (optional)" value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-            />
-            <input
-              type="text" placeholder="Host name (optional)" value={hostName} onChange={(e) => setHostName(e.target.value)}
+              type="email"
+              placeholder="Email (optional)"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
             />
 
-            <label className="flex items-start gap-2 text-sm text-slate-200">
+            {/* Host selection */}
+            {hosts.length > 0 ? (
+              <div>
+                <select
+                  value={selectedHostId}
+                  onChange={(e) => {
+                    setSelectedHostId(e.target.value);
+                    if (e.target.value) {
+                      setHostName(
+                        hosts.find((h) => h.id === e.target.value)?.name || ""
+                      );
+                    } else {
+                      setHostName("");
+                    }
+                  }}
+                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white [&_option]:text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+                >
+                  <option value="">Select a host (optional)</option>
+                  {hosts.map((host) => (
+                    <option key={host.id} value={host.id}>
+                      {host.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
               <input
-                type="checkbox" checked={safetyAcknowledged} onChange={(e) => setSafetyAcknowledged(e.target.checked)} required
-                className="mt-0.5 h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
+                type="text"
+                placeholder="Host name (optional)"
+                value={hostName}
+                onChange={(e) => setHostName(e.target.value)}
+                className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
               />
-              <span>I have read and understand the site safety briefing.</span>
-            </label>
+            )}
 
             <button
-              type="submit" disabled={loading}
+              type="submit"
+              disabled={loading}
               className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white font-medium tracking-wide rounded-xl px-6 py-3 text-sm transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
             >
               <ClipboardCheck className="w-4 h-4" />
@@ -171,7 +354,7 @@ export default function CheckinClient({
           </form>
         </div>
 
-        {/* Active visitors – raised */}
+        {/* Active visitors (raised) */}
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-2">
@@ -186,28 +369,50 @@ export default function CheckinClient({
           ) : (
             <ul className="divide-y divide-white/5">
               {activeVisitors.map((v) => (
-                <li key={v.id} className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <li
+                  key={v.id}
+                  className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
+                >
                   <div>
                     <p className="text-sm font-medium text-white">{v.fullName}</p>
                     <p className="text-xs text-slate-400">{v.company}</p>
+                    {v.hostName && (
+                      <p className="text-xs text-sky-300">Host: {v.hostName}</p>
+                    )}
                     <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
                       <Clock className="w-3 h-3" /> In since{" "}
-                      {new Date(v.signedInAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      {new Date(v.signedInAt).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </p>
                   </div>
-                  <button
-                    onClick={() => handleSignOut(v.id)}
-                    className="self-start sm:self-center inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200 active:scale-[0.98] gap-1"
-                  >
-                    <LogOut className="w-3 h-3" /> Sign out
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() =>
+                        printBadgeForVisitor(v.fullName, v.company, v.hostName)
+                      }
+                      className="inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-2 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200"
+                      title="Print badge"
+                    >
+                      <Printer className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => handleSignOut(v.id)}
+                      className="inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200 active:scale-[0.98] gap-1"
+                    >
+                      <LogOut className="w-3 h-3" /> Sign out
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        <p className="text-center text-xs text-slate-500">Secure digital log – replaces paper forms</p>
+        <p className="text-center text-xs text-slate-500">
+          Secure digital log – replaces paper forms
+        </p>
       </div>
     </div>
   );

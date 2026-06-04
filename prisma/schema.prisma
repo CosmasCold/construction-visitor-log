@@ -11,24 +11,24 @@ datasource db {
 // COMPANY & SUBSCRIPTIONS
 // -------------------------------
 model Company {
-  id           String        @id @default(cuid())
-  slug         String        @unique
-  name         String
-  email        String        @unique
+  id               String         @id @default(cuid())
+  slug             String         @unique
+  name             String
+  email            String         @unique
   stripeCustomerId String?
-  createdAt    DateTime      @default(now())
-  sites        Site[]
-  users        User[]
-  trialEndsAt  DateTime?      
-  subscription Subscription?
+  trialEndsAt      DateTime?
+  createdAt        DateTime       @default(now())
+  sites            Site[]
+  users            User[]
+  subscription     Subscription?
 }
 
 model Plan {
   id            String         @id @default(cuid())
-  name          String         // e.g. "Pro Monthly"
+  name          String
   stripePriceId String         @unique
   maxSites      Int            @default(10)
-  features      String[]       // ["unlimited_visitors", "export_csv_excel"]
+  features      String[]
   subscriptions Subscription[]
 }
 
@@ -38,31 +38,33 @@ model Subscription {
   company          Company   @relation(fields: [companyId], references: [id])
   planId           String
   plan             Plan      @relation(fields: [planId], references: [id])
-  stripeSubId      String?   // Stripe subscription ID
-  status           String    @default("incomplete") // active, canceled, past_due
+  stripeSubId      String?
+  status           String    @default("incomplete")
   currentPeriodEnd DateTime?
   createdAt        DateTime  @default(now())
 }
 
 // -------------------------------
-// SITES & VISITORS
+// SITES, VISITORS, HOSTS, EXPECTED
 // -------------------------------
 model Site {
-  id                 String        @id @default(cuid())
-  slug               String        @unique
+  id                 String            @id @default(cuid())
+  slug               String            @unique
   name               String
   address            String?
-  safetyBriefingText String        @default("Hard hat, high-vis vest, and safety glasses are mandatory. Stay in designated walkways.")
+  safetyBriefingText String            @default("Hard hat, high-vis vest, and safety glasses are mandatory. Stay in designated walkways.")
   companyId          String
-  company            Company       @relation(fields: [companyId], references: [id])
+  company            Company           @relation(fields: [companyId], references: [id])
   visitors           VisitorLog[]
-  createdAt          DateTime      @default(now())
+  hosts              Host[]
+  expectedVisitors   ExpectedVisitor[]
+  createdAt          DateTime          @default(now())
 }
 
 model VisitorLog {
   id                  String    @id @default(cuid())
   fullName            String
-  company             String    // visitor's company name, not a relation
+  company             String
   phone               String?
   email               String?
   hostName            String?
@@ -73,8 +75,29 @@ model VisitorLog {
   site                Site      @relation(fields: [siteId], references: [id])
 }
 
+model Host {
+  id               String            @id @default(cuid())
+  name             String
+  email            String
+  siteId           String
+  site             Site              @relation(fields: [siteId], references: [id])
+  expectedVisitors ExpectedVisitor[]
+}
+
+model ExpectedVisitor {
+  id        String   @id @default(cuid())
+  name      String
+  company   String
+  hostId    String?
+  host      Host?    @relation(fields: [hostId], references: [id])
+  siteId    String
+  site      Site     @relation(fields: [siteId], references: [id])
+  status    String   @default("pending") // pending, signed_in
+  createdAt DateTime @default(now())
+}
+
 // -------------------------------
-// USERS (admins / company owners)
+// USERS
 // -------------------------------
 model User {
   id           String    @id @default(cuid())
@@ -86,6 +109,9 @@ model User {
   createdAt    DateTime  @default(now())
 }
 
+// -------------------------------
+// PASSWORD RESET
+// -------------------------------
 model PasswordReset {
   id        String   @id @default(cuid())
   email     String

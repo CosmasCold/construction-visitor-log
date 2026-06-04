@@ -1,3 +1,4 @@
+// app/api/checkin/[siteId]/active/route.ts
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -18,6 +19,7 @@ export async function GET(
         id: true,
         fullName: true,
         company: true,
+        hostName: true,
         signedInAt: true,
       },
     });
