@@ -123,12 +123,21 @@ export default async function RootLayout({
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="flex gap-6 text-sm">
+            <Link
+  href="/faq"
+  className="text-sky-400 hover:text-sky-300 transition-colors duration-150 inline-flex items-center gap-1"
+>
+  <span className="text-lg leading-none">?</span> FAQ
+</Link>
             <Link href="/terms" className="hover:text-white transition-colors duration-150">
               Terms of Service
             </Link>
             <Link href="/privacy" className="hover:text-white transition-colors duration-150">
               Privacy Policy
             </Link>
+            <Link href="/docs" className="hover:text-white transition-colors duration-150">
+  API Docs
+</Link>
             <Link href="/blog" className="hover:text-white transition-colors duration-150">
               Blog
             </Link>

@@ -21,6 +21,7 @@ model Company {
   sites            Site[]
   users            User[]
   subscription     Subscription?
+  apiKey            String?        @unique
 }
 
 model Plan {
