@@ -147,6 +147,9 @@ export default async function RootLayout({
             >
               Contact
             </a>
+            <Link href="/compare" className="hover:text-white transition-colors duration-150">
+  Compare
+</Link>
           </div>
           {/* SaasDB badge */}
           <a href="https://saasdb.net" rel="dofollow" className="inline-flex">
