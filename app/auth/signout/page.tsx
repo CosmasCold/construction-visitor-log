@@ -7,7 +7,10 @@ import { ArrowLeft } from "lucide-react";
 
 export default function SignOutPage() {
   const router = useRouter();
-  const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl") || "/";
+
+  // Read callbackUrl from the query string; if missing, go to landing page
+  const params = new URLSearchParams(window.location.search);
+  const callbackUrl = params.get("callbackUrl") || "/";
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -18,7 +21,7 @@ export default function SignOutPage() {
         </p>
         <div className="flex gap-3 justify-center">
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push(callbackUrl)}
             className="px-5 py-2 rounded-xl text-sm font-medium bg-white/10 text-white hover:bg-white/20 border border-white/10 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 inline mr-1" />
