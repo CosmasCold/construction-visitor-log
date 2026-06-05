@@ -22,6 +22,7 @@ model Company {
   users            User[]
   subscription     Subscription?
   apiKeyHash            String?        @unique
+  trialEmailSequence String[]    @default([])
 }
 
 model Plan {
