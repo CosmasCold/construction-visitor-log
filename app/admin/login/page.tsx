@@ -2,14 +2,15 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { LogIn, Mail, Lock } from "lucide-react";
+import { LogIn, Mail, Lock, CheckCircle2 } from "lucide-react";
 
-export default function AdminLogin() {
+function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin";
+  const verified = searchParams.get("verified");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -20,9 +21,19 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
 
-    const result = await signIn("credentials", { email, password, redirect: false, callbackUrl });
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+      callbackUrl,
+    });
+
     if (result?.error) {
-      setError("Invalid email or password");
+      if (result.error.includes("verify your email")) {
+        setError("Please verify your email before logging in. Check your inbox.");
+      } else {
+        setError("Invalid email or password");
+      }
       setLoading(false);
       return;
     }
@@ -30,8 +41,11 @@ export default function AdminLogin() {
     try {
       const sessionRes = await fetch("/api/auth/session");
       const sessionData = await sessionRes.json();
-      if (sessionData?.user?.role === "company_owner") window.location.href = "/dashboard";
-      else window.location.href = "/admin";
+      if (sessionData?.user?.role === "company_owner") {
+        window.location.href = "/dashboard";
+      } else {
+        window.location.href = "/admin";
+      }
     } catch {
       window.location.href = callbackUrl;
     }
@@ -43,6 +57,13 @@ export default function AdminLogin() {
         <h1 className="text-xl font-semibold tracking-tight text-white flex items-center gap-2 mb-6">
           <LogIn className="w-5 h-5 text-sky-400" /> Sign in to SiteSafe
         </h1>
+
+        {verified === "true" && (
+          <div className="mb-4 text-sm text-emerald-400 flex items-center gap-1">
+            <CheckCircle2 className="w-4 h-4" /> Email verified. You can sign in now.
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -81,5 +102,13 @@ export default function AdminLogin() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading…</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

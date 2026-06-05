@@ -21,10 +21,11 @@ export async function POST() {
 
   // Generate a secure random key
   const apiKey = `ss_${crypto.randomBytes(24).toString("hex")}`;
+  const apiKeyHash = crypto.createHash("sha256").update(apiKey).digest("hex");
 
   await prisma.company.update({
     where: { id: user.companyId },
-    data: { apiKey },
+    data: { apiKeyHash },
   });
 
   return NextResponse.json({ apiKey });

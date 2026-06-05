@@ -58,7 +58,6 @@ export default async function SettingsPage() {
         company.trialEndsAt != null &&
         company.trialEndsAt > new Date()
       }
-      apiKey={company.apiKey}
     />
   );
 }

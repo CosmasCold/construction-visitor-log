@@ -2,10 +2,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { UserPlus, Building, Mail, Lock } from "lucide-react";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +27,10 @@ export default function SignupPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) { setErrors(validationErrors); return; }
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
     setErrors({});
     setLoading(true);
 
@@ -37,9 +42,8 @@ export default function SignupPage() {
 
     const data = await res.json();
     if (res.ok && data.success) {
-      const result = await signIn("credentials", { email: data.email, password: data.password, redirect: false, callbackUrl: `/dashboard?slug=${data.companySlug}` });
-      if (result?.error) setErrors({ form: "Signup succeeded but login failed. Please use the sign in page." });
-      else window.location.href = `/dashboard?slug=${data.companySlug}`;
+      // Redirect to the "Check your email" page instead of auto‑logging in
+      router.push("/signup/verify-email");
     } else {
       setErrors({ form: data.error || "Signup failed." });
     }

@@ -21,7 +21,7 @@ model Company {
   sites            Site[]
   users            User[]
   subscription     Subscription?
-  apiKey            String?        @unique
+  apiKeyHash            String?        @unique
 }
 
 model Plan {
@@ -107,6 +107,7 @@ model User {
   role         String    @default("company_owner") // "super_admin" or "company_owner"
   companyId    String?
   company      Company?  @relation(fields: [companyId], references: [id])
+  verified          Boolean   @default(false)
   createdAt    DateTime  @default(now())
 }
 
@@ -119,5 +120,13 @@ model PasswordReset {
   token     String   @unique
   expiresAt DateTime
   used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
   createdAt DateTime @default(now())
 }

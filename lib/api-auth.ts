@@ -1,15 +1,17 @@
-// lib/api-auth.ts
 import { prisma } from "./prisma";
+import crypto from "crypto";
 
-/**
- * Validates a Bearer token and returns the company ID if valid.
- */
 export async function validateApiKey(request: Request): Promise<string | null> {
   const authHeader = request.headers.get("authorization");
   if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
 
   const token = authHeader.slice(7);
-  const company = await prisma.company.findUnique({ where: { apiKey: token } });
+  const hash = crypto.createHash("sha256").update(token).digest("hex");
+
+  const company = await prisma.company.findFirst({
+    where: { apiKeyHash: hash },
+    select: { id: true },
+  });
 
   return company?.id ?? null;
 }
