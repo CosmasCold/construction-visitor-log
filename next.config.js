@@ -4,7 +4,6 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Apply to all routes
         source: "/(.*)",
         headers: [
           {
@@ -12,8 +11,8 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' https://client.crisp.chat",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' https://images.unsplash.com data:",
+              "style-src 'self' 'unsafe-inline' https://client.crisp.chat",
+              "img-src 'self' https://images.unsplash.com data: https://saasdb.net",
               "connect-src 'self' https://api.brevo.com https://api.stripe.com https://client.crisp.chat",
               "frame-src https://checkout.stripe.com https://js.stripe.com",
               "font-src 'self'",

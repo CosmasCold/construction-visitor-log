@@ -45,7 +45,10 @@ export default function PrivacyPage() {
           <section>
             <h2 className="font-semibold text-base text-white mb-2">5. Cookies</h2>
             <p>
-              SiteSafe uses essential cookies for authentication and session management. We do not use tracking cookies for advertising.
+              SiteSafe uses a single essential cookie for authentication and session management. 
+We do not use tracking cookies, advertising cookies, or any third‑party analytics 
+cookies. Because our cookie is strictly necessary for the service to function, 
+consent is not required under GDPR, LGPD, or similar regulations.
             </p>
           </section>
 
