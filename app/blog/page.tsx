@@ -9,6 +9,13 @@ export const metadata: Metadata = {
 };
 
 const posts = [
+    {
+    slug: "case-study-small-business",
+    title: "How a Small Business Chooses a Visitor Log",
+    date: "2026-06-06",
+    excerpt:
+      "A walk through how a fictional small business owner compares Envoy, SwipedOn, and SiteSafe — and why the simplest, most affordable option wins.",
+  },
   {
     slug: "sitesafe-vs-envoy-swipedon-paper",
     title: "SiteSafe vs Envoy vs SwipedOn vs Paper Logs",

@@ -77,6 +77,28 @@ export default function LandingPage() {
               Sign in
             </Link>
           </div>
+
+          {/* Demo video */}
+          <div className="mt-8 max-w-xl mx-auto">
+            <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+              <iframe
+                src="https://www.youtube.com/embed/5PKa8e84RJ4"
+                title="SiteSafe demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute top-0 left-0 w-full h-full rounded-xl border border-white/10"
+              />
+            </div>
+            <p className="text-xs text-slate-500 mt-2">2‑minute overview</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Subtle onboarding vibe */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+        <div className="bg-white/[0.04] backdrop-blur-md rounded-xl border border-white/5 px-5 py-3 text-center text-sm text-slate-400">
+          Now onboarding new companies — set up your first site in 60 seconds.
+          No sales calls. No waiting.
         </div>
       </div>
 
@@ -113,7 +135,8 @@ export default function LandingPage() {
         </div>
       </div>
 
-            <div className="max-w-2xl mx-auto mb-12 px-4">
+      {/* Comparison card */}
+      <div className="max-w-2xl mx-auto mb-12 px-4">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
           <p className="text-sm text-slate-300">
             See how SiteSafe compares to Envoy, SwipedOn, and paper logs{" "}
