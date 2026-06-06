@@ -151,6 +151,12 @@ export default function AdminClient({
             <button onClick={exportPDF} title="PDF" className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
               <FileDown className="w-4 h-4" /> PDF
             </button>
+            <a
+              href="/admin/checklist"
+              className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-1"
+            >
+              Checklist Requests
+            </a>
             <button onClick={() => signOut({ callbackUrl: "/" })} title="Logout" className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1">
               <LogOut className="w-4 h-4" /> Logout
             </button>

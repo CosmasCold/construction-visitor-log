@@ -1,5 +1,6 @@
 // app/api/send-checklist/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
@@ -8,6 +9,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Valid email required" }, { status: 400 });
   }
 
+  // 1. Save the request to your database
+  try {
+    await prisma.checklistRequest.create({
+      data: { email },
+    });
+  } catch (error) {
+    console.error("Failed to store checklist request:", error);
+    // Continue to send the email anyway – don't block the user
+  }
+
+  // 2. Build the email
   const checklistUrl = `${req.nextUrl.origin}/checklist`;
 
   const htmlContent = `
@@ -62,9 +74,9 @@ export async function POST(req: NextRequest) {
     </html>
   `;
 
-  // Use your verified Brevo sender
   const payload = {
-    sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },  
+    // 🔁 Replace with a verified sender in your Brevo account
+    sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
     to: [{ email }],
     subject: "Your Visitor Log Audit Checklist",
     htmlContent,
