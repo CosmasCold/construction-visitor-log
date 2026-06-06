@@ -13,6 +13,7 @@ import {
   Code,
   DollarSign,
   ArrowRight,
+  Play,
 } from "lucide-react";
 
 const features = [
@@ -29,13 +30,6 @@ const features = [
   { icon: DollarSign, title: "Flat $49/mo", desc: "No per‑site or per‑user fees. Cancel anytime." },
 ];
 
-const benefits = [
-  { icon: ShieldCheck, text: "Replace the clipboard forever" },
-  { icon: Users, text: "Know exactly who's on site" },
-  { icon: FileDown, text: "Stay compliant without effort" },
-  { icon: DollarSign, text: "No‑risk trial, no‑hassle pricing" },
-];
-
 export default function LandingPage() {
   return (
     <div className="min-h-screen text-white">
@@ -50,35 +44,33 @@ export default function LandingPage() {
             for construction sites, warehouses, and offices.
           </p>
           <p className="mt-4 text-base text-slate-400 max-w-2xl mx-auto">
-            QR check‑in. Real‑time dashboard. Audit‑ready exports. No sales calls.
+            QR check‑in. Real‑time dashboard. Audit‑ready exports. No sales calls ever.
           </p>
           <p className="mt-3 inline-flex items-center gap-1.5 bg-sky-500/10 border border-sky-400/30 rounded-full px-4 py-1.5 text-sm text-sky-300 font-semibold">
             <ShieldCheck className="w-4 h-4" />
             14‑day free trial – no credit card required
           </p>
 
-          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+          {/* Single primary CTA */}
+          <div className="mt-8 flex flex-col items-center gap-4">
             <Link
               href="/signup"
               className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
             >
               Start Free Trial <ArrowRight className="ml-2 w-4 h-4" />
             </Link>
-            <a
-              href="#features"
-              className="inline-flex items-center justify-center px-8 py-3 border border-white/10 text-base font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-200 active:scale-[0.98]"
-            >
-              What&apos;s included
-            </a>
-            <Link
-              href="/admin/login"
-              className="inline-flex items-center justify-center px-8 py-3 border border-white/10 text-base font-medium rounded-xl text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-all duration-200 active:scale-[0.98]"
-            >
-              Sign in
-            </Link>
+            <div className="flex items-center gap-4 text-sm">
+              <a href="#features" className="text-slate-400 hover:text-white transition-colors duration-150">
+                See what&apos;s included ↓
+              </a>
+              <span className="text-slate-600">·</span>
+              <Link href="/admin/login" className="text-slate-400 hover:text-white transition-colors duration-150">
+                Sign in
+              </Link>
+            </div>
           </div>
 
-          {/* Demo video */}
+          {/* Demo video – now above the fold */}
           <div className="mt-8 max-w-xl mx-auto">
             <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
               <iframe
@@ -89,26 +81,20 @@ export default function LandingPage() {
                 className="absolute top-0 left-0 w-full h-full rounded-xl border border-white/10"
               />
             </div>
-            <p className="text-xs text-slate-500 mt-2">2‑minute overview</p>
+            <p className="text-xs text-slate-500 mt-2 flex items-center justify-center gap-1">
+              <Play className="w-3 h-3" /> 2‑minute overview
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Subtle onboarding vibe */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-        <div className="bg-white/[0.04] backdrop-blur-md rounded-xl border border-white/5 px-5 py-3 text-center text-sm text-slate-400">
-          Now onboarding new companies — set up your first site in 60 seconds.
-          No sales calls. No waiting.
-        </div>
-      </div>
-
-      {/* Problem section */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pb-24">
-        <p className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-          Paper logs get lost. Safety briefings get skipped. Audits become a scramble.
+      {/* Problem section – more specific and painful */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pb-12">
+        <p className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+          Last month, a contractor lost his visitor log the day before an OSHA audit. He spent four hours recreating it from memory.
         </p>
         <p className="mt-4 text-lg text-sky-400 font-semibold">
-          SiteSafe fixes that.
+          That doesn&apos;t happen with SiteSafe.
         </p>
       </div>
 
@@ -135,6 +121,28 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* Testimonial / social proof */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
+          <blockquote className="text-lg text-slate-200 italic leading-relaxed">
+            I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.
+          </blockquote>
+          <p className="mt-4 text-sm text-slate-400">
+            – John, Site Manager
+          </p>
+        </div>
+      </div>
+
+      {/* ROI benefit */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 text-center">
+        <p className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+          SiteSafe pays for itself if it saves you just two hours of audit prep per month.
+        </p>
+        <p className="mt-2 text-slate-400">
+          Most users save five hours or more.
+        </p>
+      </div>
+
       {/* Comparison card */}
       <div className="max-w-2xl mx-auto mb-12 px-4">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
@@ -147,31 +155,78 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Benefits section */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {benefits.map((b, idx) => (
-            <div
-              key={idx}
-              className="text-center bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6"
+      {/* Checklist lead capture */}
+      <div className="max-w-2xl mx-auto px-4 pb-16">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 text-center">
+          <h3 className="text-lg font-semibold text-white mb-2">
+            Free Visitor Log Audit Checklist
+          </h3>
+          <p className="text-sm text-slate-300 mb-4">
+            10 things an inspector checks in any visitor log. Get the printable
+            PDF delivered to your inbox.
+          </p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const emailInput = (e.target as HTMLFormElement).elements.namedItem("email") as HTMLInputElement;
+              const email = emailInput.value.trim();
+              if (!email) return;
+              fetch("/api/send-checklist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email }),
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data.success) {
+                    emailInput.value = "";
+                    alert("Checklist sent! Check your inbox.");
+                  } else {
+                    alert("Something went wrong. Please try again.");
+                  }
+                })
+                .catch(() => alert("Something went wrong. Please try again."));
+            }}
+            className="flex flex-col sm:flex-row gap-3 justify-center items-center"
+          >
+            <input
+              type="email"
+              name="email"
+              placeholder="your@email.com"
+              required
+              className="w-full sm:w-64 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+            />
+            <button
+              type="submit"
+              className="w-full sm:w-auto bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-xl px-6 py-3 text-sm transition-all duration-200 active:scale-[0.98]"
             >
-              <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-sky-500/20 mb-3">
-                <b.icon className="w-5 h-5 text-sky-300" />
-              </div>
-              <p className="text-sm font-medium text-white">{b.text}</p>
-            </div>
-          ))}
+              Send me the checklist
+            </button>
+          </form>
         </div>
       </div>
 
-      {/* Footer CTA */}
+      {/* Developer / API quick mention */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+        <div className="flex justify-center">
+          <Link
+            href="/docs"
+            className="inline-flex items-center gap-2 bg-white/[0.04] backdrop-blur-md rounded-xl border border-white/5 px-4 py-3 text-sm text-slate-400 hover:text-white transition-colors duration-150"
+          >
+            <Code className="w-4 h-4 text-sky-400" />
+            Developers: REST API available – integrate SiteSafe with your own tools
+          </Link>
+        </div>
+      </div>
+
+      {/* Footer CTA – with subtle urgency */}
       <div className="bg-white/[0.03] backdrop-blur-sm py-16 border-t border-white/5">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">
             Start your 14‑day free trial
           </h2>
           <p className="mt-3 text-lg text-slate-400">
-            No credit card. No sales call.
+            No credit card. No sales call. Trial starts instantly.
           </p>
           <Link
             href="/signup"
