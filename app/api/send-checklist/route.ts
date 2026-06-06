@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const checklistUrl = `${req.nextUrl.origin}/checklist`;
 
   const payload = {
-    sender: { name: "SiteSafe", email: "noreply@sitesafe.app" },
+    sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
     to: [{ email }],
     subject: "Your Visitor Log Audit Checklist",
     htmlContent: `
