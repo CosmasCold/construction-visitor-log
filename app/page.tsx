@@ -39,7 +39,7 @@ export default function LandingPage() {
         <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
             <span className="text-sky-400">SiteSafe</span>
-            <span className="block mt-2 text-white">Digital visitor log</span>
+            <span className="block mt-2 text-white">Smart Visitor Management</span>
           </h1>
           <p className="mt-4 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
             for construction sites, warehouses, and offices.

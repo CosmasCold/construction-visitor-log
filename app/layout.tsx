@@ -10,11 +10,11 @@ import NavWrapper from "@/components/NavWrapper";
 import { Analytics } from "@vercel/analytics/react";
 
 export const metadata: Metadata = {
-  title: "SiteSafe – Digital Visitor Log",
+  title: "SiteSafe – Smart Visitor Management",
   description:
     "Replace paper sign‑in sheets with a secure, digital check‑in for any workplace. Real‑time dashboard, audit‑ready exports, and customizable policy acknowledgments.",
   openGraph: {
-    title: "SiteSafe – Digital Visitor Log",
+    title: "SiteSafe – Smart Visitor Management",
     description:
       "Replace paper sign‑in sheets with a secure, digital check‑in for any workplace.",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
@@ -186,7 +186,7 @@ export default async function RootLayout({
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
               description:
-                "Digital visitor log for construction sites, warehouses, and offices. QR check‑in, real‑time dashboard, audit‑ready exports.",
+                "Smart Visitor Management for construction sites, warehouses, and offices. QR check‑in, real‑time dashboard, audit‑ready exports.",
               offers: {
                 "@type": "Offer",
                 price: "49.00",

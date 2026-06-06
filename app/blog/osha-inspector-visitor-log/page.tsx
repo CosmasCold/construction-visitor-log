@@ -64,7 +64,7 @@ export default function BlogPost() {
             How to be inspection‑ready in 30 seconds
           </h2>
           <p>
-            A digital visitor log solves all of this. Workers cannot check in without acknowledging the
+            A Smart Visitor Management System solves all of this. Workers cannot check in without acknowledging the
             safety briefing. Their entry is timestamped automatically. When the inspector asks, you
             open a dashboard and export a clean PDF. No scrambling, no excuses.
           </p>

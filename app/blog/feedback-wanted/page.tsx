@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Help Us Improve SiteSafe – Feedback Wanted",
   description:
-    "We built a simple digital visitor log for construction sites and need your honest feedback.",
+    "We built a simple Smart Visitor Management System for construction sites and need your honest feedback.",
 };
 
 export default function BlogPost() {

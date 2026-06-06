@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Compare SiteSafe – Digital Visitor Log",
+  title: "Compare SiteSafe – Smart Visitor Management",
   description:
     "See how SiteSafe compares to Envoy, SwipedOn, and paper visitor logs. QR check‑in, mandatory safety acknowledgment, real‑time dashboard, flat pricing.",
 };
