@@ -3,9 +3,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "SiteSafe Blog – Construction Safety & Visitor Management",
+  title: "SiteSafe Blog – Smart Visitor Management",
   description:
-    "Tips and insights on construction site safety, OSHA compliance, and digital visitor logs.",
+    "Tips and insights on site safety, OSHA compliance, and digital visitor logs.",
 };
 
 const posts = [

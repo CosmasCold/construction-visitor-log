@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Terms of Service – SiteSafe",
-  description: "Terms and conditions for using SiteSafe, the digital construction visitor log.",
+  description: "Terms and conditions for using SiteSafe, the Smart Visitor Management System.",
 };
 
 export default function TermsPage() {
@@ -24,7 +24,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-semibold text-base text-white mb-2">2. Description of Service</h2>
             <p>
-              SiteSafe provides a digital construction visitor log that allows companies to manage site check‑ins, safety briefings, and audit trails. The Service is provided on a subscription basis.
+              SiteSafe provides a Smart Visitor Management System that allows companies to manage site check‑ins, safety briefings, and audit trails. The Service is provided on a subscription basis.
             </p>
           </section>
 
