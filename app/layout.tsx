@@ -48,47 +48,47 @@ export default async function RootLayout({
 
   const header = (
     <header className="bg-gradient-to-b from-black/30 to-transparent backdrop-blur-lg border-b border-white/5">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-14 sm:h-16">
         <Link
           href={logoHref}
-          className="flex items-center gap-2 text-white font-semibold text-lg tracking-tight hover:text-sky-300 transition-colors duration-150"
+          className="flex items-center gap-2 text-white font-semibold text-base sm:text-lg tracking-tight hover:text-sky-300 transition-colors duration-150 shrink-0"
         >
           <Image
             src="/logo.png"
             alt="SiteSafe"
-            width={32}
-            height={32}
-            className="h-8 w-auto"
+            width={28}
+            height={28}
+            className="h-7 w-auto sm:h-8"
           />
-          <span>SiteSafe</span>
+          <span className="hidden sm:inline">SiteSafe</span>
         </Link>
-        <nav className="flex gap-4 text-sm items-center">
+        <nav className="flex gap-3 sm:gap-4 text-xs sm:text-sm items-center flex-wrap justify-end">
           {session ? (
             <>
               <Link
                 href={logoHref}
-                className="text-slate-300 hover:text-white transition-colors duration-150"
+                className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
               >
                 Dashboard
               </Link>
               {session.user?.role === "super_admin" && (
                 <Link
                   href="/admin"
-                  className="text-slate-300 hover:text-white transition-colors duration-150"
+                  className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
                 >
                   Admin
                 </Link>
               )}
               <Link
                 href="/settings"
-                className="text-slate-300 hover:text-white transition-colors duration-150"
+                className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
               >
                 Settings
               </Link>
               <form action="/api/auth/signout" method="POST">
                 <button
                   type="submit"
-                  className="text-slate-300 hover:text-white bg-transparent border-none cursor-pointer text-sm transition-colors duration-150"
+                  className="text-slate-300 hover:text-white bg-transparent border-none cursor-pointer text-xs sm:text-sm transition-colors duration-150 whitespace-nowrap"
                 >
                   Logout
                 </button>
@@ -98,13 +98,13 @@ export default async function RootLayout({
             <>
               <Link
                 href="/"
-                className="text-slate-300 hover:text-white transition-colors duration-150"
+                className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
               >
                 Home
               </Link>
               <Link
                 href="/admin/login"
-                className="text-slate-300 hover:text-white transition-colors duration-150"
+                className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
               >
                 Sign in
               </Link>
@@ -115,52 +115,52 @@ export default async function RootLayout({
     </header>
   );
 
-    const footer = (
+  const footer = (
     <footer className="bg-black/20 border-t border-white/5 text-slate-400 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
         <div className="text-sm text-center sm:text-left">
           &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
         </div>
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="flex gap-6 text-sm">
-            <Link
-  href="/faq"
-  className="text-sky-400 hover:text-sky-300 transition-colors duration-150 inline-flex items-center gap-1"
->
-  <span className="text-lg leading-none">?</span> FAQ
-</Link>
-            <Link href="/terms" className="hover:text-white transition-colors duration-150">
-              Terms of Service
-            </Link>
-            <Link href="/privacy" className="hover:text-white transition-colors duration-150">
-              Privacy Policy
-            </Link>
-            <Link href="/docs" className="hover:text-white transition-colors duration-150">
-  API Docs
-</Link>
-            <Link href="/blog" className="hover:text-white transition-colors duration-150">
-              Blog
-            </Link>
-            <a
-              href="mailto:cloudandclipboard@gmail.com"
-              className="hover:text-white transition-colors duration-150"
-            >
-              Contact
-            </a>
-            <Link href="/compare" className="hover:text-white transition-colors duration-150">
-  Compare
-</Link>
-          </div>
-          {/* SaasDB badge */}
-          <a href="https://saasdb.net" rel="dofollow" className="inline-flex">
-            <img
-              src="https://saasdb.net/badge/featured-dark.svg"
-              alt="Featured on SaasDB"
-              width="150"
-              height="30"
-            />
+        <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
+          <Link href="/terms" className="hover:text-white transition-colors duration-150">
+            Terms of Service
+          </Link>
+          <Link href="/privacy" className="hover:text-white transition-colors duration-150">
+            Privacy Policy
+          </Link>
+          <Link href="/blog" className="hover:text-white transition-colors duration-150">
+            Blog
+          </Link>
+          <Link href="/docs" className="hover:text-white transition-colors duration-150">
+            API Docs
+          </Link>
+          <Link href="/faq" className="text-sky-400 hover:text-sky-300 transition-colors duration-150 inline-flex items-center gap-1">
+            <span className="text-lg leading-none">?</span> FAQ
+          </Link>
+          <Link href="/compare" className="hover:text-white transition-colors duration-150">
+            Compare
+          </Link>
+          <a
+            href="mailto:cloudandclipboard@gmail.com"
+            className="hover:text-white transition-colors duration-150"
+          >
+            Contact
           </a>
         </div>
+        <a
+          href="https://saasdb.net"
+          rel="dofollow"
+          className="inline-flex mt-2 sm:mt-0"
+        >
+          <Image
+            src="https://saasdb.net/badge/featured-dark.svg"
+            alt="Featured on SaasDB"
+            width={130}
+            height={26}
+            unoptimized
+            className="h-6 w-auto"
+          />
+        </a>
       </div>
     </footer>
   );
@@ -189,7 +189,7 @@ export default async function RootLayout({
             `,
           }}
         />
-                {/* Structured data for SiteSafe */}
+        {/* Structured data for SiteSafe */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
