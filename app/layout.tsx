@@ -54,7 +54,7 @@ export default async function RootLayout({
           className="flex items-center gap-2 text-white font-semibold text-base sm:text-lg tracking-tight hover:text-sky-300 transition-colors duration-150 shrink-0"
         >
           <Image
-            src="/logo.png"
+            src="/favicon.svg"
             alt="SiteSafe"
             width={28}
             height={28}
