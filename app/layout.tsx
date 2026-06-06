@@ -147,20 +147,6 @@ export default async function RootLayout({
             Contact
           </a>
         </div>
-        <a
-          href="https://saasdb.net"
-          rel="dofollow"
-          className="inline-flex mt-2 sm:mt-0"
-        >
-          <Image
-            src="https://saasdb.net/badge/featured-dark.svg"
-            alt="Featured on SaasDB"
-            width={130}
-            height={26}
-            unoptimized
-            className="h-6 w-auto"
-          />
-        </a>
       </div>
     </footer>
   );

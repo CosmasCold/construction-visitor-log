@@ -89,6 +89,24 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* Trust badge – social proof */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+        <div className="flex justify-center">
+          <a
+            href="https://saasdb.net"
+            rel="dofollow"
+            className="inline-flex flex-col items-center gap-1 text-center"
+          >
+            <img
+              src="https://saasdb.net/badge/featured-dark.svg"
+              alt="Featured on SaasDB"
+              className="h-12 w-auto sm:h-14"
+            />
+            <span className="text-xs text-slate-400">Featured on SaasDB</span>
+          </a>
+        </div>
+      </div>
+
       {/* Problem section – more specific and painful */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pb-12">
         <p className="text-xl sm:text-2xl font-bold tracking-tight text-white">
@@ -157,7 +175,6 @@ export default function LandingPage() {
       </div>
 
       {/* Checklist lead capture */}
-            {/* Checklist lead capture */}
       <div className="max-w-2xl mx-auto px-4 pb-16">
         <ChecklistForm />
       </div>
