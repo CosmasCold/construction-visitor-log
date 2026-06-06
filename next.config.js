@@ -12,7 +12,7 @@ const nextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' https://client.crisp.chat",
               "style-src 'self' 'unsafe-inline' https://client.crisp.chat",
-              "img-src 'self' https://images.unsplash.com data: https://saasdb.net",
+              "img-src 'self' https://images.unsplash.com data: https://saasdb.net *.crisp.chat",
               "connect-src 'self' https://api.brevo.com https://api.stripe.com https://client.crisp.chat wss://client.relay.crisp.chat",
               "frame-src https://checkout.stripe.com https://js.stripe.com",
               "font-src 'self' https://client.crisp.chat data:",
