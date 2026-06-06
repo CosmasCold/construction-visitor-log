@@ -1,5 +1,6 @@
 // app/page.tsx
 import Link from "next/link";
+import ChecklistForm from "@/components/ChecklistForm";
 import {
   QrCode,
   ShieldCheck,
@@ -156,54 +157,9 @@ export default function LandingPage() {
       </div>
 
       {/* Checklist lead capture */}
+            {/* Checklist lead capture */}
       <div className="max-w-2xl mx-auto px-4 pb-16">
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 text-center">
-          <h3 className="text-lg font-semibold text-white mb-2">
-            Free Visitor Log Audit Checklist
-          </h3>
-          <p className="text-sm text-slate-300 mb-4">
-            10 things an inspector checks in any visitor log. Get the printable
-            PDF delivered to your inbox.
-          </p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const emailInput = (e.target as HTMLFormElement).elements.namedItem("email") as HTMLInputElement;
-              const email = emailInput.value.trim();
-              if (!email) return;
-              fetch("/api/send-checklist", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
-              })
-                .then((res) => res.json())
-                .then((data) => {
-                  if (data.success) {
-                    emailInput.value = "";
-                    alert("Checklist sent! Check your inbox.");
-                  } else {
-                    alert("Something went wrong. Please try again.");
-                  }
-                })
-                .catch(() => alert("Something went wrong. Please try again."));
-            }}
-            className="flex flex-col sm:flex-row gap-3 justify-center items-center"
-          >
-            <input
-              type="email"
-              name="email"
-              placeholder="your@email.com"
-              required
-              className="w-full sm:w-64 bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-            />
-            <button
-              type="submit"
-              className="w-full sm:w-auto bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-xl px-6 py-3 text-sm transition-all duration-200 active:scale-[0.98]"
-            >
-              Send me the checklist
-            </button>
-          </form>
-        </div>
+        <ChecklistForm />
       </div>
 
       {/* Developer / API quick mention */}
