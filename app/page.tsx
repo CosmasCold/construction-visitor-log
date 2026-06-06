@@ -147,7 +147,7 @@ export default function LandingPage() {
             I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.
           </blockquote>
           <p className="mt-4 text-sm text-slate-400">
-            – John, Site Manager
+            – Matteus, Multi-site Manager
           </p>
         </div>
       </div>
