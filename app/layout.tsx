@@ -115,12 +115,15 @@ export default async function RootLayout({
     </header>
   );
 
-  const footer = (
+    const footer = (
     <footer className="bg-black/20 border-t border-white/5 text-slate-400 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-        <div className="text-sm text-center sm:text-left">
-          &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        {/* Secured by line */}
+        <div className="text-center text-xs text-slate-500">
+          Encrypted data · GDPR / LGPD ready · No third‑party trackers
         </div>
+
+        {/* Links */}
         <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
           <Link href="/terms" className="hover:text-white transition-colors duration-150">
             Terms of Service
@@ -140,12 +143,46 @@ export default async function RootLayout({
           <Link href="/compare" className="hover:text-white transition-colors duration-150">
             Compare
           </Link>
+          <Link href="/changelog" className="hover:text-white transition-colors duration-150">
+            Changelog
+          </Link>
           <a
             href="mailto:cloudandclipboard@gmail.com"
             className="hover:text-white transition-colors duration-150"
           >
             Contact
           </a>
+        </div>
+
+        {/* Trust badges & social proof */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-500">
+          <span>Proudly built with</span>
+          <div className="flex items-center gap-3">
+            <span className="bg-white/10 px-2 py-0.5 rounded">Neon</span>
+            <span className="bg-white/10 px-2 py-0.5 rounded">Vercel</span>
+            <span className="bg-white/10 px-2 py-0.5 rounded">Brevo</span>
+            <span className="bg-white/10 px-2 py-0.5 rounded">Upstash</span>
+          </div>
+        </div>
+
+        {/* SaasDB badge */}
+        <div className="flex justify-center">
+          <a
+            href="https://saasdb.net"
+            rel="dofollow"
+            className="inline-flex"
+          >
+            <img
+              src="https://saasdb.net/badge/featured-dark.svg"
+              alt="Featured on SaasDB"
+              className="h-10 w-auto"
+            />
+          </a>
+        </div>
+
+        {/* Copyright */}
+        <div className="text-sm text-center">
+          &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
         </div>
       </div>
     </footer>
