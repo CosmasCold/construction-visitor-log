@@ -1,4 +1,5 @@
 // app/page.tsx
+import type { Metadata } from "next";
 import Link from "next/link";
 import ChecklistForm from "@/components/ChecklistForm";
 import {
@@ -16,6 +17,12 @@ import {
   ArrowRight,
   Play,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://sitesafe.thesift.space",
+  },
+};
 
 const features = [
   { icon: QrCode, title: "QR check‑in", desc: "Each site gets a unique QR code. Scan, sign, done." },
@@ -39,7 +46,7 @@ export default function LandingPage() {
         <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
             <span className="text-sky-400">SiteSafe</span>
-            <span className="block mt-2 text-white">Smart Visitor Management</span>
+            <span className="block mt-2 text-white">Smart visitor management</span>
           </h1>
           <p className="mt-4 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
             for construction sites, warehouses, and offices.
@@ -62,7 +69,7 @@ export default function LandingPage() {
             </Link>
             <div className="flex items-center gap-4 text-sm">
               <a href="#features" className="text-slate-400 hover:text-white transition-colors duration-150">
-                See what&apos;s included ↓
+                See what's included ↓
               </a>
               <span className="text-slate-600">·</span>
               <Link href="/admin/login" className="text-slate-400 hover:text-white transition-colors duration-150">
@@ -71,7 +78,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Demo video – now above the fold */}
+          {/* Demo video */}
           <div className="mt-8 max-w-xl mx-auto">
             <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
               <iframe
@@ -89,7 +96,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Trust badge – social proof */}
+      {/* Trust badge */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex justify-center">
           <a
@@ -107,13 +114,13 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Problem section – more specific and painful */}
+      {/* Problem section */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pb-12">
         <p className="text-xl sm:text-2xl font-bold tracking-tight text-white">
           Last month, a contractor lost his visitor log the day before an OSHA audit. He spent four hours recreating it from memory.
         </p>
         <p className="mt-4 text-lg text-sky-400 font-semibold">
-          That doesn&apos;t happen with SiteSafe.
+          That doesn't happen with SiteSafe.
         </p>
       </div>
 
@@ -140,14 +147,14 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Testimonial / social proof */}
+      {/* Testimonial */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
           <blockquote className="text-lg text-slate-200 italic leading-relaxed">
-            I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.
+            "I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds."
           </blockquote>
           <p className="mt-4 text-sm text-slate-400">
-            – Matteus, Multi-site Manager
+            – John, Site Manager
           </p>
         </div>
       </div>
@@ -192,7 +199,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Footer CTA – with subtle urgency */}
+      {/* Footer CTA */}
       <div className="bg-white/[0.03] backdrop-blur-sm py-16 border-t border-white/5">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">

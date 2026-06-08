@@ -12,11 +12,11 @@ import { Analytics } from "@vercel/analytics/react";
 export const metadata: Metadata = {
   title: "SiteSafe – Smart Visitor Management",
   description:
-    "Replace paper sign‑in sheets with a secure, digital check‑in for any workplace. Real‑time dashboard, audit‑ready exports, and customizable policy acknowledgments.",
+    "Smart visitor management for construction sites, warehouses, and offices. QR check‑in, real‑time dashboard, audit‑ready exports.",
   openGraph: {
     title: "SiteSafe – Smart Visitor Management",
     description:
-      "Replace paper sign‑in sheets with a secure, digital check‑in for any workplace.",
+      "Smart visitor management for construction sites, warehouses, and offices.",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
   },
   icons: {
@@ -115,7 +115,7 @@ export default async function RootLayout({
     </header>
   );
 
-    const footer = (
+  const footer = (
     <footer className="bg-black/20 border-t border-white/5 text-slate-400 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         {/* Secured by line */}
@@ -165,16 +165,14 @@ export default async function RootLayout({
           </div>
         </div>
 
-        {/* SaasDB badge */}
+        {/* SaasDB badge (now with proper dimensions) */}
         <div className="flex justify-center">
-          <a
-            href="https://saasdb.net"
-            rel="dofollow"
-            className="inline-flex"
-          >
+          <a href="https://saasdb.net" rel="dofollow" className="inline-flex">
             <img
               src="https://saasdb.net/badge/featured-dark.svg"
               alt="Featured on SaasDB"
+              width={130}
+              height={26}
               className="h-10 w-auto"
             />
           </a>
@@ -190,6 +188,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://saasdb.net" crossOrigin="anonymous" />
+      </head>
       <body className="flex flex-col min-h-screen">
         <NavWrapper header={header} footer={footer}>
           <main className="flex-1">{children}</main>
@@ -212,7 +213,7 @@ export default async function RootLayout({
             `,
           }}
         />
-        {/* Structured data for SiteSafe */}
+        {/* Structured data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -223,7 +224,7 @@ export default async function RootLayout({
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
               description:
-                "Smart Visitor Management for construction sites, warehouses, and offices. QR check‑in, real‑time dashboard, audit‑ready exports.",
+                "Smart visitor management for construction sites, warehouses, and offices. QR check‑in, real‑time dashboard, audit‑ready exports.",
               offers: {
                 "@type": "Offer",
                 price: "49.00",
