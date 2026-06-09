@@ -4,6 +4,7 @@ const BASE_URL = "https://sitesafe.thesift.space";
 export function GET() {
   const staticPages = [
     "",
+    "/about",
     "/blog",
     "/blog/paper-sign-in-sheets-safety-risk",
     "/blog/osha-inspector-visitor-log",
@@ -11,9 +12,11 @@ export function GET() {
     "/blog/feedback-wanted",
     "/blog/sitesafe-vs-envoy-swipedon-paper",
     "/blog/case-study-small-business",
+    "/blog/ultimate-guide-modern-visitor-management",
     "/compare",
     "/docs",
     "/faq",
+    "/features",
     "/changelog",
     "/checklist",
     "/pricing",
