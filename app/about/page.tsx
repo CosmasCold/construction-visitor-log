@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "About – SiteSafe",
   description:
-    "SiteSafe was built by a solo founder after watching a friend lose a construction audit over a paper visitor log. No sales calls, flat pricing, and mandatory safety acknowledgment.",
+    "SiteSafe was built by a solo founder who wanted to create something genuinely useful for small businesses. No sales calls, flat pricing, and mandatory safety acknowledgment.",
 };
 
 export default function AboutPage() {
@@ -22,28 +22,30 @@ export default function AboutPage() {
           <h2 className="text-xl font-semibold text-white mb-4">The story</h2>
           <div className="space-y-4 text-sm leading-relaxed text-slate-200">
             <p>
-              A friend of mine runs a small construction crew. One evening, he called me in a
-              panic—he had lost his visitor log the day before an OSHA audit and was trying to
-              recreate weeks of entries from memory. He spent four hours scribbling names and
-              dates onto a fresh sheet, knowing that if he missed even one, he would be in real
-              trouble.
+              I wanted to build something useful. I spent a few weeks researching
+              common problems in small to medium businesses—places where a simple
+              piece of software could make a real difference. One theme kept
+              coming up: tracking visitors.
             </p>
             <p>
-              I looked into what digital tools existed and found plenty of options. But they all
-              had the same three problems: expensive per‑building pricing, mandatory sales calls,
-              and safety acknowledgments that visitors could just skip. None of them were built
-              for someone like my friend.
+              Construction sites, warehouses, offices, clinics—they all use
+              paper sign‑in sheets. Those sheets get lost, ruined, or simply
+              ignored. When an audit or inspection happens, the log is nowhere
+              to be found. And the existing digital options? Expensive,
+              per‑building pricing, mandatory sales calls, and safety
+              acknowledgments that visitors could skip.
             </p>
             <p>
-              So I built SiteSafe. It started as a simple tablet‑friendly check‑in for
-              construction trailers. A way to scan a QR code, enter your details, and check a
-              mandatory safety box before signing in. No paper, no lost records, no last‑minute
-              panic before an inspection.
+              So I built SiteSafe. A simple, tablet‑friendly check‑in that
+              replaces the clipboard. Each site gets a QR code. Visitors scan
+              it, enter their details, and must acknowledge your safety or
+              conduct policy before they can proceed—no skipping allowed. You
+              get a real‑time dashboard and audit‑ready exports in one click.
             </p>
             <p>
-              Over time, I realized the same problem exists in warehouses, offices,
-              clinics—anywhere people walk in and sign a clipboard. So I broadened SiteSafe to
-              work for any workplace. It’s still just me building and supporting it.
+              Everything you see—the product, the website, the emails—is built
+              and run by one person. No sales team, no board, no hidden fees.
+              Just me, solving a problem I believe in.
             </p>
           </div>
         </div>
@@ -53,22 +55,22 @@ export default function AboutPage() {
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 text-center">
             <h3 className="font-semibold text-white mb-2">No sales calls. Ever.</h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              You&apos;ll never be asked to book a demo or speak to a salesperson. Sign up, set up, and
-              start checking in visitors.
+              You&apos;ll never be asked to book a demo or speak to a salesperson.
+              Sign up, set up, and start checking in visitors.
             </p>
           </div>
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 text-center">
             <h3 className="font-semibold text-white mb-2">Flat, transparent pricing</h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              $49/month for unlimited sites and visitors. No per‑site fees, no hidden add‑ons.
-              Cancel anytime.
+              $49/month for unlimited sites and visitors. No per‑site fees, no
+              hidden add‑ons. Cancel anytime.
             </p>
           </div>
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 text-center">
             <h3 className="font-semibold text-white mb-2">Compliance first</h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Mandatory policy acknowledgment means every visitor confirms your rules. That&apos;s your
-              proof during an audit.
+              Mandatory policy acknowledgment means every visitor confirms your
+              rules. That&apos;s your proof during an audit.
             </p>
           </div>
         </div>
