@@ -103,10 +103,22 @@ export default async function RootLayout({
                 Home
               </Link>
               <Link
+                href="/features"
+                className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
+              >
+                Features
+              </Link>
+              <Link
                 href="/pricing"
                 className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
               >
                 Pricing
+              </Link>
+              <Link
+                href="/about"
+                className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
+              >
+                About
               </Link>
               <Link
                 href="/admin/login"
@@ -143,6 +155,9 @@ export default async function RootLayout({
           <Link href="/docs" className="hover:text-white transition-colors duration-150">
             API Docs
           </Link>
+          <Link href="/features" className="hover:text-white transition-colors duration-150">
+            Features
+          </Link>
           <Link href="/faq" className="text-sky-400 hover:text-sky-300 transition-colors duration-150 inline-flex items-center gap-1">
             <span className="text-lg leading-none">?</span> FAQ
           </Link>
@@ -154,6 +169,9 @@ export default async function RootLayout({
           </Link>
           <Link href="/pricing" className="hover:text-white transition-colors duration-150">
             Pricing
+          </Link>
+          <Link href="/about" className="hover:text-white transition-colors duration-150">
+            About
           </Link>
           <Link href="/security" className="hover:text-white transition-colors duration-150">
             Security
