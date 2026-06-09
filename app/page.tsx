@@ -70,7 +70,7 @@ export default function LandingPage() {
             </Link>
             <div className="flex items-center gap-4 text-sm">
               <a href="#features" className="text-slate-400 hover:text-white transition-colors duration-150">
-                See what's included ↓
+                See what&apos;s included ↓
               </a>
               <span className="text-slate-600">·</span>
               <Link href="/admin/login" className="text-slate-400 hover:text-white transition-colors duration-150">
@@ -117,7 +117,7 @@ export default function LandingPage() {
           Last month, a contractor lost his visitor log the day before an OSHA audit. He spent four hours recreating it from memory.
         </p>
         <p className="mt-4 text-lg text-sky-400 font-semibold">
-          That doesn't happen with SiteSafe.
+          That doesn&apos;t happen with SiteSafe.
         </p>
       </div>
 
@@ -144,7 +144,7 @@ export default function LandingPage() {
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-12">See the product</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
-            <img src="/checkin-page.png" alt="SiteSafe check‑in page with QR code" className="rounded-lg w-full h-auto" />
+            <img src="/qr.png" alt="SiteSafe check‑in page with QR code" className="rounded-lg w-full h-auto" />
             <p className="text-xs text-slate-400 text-center mt-2">QR check‑in page on a tablet</p>
           </div>
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
@@ -171,9 +171,9 @@ export default function LandingPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
           <blockquote className="text-lg text-slate-200 italic leading-relaxed">
-            "I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds."
+            I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.
           </blockquote>
-          <p className="mt-4 text-sm text-slate-400">– John, Site Manager</p>
+          <p className="mt-4 text-sm text-slate-400">– Matteus, Multi-Site Manager</p>
         </div>
       </div>
 
