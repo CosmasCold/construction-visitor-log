@@ -16,6 +16,8 @@ export function GET() {
     "/faq",
     "/changelog",
     "/checklist",
+    "/pricing",
+    "/security",
     "/signup",
     "/admin/login",
     "/terms",
