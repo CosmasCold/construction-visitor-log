@@ -103,6 +103,12 @@ export default async function RootLayout({
                 Home
               </Link>
               <Link
+                href="/pricing"
+                className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
+              >
+                Pricing
+              </Link>
+              <Link
                 href="/admin/login"
                 className="text-slate-300 hover:text-white transition-colors duration-150 whitespace-nowrap"
               >
@@ -146,6 +152,12 @@ export default async function RootLayout({
           <Link href="/changelog" className="hover:text-white transition-colors duration-150">
             Changelog
           </Link>
+          <Link href="/pricing" className="hover:text-white transition-colors duration-150">
+            Pricing
+          </Link>
+          <Link href="/security" className="hover:text-white transition-colors duration-150">
+            Security
+          </Link>
           <a
             href="mailto:cloudandclipboard@gmail.com"
             className="hover:text-white transition-colors duration-150"
@@ -165,7 +177,7 @@ export default async function RootLayout({
           </div>
         </div>
 
-        {/* SaasDB badge (now with proper dimensions) */}
+        {/* SaasDB badge */}
         <div className="flex justify-center">
           <a href="https://saasdb.net" rel="dofollow" className="inline-flex">
             <img

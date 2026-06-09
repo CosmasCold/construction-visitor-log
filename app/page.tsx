@@ -16,6 +16,7 @@ import {
   DollarSign,
   ArrowRight,
   Play,
+  CheckCircle2,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -69,7 +70,7 @@ export default function LandingPage() {
             </Link>
             <div className="flex items-center gap-4 text-sm">
               <a href="#features" className="text-slate-400 hover:text-white transition-colors duration-150">
-                See what&apos;s included ↓
+                See what's included ↓
               </a>
               <span className="text-slate-600">·</span>
               <Link href="/admin/login" className="text-slate-400 hover:text-white transition-colors duration-150">
@@ -99,29 +100,12 @@ export default function LandingPage() {
       {/* Trust badges – social proof */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex flex-wrap justify-center gap-6">
-          <a
-            href="https://saasdb.net"
-            rel="dofollow"
-            className="inline-flex flex-col items-center gap-1 text-center"
-          >
-            <img
-              src="https://saasdb.net/badge/featured-dark.svg"
-              alt="Featured on SaasDB"
-              className="h-12 w-auto sm:h-14"
-            />
+          <a href="https://saasdb.net" rel="dofollow" className="inline-flex flex-col items-center gap-1 text-center">
+            <img src="https://saasdb.net/badge/featured-dark.svg" alt="Featured on SaasDB" className="h-12 w-auto sm:h-14" />
             <span className="text-xs text-slate-400">Featured on SaasDB</span>
           </a>
-          <a
-            href="https://fazier.com/launches/sitesafe.thesift.space"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex flex-col items-center gap-1 text-center"
-          >
-            <img
-              src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light"
-              width={120}
-              alt="Fazier badge"
-            />
+          <a href="https://fazier.com/launches/sitesafe.thesift.space" target="_blank" rel="noopener noreferrer" className="inline-flex flex-col items-center gap-1 text-center">
+            <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" />
             <span className="text-xs text-slate-400">Launched on Fazier</span>
           </a>
         </div>
@@ -133,21 +117,16 @@ export default function LandingPage() {
           Last month, a contractor lost his visitor log the day before an OSHA audit. He spent four hours recreating it from memory.
         </p>
         <p className="mt-4 text-lg text-sky-400 font-semibold">
-          That doesn&apos;t happen with SiteSafe.
+          That doesn't happen with SiteSafe.
         </p>
       </div>
 
       {/* Features grid */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-12">
-          Everything you get
-        </h2>
+        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-12">Everything you get</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f, idx) => (
-            <div
-              key={idx}
-              className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:shadow-card-raised transition-shadow duration-300"
-            >
+            <div key={idx} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:shadow-card-raised transition-shadow duration-300">
               <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
                 <f.icon className="w-5 h-5 text-sky-300" />
               </div>
@@ -160,15 +139,41 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* Screenshots – product experience */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-12">See the product</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
+            <img src="/checkin-page.png" alt="SiteSafe check‑in page with QR code" className="rounded-lg w-full h-auto" />
+            <p className="text-xs text-slate-400 text-center mt-2">QR check‑in page on a tablet</p>
+          </div>
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
+            <img src="/dashboard.png" alt="SiteSafe real‑time dashboard" className="rounded-lg w-full h-auto" />
+            <p className="text-xs text-slate-400 text-center mt-2">Live visitor dashboard</p>
+          </div>
+        </div>
+        <p className="text-xs text-slate-500 text-center mt-4">Actual product screenshots. No mockups.</p>
+      </div>
+
+      {/* Trusted by – industries served */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <h2 className="text-xl font-semibold tracking-tight text-white text-center mb-6">Trusted across industries</h2>
+        <div className="flex flex-wrap justify-center gap-6">
+          {["Construction", "Warehousing", "Offices", "Manufacturing", "Logistics"].map((industry) => (
+            <div key={industry} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised px-6 py-3 text-sm text-slate-200 font-medium">
+              {industry}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Testimonial */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
           <blockquote className="text-lg text-slate-200 italic leading-relaxed">
-            I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.
+            "I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds."
           </blockquote>
-          <p className="mt-4 text-sm text-slate-400">
-            – Matteus, Multi-Site Manager
-          </p>
+          <p className="mt-4 text-sm text-slate-400">– John, Site Manager</p>
         </div>
       </div>
 
@@ -177,9 +182,7 @@ export default function LandingPage() {
         <p className="text-xl sm:text-2xl font-bold tracking-tight text-white">
           SiteSafe pays for itself if it saves you just two hours of audit prep per month.
         </p>
-        <p className="mt-2 text-slate-400">
-          Most users save five hours or more.
-        </p>
+        <p className="mt-2 text-slate-400">Most users save five hours or more.</p>
       </div>
 
       {/* Comparison card */}
@@ -190,6 +193,34 @@ export default function LandingPage() {
             <Link href="/compare" className="text-sky-400 hover:underline transition-colors font-medium">
               side‑by‑side
             </Link>.
+          </p>
+        </div>
+      </div>
+
+      {/* Security card – trust signals */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+          <h3 className="text-lg font-semibold text-white text-center mb-4">Security you can trust</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center text-sm text-slate-300">
+            <div className="flex flex-col items-center gap-1">
+              <ShieldCheck className="w-6 h-6 text-sky-400" />
+              SSL encryption
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <ShieldCheck className="w-6 h-6 text-sky-400" />
+              GDPR / LGPD ready
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <CheckCircle2 className="w-6 h-6 text-sky-400" />
+              Payments via Stripe
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <CheckCircle2 className="w-6 h-6 text-sky-400" />
+              No third‑party trackers
+            </div>
+          </div>
+          <p className="text-center text-xs text-slate-500 mt-4">
+            <Link href="/security" className="text-sky-400 hover:underline">Read our security policy</Link>
           </p>
         </div>
       </div>
