@@ -10,6 +10,13 @@ export const metadata: Metadata = {
 
 const posts = [
     {
+    slug: "ultimate-guide-modern-visitor-management",
+    title: "The Ultimate Guide to Modern Visitor Management",
+    date: "2026-06-09",
+    excerpt:
+      "Why paper visitor logs fail audits, how digital check‑in works, and the essential features a modern visitor management system should have.",
+  },
+    {
     slug: "case-study-small-business",
     title: "How a Small Business Chooses a Visitor Log",
     date: "2026-06-06",
