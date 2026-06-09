@@ -96,9 +96,9 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Trust badge */}
+      {/* Trust badges – social proof */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
-        <div className="flex justify-center">
+        <div className="flex flex-wrap justify-center gap-6">
           <a
             href="https://saasdb.net"
             rel="dofollow"
@@ -110,6 +110,19 @@ export default function LandingPage() {
               className="h-12 w-auto sm:h-14"
             />
             <span className="text-xs text-slate-400">Featured on SaasDB</span>
+          </a>
+          <a
+            href="https://fazier.com/launches/sitesafe.thesift.space"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex flex-col items-center gap-1 text-center"
+          >
+            <img
+              src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light"
+              width={120}
+              alt="Fazier badge"
+            />
+            <span className="text-xs text-slate-400">Launched on Fazier</span>
           </a>
         </div>
       </div>
@@ -154,7 +167,7 @@ export default function LandingPage() {
             I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.
           </blockquote>
           <p className="mt-4 text-sm text-slate-400">
-            – Matteus, Multi-Site Manager 
+            – Matteus, Multi-Site Manager
           </p>
         </div>
       </div>
