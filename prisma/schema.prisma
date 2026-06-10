@@ -17,12 +17,12 @@ model Company {
   email            String         @unique
   stripeCustomerId String?
   trialEndsAt      DateTime?
+  apiKeyHash       String?
+  trialEmailSequence String[]     @default([])
   createdAt        DateTime       @default(now())
   sites            Site[]
   users            User[]
   subscription     Subscription?
-  apiKeyHash            String?        @unique
-  trialEmailSequence String[]    @default([])
 }
 
 model Plan {
@@ -55,6 +55,7 @@ model Site {
   name               String
   address            String?
   safetyBriefingText String            @default("Hard hat, high-vis vest, and safety glasses are mandatory. Stay in designated walkways.")
+  questions          String[]         @default([])
   companyId          String
   company            Company           @relation(fields: [companyId], references: [id])
   visitors           VisitorLog[]
@@ -73,6 +74,7 @@ model VisitorLog {
   safetyAcknowledged  Boolean   @default(false)
   signedInAt          DateTime  @default(now())
   signedOutAt         DateTime?
+  answers             Json?     // ✅ pre‑screening answers (question → boolean)
   siteId              String
   site                Site      @relation(fields: [siteId], references: [id])
 }
@@ -94,7 +96,7 @@ model ExpectedVisitor {
   host      Host?    @relation(fields: [hostId], references: [id])
   siteId    String
   site      Site     @relation(fields: [siteId], references: [id])
-  status    String   @default("pending") // pending, signed_in
+  status    String   @default("pending")
   createdAt DateTime @default(now())
 }
 
@@ -105,15 +107,15 @@ model User {
   id           String    @id @default(cuid())
   email        String    @unique
   passwordHash String
-  role         String    @default("company_owner") // "super_admin" or "company_owner"
+  role         String    @default("company_owner")
+  verified     Boolean   @default(false)
   companyId    String?
   company      Company?  @relation(fields: [companyId], references: [id])
-  verified          Boolean   @default(false)
   createdAt    DateTime  @default(now())
 }
 
 // -------------------------------
-// PASSWORD RESET
+// PASSWORD RESET & VERIFICATION
 // -------------------------------
 model PasswordReset {
   id        String   @id @default(cuid())
@@ -132,6 +134,9 @@ model VerificationToken {
   createdAt DateTime @default(now())
 }
 
+// -------------------------------
+// CHECKLIST REQUESTS
+// -------------------------------
 model ChecklistRequest {
   id        String   @id @default(cuid())
   email     String

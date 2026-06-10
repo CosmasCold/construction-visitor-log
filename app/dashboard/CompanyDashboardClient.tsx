@@ -24,7 +24,6 @@ import {
   CheckCircle2,
   XCircle,
   QrCode,
-  BarChart3,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
@@ -40,6 +39,7 @@ type Visitor = {
   signedOutAt: string | null;
   siteName: string;
   siteId: string;
+  answers?: Record<string, boolean> | null;
 };
 
 type Site = {
@@ -49,6 +49,7 @@ type Site = {
   address: string | null;
   safetyBriefingText: string;
   visitorsToday: number;
+  questions?: string[] | null;
 };
 
 type Host = {
@@ -88,9 +89,7 @@ export default function CompanyDashboardClient({
   const [editingSiteId, setEditingSiteId] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-  const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(
-    null
-  );
+  const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(null);
 
   // Edit form fields
   const [editName, setEditName] = useState("");
@@ -107,6 +106,10 @@ export default function CompanyDashboardClient({
   const [expectedForEdit, setExpectedForEdit] = useState<ExpectedVisitor[]>([]);
   const [newVisitorName, setNewVisitorName] = useState("");
   const [newVisitorCompany, setNewVisitorCompany] = useState("");
+
+  // Pre‑screening questions management
+  const [editQuestions, setEditQuestions] = useState<string[]>([]);
+  const [newQuestion, setNewQuestion] = useState("");
 
   function applyFilter() {
     const params = new URLSearchParams();
@@ -138,6 +141,7 @@ export default function CompanyDashboardClient({
     setEditSlug(site.slug);
     setEditAddress(site.address || "");
     setEditBriefing(site.safetyBriefingText);
+    setEditQuestions(site.questions || []);
 
     // Fetch hosts
     fetch(`/api/sites/${site.id}/hosts`)
@@ -155,12 +159,14 @@ export default function CompanyDashboardClient({
     setNewHostEmail("");
     setNewVisitorName("");
     setNewVisitorCompany("");
+    setNewQuestion("");
   }
 
   function cancelEdit() {
     setEditingSiteId(null);
     setHostsForEdit([]);
     setExpectedForEdit([]);
+    setEditQuestions([]);
   }
 
   async function saveEdit(siteId: string) {
@@ -172,6 +178,7 @@ export default function CompanyDashboardClient({
         slug: editSlug,
         address: editAddress,
         safetyBriefingText: editBriefing,
+        questions: editQuestions,
       }),
     });
     if (res.ok) {
@@ -185,6 +192,7 @@ export default function CompanyDashboardClient({
                 slug: updated.slug,
                 address: updated.address,
                 safetyBriefingText: updated.safetyBriefingText,
+                questions: updated.questions,
               }
             : s
         )
@@ -192,6 +200,7 @@ export default function CompanyDashboardClient({
       setEditingSiteId(null);
       setHostsForEdit([]);
       setExpectedForEdit([]);
+      setEditQuestions([]);
     } else {
       alert("Failed to update site.");
     }
@@ -207,14 +216,7 @@ export default function CompanyDashboardClient({
 
   function exportCSV() {
     const headers = [
-      "Site",
-      "Name",
-      "Company",
-      "Phone",
-      "Host",
-      "Safety OK",
-      "Signed In",
-      "Signed Out",
+      "Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out", "Pre‑screening",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -225,11 +227,14 @@ export default function CompanyDashboardClient({
       v.safetyAcknowledged ? "Yes" : "No",
       v.signedInAt,
       v.signedOutAt || "Still on site",
+      v.answers
+        ? Object.entries(v.answers)
+            .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
+            .join("; ")
+        : "",
     ]);
     const csvContent = [headers, ...rows]
-      .map((row) =>
-        row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(",")
-      )
+      .map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(","))
       .join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const link = document.createElement("a");
@@ -251,6 +256,11 @@ export default function CompanyDashboardClient({
       "Safety OK": v.safetyAcknowledged ? "Yes" : "No",
       "Signed In": v.signedInAt,
       "Signed Out": v.signedOutAt || "Still on site",
+      "Pre‑screening": v.answers
+        ? Object.entries(v.answers)
+            .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
+            .join("; ")
+        : "",
     }));
     const ws = XLSX.utils.json_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
@@ -268,14 +278,7 @@ export default function CompanyDashboardClient({
       format: "a4",
     });
     const headers = [
-      "Site",
-      "Name",
-      "Company",
-      "Phone",
-      "Host",
-      "Safety OK",
-      "Signed In",
-      "Signed Out",
+      "Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out", "Pre‑screening",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -286,6 +289,11 @@ export default function CompanyDashboardClient({
       v.safetyAcknowledged ? "Yes" : "No",
       new Date(v.signedInAt).toLocaleString(),
       v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "On site",
+      v.answers
+        ? Object.entries(v.answers)
+            .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
+            .join("; ")
+        : "",
     ]);
 
     autoTable(doc, {
@@ -352,11 +360,11 @@ export default function CompanyDashboardClient({
               <FileDown className="w-4 h-4" /> PDF
             </button>
             <button
-  onClick={() => router.push(`/dashboard/analytics?slug=${companySlug}`)}
-  className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
->
-  <BarChart3 className="w-4 h-4" /> Analytics
-</button>
+              onClick={() => router.push(`/dashboard/analytics?slug=${companySlug}`)}
+              className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+            >
+              <FileSpreadsheet className="w-4 h-4" /> Analytics
+            </button>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               title="Logout"
@@ -677,6 +685,56 @@ export default function CompanyDashboardClient({
                       </div>
                     </div>
 
+                    {/* Pre‑screening questions section */}
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <h4 className="text-sm font-semibold text-white mb-2">
+                        Pre‑screening questions (yes/no)
+                      </h4>
+                      {editQuestions.length > 0 && (
+                        <ul className="space-y-1 mb-3">
+                          {editQuestions.map((q, i) => (
+                            <li
+                              key={i}
+                              className="flex justify-between items-center text-xs text-slate-300"
+                            >
+                              <span>{q}</span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setEditQuestions((prev) =>
+                                    prev.filter((_, idx) => idx !== i)
+                                  )
+                                }
+                                className="text-rose-400 hover:text-rose-300"
+                              >
+                                Remove
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Question (e.g., Completed induction?)"
+                          value={newQuestion}
+                          onChange={(e) => setNewQuestion(e.target.value)}
+                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!newQuestion.trim()) return;
+                            setEditQuestions((prev) => [...prev, newQuestion.trim()]);
+                            setNewQuestion("");
+                          }}
+                          className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
+
                     <div className="flex gap-2">
                       <button
                         onClick={() => saveEdit(site.id)}
@@ -770,12 +828,13 @@ export default function CompanyDashboardClient({
                 <th className="p-3 text-left">Signed In</th>
                 <th className="p-3 text-left">Signed Out</th>
                 <th className="p-3 text-left">Safety</th>
+                <th className="p-3 text-left">Pre‑screening</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {logs.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-4 text-center text-slate-500">
+                  <td colSpan={9} className="p-4 text-center text-slate-500">
                     <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p>
                       No visitors yet. Share the check‑in link with your team
@@ -810,6 +869,13 @@ export default function CompanyDashboardClient({
                       ) : (
                         <XCircle className="w-4 h-4 text-rose-400 inline" />
                       )}
+                    </td>
+                    <td className="p-3">
+                      {v.answers
+                        ? Object.entries(v.answers)
+                            .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
+                            .join(", ")
+                        : "—"}
                     </td>
                   </tr>
                 ))

@@ -13,8 +13,17 @@ export async function POST(request: Request) {
   // -------------------------------
 
   try {
-    const { fullName, company, phone, email, hostName, hostId, safetyAcknowledged, siteId } =
-      await request.json();
+    const {
+      fullName,
+      company,
+      phone,
+      email,
+      hostName,
+      hostId,
+      safetyAcknowledged,
+      siteId,
+      answers,
+    } = await request.json();
 
     if (!fullName || !company || !siteId) {
       return NextResponse.json(
@@ -44,6 +53,7 @@ export async function POST(request: Request) {
         hostName: resolvedHostName,
         safetyAcknowledged: safetyAcknowledged || false,
         siteId,
+        answers: answers || null,
       },
     });
 

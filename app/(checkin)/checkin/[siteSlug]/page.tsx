@@ -1,4 +1,4 @@
-// app/checkin/[siteSlug]/page.tsx
+// app/(checkin)/checkin/[siteSlug]/page.tsx
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import CheckinClient from "./CheckinClient";
@@ -10,21 +10,15 @@ export default async function CheckinPage({
 }) {
   const { siteSlug } = await params;
 
-  let site = await prisma.site.findUnique({
+  const site = await prisma.site.findUnique({
     where: { slug: siteSlug },
+    select: {
+      id: true,
+      name: true,
+      safetyBriefingText: true,
+      questions: true,
+    },
   });
-
-  // If not found, try sanitizing the slug as a fallback
-  if (!site) {
-    const cleanSlug = siteSlug
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-    if (cleanSlug !== siteSlug) {
-      site = await prisma.site.findUnique({ where: { slug: cleanSlug } });
-    }
-  }
 
   if (!site) notFound();
 
@@ -33,6 +27,7 @@ export default async function CheckinPage({
       siteId={site.id}
       siteName={site.name}
       safetyBriefing={site.safetyBriefingText}
+      questions={site.questions || []}
     />
   );
 }

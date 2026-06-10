@@ -37,10 +37,12 @@ export default function CheckinClient({
   siteId,
   siteName,
   safetyBriefing,
+  questions = [],
 }: {
   siteId: string;
   siteName: string;
   safetyBriefing: string;
+  questions?: string[];
 }) {
   const [fullName, setFullName] = useState("");
   const [company, setCompany] = useState("");
@@ -54,6 +56,9 @@ export default function CheckinClient({
   const [loading, setLoading] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [expectedVisitors, setExpectedVisitors] = useState<ExpectedVisitor[]>([]);
+
+  // Pre‑screening answers
+  const [answers, setAnswers] = useState<Record<string, boolean>>({});
 
   // Fetch hosts
   useEffect(() => {
@@ -97,7 +102,7 @@ export default function CheckinClient({
     }
     setLoading(true);
 
-    const body: Record<string, string | boolean | null | undefined> = {
+    const body: Record<string, string | boolean | null | undefined | Record<string, boolean>> = {
       fullName,
       company,
       phone: phone || null,
@@ -106,6 +111,7 @@ export default function CheckinClient({
       hostId: selectedHostId || undefined,
       safetyAcknowledged,
       siteId,
+      answers: Object.keys(answers).length > 0 ? answers : undefined,
     };
 
     const res = await fetch("/api/checkin/signin", {
@@ -123,10 +129,10 @@ export default function CheckinClient({
       setHostName("");
       setSelectedHostId("");
       setSafetyAcknowledged(false);
+      setAnswers({});
       const refresh = await fetch(`/api/checkin/${siteId}/active`);
       if (refresh.ok) setActiveVisitors(await refresh.json());
 
-      // Refresh expected visitors
       const refreshExpected = await fetch(`/api/sites/${siteId}/expected-visitors`);
       if (refreshExpected.ok) setExpectedVisitors(await refreshExpected.json());
     } else {
@@ -248,6 +254,26 @@ export default function CheckinClient({
           />
           I have read and understand the site safety briefing.
         </label>
+
+        {/* Pre‑screening questions */}
+        {questions.length > 0 && (
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+            <h3 className="text-sm font-semibold text-white mb-3">Pre‑screening questions</h3>
+            {questions.map((q, idx) => (
+              <label key={idx} className="flex items-center gap-2 text-sm text-slate-200 mb-2">
+                <input
+                  type="checkbox"
+                  checked={answers[q] || false}
+                  onChange={(e) =>
+                    setAnswers((prev) => ({ ...prev, [q]: e.target.checked }))
+                  }
+                  className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
+                />
+                {q}
+              </label>
+            ))}
+          </div>
+        )}
 
         {/* Expected visitors (quick sign‑in) */}
         {expectedVisitors.length > 0 && (
