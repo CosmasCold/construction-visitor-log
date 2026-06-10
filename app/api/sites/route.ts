@@ -1,78 +1,61 @@
-// app/api/sites/[siteId]/route.ts
-import { NextResponse } from "next/server";
+// app/api/sites/route.ts
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ siteId: string }> }
-) {
-  const { siteId } = await params;
+export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const site = await prisma.site.findUnique({ where: { id: siteId } });
-  if (!site) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-  if (session.user.role !== "super_admin") {
-    const user = await prisma.user.findUnique({ where: { email: session.user.email! } });
-    if (!user || user.companyId !== site.companyId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+  if (!session || session.user.role !== "company_owner") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await prisma.visitorLog.deleteMany({ where: { siteId } });
-  await prisma.site.delete({ where: { id: siteId } });
-  return NextResponse.json({ success: true });
-}
+  const formData = await request.formData();
+  const name = formData.get("name") as string;
+  const address = formData.get("address") as string;
+  let slug = (formData.get("slug") as string) || "";
+  const companyId = formData.get("companyId") as string;
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ siteId: string }> }
-) {
-  const { siteId } = await params;
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const site = await prisma.site.findUnique({ where: { id: siteId } });
-  if (!site) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-  if (session.user.role !== "super_admin") {
-    const user = await prisma.user.findUnique({ where: { email: session.user.email! } });
-    if (!user || user.companyId !== site.companyId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+  if (!name || !slug || !companyId) {
+    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  const body = await request.json();
-  const { name, slug, address, safetyBriefingText, questions } = body;
-
-  // Sanitize slug if changed
-  let newSlug = slug || site.slug;
-  newSlug = newSlug
+  // Sanitize slug
+  slug = slug
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-  if (!newSlug) return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
+  if (!slug) return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
 
-  // Validate questions: must be an array of strings
-  const finalQuestions = Array.isArray(questions)
-    ? questions.filter((q: unknown) => typeof q === "string" && q.trim().length > 0)
-    : site.questions;
+  const user = await prisma.user.findUnique({ where: { email: session.user.email! } });
+  if (!user || user.companyId !== companyId) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
-  const updated = await prisma.site.update({
-    where: { id: siteId },
-    data: {
-      name: name ?? site.name,
-      slug: newSlug,
-      address: address ?? site.address,
-      safetyBriefingText: safetyBriefingText ?? site.safetyBriefingText,
-      questions: finalQuestions,
-    },
-  });
-
-  return NextResponse.json(updated);
+  try {
+    await prisma.site.create({
+      data: { name, address: address || null, slug, companyId },
+    });
+    const company = await prisma.company.findUnique({ where: { id: companyId } });
+    return NextResponse.redirect(
+      new URL(`/dashboard?slug=${company?.slug || ""}`, request.url)
+    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("Site creation error:", message);
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "code" in error &&
+      (error as { code: string }).code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "A site with this slug already exists" },
+        { status: 409 }
+      );
+    }
+    return NextResponse.json({ error: "Failed to create site" }, { status: 500 });
+  }
 }
