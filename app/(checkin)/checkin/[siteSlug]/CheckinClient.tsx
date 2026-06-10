@@ -220,31 +220,79 @@ export default function CheckinClient({
     }
   }
 
-  function printBadgeForVisitor(
+    function printBadgeForVisitor(
     visitorName: string,
     visitorCompany: string,
     visitorHost?: string | null,
     photoUrl?: string | null
   ) {
-    const win = window.open("", "_blank", "width=400,height=400");
+    const win = window.open("", "_blank", "width=500,height=400");
     if (win) {
       win.document.write(`
         <html>
-          <head><title>Visitor Badge</title></head>
-          <body style="font-family: sans-serif; padding: 20px; text-align: center;">
-            <h2 style="margin:0;">${siteName}</h2>
-            <hr />
-            ${photoUrl ? `<img src="${photoUrl}" alt="${visitorName}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; margin-bottom:8px;" />` : ""}
-            <p><strong>${visitorName}</strong></p>
-            <p>${visitorCompany}</p>
-            ${visitorHost ? `<p>Host: ${visitorHost}</p>` : ""}
-            <p>${new Date().toLocaleString()}</p>
-            <small>SiteSafe visitor log</small>
+          <head>
+            <title>Visitor Badge</title>
+            <style>
+              @page {
+                size: 4in 3in;
+                margin: 0;
+              }
+              body {
+                width: 4in;
+                height: 3in;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: system-ui, sans-serif;
+                margin: 0 auto;
+              }
+              .badge {
+                text-align: center;
+                padding: 12px;
+                border: 1px dashed #ccc;
+                border-radius: 8px;
+                width: 100%;
+              }
+              img {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 6px;
+                margin-bottom: 6px;
+              }
+              h2 {
+                margin: 0 0 4px;
+                font-size: 14px;
+              }
+              p {
+                margin: 2px 0;
+                font-size: 12px;
+              }
+              hr {
+                border: 0.5px solid #ccc;
+                margin: 8px 0;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="badge">
+              <h2>${siteName}</h2>
+              <hr />
+              ${photoUrl ? `<img src="${photoUrl}" alt="${visitorName}" />` : ""}
+              <p><strong>${visitorName}</strong></p>
+              <p>${visitorCompany}</p>
+              ${visitorHost ? `<p>Host: ${visitorHost}</p>` : ""}
+              <p>${new Date().toLocaleString()}</p>
+              <small>SiteSafe visitor log</small>
+            </div>
           </body>
         </html>
       `);
       win.document.close();
-      win.print();
+      // Small delay to let styles apply, then print
+      setTimeout(() => {
+        win.print();
+      }, 200);
     }
   }
 
