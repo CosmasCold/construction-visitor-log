@@ -7,6 +7,54 @@ import CompanyDashboardClient from "./CompanyDashboardClient";
 
 export const dynamic = "force-dynamic";
 
+// ── types matching the Prisma select ─────────────────────────────────
+interface SelectedVisitor {
+  id: string;
+  fullName: string;
+  company: string;
+  phone: string | null;
+  hostName: string | null;
+  safetyAcknowledged: boolean;
+  signedInAt: Date;
+  signedOutAt: Date | null;
+  answers: Record<string, boolean> | null;
+}
+
+interface SelectedSite {
+  name: string;
+  id: string;
+  slug: string;
+  address: string | null;
+  safetyBriefingText: string;
+  questions: string[];
+  visitors: SelectedVisitor[];
+}
+
+// ── client‑ready types ───────────────────────────────────────────────
+export interface DashboardVisitor {
+  id: string;
+  fullName: string;
+  company: string;
+  phone: string | null;
+  hostName: string | null;
+  safetyAcknowledged: boolean;
+  signedInAt: string;
+  signedOutAt: string | null;
+  siteName: string;
+  siteId: string;
+  answers: Record<string, boolean> | null;
+}
+
+export interface DashboardSite {
+  id: string;
+  name: string;
+  slug: string;
+  address: string | null;
+  safetyBriefingText: string;
+  visitorsToday: number;
+  questions: string[];
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -50,6 +98,7 @@ export default async function DashboardPage({
                   safetyAcknowledged: true,
                   signedInAt: true,
                   signedOutAt: true,
+                  answers: true,
                 },
               },
             },
@@ -72,14 +121,11 @@ export default async function DashboardPage({
     );
   }
 
-  const now = new Date();
-  const trialValid = company.trialEndsAt && company.trialEndsAt > now;
-  const subscriptionActive =
-    company.subscription?.status === "active" ||
-    company.subscription?.status === "trialing";
-
-  // Block access if trial expired and no active subscription
-  if (!trialValid && !subscriptionActive) {
+  // Subscription check
+  const subscription = company.subscription;
+  const isTrialing = subscription?.status === "trialing";
+  const isActive = subscription?.status === "active";
+  if (!isActive && !isTrialing) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 max-w-md text-center">
@@ -87,10 +133,7 @@ export default async function DashboardPage({
           <p className="text-slate-600 mb-6">
             Your free trial has expired. To continue using SiteSafe, please set up a payment method.
           </p>
-          <a
-            href="/settings"
-            className="inline-block bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 transition-colors"
-          >
+          <a href="/settings" className="inline-block bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 transition-colors">
             Manage subscription
           </a>
         </div>
@@ -115,33 +158,40 @@ export default async function DashboardPage({
     dateFilter = { gte: start, lte: end };
   }
 
-  // Visitors across all sites
-  const allVisitors = company.sites.flatMap((site) =>
+  // Cast the nested sites to our explicit type to avoid implicit any
+  const selectedSites = company.sites as unknown as SelectedSite[];
+
+  // Combine visitors across all sites, apply date filter
+  const allVisitors: DashboardVisitor[] = selectedSites.flatMap((site) =>
     site.visitors
       .filter((v) => {
-        const time = new Date(v.signedInAt).getTime();
+        const time = v.signedInAt.getTime();
         if (dateFilter.gte && time < dateFilter.gte.getTime()) return false;
         if (dateFilter.lte && time > dateFilter.lte.getTime()) return false;
         return true;
       })
       .map((v) => ({
-        ...v,
+        id: v.id,
+        fullName: v.fullName,
+        company: v.company,
+        phone: v.phone,
+        hostName: v.hostName,
+        safetyAcknowledged: v.safetyAcknowledged,
+        signedInAt: v.signedInAt.toISOString(),
+        signedOutAt: v.signedOutAt?.toISOString() ?? null,
         siteName: site.name,
         siteId: site.id,
+        answers: v.answers,
       }))
   );
 
+  // Sort by signed in time descending
   allVisitors.sort(
     (a, b) => new Date(b.signedInAt).getTime() - new Date(a.signedInAt).getTime()
   );
 
-  const serializedLogs = allVisitors.map((v) => ({
-    ...v,
-    signedInAt: v.signedInAt.toISOString(),
-    signedOutAt: v.signedOutAt?.toISOString() ?? null,
-  }));
-
-  const sites = company.sites.map((site) => ({
+  // Build site cards
+  const sites: DashboardSite[] = selectedSites.map((site) => ({
     id: site.id,
     name: site.name,
     slug: site.slug,
@@ -150,40 +200,18 @@ export default async function DashboardPage({
     visitorsToday: site.visitors.filter(
       (v) => new Date(v.signedInAt).toDateString() === new Date().toDateString()
     ).length,
+    questions: site.questions,
   }));
 
-  // Compute trial days remaining for the banner
-  const trialDaysLeft = trialValid
-    ? Math.ceil((company.trialEndsAt!.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-    : 0;
-
   return (
-    <>
-      {/* Trial banner – only shown when on free trial */}
-      {trialValid && !company.subscription && (
-        <div className="bg-sky-600/90 backdrop-blur-sm border-b border-sky-400/50">
-          <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2 text-white text-sm">
-            <span>
-              🎉 You&apos;re on the <strong>14‑day free trial</strong> – {trialDaysLeft} day{trialDaysLeft !== 1 ? 's' : ''} remaining.
-            </span>
-            <a
-              href="/settings"
-              className="bg-white text-sky-700 px-4 py-1.5 rounded-full text-xs font-semibold hover:bg-sky-50 transition-colors"
-            >
-              Subscribe now
-            </a>
-          </div>
-        </div>
-      )}
-      <CompanyDashboardClient
-        companyId={company.id}
-        companySlug={company.slug}
-        companyName={company.name}
-        logs={serializedLogs}
-        sites={sites}
-        currentDateFrom={typeof dateFrom === "string" ? dateFrom : ""}
-        currentDateTo={typeof dateTo === "string" ? dateTo : ""}
-      />
-    </>
+    <CompanyDashboardClient
+      companyId={company.id}
+      companySlug={company.slug}
+      companyName={company.name}
+      logs={allVisitors}
+      sites={sites}
+      currentDateFrom={typeof dateFrom === "string" ? dateFrom : ""}
+      currentDateTo={typeof dateTo === "string" ? dateTo : ""}
+    />
   );
 }

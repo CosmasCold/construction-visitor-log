@@ -1,7 +1,7 @@
 // app/dashboard/CompanyDashboardClient.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import * as XLSX from "xlsx";
@@ -90,6 +90,13 @@ export default function CompanyDashboardClient({
   const [showWelcome, setShowWelcome] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(null);
+
+  useEffect(() => {
+  const interval = setInterval(() => {
+    router.refresh();
+  }, 5000);
+  return () => clearInterval(interval);
+}, [router]);
 
   // Edit form fields
   const [editName, setEditName] = useState("");
