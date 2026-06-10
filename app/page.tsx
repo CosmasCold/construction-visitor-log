@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ChecklistForm from "@/components/ChecklistForm";
+import ReviewBadges from "@/components/ReviewBadges";
 import {
   QrCode,
   ShieldCheck,
@@ -99,7 +100,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-            {/* Trust badges – social proof */}
+                  {/* Trust badges – social proof */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex flex-wrap justify-center gap-6 items-center">
           <a href="https://saasdb.net" rel="dofollow" className="inline-flex flex-col items-center gap-1 text-center">
@@ -110,21 +111,8 @@ export default function LandingPage() {
             <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" />
             <span className="text-xs text-slate-400">Launched on Fazier</span>
           </a>
-          {/* SourceForge */}
-          <div className="sf-root" data-id="4103023" data-badge="light-default" data-variant-id="sf" style={{ width: "125px" }}>
-            <a href="https://sourceforge.net/software/product/SiteSafe/" target="_blank">SiteSafe Reviews</a>
-          </div>
-          <script dangerouslySetInnerHTML={{ __html: `(function () {var sc=document.createElement('script');sc.async=true;sc.src='https://b.sf-syn.com/badge_js?sf_id=4103023&variant_id=sf';var p=document.getElementsByTagName('script')[0];p.parentNode.insertBefore(sc, p);})();` }} />
-          {/* Slashdot */}
-          <div className="sf-root" data-id="4103023" data-badge="users-love-us-new-white" data-variant-id="sd" style={{ width: "125px" }}>
-            <a href="https://slashdot.org/software/p/SiteSafe/" target="_blank">SiteSafe Reviews</a>
-          </div>
-          <script dangerouslySetInnerHTML={{ __html: `(function () {var sc=document.createElement('script');sc.async=true;sc.src='https://b.sf-syn.com/badge_js?sf_id=4103023&variant_id=sd';var p=document.getElementsByTagName('script')[0];p.parentNode.insertBefore(sc, p);})();` }} />
-          {/* TopBusinessSoftware */}
-          <div className="sf-root" data-id="4103023" data-badge="most-loved" data-variant-id="tbs" style={{ width: "125px" }}>
-            <a href="https://topbusinesssoftware.com/products/SiteSafe/reviews/" target="_blank">SiteSafe Reviews</a>
-          </div>
-          <script dangerouslySetInnerHTML={{ __html: `(function () {var sc=document.createElement('script');sc.async=true;sc.src='https://b.sf-syn.com/badge_js?sf_id=4103023&variant_id=tbs';var p=document.getElementsByTagName('script')[0];p.parentNode.insertBefore(sc, p);})();` }} />
+          {/* Review badges (SourceForge, Slashdot, TopBusinessSoftware) */}
+          <ReviewBadges />
         </div>
       </div>
 
