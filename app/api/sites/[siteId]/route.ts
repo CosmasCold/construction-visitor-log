@@ -38,7 +38,6 @@ export async function PUT(
   const site = await prisma.site.findUnique({ where: { id: siteId } });
   if (!site) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  // Only company owner of that site or super admin can edit
   if (session.user.role !== "super_admin") {
     const user = await prisma.user.findUnique({ where: { email: session.user.email! } });
     if (!user || user.companyId !== site.companyId) {
@@ -47,7 +46,7 @@ export async function PUT(
   }
 
   const body = await request.json();
-  const { name, slug, address, safetyBriefingText } = body;
+  const { name, slug, address, safetyBriefingText, questions } = body;
 
   // Sanitize slug if changed
   let newSlug = slug || site.slug;
@@ -59,6 +58,11 @@ export async function PUT(
 
   if (!newSlug) return NextResponse.json({ error: "Invalid slug" }, { status: 400 });
 
+  // Validate questions: must be an array of strings
+  const finalQuestions = Array.isArray(questions)
+    ? questions.filter((q: unknown) => typeof q === "string" && q.trim().length > 0)
+    : site.questions;
+
   const updated = await prisma.site.update({
     where: { id: siteId },
     data: {
@@ -66,6 +70,7 @@ export async function PUT(
       slug: newSlug,
       address: address ?? site.address,
       safetyBriefingText: safetyBriefingText ?? site.safetyBriefingText,
+      questions: finalQuestions,            // ✅ store the questions
     },
   });
 
