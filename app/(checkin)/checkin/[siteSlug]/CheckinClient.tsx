@@ -62,7 +62,6 @@ export default function CheckinClient({
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
 
   // Photo capture state
-  const [photoData, setPhotoData] = useState<string | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -96,7 +95,8 @@ export default function CheckinClient({
     return () => clearInterval(interval);
   }, [siteId]);
 
-  async function capturePhoto() {
+  // ✅ Returns a base64 data URL directly, instead of relying on state
+  async function capturePhoto(): Promise<string | null> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
@@ -113,22 +113,23 @@ export default function CheckinClient({
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       }
       const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-      setPhotoData(dataUrl);
       stream.getTracks().forEach((track) => track.stop());
       video.remove();
+      return dataUrl;
     } catch (err) {
       alert("Could not access camera: " + (err as Error).message);
+      return null;
     }
   }
 
-  async function uploadPhoto(): Promise<string | null> {
-    if (!photoData) return null;
+  // ✅ Accepts the base64 data as a parameter, so it doesn't depend on state
+  async function uploadPhoto(dataUrl: string): Promise<string | null> {
     setUploading(true);
     const res = await fetch("/api/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        imageBase64: photoData,
+        imageBase64: dataUrl,
         fileName: `visitor-${Date.now()}.jpg`,
       }),
     });
@@ -184,7 +185,6 @@ export default function CheckinClient({
       setSelectedHostId("");
       setSafetyAcknowledged(false);
       setAnswers({});
-      setPhotoData(null);
       setPhotoUrl(null);
       const refresh = await fetch(`/api/checkin/${siteId}/active`);
       if (refresh.ok) setActiveVisitors(await refresh.json());
@@ -431,24 +431,22 @@ export default function CheckinClient({
                   <img src={photoUrl} alt="Visitor" className="w-24 h-24 rounded-lg object-cover" />
                   <button
                     type="button"
-                    onClick={() => {
-                      setPhotoData(null);
-                      setPhotoUrl(null);
-                    }}
+                    onClick={() => setPhotoUrl(null)}
                     className="absolute -top-1 -right-1 bg-rose-500 text-white rounded-full w-5 h-5 text-xs leading-none"
                   >
                     x
                   </button>
                 </div>
-              ) : photoData ? (
+              ) : uploading ? (
                 <p className="text-sm text-sky-400">Uploading photo…</p>
               ) : (
                 <button
                   type="button"
                   onClick={async () => {
-                    await capturePhoto();
-                    const url = await uploadPhoto();
-                    if (url) setPhotoUrl(url);
+                    const dataUrl = await capturePhoto();
+                    if (dataUrl) {
+                      await uploadPhoto(dataUrl);
+                    }
                   }}
                   disabled={uploading}
                   className="flex items-center gap-2 bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-sm text-white hover:bg-white/20 transition-colors disabled:opacity-50"
