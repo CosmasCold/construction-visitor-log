@@ -8,6 +8,26 @@ export const metadata: Metadata = {
 
 const updates = [
   {
+    date: "2026-06-10",
+    changes: [
+      "Added pre‑screening questions – site managers can now define custom yes/no questions that visitors must answer before signing in.",
+      "Added real‑time photo capture – take a visitor photo at check‑in. Stored securely and included on printed badges.",
+      "Dashboard now auto‑refreshes every 5 seconds, giving you a true real‑time view of who's on site.",
+      "Printed badges are now compact (4×3‑inch label format) and include visitor photos.",
+      "Added SourceForge, Slashdot, and TopBusinessSoftware review badges to the landing page.",
+      "Updated Privacy Policy to cover photo storage, pre‑screening answers, and data retention.",
+    ],
+  },
+  {
+    date: "2026-06-09",
+    changes: [
+      "Launched dedicated Features, About, Pricing, and Security pages.",
+      "Published the Ultimate Guide to Modern Visitor Management on the blog.",
+      "Added Fazier launch badge alongside the existing SaasDB badge.",
+      "Introduced a 'Trusted across industries' section on the landing page.",
+    ],
+  },
+  {
     date: "2026-06-06",
     changes: [
       "Added Visitor Log Audit Checklist email capture on the landing page.",
