@@ -18,6 +18,7 @@ interface SelectedVisitor {
   signedInAt: Date;
   signedOutAt: Date | null;
   answers: Record<string, boolean> | null;
+  photoUrl: string | null;
 }
 
 interface SelectedSite {
@@ -43,6 +44,7 @@ export interface DashboardVisitor {
   siteName: string;
   siteId: string;
   answers: Record<string, boolean> | null;
+  photoUrl: string | null;
 }
 
 export interface DashboardSite {
@@ -99,6 +101,7 @@ export default async function DashboardPage({
                   signedInAt: true,
                   signedOutAt: true,
                   answers: true,
+                  photoUrl: true,
                 },
               },
             },
@@ -158,10 +161,10 @@ export default async function DashboardPage({
     dateFilter = { gte: start, lte: end };
   }
 
-  // Cast the nested sites to our explicit type to avoid implicit any
+  // Cast the nested sites to our explicit type
   const selectedSites = company.sites as unknown as SelectedSite[];
 
-  // Combine visitors across all sites, apply date filter
+  // Combine visitors across all sites, apply date filter, include photoUrl
   const allVisitors: DashboardVisitor[] = selectedSites.flatMap((site) =>
     site.visitors
       .filter((v) => {
@@ -182,6 +185,7 @@ export default async function DashboardPage({
         siteName: site.name,
         siteId: site.id,
         answers: v.answers,
+        photoUrl: v.photoUrl,
       }))
   );
 

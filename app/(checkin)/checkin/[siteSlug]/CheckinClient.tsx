@@ -95,7 +95,6 @@ export default function CheckinClient({
     return () => clearInterval(interval);
   }, [siteId]);
 
-  // ✅ Returns a base64 data URL directly, instead of relying on state
   async function capturePhoto(): Promise<string | null> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -122,7 +121,6 @@ export default function CheckinClient({
     }
   }
 
-  // ✅ Accepts the base64 data as a parameter, so it doesn't depend on state
   async function uploadPhoto(dataUrl: string): Promise<string | null> {
     setUploading(true);
     const res = await fetch("/api/upload", {
@@ -222,8 +220,13 @@ export default function CheckinClient({
     }
   }
 
-  function printBadgeForVisitor(visitorName: string, visitorCompany: string, visitorHost?: string | null) {
-    const win = window.open("", "_blank", "width=400,height=300");
+  function printBadgeForVisitor(
+    visitorName: string,
+    visitorCompany: string,
+    visitorHost?: string | null,
+    photoUrl?: string | null
+  ) {
+    const win = window.open("", "_blank", "width=400,height=400");
     if (win) {
       win.document.write(`
         <html>
@@ -231,6 +234,7 @@ export default function CheckinClient({
           <body style="font-family: sans-serif; padding: 20px; text-align: center;">
             <h2 style="margin:0;">${siteName}</h2>
             <hr />
+            ${photoUrl ? `<img src="${photoUrl}" alt="${visitorName}" style="width:100px; height:100px; object-fit:cover; border-radius:8px; margin-bottom:8px;" />` : ""}
             <p><strong>${visitorName}</strong></p>
             <p>${visitorCompany}</p>
             ${visitorHost ? `<p>Host: ${visitorHost}</p>` : ""}
@@ -427,16 +431,32 @@ export default function CheckinClient({
             {/* Photo capture */}
             <div className="flex flex-col items-center gap-2">
               {photoUrl ? (
-                <div className="relative">
-                  <img src={photoUrl} alt="Visitor" className="w-24 h-24 rounded-lg object-cover" />
+                <>
+                  <div className="relative">
+                    <img src={photoUrl} alt="Visitor" className="w-24 h-24 rounded-lg object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setPhotoUrl(null)}
+                      className="absolute -top-1 -right-1 bg-rose-500 text-white rounded-full w-5 h-5 text-xs leading-none"
+                    >
+                      x
+                    </button>
+                  </div>
                   <button
                     type="button"
-                    onClick={() => setPhotoUrl(null)}
-                    className="absolute -top-1 -right-1 bg-rose-500 text-white rounded-full w-5 h-5 text-xs leading-none"
+                    onClick={() =>
+                      printBadgeForVisitor(
+                        fullName || "Visitor",
+                        company || "",
+                        selectedHostId ? hosts.find(h => h.id === selectedHostId)?.name : hostName,
+                        photoUrl
+                      )
+                    }
+                    className="flex items-center gap-2 bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-sm text-white hover:bg-white/20 transition-colors"
                   >
-                    x
+                    <Printer className="w-4 h-4" /> Print badge
                   </button>
-                </div>
+                </>
               ) : uploading ? (
                 <p className="text-sm text-sky-400">Uploading photo…</p>
               ) : (
