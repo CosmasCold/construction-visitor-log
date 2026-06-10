@@ -40,6 +40,7 @@ type Visitor = {
   siteName: string;
   siteId: string;
   answers?: Record<string, boolean> | null;
+  photoUrl?: string | null;
 };
 
 type Site = {
@@ -91,13 +92,6 @@ export default function CompanyDashboardClient({
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(null);
 
-  useEffect(() => {
-  const interval = setInterval(() => {
-    router.refresh();
-  }, 5000);
-  return () => clearInterval(interval);
-}, [router]);
-
   // Edit form fields
   const [editName, setEditName] = useState("");
   const [editSlug, setEditSlug] = useState("");
@@ -117,6 +111,14 @@ export default function CompanyDashboardClient({
   // Pre‑screening questions management
   const [editQuestions, setEditQuestions] = useState<string[]>([]);
   const [newQuestion, setNewQuestion] = useState("");
+
+  // Auto‑refresh every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      router.refresh();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [router]);
 
   function applyFilter() {
     const params = new URLSearchParams();
@@ -827,6 +829,7 @@ export default function CompanyDashboardClient({
           <table className="w-full text-sm">
             <thead className="bg-white/5">
               <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                <th className="p-3 text-left">Photo</th>
                 <th className="p-3 text-left">Site</th>
                 <th className="p-3 text-left">Name</th>
                 <th className="p-3 text-left">Company</th>
@@ -841,7 +844,7 @@ export default function CompanyDashboardClient({
             <tbody className="divide-y divide-white/5">
               {logs.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="p-4 text-center text-slate-500">
+                  <td colSpan={10} className="p-4 text-center text-slate-500">
                     <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p>
                       No visitors yet. Share the check‑in link with your team
@@ -855,6 +858,15 @@ export default function CompanyDashboardClient({
                     key={v.id}
                     className="text-slate-300 hover:bg-white/[0.03] transition-colors duration-150"
                   >
+                    <td className="p-3">
+                      {v.photoUrl ? (
+                        <a href={v.photoUrl} target="_blank" rel="noopener noreferrer">
+                          <img src={v.photoUrl} alt={v.fullName} className="w-10 h-10 rounded object-cover" />
+                        </a>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
                     <td className="p-3">{v.siteName}</td>
                     <td className="p-3 font-medium text-white">
                       {v.fullName}

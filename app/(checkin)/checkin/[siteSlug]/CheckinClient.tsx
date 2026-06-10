@@ -11,6 +11,7 @@ import {
   Users,
   QrCode,
   Printer,
+  Camera,
 } from "lucide-react";
 
 type ActiveVisitor = {
@@ -60,6 +61,11 @@ export default function CheckinClient({
   // Pre‑screening answers
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
 
+  // Photo capture state
+  const [photoData, setPhotoData] = useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
   // Fetch hosts
   useEffect(() => {
     fetch(`/api/sites/${siteId}/hosts`)
@@ -90,6 +96,53 @@ export default function CheckinClient({
     return () => clearInterval(interval);
   }, [siteId]);
 
+  async function capturePhoto() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+      });
+      const video = document.createElement("video");
+      video.srcObject = stream;
+      video.play();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth || 320;
+      canvas.height = video.videoHeight || 240;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      }
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+      setPhotoData(dataUrl);
+      stream.getTracks().forEach((track) => track.stop());
+      video.remove();
+    } catch (err) {
+      alert("Could not access camera: " + (err as Error).message);
+    }
+  }
+
+  async function uploadPhoto(): Promise<string | null> {
+    if (!photoData) return null;
+    setUploading(true);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        imageBase64: photoData,
+        fileName: `visitor-${Date.now()}.jpg`,
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setPhotoUrl(data.url);
+      setUploading(false);
+      return data.url;
+    }
+    setUploading(false);
+    alert("Failed to upload photo. Try again.");
+    return null;
+  }
+
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     if (!fullName || !company) {
@@ -112,6 +165,7 @@ export default function CheckinClient({
       safetyAcknowledged,
       siteId,
       answers: Object.keys(answers).length > 0 ? answers : undefined,
+      photoUrl: photoUrl || undefined,
     };
 
     const res = await fetch("/api/checkin/signin", {
@@ -130,9 +184,10 @@ export default function CheckinClient({
       setSelectedHostId("");
       setSafetyAcknowledged(false);
       setAnswers({});
+      setPhotoData(null);
+      setPhotoUrl(null);
       const refresh = await fetch(`/api/checkin/${siteId}/active`);
       if (refresh.ok) setActiveVisitors(await refresh.json());
-
       const refreshExpected = await fetch(`/api/sites/${siteId}/expected-visitors`);
       if (refreshExpected.ok) setExpectedVisitors(await refreshExpected.json());
     } else {
@@ -368,6 +423,40 @@ export default function CheckinClient({
                 className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
               />
             )}
+
+            {/* Photo capture */}
+            <div className="flex flex-col items-center gap-2">
+              {photoUrl ? (
+                <div className="relative">
+                  <img src={photoUrl} alt="Visitor" className="w-24 h-24 rounded-lg object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPhotoData(null);
+                      setPhotoUrl(null);
+                    }}
+                    className="absolute -top-1 -right-1 bg-rose-500 text-white rounded-full w-5 h-5 text-xs leading-none"
+                  >
+                    x
+                  </button>
+                </div>
+              ) : photoData ? (
+                <p className="text-sm text-sky-400">Uploading photo…</p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await capturePhoto();
+                    const url = await uploadPhoto();
+                    if (url) setPhotoUrl(url);
+                  }}
+                  disabled={uploading}
+                  className="flex items-center gap-2 bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-sm text-white hover:bg-white/20 transition-colors disabled:opacity-50"
+                >
+                  <Camera className="w-4 h-4" /> Take photo
+                </button>
+              )}
+            </div>
 
             <button
               type="submit"
