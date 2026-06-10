@@ -12,16 +12,8 @@ export async function POST(request: Request) {
 
   try {
     const {
-      fullName,
-      company,
-      phone,
-      email,
-      hostName,
-      hostId,
-      safetyAcknowledged,
-      siteId,
-      answers,
-      photoUrl,          // ✅ capture the photo URL
+      fullName, company, phone, email, hostName, hostId,
+      safetyAcknowledged, siteId, answers, photoUrl,
     } = await request.json();
 
     if (!fullName || !company || !siteId) {
@@ -37,9 +29,7 @@ export async function POST(request: Request) {
         where: { id: hostId },
         select: { name: true, email: true },
       });
-      if (host) {
-        resolvedHostName = host.name;
-      }
+      if (host) resolvedHostName = host.name;
     }
 
     const visitor = await prisma.visitorLog.create({
@@ -52,11 +42,58 @@ export async function POST(request: Request) {
         safetyAcknowledged: safetyAcknowledged || false,
         siteId,
         answers: answers || null,
-        photoUrl: photoUrl || null,   // ✅ store the photo
+        photoUrl: photoUrl || null,
       },
     });
 
-    // (notification email code unchanged…)
+    // ── Slack notification ─────────────────────────────────────────
+    const site = await prisma.site.findUnique({
+      where: { id: siteId },
+      select: { name: true, companyId: true },
+    });
+    if (site) {
+      const companyRecord = await prisma.company.findUnique({
+        where: { id: site.companyId },
+        select: { slackWebhookUrl: true },
+      });
+      if (companyRecord?.slackWebhookUrl) {
+        const slackPayload = {
+          text: `🚪 New visitor: *${visitor.fullName}* from *${visitor.company || "unknown"}* just signed in at *${site.name}*${resolvedHostName ? ` (host: ${resolvedHostName})` : ""}.`,
+          username: "SiteSafe",
+          icon_emoji: ":clipboard:",
+        };
+        fetch(companyRecord.slackWebhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(slackPayload),
+        }).catch((err) => console.error("Slack notification failed:", err));
+      }
+    }
+    // ────────────────────────────────────────────────────────────────
+
+    // Host email notification (unchanged)
+    if (hostId) {
+      const host = await prisma.host.findUnique({
+        where: { id: hostId },
+        select: { email: true },
+      });
+      if (host?.email) {
+        const emailPayload = {
+          sender: { name: "SiteSafe", email: "noreply@sitesafe.app" },
+          to: [{ email: host.email }],
+          subject: `${visitor.fullName} has arrived`,
+          htmlContent: `<p><strong>${visitor.fullName}</strong> from <strong>${visitor.company || "unknown"}</strong> has signed in and is waiting for you.</p>`,
+        };
+        fetch("https://api.brevo.com/v3/smtp/email", {
+          method: "POST",
+          headers: {
+            "api-key": process.env.BREVO_API_KEY!,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(emailPayload),
+        }).catch((err) => console.error("Brevo email failed:", err));
+      }
+    }
 
     return NextResponse.json(visitor, { status: 200 });
   } catch (error) {

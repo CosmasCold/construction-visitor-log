@@ -158,6 +158,9 @@ export default async function RootLayout({
           <Link href="/features" className="hover:text-white transition-colors duration-150">
             Features
           </Link>
+          <Link href="/integrations" className="hover:text-white transition-colors duration-150">
+            Integrations
+          </Link>
           <Link href="/faq" className="text-sky-400 hover:text-sky-300 transition-colors duration-150 inline-flex items-center gap-1">
             <span className="text-lg leading-none">?</span> FAQ
           </Link>
@@ -193,19 +196,6 @@ export default async function RootLayout({
             <span className="bg-white/10 px-2 py-0.5 rounded">Brevo</span>
             <span className="bg-white/10 px-2 py-0.5 rounded">Upstash</span>
           </div>
-        </div>
-
-        {/* SaasDB badge */}
-        <div className="flex justify-center">
-          <a href="https://saasdb.net" rel="dofollow" className="inline-flex">
-            <img
-              src="https://saasdb.net/badge/featured-dark.svg"
-              alt="Featured on SaasDB"
-              width={130}
-              height={26}
-              className="h-10 w-auto"
-            />
-          </a>
         </div>
 
         {/* Copyright */}

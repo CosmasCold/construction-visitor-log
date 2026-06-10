@@ -23,6 +23,7 @@ model Company {
   sites            Site[]
   users            User[]
   subscription     Subscription?
+  slackWebhookUrl   String?          // ✅ Slack incoming webhook URL
 }
 
 model Plan {
