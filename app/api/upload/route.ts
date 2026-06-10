@@ -12,17 +12,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Convert base64 to buffer
     const matches = imageBase64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
     if (!matches || matches.length !== 3) {
       return NextResponse.json({ error: "Invalid image data" }, { status: 400 });
     }
     const buffer = Buffer.from(matches[2], "base64");
 
-    // Upload to Vercel Blob
     const blob = await put(fileName, buffer, {
-      access: "public",
       contentType: matches[1],
+      access: "public",         // ✅ ensures the URL is directly viewable
     });
 
     return NextResponse.json({ url: blob.url });
