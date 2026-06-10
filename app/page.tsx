@@ -20,6 +20,7 @@ import {
   CheckCircle2,
   Camera,
   ListChecks,
+  Zap,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -41,6 +42,7 @@ const features = [
   { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
   { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV." },
   { icon: Code, title: "REST API", desc: "Connect to Slack, HR tools, or custom dashboards." },
+  { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier, and a full REST API for custom tools." },
   { icon: DollarSign, title: "Flat $49/mo", desc: "No per‑site or per‑user fees. Cancel anytime." },
 ];
 
@@ -100,7 +102,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-                  {/* Trust badges – social proof */}
+      {/* Trust badges – social proof */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex flex-wrap justify-center gap-6 items-center">
           <a href="https://saasdb.net" rel="dofollow" className="inline-flex flex-col items-center gap-1 text-center">
@@ -111,7 +113,6 @@ export default function LandingPage() {
             <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" />
             <span className="text-xs text-slate-400">Launched on Fazier</span>
           </a>
-          {/* Review badges (SourceForge, Slashdot, TopBusinessSoftware) */}
           <ReviewBadges />
         </div>
       </div>
@@ -144,7 +145,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Screenshots */}
+      {/* Screenshots – product experience */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-12">See the product</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -160,7 +161,7 @@ export default function LandingPage() {
         <p className="text-xs text-slate-500 text-center mt-4">Actual product screenshots. No mockups.</p>
       </div>
 
-      {/* Trusted by */}
+      {/* Trusted by – industries served */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-xl font-semibold tracking-tight text-white text-center mb-6">Trusted across industries</h2>
         <div className="flex flex-wrap justify-center gap-6">
@@ -202,7 +203,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Security card */}
+      {/* Security card – trust signals */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <h3 className="text-lg font-semibold text-white text-center mb-4">Security you can trust</h3>

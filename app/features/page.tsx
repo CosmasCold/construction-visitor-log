@@ -15,12 +15,15 @@ import {
   ArrowRight,
   ListChecks,
   Camera,
+  Zap,
+  MessageSquare,
+  FileSpreadsheet,
 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Features – SiteSafe",
   description:
-    "Explore every SiteSafe feature: QR check‑in, mandatory policy acknowledgment, real‑time dashboard, pre‑screening questions, photo capture, host notifications, pre‑registration, badge printing, audit exports, multi‑site management, analytics, and REST API.",
+    "Explore every SiteSafe feature: QR check‑in, mandatory policy acknowledgment, real‑time dashboard, pre‑screening questions, photo capture, host notifications, pre‑registration, badge printing, audit exports, multi‑site management, analytics, integrations, and REST API.",
 };
 
 const visitorFeatures = [
@@ -108,6 +111,51 @@ export default function FeaturesPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Integrations section */}
+        <section>
+          <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
+            <Zap className="w-6 h-6 text-sky-400" /> Integrations
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                <MessageSquare className="w-5 h-5 text-sky-300" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white text-sm">Slack notifications</h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Post a message in any Slack channel when a visitor signs in. Set it up in one minute from your Settings page.</p>
+              </div>
+            </div>
+            <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                <FileSpreadsheet className="w-5 h-5 text-sky-300" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white text-sm">Google Sheets sync</h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Append new visitor records to a Google Sheet automatically with a simple Apps Script.</p>
+              </div>
+            </div>
+            <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-sky-300" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white text-sm">Zapier & Make</h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Connect SiteSafe to 5,000+ apps without writing code. Trigger workflows when a visitor signs in.</p>
+              </div>
+            </div>
+            <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                <Code className="w-5 h-5 text-sky-300" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white text-sm">REST API</h3>
+                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Full developer API with Bearer token auth. List sites, fetch visitors, create check‑ins programmatically.</p>
+              </div>
+            </div>
           </div>
         </section>
 
