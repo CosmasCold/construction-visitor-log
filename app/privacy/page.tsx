@@ -9,46 +9,43 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen py-12 px-4">
-      <div className="max-w-3xl mx-auto bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-8 text-white">
+      <div className="max-w-3xl mx-auto bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-white">
         <h1 className="text-2xl font-bold tracking-tight mb-6">Privacy Policy</h1>
-        <p className="text-sm text-slate-400 mb-8">Last updated: June 1, 2026</p>
+        <p className="text-sm text-slate-400 mb-8">Last updated: June 10, 2026</p>
 
         <div className="space-y-6 text-sm leading-relaxed text-slate-200">
           <section>
             <h2 className="font-semibold text-base text-white mb-2">1. Information We Collect</h2>
             <p>
-              When you use SiteSafe, we collect information you provide directly: company name, email address, visitor names, company affiliations, phone numbers (optional), and host names. We also collect payment information via Stripe (we do not store full credit card details).
+              When you use SiteSafe, we collect information you provide directly: company name, email address, visitor names, company affiliations, phone numbers (optional), host names, pre‑screening answers, and optional visitor photographs. We also collect payment information via Stripe (we do not store full credit card details).
             </p>
           </section>
 
           <section>
             <h2 className="font-semibold text-base text-white mb-2">2. How We Use Information</h2>
             <p>
-              We use the collected information to provide and improve the Service, process payments, communicate with you, and ensure the security of the platform.
+              We use the collected information to provide and improve the Service, process payments, communicate with you, and ensure the security of the platform. Pre‑screening answers and photographs are stored alongside visitor records for compliance and identification purposes, and are visible to your account administrators.
             </p>
           </section>
 
           <section>
             <h2 className="font-semibold text-base text-white mb-2">3. Data Sharing</h2>
             <p>
-              We do not sell or rent your personal data. We may share information with third‑party service providers (e.g., Stripe for payments, Neon for database hosting) solely for the purpose of delivering the Service.
+              We do not sell or rent your personal data. We may share information with third‑party service providers (e.g., Stripe for payments, Vercel Blob for photo storage, Neon for database hosting) solely for the purpose of delivering the Service.
             </p>
           </section>
 
           <section>
             <h2 className="font-semibold text-base text-white mb-2">4. Data Retention</h2>
             <p>
-              Visitor log data is retained for the duration of your subscription. Upon account termination, we will delete your data within 30 days unless otherwise required by law.
+              Visitor log data, including pre‑screening answers and photographs, is retained for the duration of your subscription. Upon account termination, we will delete your data within 30 days unless otherwise required by law. Photographs are stored securely on Vercel Blob with public access restricted to your account.
             </p>
           </section>
 
           <section>
             <h2 className="font-semibold text-base text-white mb-2">5. Cookies</h2>
             <p>
-              SiteSafe uses a single essential cookie for authentication and session management. 
-We do not use tracking cookies, advertising cookies, or any third‑party analytics 
-cookies. Because our cookie is strictly necessary for the service to function, 
-consent is not required under GDPR, LGPD, or similar regulations.
+              SiteSafe uses essential cookies for authentication and session management. We do not use tracking cookies for advertising.
             </p>
           </section>
 

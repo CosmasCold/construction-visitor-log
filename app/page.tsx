@@ -17,6 +17,8 @@ import {
   ArrowRight,
   Play,
   CheckCircle2,
+  Camera,
+  ListChecks,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -28,11 +30,13 @@ export const metadata: Metadata = {
 const features = [
   { icon: QrCode, title: "QR check‑in", desc: "Each site gets a unique QR code. Scan, sign, done." },
   { icon: ShieldCheck, title: "Mandatory safety briefing", desc: "Visitor cannot skip acknowledgment. Compliance proof." },
-  { icon: Users, title: "Real‑time dashboard", desc: "See who's on site right now – updated every few seconds." },
+  { icon: Users, title: "Real‑time dashboard", desc: "See who's on site right now – auto‑refreshes every few seconds." },
+  { icon: ListChecks, title: "Pre‑screening questions", desc: "Custom yes/no questions before sign‑in. Answers stored with the record." },
+  { icon: Camera, title: "Photo capture", desc: "Take a visitor photo at check‑in, stored with their log. Improves security." },
   { icon: Mail, title: "Host notifications", desc: "Visitor selects a host; automatic email alert (via Brevo)." },
   { icon: UserPlus, title: "Pre‑registration", desc: "Add expected visitors for one‑tap sign‑in." },
-  { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list." },
-  { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company." },
+  { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list, with photo if available." },
+  { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
   { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
   { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV." },
   { icon: Code, title: "REST API", desc: "Connect to Slack, HR tools, or custom dashboards." },
@@ -53,14 +57,13 @@ export default function LandingPage() {
             for construction sites, warehouses, and offices.
           </p>
           <p className="mt-4 text-base text-slate-400 max-w-2xl mx-auto">
-            QR check‑in. Real‑time dashboard. Audit‑ready exports. No sales calls ever.
+            QR check‑in. Real‑time dashboard (auto‑refreshes). Audit‑ready exports. No sales calls ever.
           </p>
           <p className="mt-3 inline-flex items-center gap-1.5 bg-sky-500/10 border border-sky-400/30 rounded-full px-4 py-1.5 text-sm text-sky-300 font-semibold">
             <ShieldCheck className="w-4 h-4" />
             14‑day free trial – no credit card required
           </p>
 
-          {/* Single primary CTA */}
           <div className="mt-8 flex flex-col items-center gap-4">
             <Link
               href="/signup"
@@ -79,7 +82,6 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Demo video */}
           <div className="mt-8 max-w-xl mx-auto">
             <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
               <iframe
@@ -97,7 +99,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Trust badges – social proof */}
+      {/* Trust badges */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex flex-wrap justify-center gap-6">
           <a href="https://saasdb.net" rel="dofollow" className="inline-flex flex-col items-center gap-1 text-center">
@@ -139,7 +141,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Screenshots – product experience */}
+      {/* Screenshots */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-12">See the product</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -155,7 +157,7 @@ export default function LandingPage() {
         <p className="text-xs text-slate-500 text-center mt-4">Actual product screenshots. No mockups.</p>
       </div>
 
-      {/* Trusted by – industries served */}
+      {/* Trusted by */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-xl font-semibold tracking-tight text-white text-center mb-6">Trusted across industries</h2>
         <div className="flex flex-wrap justify-center gap-6">
@@ -173,7 +175,7 @@ export default function LandingPage() {
           <blockquote className="text-lg text-slate-200 italic leading-relaxed">
             I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.
           </blockquote>
-          <p className="mt-4 text-sm text-slate-400">– Matteus, Multi-Site Manager</p>
+          <p className="mt-4 text-sm text-slate-400">– Matteus, Multi-Site Manager - NY</p>
         </div>
       </div>
 
@@ -197,7 +199,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Security card – trust signals */}
+      {/* Security card */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <h3 className="text-lg font-semibold text-white text-center mb-4">Security you can trust</h3>

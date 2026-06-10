@@ -13,32 +13,35 @@ import {
   TrendingUp,
   Code,
   ArrowRight,
-  CheckCircle2,
+  ListChecks,
+  Camera,
 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Features – SiteSafe",
   description:
-    "Explore every SiteSafe feature: QR check‑in, mandatory policy acknowledgment, real‑time dashboard, host notifications, pre‑registration, badge printing, audit exports, multi‑site management, analytics, and REST API.",
+    "Explore every SiteSafe feature: QR check‑in, mandatory policy acknowledgment, real‑time dashboard, pre‑screening questions, photo capture, host notifications, pre‑registration, badge printing, audit exports, multi‑site management, analytics, and REST API.",
 };
 
 const visitorFeatures = [
-  { icon: QrCode, title: "QR check‑in", desc: "Each site gets its own scannable QR code. Visitors use their phone camera to open the check‑in page instantly. No typing a URL, no searching for the right form." },
+  { icon: QrCode, title: "QR check‑in", desc: "Each site gets its own scannable QR code. Visitors use their phone camera to open the check‑in page instantly." },
   { icon: ShieldCheck, title: "Mandatory policy acknowledgment", desc: "Your safety or conduct policy appears before the sign‑in form. The visitor must check a box confirming they've read it. The acknowledgment is timestamped and stored permanently. It cannot be skipped." },
-  { icon: UserPlus, title: "Pre‑registration", desc: "Add expected visitors ahead of time. When they arrive, they tap their name and sign in with one touch. Reduces wait times and eliminates data entry errors." },
-  { icon: Printer, title: "Badge printing", desc: "Print visitor badges directly from the active visitor list. Great for conferences, large offices, or any workplace that needs visible identification." },
+  { icon: ListChecks, title: "Pre‑screening questions", desc: "Add custom yes/no questions (e.g., 'Completed induction?'). Answers are stored with each visitor record and displayed in the dashboard." },
+  { icon: Camera, title: "Photo capture", desc: "Take a visitor photo directly from the check‑in page. The photo is stored securely on Vercel Blob and attached to the visitor record for identification." },
+  { icon: UserPlus, title: "Pre‑registration", desc: "Add expected visitors ahead of time. When they arrive, they tap their name and sign in with one touch." },
+  { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list, with photo if available. Perfect for events or security‑conscious environments." },
 ];
 
 const managerFeatures = [
-  { icon: Users, title: "Real‑time dashboard", desc: "A live view of everyone currently on site, updated every few seconds. Know exactly who is in your building without walking the floor." },
-  { icon: Mail, title: "Host notifications", desc: "When a visitor selects a host, an automatic email alert is sent via Brevo. No more calling the front desk to ask if your guest has arrived." },
-  { icon: Users, title: "Remote sign‑out", desc: "Sign any visitor out from your dashboard. Perfect when someone forgets to sign out or leaves early." },
+  { icon: Users, title: "Real‑time dashboard", desc: "A live view of everyone currently on site, updated every few seconds automatically. No manual refresh needed." },
+  { icon: Mail, title: "Host notifications", desc: "When a visitor selects a host, an automatic email alert is sent via Brevo. The host knows their guest has arrived instantly." },
+  { icon: Users, title: "Remote sign‑out", desc: "Sign any visitor out from your dashboard. Handy when someone forgets to sign out or leaves early." },
   { icon: Building, title: "Multi‑site management", desc: "One account, unlimited sites. Each location has its own QR code, check‑in page, and settings. Manage everything from a single dashboard." },
 ];
 
 const complianceFeatures = [
-  { icon: FileDown, title: "Instant audit exports", desc: "Filter by date, host, or site, then export a complete visitor log as CSV, Excel, or PDF. Turns hours of paperwork into a 30‑second task." },
-  { icon: TrendingUp, title: "Built‑in analytics", desc: "View 30‑day trend charts and total visitor counts. Export the data as CSV for your own reports. Spot patterns and plan staffing around peak check‑in times." },
+  { icon: FileDown, title: "Instant audit exports", desc: "Filter by date, host, or site, then export a complete visitor log as CSV, Excel, or PDF. Pre‑screening answers and photos are included in exports." },
+  { icon: TrendingUp, title: "Built‑in analytics", desc: "View 30‑day trend charts and total visitor counts. Export the data as CSV for your own reports." },
   { icon: Code, title: "REST API", desc: "Integrate SiteSafe with your own tools—Slack, HR systems, custom dashboards. Full documentation and per‑company API keys are included." },
 ];
 
@@ -51,7 +54,6 @@ export default function FeaturesPage() {
           <p className="text-lg text-slate-400">All features included. No premium tiers.</p>
         </div>
 
-        {/* For Visitors */}
         <section>
           <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
             <Users className="w-6 h-6 text-sky-400" /> For Visitors
@@ -71,7 +73,6 @@ export default function FeaturesPage() {
           </div>
         </section>
 
-        {/* For Site Managers */}
         <section>
           <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
             <Building className="w-6 h-6 text-sky-400" /> For Site Managers
@@ -91,7 +92,6 @@ export default function FeaturesPage() {
           </div>
         </section>
 
-        {/* For Compliance */}
         <section>
           <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-sky-400" /> For Compliance
