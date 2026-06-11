@@ -24,6 +24,7 @@ import {
   CheckCircle2,
   XCircle,
   QrCode,
+  DoorClosed,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
@@ -119,6 +120,22 @@ export default function CompanyDashboardClient({
     }, 5000);
     return () => clearInterval(interval);
   }, [router]);
+
+  // ── remote sign‑out ────────────────────────────────────────────────
+  async function handleSignOutRemote(visitorId: string) {
+    const res = await fetch("/api/checkin/signout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: visitorId }),
+    });
+    if (res.ok) {
+      // Auto‑refresh will pick up the change, but we can force an immediate refresh
+      router.refresh();
+    } else {
+      alert("Failed to sign out visitor. Try again.");
+    }
+  }
+  // ────────────────────────────────────────────────────────────────────
 
   function applyFilter() {
     const params = new URLSearchParams();
@@ -839,12 +856,13 @@ export default function CompanyDashboardClient({
                 <th className="p-3 text-left">Signed Out</th>
                 <th className="p-3 text-left">Safety</th>
                 <th className="p-3 text-left">Pre‑screening</th>
+                <th className="p-3 text-left">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {logs.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="p-4 text-center text-slate-500">
+                  <td colSpan={11} className="p-4 text-center text-slate-500">
                     <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p>
                       No visitors yet. Share the check‑in link with your team
@@ -861,7 +879,11 @@ export default function CompanyDashboardClient({
                     <td className="p-3">
                       {v.photoUrl ? (
                         <a href={v.photoUrl} target="_blank" rel="noopener noreferrer">
-                          <img src={v.photoUrl} alt={v.fullName} className="w-10 h-10 rounded object-cover" />
+                          <img
+                            src={v.photoUrl}
+                            alt={v.fullName}
+                            className="w-10 h-10 rounded object-cover"
+                          />
                         </a>
                       ) : (
                         "—"
@@ -895,6 +917,17 @@ export default function CompanyDashboardClient({
                             .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
                             .join(", ")
                         : "—"}
+                    </td>
+                    <td className="p-3">
+                      {!v.signedOutAt && (
+                        <button
+                          onClick={() => handleSignOutRemote(v.id)}
+                          className="inline-flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 transition-colors"
+                          title="Sign out remotely"
+                        >
+                          <DoorClosed className="w-3.5 h-3.5" /> Sign out
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))
