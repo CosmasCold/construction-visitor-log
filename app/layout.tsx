@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import Script from "next/script";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -216,50 +217,10 @@ export default async function RootLayout({
           <main className="flex-1">{children}</main>
         </NavWrapper>
         <Analytics />
-        {/* Crisp chat widget */}
-        <script
-          type="text/javascript"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.$crisp = [];
-              window.CRISP_WEBSITE_ID = "9ecf2637-4b7e-4c6d-8e92-5326ce566ebc";
-              (function() {
-                var d = document;
-                var s = d.createElement("script");
-                s.src = "https://client.crisp.chat/l.js";
-                s.async = 1;
-                d.getElementsByTagName("head")[0].appendChild(s);
-              })();
-            `,
-          }}
-        />
-        {/* Structured data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "SoftwareApplication",
-              name: "SiteSafe",
-              applicationCategory: "BusinessApplication",
-              operatingSystem: "Web",
-              description:
-                "Smart visitor management for construction sites, warehouses, and offices. QR check‑in, real‑time dashboard, audit‑ready exports.",
-              offers: {
-                "@type": "Offer",
-                price: "49.00",
-                priceCurrency: "USD",
-                priceValidUntil: "2027-12-31",
-              },
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: "5",
-                reviewCount: "1",
-              },
-              url: "https://sitesafe.thesift.space",
-            }),
-          }}
-        />
+        {/* Crisp chat – external init script */}
+        <Script src="/crisp-init.js" strategy="lazyOnload" />
+        {/* Structured data – external JSON file */}
+       <Script src="/structured-data.json" type="application/ld+json" strategy="afterInteractive" />
       </body>
     </html>
   );
