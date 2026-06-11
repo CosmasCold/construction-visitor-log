@@ -12,22 +12,17 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value: [
-              "default-src 'none'",
-              "script-src 'self' https://client.crisp.chat https://*.sf-syn.com",
-              "style-src 'self' 'unsafe-inline'",                         // ← Tailwind requires 'unsafe-inline'
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' https://client.crisp.chat https://*.sf-syn.com",
+              "style-src 'self' 'unsafe-inline' https://client.crisp.chat",
               "img-src 'self' https://images.unsplash.com data: https://saasdb.net https://fazier.com *.crisp.chat https://*.sf-syn.com https://sourceforge.net https://slashdot.org https://topbusinesssoftware.com https://a.fsdn.com *.public.blob.vercel-storage.com",
               "connect-src 'self' https://api.brevo.com https://api.stripe.com https://client.crisp.chat wss://client.relay.crisp.chat",
               "frame-src https://checkout.stripe.com https://js.stripe.com https://www.youtube.com",
-              "frame-ancestors 'none'",
               "font-src 'self' https://client.crisp.chat data:",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",
             ].join("; "),
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
           },
         ],
       },
