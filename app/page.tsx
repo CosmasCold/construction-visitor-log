@@ -88,7 +88,7 @@ export default function LandingPage() {
           <div className="mt-8 max-w-xl mx-auto">
             <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
               <iframe
-                src="https://www.youtube.com/embed/5PKa8e84RJ4"
+                src="https://www.youtube.com/embed/JmVMm-4s6B4"
                 title="SiteSafe demo"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -96,7 +96,7 @@ export default function LandingPage() {
               />
             </div>
             <p className="text-xs text-slate-500 mt-2 flex items-center justify-center gap-1">
-              <Play className="w-3 h-3" /> 2‑minute overview
+              <Play className="w-3 h-3" /> 30‑second overview
             </p>
           </div>
         </div>
@@ -177,9 +177,11 @@ export default function LandingPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
           <blockquote className="text-lg text-slate-200 italic leading-relaxed">
-            I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.
+            &ldquo;I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.&rdquo;
           </blockquote>
-          <p className="mt-4 text-sm text-slate-400">– Matteus, Multi-Site Manager - NY</p>
+          <p className="mt-4 text-sm text-slate-400">
+            – Matteus, Multi‑Site Manager – NY
+          </p>
         </div>
       </div>
 
