@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// Secret to prevent anyone else from calling this route
 const CRON_SECRET = process.env.CRON_SECRET!;
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "cloudandclipboard@gmail.com";
 
 export async function GET(req: NextRequest) {
   // Validate secret
@@ -37,7 +37,6 @@ export async function GET(req: NextRequest) {
     );
     const dashboardUrl = `${dashboardBase}${company.slug}`;
 
-    // Determine which email to send (if any)
     let emailHtml: string | null = null;
     let emailLabel = "";
 
@@ -61,13 +60,13 @@ export async function GET(req: NextRequest) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            sender: { name: "Gabriel", email: "hello@sitesafe.thesift.space" }, // use your verified sender
+            sender: { name: "Gabriel", email: "gabriel@cloudandclipboard.com" },
             to: [{ email: company.email }],
+            bcc: [{ email: ADMIN_EMAIL }],   // ✅ you get a copy
             subject: getSubjectFor(emailLabel),
             htmlContent: emailHtml,
           }),
         });
-        // Mark as sent
         await prisma.company.update({
           where: { id: company.id },
           data: {
@@ -96,7 +95,6 @@ function getSubjectFor(label: string): string {
   }
 }
 
-// Email templates (inline)
 const emailDay0 = (name: string, url: string) => `
   <p>Hi ${name},</p>
   <p>Welcome to SiteSafe – your digital visitor log is ready.</p>
@@ -110,7 +108,7 @@ const emailDay0 = (name: string, url: string) => `
 const emailDay2 = (name: string, url: string) => `
   <p>Hi ${name},</p>
   <p>Have you had a chance to try the visitor check‑in yet? If so, you've already collected some data.</p>
-  <p>Now you can <strong>export an audit‑ready report</strong> in one click. Go to your dashboard, choose a date range, and download a CSV, Excel, or PDF. That’s instant proof of who was on site and that they acknowledged your safety briefing.</p>
+  <p>Now you can <strong>export an audit‑ready report</strong> in one click. Go to your dashboard, choose a date range, and download a CSV, Excel, or PDF. That's instant proof of who was on site and that they acknowledged your safety briefing.</p>
   <p><a href="${url}" style="background-color:#0ea5e9; color:white; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:600;">Export your first report</a></p>
   <p>This is the feature that saves you during inspections – give it a try.</p>
   <p>– Gabriel</p>
@@ -118,9 +116,9 @@ const emailDay2 = (name: string, url: string) => `
 
 const emailDay12 = (name: string, url: string) => `
   <p>Hi ${name},</p>
-  <p>Your 14‑day free trial ends in 2 days. You’ve been using SiteSafe to check in visitors and stay audit‑ready – don’t lose that when the trial expires.</p>
-  <p>Upgrading takes one minute, and it’s just $49/month for unlimited sites and visitors. No per‑site fees, no contracts.</p>
+  <p>Your 14‑day free trial ends in 2 days. You've been using SiteSafe to check in visitors and stay audit‑ready – don't lose that when the trial expires.</p>
+  <p>Upgrading takes one minute, and it's just $49/month for unlimited sites and visitors. No per‑site fees, no contracts.</p>
   <p><a href="${url}" style="background-color:#0ea5e9; color:white; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:600;">Upgrade your account</a></p>
-  <p>If it’s not a fit, no hard feelings. You can export your data at any time.</p>
+  <p>If it's not a fit, no hard feelings. You can export your data at any time.</p>
   <p>– Gabriel</p>
 `;
