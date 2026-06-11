@@ -19,7 +19,7 @@ import {
   Plus,
   X,
   Users,
-  Construction,
+  Building2,
   ClipboardList,
   CheckCircle2,
   XCircle,
@@ -129,7 +129,6 @@ export default function CompanyDashboardClient({
       body: JSON.stringify({ id: visitorId }),
     });
     if (res.ok) {
-      // Auto‑refresh will pick up the change, but we can force an immediate refresh
       router.refresh();
     } else {
       alert("Failed to sign out visitor. Try again.");
@@ -350,7 +349,7 @@ export default function CompanyDashboardClient({
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-white flex items-center gap-2">
-              <Construction className="w-6 h-6 text-sky-400" /> {companyName}
+              <Building2 className="w-6 h-6 text-sky-400" /> {companyName}
             </h1>
             <p className="text-sm text-slate-400 mt-1">
               Visitor Log & Site Management
@@ -510,7 +509,7 @@ export default function CompanyDashboardClient({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sites.length === 0 ? (
             <div className="col-span-2 text-center py-12 text-slate-400">
-              <Construction className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <Building2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p className="text-lg font-medium">No sites yet</p>
               <p className="text-sm mt-1">
                 Create your first site to start checking in visitors.
