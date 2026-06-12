@@ -8,6 +8,21 @@ export const metadata: Metadata = {
 
 const updates = [
   {
+    date: "2026-06-12",
+    changes: [
+      "Site managers can now sign visitors out remotely from the dashboard – one click and the visitor is marked as departed.",
+      "Analytics page upgraded with custom date range picker, site filter dropdown, and automatic chart updates.",
+      "Redesigned the 'See the product' section on the landing page with a horizontal scrollable gallery featuring five product screenshots.",
+      "Added SaaS Hub review badge alongside existing trust badges.",
+      "Replaced the construction icon on the company dashboard with a neutral building icon to better represent all industries.",
+      "Updated the FAQ page to cover every new feature, including remote sign‑out, pre‑screening, photo capture, analytics, and integrations.",
+      "Added SourceForge, Slashdot, and TopBusinessSoftware review badges to the landing page.",
+      "Multiple security improvements: tightened Content Security Policy, added HSTS preload, and hardened default‑src.",
+      "Changed the testimonial name and title on the landing page.",
+      "Replaced the 2‑minute overview video with a 30‑second version and updated the caption.",
+    ],
+  },
+  {
     date: "2026-06-10",
     changes: [
       "Added pre‑screening questions – site managers can now define custom yes/no questions that visitors must answer before signing in.",
