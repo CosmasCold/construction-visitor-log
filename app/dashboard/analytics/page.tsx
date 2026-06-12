@@ -1,6 +1,7 @@
 // app/dashboard/analytics/page.tsx
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import AnalyticsChart from "@/components/AnalyticsChart";
 import Link from "next/link";
@@ -19,6 +20,23 @@ export default async function AnalyticsPage({
   const { slug } = await searchParams;
   if (!slug) redirect("/dashboard");
 
+  // Fetch company sites for the filter dropdown
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email! },
+    include: {
+      company: {
+        include: {
+          sites: {
+            select: { id: true, name: true },
+            orderBy: { name: "asc" },
+          },
+        },
+      },
+    },
+  });
+
+  const sites = user?.company?.sites ?? [];
+
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -31,7 +49,7 @@ export default async function AnalyticsPage({
         <h1 className="text-2xl font-semibold tracking-tight text-white flex items-center gap-2">
           Analytics
         </h1>
-        <AnalyticsChart />
+        <AnalyticsChart sites={sites} />
       </div>
     </div>
   );

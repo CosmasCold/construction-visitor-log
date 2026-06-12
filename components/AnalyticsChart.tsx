@@ -14,16 +14,18 @@ import {
 import { Bar } from "react-chartjs-2";
 import { BarChart3, FileText } from "lucide-react";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-export default function AnalyticsChart() {
+interface Site {
+  id: string;
+  name: string;
+}
+
+interface AnalyticsChartProps {
+  sites: Site[];
+}
+
+export default function AnalyticsChart({ sites }: AnalyticsChartProps) {
   const [chartData, setChartData] = useState<{
     labels: string[];
     data: number[];
@@ -31,17 +33,40 @@ export default function AnalyticsChart() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // Filter state
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [siteId, setSiteId] = useState("");
+
+  // Fetch data when filters change
   useEffect(() => {
-    fetch("/api/analytics")
-      .then((res) => res.json())
-      .then((json) => {
-        setChartData(json);
-        const sum = (json.data as number[]).reduce((a, b) => a + b, 0);
-        setTotal(sum);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+    fetchData();
+  }, [from, to, siteId]);
+
+  async function fetchData() {
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (from) params.set("from", from);
+    if (to) params.set("to", to);
+    if (siteId) params.set("siteId", siteId);
+
+    try {
+      const res = await fetch(`/api/analytics?${params.toString()}`);
+      const json = await res.json();
+      setChartData(json);
+      const sum = (json.data as number[]).reduce((a: number, b: number) => a + b, 0);
+      setTotal(sum);
+    } catch (error) {
+      console.error("Analytics fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function applyFilter(e: React.FormEvent) {
+    e.preventDefault();
+    fetchData();
+  }
 
   function exportCSV() {
     if (!chartData) return;
@@ -57,7 +82,7 @@ export default function AnalyticsChart() {
     URL.revokeObjectURL(link.href);
   }
 
-  if (loading) {
+  if (loading && !chartData) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
@@ -66,9 +91,7 @@ export default function AnalyticsChart() {
   }
 
   if (!chartData) {
-    return (
-      <p className="text-slate-400 text-center py-12">No data available.</p>
-    );
+    return <p className="text-slate-400 text-center py-12">No data available.</p>;
   }
 
   const data = {
@@ -104,13 +127,57 @@ export default function AnalyticsChart() {
 
   return (
     <div className="space-y-6">
+      {/* Filters */}
+      <form onSubmit={applyFilter}>
+        <div className="flex flex-wrap gap-4 items-end">
+          <div>
+            <label className="block text-xs text-slate-400 mb-1">From</label>
+            <input
+              type="date"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+              className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-slate-400 mb-1">To</label>
+            <input
+              type="date"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-slate-400 mb-1">Site</label>
+            <select
+              value={siteId}
+              onChange={(e) => setSiteId(e.target.value)}
+              className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+            >
+              <option value="">All sites</option>
+              {sites.map((site) => (
+                <option key={site.id} value={site.id}>
+                  {site.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="submit"
+            className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            Apply
+          </button>
+        </div>
+      </form>
+
+      {/* Summary */}
       <div className="bg-sky-500/10 backdrop-blur-md rounded-2xl border border-sky-400/30 p-5 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <BarChart3 className="w-8 h-8 text-sky-400" />
           <div>
-            <p className="text-sm text-sky-200">
-              Total visitors (last 30 days)
-            </p>
+            <p className="text-sm text-sky-200">Total visitors</p>
             <p className="text-3xl font-bold text-white">{total}</p>
           </div>
         </div>
@@ -121,6 +188,8 @@ export default function AnalyticsChart() {
           <FileText className="w-4 h-4" /> Export CSV
         </button>
       </div>
+
+      {/* Chart */}
       <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
         <Bar data={data} options={options} />
       </div>

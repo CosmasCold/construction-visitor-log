@@ -1,10 +1,10 @@
 // app/api/analytics/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -24,54 +24,67 @@ export async function GET() {
     return NextResponse.json({ error: "No company found" }, { status: 404 });
   }
 
-  // Default: last 30 days
-  const days = 30;
-  const endDate = new Date();
-  endDate.setHours(23, 59, 59, 999);
-  const startDate = new Date(endDate);
-  startDate.setDate(startDate.getDate() - (days - 1));
-  startDate.setHours(0, 0, 0, 0);
+  const { searchParams } = req.nextUrl;
+  const from = searchParams.get("from");
+  const to = searchParams.get("to");
+  const siteId = searchParams.get("siteId");
 
-  // Build where clause with proper types
-  const whereClause: {
-    signedInAt: { gte: Date; lte: Date };
-    site?: { companyId: string };
-  } = {
+  // Default: last 30 days
+  let startDate: Date;
+  let endDate: Date;
+
+  if (from) {
+    startDate = new Date(from);
+    startDate.setHours(0, 0, 0, 0);
+  } else {
+    startDate = new Date();
+    startDate.setDate(startDate.getDate() - 29);
+    startDate.setHours(0, 0, 0, 0);
+  }
+
+  if (to) {
+    endDate = new Date(to);
+    endDate.setHours(23, 59, 59, 999);
+  } else {
+    endDate = new Date();
+    endDate.setHours(23, 59, 59, 999);
+  }
+
+  const where: Record<string, unknown> = {
     signedInAt: {
       gte: startDate,
       lte: endDate,
     },
   };
-  if (companyId) {
-    whereClause.site = { companyId };
+
+  if (siteId) {
+    where.siteId = siteId;
+  } else if (companyId) {
+    where.site = { companyId };
   }
 
   const logs = await prisma.visitorLog.findMany({
-    where: whereClause,
-    select: {
-      signedInAt: true,
-    },
+    where,
+    select: { signedInAt: true },
     orderBy: { signedInAt: "asc" },
   });
 
   // Aggregate by day
   const dailyCounts: Record<string, number> = {};
-  for (let i = 0; i < days; i++) {
-    const date = new Date(startDate);
-    date.setDate(date.getDate() + i);
-    const key = date.toISOString().slice(0, 10);
+  const cursor = new Date(startDate);
+  while (cursor <= endDate) {
+    const key = cursor.toISOString().slice(0, 10);
     dailyCounts[key] = 0;
+    cursor.setDate(cursor.getDate() + 1);
   }
 
-  logs.forEach((log: { signedInAt: Date }) => {
+  logs.forEach((log) => {
     const key = log.signedInAt.toISOString().slice(0, 10);
-    if (dailyCounts[key] !== undefined) {
-      dailyCounts[key]++;
-    }
+    if (dailyCounts[key] !== undefined) dailyCounts[key]++;
   });
 
-  const labels = Object.keys(dailyCounts);
-  const data = Object.values(dailyCounts);
-
-  return NextResponse.json({ labels, data });
+  return NextResponse.json({
+    labels: Object.keys(dailyCounts),
+    data: Object.values(dailyCounts),
+  });
 }
