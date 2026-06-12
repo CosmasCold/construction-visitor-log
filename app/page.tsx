@@ -130,7 +130,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Trust badges – social proof */}
+            {/* Trust badges – social proof */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex flex-wrap justify-center gap-6 items-center">
           <a href="https://saasdb.net" rel="dofollow" className="inline-flex flex-col items-center gap-1 text-center">
@@ -140,6 +140,10 @@ export default function LandingPage() {
           <a href="https://fazier.com/launches/sitesafe.thesift.space" target="_blank" rel="noopener noreferrer" className="inline-flex flex-col items-center gap-1 text-center">
             <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" />
             <span className="text-xs text-slate-400">Launched on Fazier</span>
+          </a>
+          <a href="https://www.saashub.com/sitesafe-by-thesift?utm_source=badge&utm_campaign=badge&utm_content=sitesafe-by-thesift&badge_variant=dark&badge_kind=approved" target="_blank" className="inline-flex flex-col items-center gap-1 text-center">
+            <img src="https://cdn-b.saashub.com/img/badges/approved-dark.png?v=1" alt="SiteSafe by TheSift badge" style={{ maxWidth: "150px" }} />
+            <span className="text-xs text-slate-400">Featured on SaaS Hub</span>
           </a>
           <ReviewBadges />
         </div>
