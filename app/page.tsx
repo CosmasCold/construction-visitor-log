@@ -40,10 +40,43 @@ const features = [
   { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list, with photo if available." },
   { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
   { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
-  { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV." },
+  { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
   { icon: Code, title: "REST API", desc: "Connect to Slack, HR tools, or custom dashboards." },
   { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier, and a full REST API for custom tools." },
   { icon: DollarSign, title: "Flat $49/mo", desc: "No per‑site or per‑user fees. Cancel anytime." },
+];
+
+const screenshots = [
+  {
+    src: "/qr.png",
+    alt: "SiteSafe check‑in page with QR code and safety briefing",
+    caption: "QR check‑in with mandatory safety acknowledgment",
+  },
+  {
+    src: "/checkin.png",
+    alt: "Visitor sign‑in form with host selection and photo capture",
+    caption: "Visitor sign‑in with host dropdown and photo capture",
+  },
+  {
+    src: "/dashboard.png",
+    alt: "SiteSafe real‑time visitor dashboard",
+    caption: "Live dashboard – auto‑refreshes every few seconds",
+  },
+  {
+    src: "/analytics.png",
+    alt: "SiteSafe analytics chart with date and site filters",
+    caption: "Analytics with custom date ranges and site filters",
+  },
+  {
+    src: "/sites.png",
+    alt: "Multi‑site management card with edit and delete options",
+    caption: "Multi‑site management – unlimited sites, one account",
+  },
+  {
+    src: "/integrations.png",
+    alt: "SiteSafe integrations hub – Slack, Google Sheets, Zapier",
+    caption: "Built‑in integrations with Slack, Sheets, Zapier, and API",
+  },
 ];
 
 export default function LandingPage() {
@@ -145,20 +178,31 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Screenshots – product experience */}
+      {/* See the product – horizontally scrollable gallery */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-12">See the product</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
-            <img src="/qr.png" alt="SiteSafe check‑in page with QR code" className="rounded-lg w-full h-auto" />
-            <p className="text-xs text-slate-400 text-center mt-2">QR check‑in page on a tablet</p>
-          </div>
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
-            <img src="/dashboard.png" alt="SiteSafe real‑time dashboard" className="rounded-lg w-full h-auto" />
-            <p className="text-xs text-slate-400 text-center mt-2">Live visitor dashboard</p>
+        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">See the product</h2>
+        <div className="overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 sm:mx-0">
+          <div className="flex gap-6 w-max px-4 sm:px-0">
+            {screenshots.map((shot, idx) => (
+              <div
+                key={idx}
+                className="snap-center flex-shrink-0 w-[85vw] max-w-md bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised overflow-hidden"
+              >
+                <div className="p-2">
+                  <img
+                    src={shot.src}
+                    alt={shot.alt}
+                    className="rounded-xl w-full h-auto object-cover"
+                  />
+                </div>
+                <div className="px-4 pb-4 text-center">
+                  <p className="text-xs text-slate-400">{shot.caption}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-        <p className="text-xs text-slate-500 text-center mt-4">Actual product screenshots. No mockups.</p>
+        <p className="text-xs text-slate-500 text-center mt-4">Actual product screenshots. Scroll to explore.</p>
       </div>
 
       {/* Trusted by – industries served */}
