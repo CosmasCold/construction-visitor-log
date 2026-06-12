@@ -48,11 +48,6 @@ const features = [
 
 const screenshots = [
   {
-    src: "/qr.png",
-    alt: "SiteSafe check‑in page with QR code and safety briefing",
-    caption: "QR check‑in with mandatory safety acknowledgment",
-  },
-  {
     src: "/checkin.png",
     alt: "Visitor sign‑in form with host selection and photo capture",
     caption: "Visitor sign‑in with host dropdown and photo capture",
