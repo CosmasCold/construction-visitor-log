@@ -153,7 +153,7 @@ export default function AnalyticsChart({ sites }: AnalyticsChartProps) {
             <select
               value={siteId}
               onChange={(e) => setSiteId(e.target.value)}
-              className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+              className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white [&_option]:text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
             >
               <option value="">All sites</option>
               {sites.map((site) => (
