@@ -137,58 +137,28 @@ export default async function RootLayout({
   const footer = (
     <footer className="bg-black/20 border-t border-white/5 text-slate-400 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        {/* Secured by line */}
         <div className="text-center text-xs text-slate-500">
-          Encrypted data · GDPR / LGPD ready · No third‑party trackers
+          Encrypted data · GDPR / LGPD ready · No third‑party ad trackers
         </div>
 
-        {/* Links */}
         <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
-          <Link href="/terms" className="hover:text-white transition-colors duration-150">
-            Terms of Service
-          </Link>
-          <Link href="/privacy" className="hover:text-white transition-colors duration-150">
-            Privacy Policy
-          </Link>
-          <Link href="/blog" className="hover:text-white transition-colors duration-150">
-            Blog
-          </Link>
-          <Link href="/docs" className="hover:text-white transition-colors duration-150">
-            API Docs
-          </Link>
-          <Link href="/features" className="hover:text-white transition-colors duration-150">
-            Features
-          </Link>
-          <Link href="/integrations" className="hover:text-white transition-colors duration-150">
-            Integrations
-          </Link>
+          <Link href="/terms" className="hover:text-white transition-colors duration-150">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-white transition-colors duration-150">Privacy Policy</Link>
+          <Link href="/blog" className="hover:text-white transition-colors duration-150">Blog</Link>
+          <Link href="/docs" className="hover:text-white transition-colors duration-150">API Docs</Link>
+          <Link href="/features" className="hover:text-white transition-colors duration-150">Features</Link>
+          <Link href="/integrations" className="hover:text-white transition-colors duration-150">Integrations</Link>
           <Link href="/faq" className="text-sky-400 hover:text-sky-300 transition-colors duration-150 inline-flex items-center gap-1">
             <span className="text-lg leading-none">?</span> FAQ
           </Link>
-          <Link href="/compare" className="hover:text-white transition-colors duration-150">
-            Compare
-          </Link>
-          <Link href="/changelog" className="hover:text-white transition-colors duration-150">
-            Changelog
-          </Link>
-          <Link href="/pricing" className="hover:text-white transition-colors duration-150">
-            Pricing
-          </Link>
-          <Link href="/about" className="hover:text-white transition-colors duration-150">
-            About
-          </Link>
-          <Link href="/security" className="hover:text-white transition-colors duration-150">
-            Security
-          </Link>
-          <a
-            href="mailto:cloudandclipboard@gmail.com"
-            className="hover:text-white transition-colors duration-150"
-          >
-            Contact
-          </a>
+          <Link href="/compare" className="hover:text-white transition-colors duration-150">Compare</Link>
+          <Link href="/changelog" className="hover:text-white transition-colors duration-150">Changelog</Link>
+          <Link href="/pricing" className="hover:text-white transition-colors duration-150">Pricing</Link>
+          <Link href="/about" className="hover:text-white transition-colors duration-150">About</Link>
+          <Link href="/security" className="hover:text-white transition-colors duration-150">Security</Link>
+          <a href="mailto:cloudandclipboard@gmail.com" className="hover:text-white transition-colors duration-150">Contact</a>
         </div>
 
-        {/* Trust badges & social proof */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-500">
           <span>Proudly built with</span>
           <div className="flex items-center gap-3">
@@ -199,7 +169,6 @@ export default async function RootLayout({
           </div>
         </div>
 
-        {/* Copyright */}
         <div className="text-sm text-center">
           &copy; {new Date().getFullYear()} SiteSafe. All rights reserved.
         </div>
@@ -207,20 +176,47 @@ export default async function RootLayout({
     </footer>
   );
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "SiteSafe",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "description": "Smart visitor management for construction sites, warehouses, and offices. QR check‑in, real‑time dashboard, audit‑ready exports.",
+    "offers": {
+      "@type": "Offer",
+      "price": "49.00",
+      "priceCurrency": "USD",
+      "priceValidUntil": "2027-12-31",
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "reviewCount": "1",
+    },
+    "url": "https://sitesafe.thesift.space",
+  };
+
   return (
     <html lang="en">
       <head>
         <link rel="preconnect" href="https://saasdb.net" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fazier.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.saashub.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://www.youtube.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://client.crisp.chat" crossOrigin="anonymous" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </head>
       <body className="flex flex-col min-h-screen">
         <NavWrapper header={header} footer={footer}>
           <main className="flex-1">{children}</main>
         </NavWrapper>
         <Analytics />
-        {/* Crisp chat – external init script */}
         <Script src="/crisp-init.js" strategy="lazyOnload" />
-        {/* Structured data – external JSON file */}
-       <Script src="/structured-data.json" type="application/ld+json" strategy="afterInteractive" />
+        {/* Structured data is now inlined above – external file no longer needed */}
       </body>
     </html>
   );

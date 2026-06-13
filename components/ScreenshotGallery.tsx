@@ -92,13 +92,13 @@ export default function ScreenshotGallery({
                   }}
                   aria-label={`View full size: ${shot.caption}`}
                 >
-                  {/* ✅ FIX: aspect ratio added to reserve space */}
                   <div className="p-2 aspect-[4/3]">
                     <Image
                       src={shot.src}
                       alt={shot.alt}
                       width={400}
                       height={300}
+                      sizes="(max-width: 640px) 85vw, 400px"
                       className="rounded-xl w-full h-full object-cover group-hover/card:scale-[1.02] transition-transform duration-200"
                     />
                   </div>
@@ -139,6 +139,7 @@ export default function ScreenshotGallery({
               alt={selected.alt}
               width={1200}
               height={900}
+              sizes="100vw"
               className="rounded-xl w-full h-auto object-contain max-h-[90vh]"
               priority
             />

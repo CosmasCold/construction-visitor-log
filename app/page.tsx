@@ -208,7 +208,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Problem section – now industry‑neutral */}
+      {/* Problem section */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pb-12">
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
           Last month, a site manager lost their visitor log the day before a safety audit.
@@ -219,7 +219,7 @@ export default function LandingPage() {
         </p>
       </div>
 
-      {/* Features grid – grouped by capability */}
+      {/* Features grid */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get</h2>
 
@@ -271,10 +271,10 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Screenshot gallery – now a Client Component */}
+      {/* Screenshot gallery */}
       <ScreenshotGallery screenshots={screenshots} />
 
-      {/* Trusted by – industries served */}
+      {/* Trusted by */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-xl font-semibold tracking-tight text-white text-center mb-6">Trusted across industries</h2>
         <div className="flex flex-wrap justify-center gap-6">
@@ -318,7 +318,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Security card – trust signals */}
+      {/* Security card – updated tracker wording */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <h3 className="text-lg font-semibold text-white text-center mb-4">Security you can trust</h3>
@@ -337,7 +337,7 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-col items-center gap-1">
               <CheckCircle2 className="w-6 h-6 text-sky-400" />
-              No third‑party trackers
+              No behavioural ad trackers
             </div>
           </div>
           <p className="text-center text-xs text-slate-500 mt-4">

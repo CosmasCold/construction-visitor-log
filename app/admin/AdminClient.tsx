@@ -4,9 +4,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import {
   RefreshCw, FileSpreadsheet, FileText, FileDown, LogOut, Trash2, ExternalLink,
   Building, Users, CheckCircle2, XCircle,
@@ -102,7 +99,8 @@ export default function AdminClient({
     URL.revokeObjectURL(link.href);
   }
 
-  function exportExcel() {
+  async function exportExcel() {
+    const XLSX = await import("xlsx");
     const wsData = logs.map((v) => ({
       Site: v.site.name, Name: v.fullName, Company: v.company, Phone: v.phone || "", Email: v.email || "",
       Host: v.hostName || "", "Safety OK": v.safetyAcknowledged ? "Yes" : "No", "Signed In": v.signedInAt,
@@ -114,7 +112,9 @@ export default function AdminClient({
     XLSX.writeFile(wb, `visitor_log_${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
-  function exportPDF() {
+  async function exportPDF() {
+    const jsPDF = (await import("jspdf")).default;
+    const autoTable = (await import("jspdf-autotable")).default;
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
     const headers = ["Site", "Name", "Company", "Phone", "Email", "Host", "Safety OK", "Signed In", "Signed Out"];
     const rows = logs.map((v) => [
@@ -130,7 +130,6 @@ export default function AdminClient({
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-white flex items-center gap-2">
@@ -190,7 +189,7 @@ export default function AdminClient({
           <button onClick={clearFilter} className="text-slate-400 hover:text-slate-200 text-sm transition-colors duration-150">Clear</button>
         </div>
 
-        {/* Sites list */}
+        {/* Sites list (super admin only) */}
         {isSuperAdmin && sites.length > 0 && (
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
             <h2 className="text-lg font-semibold tracking-tight text-white mb-4 flex items-center gap-2">
