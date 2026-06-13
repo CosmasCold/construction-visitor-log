@@ -3,10 +3,27 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Changelog – SiteSafe",
-  description: "Recent updates and improvements to SiteSafe, the smart visitor management platform.",
+  description:
+    "Recent updates and improvements to SiteSafe, the smart visitor management platform.",
 };
 
 const updates = [
+  {
+    date: "2026-06-13",
+    changes: [
+      "Revamped the landing page: new neutral hero subtitle (“the digital check‑in for any workplace”), grouped features by capability, and added a mid‑page call‑to‑action.",
+      "Screenshot gallery redesigned with a darker display case, left/right scroll buttons, keyboard navigation, and click‑to‑enlarge for any image.",
+      "Launched dedicated Pricing and Compare pages so visitors can see pricing instantly and compare SiteSafe side‑by‑side with Envoy, SwipedOn, and paper logs.",
+      "Performance overhaul: lazy‑loaded Excel/PDF export libraries (saves ~150 KB on dashboard page loads), inlined structured data, added preconnects for external domains.",
+      "Switched hero background from external Unsplash image to a local optimized WebP — faster loads, no third‑party dependency.",
+      "Enabled automatic next‑gen image formats (WebP/AVIF) for all local screenshots and added cache headers for static assets.",
+      "Added Vercel Analytics event tracking for CTA clicks, checklist submissions, demo video plays, and file exports.",
+      "Improved table accessibility across both dashboards with scope=\"col\" attributes on all column headers.",
+      "Updated trust copy from “No third‑party trackers” to “No behavioural ad trackers” for accuracy.",
+      "Fixed visitor photo rendering in the company dashboard to use next/image for better performance.",
+      "Added empty‑state fallbacks throughout the landing page so the UI degrades gracefully if any data is missing.",
+    ],
+  },
   {
     date: "2026-06-12",
     changes: [
@@ -97,11 +114,10 @@ export default function ChangelogPage() {
               <h2 className="text-sm font-semibold text-sky-300 uppercase tracking-wider mb-2">
                 {entry.date}
               </h2>
-              <ul className="space-y-2">
+              <ul className="space-y-2 list-disc list-inside">
                 {entry.changes.map((change, j) => (
-                  <li key={j} className="text-sm text-slate-200 leading-relaxed flex gap-2">
-                    <span className="text-sky-400 mt-1 flex-shrink-0">•</span>
-                    <span>{change}</span>
+                  <li key={j} className="text-sm text-slate-200 leading-relaxed pl-1">
+                    {change}
                   </li>
                 ))}
               </ul>
@@ -112,12 +128,12 @@ export default function ChangelogPage() {
         <p className="text-xs text-slate-500 mt-12">
           We ship updates frequently. Follow us on{" "}
           <a
-            href="https://twitter.com/sitesafehq"
+            href="https://x.com/sitesafehq"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sky-400 hover:text-sky-300 transition-colors"
           >
-            Twitter
+            X
           </a>{" "}
           for real‑time news.
         </p>
