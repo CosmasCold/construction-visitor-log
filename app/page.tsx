@@ -1,8 +1,10 @@
 // app/page.tsx
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import ChecklistForm from "@/components/ChecklistForm";
 import ReviewBadges from "@/components/ReviewBadges";
+import ScreenshotGallery from "@/components/ScreenshotGallery";
 import {
   QrCode,
   ShieldCheck,
@@ -29,22 +31,43 @@ export const metadata: Metadata = {
   },
 };
 
-const features = [
-  { icon: QrCode, title: "QR check‑in", desc: "Each site gets a unique QR code. Scan, sign, done." },
-  { icon: ShieldCheck, title: "Mandatory safety briefing", desc: "Visitor cannot skip acknowledgment. Compliance proof." },
-  { icon: Users, title: "Real‑time dashboard", desc: "See who's on site right now – auto‑refreshes every few seconds." },
-  { icon: ListChecks, title: "Pre‑screening questions", desc: "Custom yes/no questions before sign‑in. Answers stored with the record." },
-  { icon: Camera, title: "Photo capture", desc: "Take a visitor photo at check‑in, stored with their log. Improves security." },
-  { icon: Mail, title: "Host notifications", desc: "Visitor selects a host; automatic email alert (via Brevo)." },
-  { icon: UserPlus, title: "Pre‑registration", desc: "Add expected visitors for one‑tap sign‑in." },
-  { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list, with photo if available." },
-  { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
-  { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
-  { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
-  { icon: Code, title: "REST API", desc: "Connect to Slack, HR tools, or custom dashboards." },
-  { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier, and a full REST API for custom tools." },
-  { icon: DollarSign, title: "Flat $49/mo", desc: "No per‑site or per‑user fees. Cancel anytime." },
+const featureGroups = [
+  {
+    category: "Check‑in",
+    items: [
+      { icon: QrCode, title: "QR check‑in", desc: "Each site gets a unique QR code. Scan, sign, done." },
+      { icon: ShieldCheck, title: "Mandatory safety briefing", desc: "Visitor cannot skip acknowledgment. Compliance proof." },
+      { icon: Camera, title: "Photo capture", desc: "Take a visitor photo at check‑in, stored with their log. Improves security." },
+      { icon: ListChecks, title: "Pre‑screening questions", desc: "Custom yes/no questions before sign‑in. Answers stored with the record." },
+    ],
+  },
+  {
+    category: "Management",
+    items: [
+      { icon: Users, title: "Real‑time dashboard", desc: "See who's on site right now – auto‑refreshes every few seconds." },
+      { icon: Mail, title: "Host notifications", desc: "Visitor selects a host; automatic email alert (via Brevo)." },
+      { icon: UserPlus, title: "Pre‑registration", desc: "Add expected visitors for one‑tap sign‑in." },
+      { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list, with photo if available." },
+    ],
+  },
+  {
+    category: "Compliance & Export",
+    items: [
+      { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
+      { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
+      { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
+    ],
+  },
+  {
+    category: "Integrations",
+    items: [
+      { icon: Code, title: "REST API", desc: "Connect to Slack, HR tools, or custom dashboards." },
+      { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier, and a full REST API for custom tools." },
+    ],
+  },
 ];
+
+const pricingFeature = { icon: DollarSign, title: "Flat $49/mo", desc: "No per‑site or per‑user fees. Cancel anytime." };
 
 const screenshots = [
   {
@@ -85,7 +108,7 @@ export default function LandingPage() {
             <span className="block mt-2 text-white">Smart visitor management</span>
           </h1>
           <p className="mt-4 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            for construction sites, warehouses, and offices.
+            the digital check‑in for any workplace.
           </p>
           <p className="mt-4 text-base text-slate-400 max-w-2xl mx-auto">
             QR check‑in. Real‑time dashboard (auto‑refreshes). Audit‑ready exports. No sales calls ever.
@@ -120,6 +143,7 @@ export default function LandingPage() {
                 title="SiteSafe demo"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
+                loading="lazy"
                 className="absolute top-0 left-0 w-full h-full rounded-xl border border-white/10"
               />
             </div>
@@ -130,79 +154,125 @@ export default function LandingPage() {
         </div>
       </div>
 
-            {/* Trust badges – social proof */}
+      {/* Trust badges – social proof */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex flex-wrap justify-center gap-6 items-center">
-          <a href="https://saasdb.net" rel="dofollow" className="inline-flex flex-col items-center gap-1 text-center">
-            <img src="https://saasdb.net/badge/featured-dark.svg" alt="Featured on SaasDB" className="h-12 w-auto sm:h-14" />
+          <a
+            href="https://saasdb.net"
+            rel="noopener noreferrer"
+            className="inline-flex flex-col items-center gap-1 text-center"
+          >
+            <Image
+              src="https://saasdb.net/badge/featured-dark.svg"
+              alt="Featured on SaasDB"
+              width={150}
+              height={56}
+              unoptimized
+              className="h-12 w-auto sm:h-14"
+            />
             <span className="text-xs text-slate-400">Featured on SaasDB</span>
           </a>
-          <a href="https://fazier.com/launches/sitesafe.thesift.space" target="_blank" rel="noopener noreferrer" className="inline-flex flex-col items-center gap-1 text-center">
-            <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" width={120} alt="Fazier badge" />
+          <a
+            href="https://fazier.com/launches/sitesafe.thesift.space"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex flex-col items-center gap-1 text-center"
+          >
+            <Image
+              src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light"
+              alt="Launched on Fazier"
+              width={120}
+              height={40}
+              unoptimized
+              className="h-10 w-auto"
+            />
             <span className="text-xs text-slate-400">Launched on Fazier</span>
           </a>
-          <a href="https://www.saashub.com/sitesafe-by-thesift?utm_source=badge&utm_campaign=badge&utm_content=sitesafe-by-thesift&badge_variant=dark&badge_kind=approved" target="_blank" className="inline-flex flex-col items-center gap-1 text-center">
-            <img src="https://cdn-b.saashub.com/img/badges/approved-dark.png?v=1" alt="SiteSafe by TheSift badge" style={{ maxWidth: "150px" }} />
+          <a
+            href="https://www.saashub.com/sitesafe-by-thesift?utm_source=badge&utm_campaign=badge&utm_content=sitesafe-by-thesift&badge_variant=dark&badge_kind=approved"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex flex-col items-center gap-1 text-center"
+          >
+            <Image
+              src="https://cdn-b.saashub.com/img/badges/approved-dark.png?v=1"
+              alt="SiteSafe by TheSift badge – approved on SaaS Hub"
+              width={150}
+              height={50}
+              unoptimized
+              className="h-10 w-auto"
+            />
             <span className="text-xs text-slate-400">Featured on SaaS Hub</span>
           </a>
           <ReviewBadges />
         </div>
       </div>
 
-      {/* Problem section */}
+      {/* Problem section – now industry‑neutral */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pb-12">
-        <p className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-          Last month, a contractor lost his visitor log the day before an OSHA audit. He spent four hours recreating it from memory.
-        </p>
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+          Last month, a site manager lost their visitor log the day before a safety audit.
+          They spent four hours recreating it from memory.
+        </h2>
         <p className="mt-4 text-lg text-sky-400 font-semibold">
           That doesn&apos;t happen with SiteSafe.
         </p>
       </div>
 
-      {/* Features grid */}
-      <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-12">Everything you get</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map((f, idx) => (
-            <div key={idx} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:shadow-card-raised transition-shadow duration-300">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                <f.icon className="w-5 h-5 text-sky-300" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-white text-sm">{f.title}</h3>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
-              </div>
+      {/* Features grid – grouped by capability */}
+      <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get</h2>
+
+        {featureGroups.map((group) => (
+          <div key={group.category} className="mb-8">
+            <h3 className="text-lg font-semibold text-sky-300 mb-4 text-center sm:text-left">
+              {group.category}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {group.items.map((f, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                    <f.icon className="w-5 h-5 text-sky-300" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white text-sm">{f.title}</h4>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+        ))}
+
+        {/* Pricing feature callout */}
+        <div className="mt-8 flex justify-center">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start max-w-md w-full hover:bg-white/[0.08] transition-all duration-300">
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+              <pricingFeature.icon className="w-5 h-5 text-emerald-300" />
+            </div>
+            <div>
+              <h4 className="font-semibold text-white text-sm">{pricingFeature.title}</h4>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">{pricingFeature.desc}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Mid‑page CTA */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/signup"
+            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
+          >
+            Ready to try? Start free trial <ArrowRight className="ml-2 w-4 h-4" />
+          </Link>
         </div>
       </div>
 
-      {/* See the product – horizontally scrollable gallery */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">See the product</h2>
-        <div className="overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-4 sm:mx-0">
-          <div className="flex gap-6 w-max px-4 sm:px-0">
-            {screenshots.map((shot, idx) => (
-              <div
-                key={idx}
-                className="snap-center flex-shrink-0 w-[85vw] max-w-md bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised overflow-hidden"
-              >
-                <div className="p-2">
-                  <img
-                    src={shot.src}
-                    alt={shot.alt}
-                    className="rounded-xl w-full h-auto object-cover"
-                  />
-                </div>
-                <div className="px-4 pb-4 text-center">
-                  <p className="text-xs text-slate-400">{shot.caption}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <p className="text-xs text-slate-500 text-center mt-4">Actual product screenshots. Scroll to explore.</p>
-      </div>
+      {/* Screenshot gallery – now a Client Component */}
+      <ScreenshotGallery screenshots={screenshots} />
 
       {/* Trusted by – industries served */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
@@ -223,7 +293,7 @@ export default function LandingPage() {
             &ldquo;I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.&rdquo;
           </blockquote>
           <p className="mt-4 text-sm text-slate-400">
-            – Matteus, Multi‑Site Manager – NY
+            – Matteus, Facility Manager – NY
           </p>
         </div>
       </div>
