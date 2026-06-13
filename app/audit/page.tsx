@@ -4,7 +4,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
-import { ArrowRight, CheckCircle2, XCircle, ShieldAlert } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  XCircle,
+  ShieldAlert,
+  Copy,
+  Award,
+} from "lucide-react";
 
 const questions = [
   {
@@ -62,9 +69,18 @@ const questions = [
 export default function AuditPage() {
   const [answers, setAnswers] = useState<Record<number, boolean | null>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [showEmailCapture, setShowEmailCapture] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailStatus, setEmailStatus] = useState<
+    "idle" | "loading" | "sent" | "error"
+  >("idle");
+  const [scoreRevealed, setScoreRevealed] = useState(false);
+  const [badgeCopied, setBadgeCopied] = useState(false);
 
   const score =
-    submitted && Object.values(answers).filter((v) => v === true).length;
+    submitted && scoreRevealed
+      ? Object.values(answers).filter((v) => v === true).length
+      : 0;
 
   function getScoreCategory(score: number) {
     if (score <= 3)
@@ -101,23 +117,68 @@ export default function AuditPage() {
   }
 
   function handleAnswer(qId: number, value: boolean) {
-    if (!submitted) {
+    if (!submitted && !showEmailCapture) {
       setAnswers((prev) => ({ ...prev, [qId]: value }));
     }
   }
 
-  function handleSubmit() {
+  function handleSeeMyScore() {
     if (Object.keys(answers).length < questions.length) return;
-    setSubmitted(true);
-    track("self_audit_completed", { score });
+    setShowEmailCapture(true);
+    setSubmitted(true); // mark submitted so answers can't change, but score not yet revealed
+  }
+
+  async function handleEmailSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email) return;
+    setEmailStatus("loading");
+    try {
+      const res = await fetch("/api/send-checklist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        track("self_audit_report_requested");
+        setEmailStatus("sent");
+        // reveal score after a brief moment
+        setTimeout(() => {
+          setScoreRevealed(true);
+        }, 500);
+      } else {
+        setEmailStatus("error");
+      }
+    } catch {
+      setEmailStatus("error");
+    }
+  }
+
+  function skipEmail() {
+    setScoreRevealed(true);
+    track("self_audit_completed", { score: Object.values(answers).filter(v => v === true).length });
   }
 
   function reset() {
     setAnswers({});
     setSubmitted(false);
+    setShowEmailCapture(false);
+    setEmail("");
+    setEmailStatus("idle");
+    setScoreRevealed(false);
   }
 
-  const ScoreIcon = submitted ? getScoreCategory(score as number).icon : CheckCircle2;
+  function copyBadge() {
+    const badgeCode = `<a href="https://sitesafe.thesift.space/audit" target="_blank" rel="noopener noreferrer">
+  <img src="https://sitesafe.thesift.space/api/audit-badge?score=${score}" alt="SiteSafe Audit Score: ${score}/10" style="width:200px;height:auto;" />
+</a>`;
+    navigator.clipboard.writeText(badgeCode);
+    setBadgeCopied(true);
+    setTimeout(() => setBadgeCopied(false), 2000);
+    track("audit_badge_copied", { score });
+  }
+
+  const ScoreIcon = scoreRevealed ? getScoreCategory(score).icon : CheckCircle2;
 
   return (
     <div className="min-h-screen py-12 px-4">
@@ -143,11 +204,12 @@ export default function AuditPage() {
 
           {questions.map((q) => {
             const answer = answers[q.id];
+            const disabled = submitted || showEmailCapture;
             return (
               <div
                 key={q.id}
                 className={`p-4 rounded-xl border transition-colors ${
-                  submitted
+                  scoreRevealed
                     ? answer === true
                       ? "border-emerald-400/20 bg-emerald-500/5"
                       : "border-rose-400/20 bg-rose-500/5"
@@ -159,7 +221,7 @@ export default function AuditPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleAnswer(q.id, true)}
-                    disabled={submitted}
+                    disabled={disabled}
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       answer === true
                         ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/30"
@@ -170,7 +232,7 @@ export default function AuditPage() {
                   </button>
                   <button
                     onClick={() => handleAnswer(q.id, false)}
-                    disabled={submitted}
+                    disabled={disabled}
                     className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                       answer === false
                         ? "bg-rose-500/20 text-rose-300 border border-rose-400/30"
@@ -184,31 +246,100 @@ export default function AuditPage() {
             );
           })}
 
-          {/* Submit / Result */}
-          {!submitted ? (
+          {/* Email capture step (before score) */}
+          {showEmailCapture && !scoreRevealed ? (
+            <div className="bg-white/[0.04] rounded-xl p-6 border border-white/5 space-y-4">
+              <h3 className="text-lg font-semibold text-white">
+                Want the full report?
+              </h3>
+              <p className="text-sm text-slate-300">
+                Enter your email and we’ll send you a detailed breakdown of your
+                score, plus the exact steps to fix each gap. No spam, no sales call.
+              </p>
+              {emailStatus !== "sent" ? (
+                <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="flex-1 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                  />
+                  <button
+                    type="submit"
+                    disabled={emailStatus === "loading"}
+                    className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white font-medium rounded-lg px-4 py-2 text-sm transition-colors"
+                  >
+                    {emailStatus === "loading" ? "Sending…" : "Send report"}
+                  </button>
+                </form>
+              ) : (
+                <p className="text-emerald-400 text-sm">Report sent! Check your inbox.</p>
+              )}
+              {emailStatus === "error" && (
+                <p className="text-rose-400 text-xs">Something went wrong. Please try again.</p>
+              )}
+              <button
+                onClick={skipEmail}
+                className="text-slate-400 hover:text-white text-sm transition-colors"
+              >
+                No thanks, just show my score
+              </button>
+            </div>
+          ) : null}
+
+          {/* Submit button (before email capture) */}
+          {!submitted && !showEmailCapture ? (
             <button
-              onClick={handleSubmit}
+              onClick={handleSeeMyScore}
               disabled={Object.keys(answers).length < questions.length}
               className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/30 disabled:text-sky-200/50 text-white font-medium rounded-xl px-6 py-3 text-sm transition-all"
             >
               See my score
             </button>
-          ) : (
+          ) : null}
+
+          {/* Score display (after email or skip) */}
+          {scoreRevealed ? (
             <div className="text-center pt-4">
               <div className="inline-flex items-center gap-2 text-3xl font-extrabold text-white">
-                <ScoreIcon className={`w-6 h-6 ${getScoreCategory(score as number).color}`} />
+                <ScoreIcon className={`w-6 h-6 ${getScoreCategory(score).color}`} />
                 {score}/10
               </div>
               <p
                 className={`text-sm font-semibold mt-1 ${
-                  getScoreCategory(score as number).color
+                  getScoreCategory(score).color
                 }`}
               >
-                {getScoreCategory(score as number).label}
+                {getScoreCategory(score).label}
               </p>
               <p className="text-sm text-slate-300 mt-2 max-w-sm mx-auto leading-relaxed">
-                {getScoreCategory(score as number).message}
+                {getScoreCategory(score).message}
               </p>
+
+              {/* Embeddable badge */}
+              <div className="mt-6 bg-white/[0.04] border border-white/10 rounded-xl p-4 inline-block mx-auto">
+                <p className="text-xs text-slate-400 mb-2 flex items-center justify-center gap-1">
+                  <Award className="w-4 h-4" /> Your badge
+                </p>
+                <div className="flex items-center gap-3 justify-center">
+                  <div className="bg-slate-800 rounded-lg px-4 py-2 inline-flex items-center gap-2 border border-white/10">
+                    <CheckCircle2 className={`w-4 h-4 ${getScoreCategory(score).color}`} />
+                    <span className="text-white font-bold">{score}/10</span>
+                    <span className="text-xs text-slate-300">SiteSafe Audit</span>
+                  </div>
+                  <button
+                    onClick={copyBadge}
+                    className="text-sky-400 hover:text-sky-300 text-xs flex items-center gap-1 transition-colors"
+                  >
+                    <Copy className="w-3.5 h-3.5" /> {badgeCopied ? "Copied!" : "Copy embed code"}
+                  </button>
+                </div>
+                <p className="text-xs text-slate-500 mt-2 max-w-xs mx-auto">
+                  Embed this badge on your website to show you take visitor safety seriously.
+                </p>
+              </div>
 
               <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
@@ -229,7 +360,7 @@ export default function AuditPage() {
                 SiteSafe fixes all 10 of these automatically — no credit card, no sales call.
               </p>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
