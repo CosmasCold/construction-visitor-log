@@ -4,6 +4,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { track } from "@vercel/analytics";
+import Image from "next/image";
 import {
   RefreshCw,
   FileSpreadsheet,
@@ -254,6 +256,7 @@ export default function CompanyDashboardClient({
       .slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(link.href);
+    track("export", { format: "csv" });
   }
 
   async function exportExcel() {
@@ -280,6 +283,7 @@ export default function CompanyDashboardClient({
       wb,
       `visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.xlsx`
     );
+    track("export", { format: "xlsx" });
   }
 
   async function exportPDF() {
@@ -323,6 +327,7 @@ export default function CompanyDashboardClient({
     doc.save(
       `visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.pdf`
     );
+    track("export", { format: "pdf" });
   }
 
   const showOnboarding =
@@ -331,6 +336,7 @@ export default function CompanyDashboardClient({
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-white flex items-center gap-2">
@@ -385,6 +391,7 @@ export default function CompanyDashboardClient({
           </div>
         </div>
 
+        {/* Onboarding banner */}
         {showOnboarding && (
           <div className="bg-sky-500/10 backdrop-blur-sm border border-sky-400/30 rounded-2xl p-4 flex justify-between items-start">
             <p className="text-sm text-sky-100">
@@ -402,10 +409,14 @@ export default function CompanyDashboardClient({
           </div>
         )}
 
+        {/* Two‑column row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Date filter */}
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4 flex flex-wrap items-end gap-3">
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">From</label>
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                From
+              </label>
               <input
                 type="date"
                 value={dateFrom}
@@ -414,7 +425,9 @@ export default function CompanyDashboardClient({
               />
             </div>
             <div>
-              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">To</label>
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
+                To
+              </label>
               <input
                 type="date"
                 value={dateTo}
@@ -436,6 +449,7 @@ export default function CompanyDashboardClient({
             </button>
           </div>
 
+          {/* New Site */}
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
             <button
               onClick={() => setShowNewSite(!showNewSite)}
@@ -529,8 +543,213 @@ export default function CompanyDashboardClient({
                       className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
                     />
 
-                    {/* Hosts, Expected Visitors, Questions sections unchanged */}
-                    {/* ... (they remain the same as originally provided) */}
+                    {/* Hosts section */}
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <h4 className="text-sm font-semibold text-white mb-2">
+                        Hosts (for email notifications)
+                      </h4>
+                      {hostsForEdit.length > 0 && (
+                        <ul className="space-y-1 mb-3">
+                          {hostsForEdit.map((host) => (
+                            <li
+                              key={host.id}
+                              className="flex justify-between items-center text-xs text-slate-300"
+                            >
+                              <span>
+                                {host.name} &lt;{host.email}&gt;
+                              </span>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  await fetch(
+                                    `/api/sites/${site.id}/hosts/${host.id}`,
+                                    { method: "DELETE" }
+                                  );
+                                  setHostsForEdit((prev) =>
+                                    prev.filter((h) => h.id !== host.id)
+                                  );
+                                }}
+                                className="text-rose-400 hover:text-rose-300"
+                              >
+                                Remove
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Name"
+                          value={newHostName}
+                          onChange={(e) => setNewHostName(e.target.value)}
+                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                        />
+                        <input
+                          type="email"
+                          placeholder="Email"
+                          value={newHostEmail}
+                          onChange={(e) => setNewHostEmail(e.target.value)}
+                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!newHostName || !newHostEmail) return;
+                            const res = await fetch(
+                              `/api/sites/${site.id}/hosts`,
+                              {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  name: newHostName,
+                                  email: newHostEmail,
+                                }),
+                              }
+                            );
+                            if (res.ok) {
+                              const created = await res.json();
+                              setHostsForEdit((prev) => [...prev, created]);
+                              setNewHostName("");
+                              setNewHostEmail("");
+                            }
+                          }}
+                          className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Expected visitors section */}
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <h4 className="text-sm font-semibold text-white mb-2">
+                        Expected visitors (quick sign‑in)
+                      </h4>
+                      {expectedForEdit.length > 0 && (
+                        <ul className="space-y-1 mb-3">
+                          {expectedForEdit.map((visitor) => (
+                            <li
+                              key={visitor.id}
+                              className="flex justify-between items-center text-xs text-slate-300"
+                            >
+                              <span>
+                                {visitor.name} — {visitor.company}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  await fetch(
+                                    `/api/sites/${site.id}/expected-visitors/${visitor.id}`,
+                                    { method: "DELETE" }
+                                  );
+                                  setExpectedForEdit((prev) =>
+                                    prev.filter((v) => v.id !== visitor.id)
+                                  );
+                                }}
+                                className="text-rose-400 hover:text-rose-300"
+                              >
+                                Remove
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Name"
+                          value={newVisitorName}
+                          onChange={(e) => setNewVisitorName(e.target.value)}
+                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Company"
+                          value={newVisitorCompany}
+                          onChange={(e) =>
+                            setNewVisitorCompany(e.target.value)
+                          }
+                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!newVisitorName || !newVisitorCompany) return;
+                            const res = await fetch(
+                              `/api/sites/${site.id}/expected-visitors`,
+                              {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                  name: newVisitorName,
+                                  company: newVisitorCompany,
+                                }),
+                              }
+                            );
+                            if (res.ok) {
+                              const created = await res.json();
+                              setExpectedForEdit((prev) => [...prev, created]);
+                              setNewVisitorName("");
+                              setNewVisitorCompany("");
+                            }
+                          }}
+                          className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Pre‑screening questions section */}
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <h4 className="text-sm font-semibold text-white mb-2">
+                        Pre‑screening questions (yes/no)
+                      </h4>
+                      {editQuestions.length > 0 && (
+                        <ul className="space-y-1 mb-3">
+                          {editQuestions.map((q, i) => (
+                            <li
+                              key={i}
+                              className="flex justify-between items-center text-xs text-slate-300"
+                            >
+                              <span>{q}</span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setEditQuestions((prev) =>
+                                    prev.filter((_, idx) => idx !== i)
+                                  )
+                                }
+                                className="text-rose-400 hover:text-rose-300"
+                              >
+                                Remove
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Question (e.g., Completed induction?)"
+                          value={newQuestion}
+                          onChange={(e) => setNewQuestion(e.target.value)}
+                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!newQuestion.trim()) return;
+                            setEditQuestions((prev) => [...prev, newQuestion.trim()]);
+                            setNewQuestion("");
+                          }}
+                          className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
 
                     <div className="flex gap-2">
                       <button
@@ -617,17 +836,17 @@ export default function CompanyDashboardClient({
           <table className="w-full text-sm">
             <thead className="bg-white/5">
               <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
-                <th className="p-3 text-left">Photo</th>
-                <th className="p-3 text-left">Site</th>
-                <th className="p-3 text-left">Name</th>
-                <th className="p-3 text-left">Company</th>
-                <th className="p-3 text-left">Phone</th>
-                <th className="p-3 text-left">Host</th>
-                <th className="p-3 text-left">Signed In</th>
-                <th className="p-3 text-left">Signed Out</th>
-                <th className="p-3 text-left">Safety</th>
-                <th className="p-3 text-left">Pre‑screening</th>
-                <th className="p-3 text-left">Actions</th>
+                <th scope="col" className="p-3 text-left">Photo</th>
+                <th scope="col" className="p-3 text-left">Site</th>
+                <th scope="col" className="p-3 text-left">Name</th>
+                <th scope="col" className="p-3 text-left">Company</th>
+                <th scope="col" className="p-3 text-left">Phone</th>
+                <th scope="col" className="p-3 text-left">Host</th>
+                <th scope="col" className="p-3 text-left">Signed In</th>
+                <th scope="col" className="p-3 text-left">Signed Out</th>
+                <th scope="col" className="p-3 text-left">Safety</th>
+                <th scope="col" className="p-3 text-left">Pre‑screening</th>
+                <th scope="col" className="p-3 text-left">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -650,10 +869,13 @@ export default function CompanyDashboardClient({
                     <td className="p-3">
                       {v.photoUrl ? (
                         <a href={v.photoUrl} target="_blank" rel="noopener noreferrer">
-                          <img
+                          <Image
                             src={v.photoUrl}
                             alt={v.fullName}
-                            className="w-10 h-10 rounded object-cover"
+                            width={40}
+                            height={40}
+                            unoptimized
+                            className="rounded object-cover"
                           />
                         </a>
                       ) : (

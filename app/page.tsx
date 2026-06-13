@@ -5,6 +5,8 @@ import Image from "next/image";
 import ChecklistForm from "@/components/ChecklistForm";
 import ReviewBadges from "@/components/ReviewBadges";
 import ScreenshotGallery from "@/components/ScreenshotGallery";
+import TrackedCtaLink from "@/components/TrackedCtaLink";
+import HeroVideo from "@/components/HeroVideo";
 import {
   QrCode,
   ShieldCheck,
@@ -18,7 +20,6 @@ import {
   Code,
   DollarSign,
   ArrowRight,
-  Play,
   CheckCircle2,
   Camera,
   ListChecks,
@@ -119,12 +120,12 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-8 flex flex-col items-center gap-4">
-            <Link
+            <TrackedCtaLink
               href="/signup"
               className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
             >
               Start Free Trial <ArrowRight className="ml-2 w-4 h-4" />
-            </Link>
+            </TrackedCtaLink>
             <div className="flex items-center gap-4 text-sm">
               <a href="#features" className="text-slate-400 hover:text-white transition-colors duration-150">
                 See what&apos;s included ↓
@@ -136,21 +137,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-8 max-w-xl mx-auto">
-            <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-              <iframe
-                src="https://www.youtube.com/embed/JmVMm-4s6B4"
-                title="SiteSafe demo"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                loading="lazy"
-                className="absolute top-0 left-0 w-full h-full rounded-xl border border-white/10"
-              />
-            </div>
-            <p className="text-xs text-slate-500 mt-2 flex items-center justify-center gap-1">
-              <Play className="w-3 h-3" /> 30‑second overview
-            </p>
-          </div>
+          <HeroVideo />
         </div>
       </div>
 
@@ -219,33 +206,37 @@ export default function LandingPage() {
         </p>
       </div>
 
-      {/* Features grid */}
+      {/* Features grid – with empty‑state fallback */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get</h2>
 
-        {featureGroups.map((group) => (
-          <div key={group.category} className="mb-8">
-            <h3 className="text-lg font-semibold text-sky-300 mb-4 text-center sm:text-left">
-              {group.category}
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {group.items.map((f, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300"
-                >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                    <f.icon className="w-5 h-5 text-sky-300" />
+        {featureGroups.length === 0 ? (
+          <p className="text-center text-slate-400">No features to display at this time.</p>
+        ) : (
+          featureGroups.map((group) => (
+            <div key={group.category} className="mb-8">
+              <h3 className="text-lg font-semibold text-sky-300 mb-4 text-center sm:text-left">
+                {group.category}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {group.items.map((f, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300"
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                      <f.icon className="w-5 h-5 text-sky-300" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white text-sm">{f.title}</h4>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-white text-sm">{f.title}</h4>
-                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
 
         {/* Pricing feature callout */}
         <div className="mt-8 flex justify-center">
@@ -262,28 +253,32 @@ export default function LandingPage() {
 
         {/* Mid‑page CTA */}
         <div className="mt-12 text-center">
-          <Link
+          <TrackedCtaLink
             href="/signup"
             className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
           >
             Ready to try? Start free trial <ArrowRight className="ml-2 w-4 h-4" />
-          </Link>
+          </TrackedCtaLink>
         </div>
       </div>
 
       {/* Screenshot gallery */}
       <ScreenshotGallery screenshots={screenshots} />
 
-      {/* Trusted by */}
+      {/* Trusted by – with empty fallback */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-xl font-semibold tracking-tight text-white text-center mb-6">Trusted across industries</h2>
-        <div className="flex flex-wrap justify-center gap-6">
-          {["Construction", "Warehousing", "Offices", "Manufacturing", "Logistics"].map((industry) => (
-            <div key={industry} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised px-6 py-3 text-sm text-slate-200 font-medium">
-              {industry}
-            </div>
-          ))}
-        </div>
+        {["Construction", "Warehousing", "Offices", "Manufacturing", "Logistics"].length === 0 ? (
+          <p className="text-center text-slate-400 text-sm">No industries listed.</p>
+        ) : (
+          <div className="flex flex-wrap justify-center gap-6">
+            {["Construction", "Warehousing", "Offices", "Manufacturing", "Logistics"].map((industry) => (
+              <div key={industry} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised px-6 py-3 text-sm text-slate-200 font-medium">
+                {industry}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Testimonial */}
@@ -373,12 +368,12 @@ export default function LandingPage() {
           <p className="mt-3 text-lg text-slate-400">
             No credit card. No sales call. Trial starts instantly.
           </p>
-          <Link
+          <TrackedCtaLink
             href="/signup"
             className="inline-flex items-center justify-center mt-8 px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
           >
             Try SiteSafe free <ArrowRight className="ml-2 w-4 h-4" />
-          </Link>
+          </TrackedCtaLink>
         </div>
       </div>
     </div>

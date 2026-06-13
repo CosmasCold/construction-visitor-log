@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { track } from "@vercel/analytics";
 
 export default function ChecklistForm() {
   const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ export default function ChecklistForm() {
       });
       const data = await res.json();
       if (data.success) {
+        track("checklist_submitted");
         setEmail("");
         setStatus("sent");
       } else {

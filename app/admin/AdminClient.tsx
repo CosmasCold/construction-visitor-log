@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { track } from "@vercel/analytics";
 import {
   RefreshCw, FileSpreadsheet, FileText, FileDown, LogOut, Trash2, ExternalLink,
   Building, Users, CheckCircle2, XCircle,
@@ -97,6 +98,7 @@ export default function AdminClient({
     link.download = `visitor_log_${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(link.href);
+    track("export", { format: "csv" });
   }
 
   async function exportExcel() {
@@ -110,6 +112,7 @@ export default function AdminClient({
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Visitor Log");
     XLSX.writeFile(wb, `visitor_log_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    track("export", { format: "xlsx" });
   }
 
   async function exportPDF() {
@@ -125,11 +128,13 @@ export default function AdminClient({
     autoTable(doc, { head: [headers], body: rows, startY: 20, styles: { fontSize: 8, cellPadding: 2 }, headStyles: { fillColor: [15, 23, 42] } });
     doc.text(`Visitor Log – ${dateFrom || "start"} to ${dateTo || "end"}`, 14, 15);
     doc.save(`visitor_log_${new Date().toISOString().slice(0, 10)}.pdf`);
+    track("export", { format: "pdf" });
   }
 
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-white flex items-center gap-2">
@@ -219,15 +224,15 @@ export default function AdminClient({
           <table className="w-full text-sm">
             <thead className="bg-white/5">
               <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
-                <th className="p-3 text-left">Site</th>
-                <th className="p-3 text-left">Name</th>
-                <th className="p-3 text-left">Company</th>
-                <th className="p-3 text-left">Phone</th>
-                <th className="p-3 text-left">Email</th>
-                <th className="p-3 text-left">Host</th>
-                <th className="p-3 text-left">Signed In</th>
-                <th className="p-3 text-left">Signed Out</th>
-                <th className="p-3 text-left">Safety</th>
+                <th scope="col" className="p-3 text-left">Site</th>
+                <th scope="col" className="p-3 text-left">Name</th>
+                <th scope="col" className="p-3 text-left">Company</th>
+                <th scope="col" className="p-3 text-left">Phone</th>
+                <th scope="col" className="p-3 text-left">Email</th>
+                <th scope="col" className="p-3 text-left">Host</th>
+                <th scope="col" className="p-3 text-left">Signed In</th>
+                <th scope="col" className="p-3 text-left">Signed Out</th>
+                <th scope="col" className="p-3 text-left">Safety</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
