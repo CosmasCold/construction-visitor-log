@@ -65,6 +65,12 @@ export default function BlogPost() {
           </p>
         </div>
       </div>
+      <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10">
+  Want to make sure your visitor log survives an audit?{" "}
+  <a href="/checklist" className="text-sky-400 hover:underline">
+    Grab our free 10‑point checklist
+  </a>.
+</p>
     </div>
   );
 }
