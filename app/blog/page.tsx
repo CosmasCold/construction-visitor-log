@@ -9,14 +9,49 @@ export const metadata: Metadata = {
 };
 
 const posts = [
-    {
+  {
+    slug: "envoy-alternative",
+    title: "Envoy Alternative: Why SiteSafe Is the Better Choice for Small Teams",
+    date: "2026-06-13",
+    excerpt:
+      "Envoy's mandatory demos, per‑site fees, and hidden pricing don't work for small teams. Here's how SiteSafe compares — flat $49/mo, no sales calls, and a mandatory safety acknowledgment Envoy can't match.",
+  },
+  {
+    slug: "swipedon-alternative",
+    title: "SwipedOn Alternative: Flat Pricing, No Per‑Location Fees",
+    date: "2026-06-13",
+    excerpt:
+      "SwipedOn's per‑location pricing adds up fast. SiteSafe offers unlimited sites for one flat price, plus host notifications and mandatory safety briefings included.",
+  },
+  {
+    slug: "ilobby-alternative",
+    title: "iLobby Alternative: Simpler Visitor Management for Small Teams",
+    date: "2026-06-13",
+    excerpt:
+      "iLobby is built for enterprises with complex needs. SiteSafe gives small teams fast check‑in, compliance proof, and flat pricing — no long deployment, no sales calls.",
+  },
+  {
+    slug: "best-visitor-management-systems",
+    title: "The 5 Best Visitor Management Systems for Small Businesses",
+    date: "2026-06-13",
+    excerpt:
+      "Compare Envoy, SwipedOn, iLobby, SiteSafe, and paper logs side‑by‑side on pricing, compliance features, and ease of use. Find the right fit for your workplace.",
+  },
+  {
+    slug: "what-inspectors-look-for-in-visitor-log",
+    title: "What Inspectors Look for in a Visitor Log",
+    date: "2026-06-13",
+    excerpt:
+      "From mandatory safety acknowledgments to time‑stamped records, here's exactly what OSHA and safety inspectors check when they review your visitor log.",
+  },
+  {
     slug: "ultimate-guide-modern-visitor-management",
     title: "The Ultimate Guide to Modern Visitor Management",
     date: "2026-06-09",
     excerpt:
       "Why paper visitor logs fail audits, how digital check‑in works, and the essential features a modern visitor management system should have.",
   },
-    {
+  {
     slug: "case-study-small-business",
     title: "How a Small Business Chooses a Visitor Log",
     date: "2026-06-06",
