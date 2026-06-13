@@ -1,4 +1,6 @@
 // app/checklist/page.tsx
+import DownloadPDFButton from "@/components/DownloadPDFButton";
+
 export default function ChecklistPage() {
   const items = [
     {
@@ -58,12 +60,7 @@ export default function ChecklistPage() {
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-sm p-8 print:shadow-none print:p-0">
         <div className="flex items-center justify-between mb-4 print:hidden">
           <h1 className="text-2xl font-bold text-slate-800">Visitor Log Audit Checklist</h1>
-          <button
-            onClick={() => window.print()}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium rounded-lg transition-colors"
-          >
-            Download PDF
-          </button>
+          <DownloadPDFButton />
         </div>
         <p className="text-sm text-slate-500 mb-6 print:text-xs">
           10 things an inspector looks for in your visitor log – regardless of industry.

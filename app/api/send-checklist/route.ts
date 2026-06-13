@@ -9,17 +9,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Valid email required" }, { status: 400 });
   }
 
-  // 1. Save the request to your database
   try {
-    await prisma.checklistRequest.create({
-      data: { email },
-    });
+    await prisma.checklistRequest.create({ data: { email } });
   } catch (error) {
     console.error("Failed to store checklist request:", error);
-    // Continue to send the email anyway – don't block the user
   }
 
-  // 2. Build the email
   const checklistUrl = `${req.nextUrl.origin}/checklist`;
 
   const htmlContent = `
@@ -31,10 +26,10 @@ export async function POST(req: NextRequest) {
         <tr>
           <td align="center">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
-              <!-- Logo -->
+              <!-- Logo (favicon) -->
               <tr>
-                <td style="background-color:#0ea5e9;padding:16px 20px;text-align:center;">
-                  <img src="https://sitesafe.thesift.space/logo.png" alt="SiteSafe" style="height:32px;width:auto;display:block;margin:0 auto;" />
+                <td style="padding:16px 20px 0;text-align:center;">
+                  <img src="https://sitesafe.thesift.space/favicon.svg" alt="SiteSafe" style="height:36px;width:auto;display:block;margin:0 auto;" />
                 </td>
               </tr>
               <!-- OG Image -->
@@ -43,7 +38,6 @@ export async function POST(req: NextRequest) {
                   <img src="https://sitesafe.thesift.space/og-image.png" alt="SiteSafe – smart visitor management" style="width:100%;height:auto;display:block;border:none;" />
                 </td>
               </tr>
-              <!-- Body -->
               <tr>
                 <td style="padding:24px 20px;font-size:15px;line-height:1.6;color:#334155;">
                   <p style="margin:0 0 16px;">Hi,</p>
@@ -55,7 +49,6 @@ export async function POST(req: NextRequest) {
                   <p style="margin:0;">– SiteSafe</p>
                 </td>
               </tr>
-              <!-- Footer -->
               <tr>
                 <td style="background-color:#f8fafc;padding:16px 20px;text-align:center;border-top:1px solid #e2e8f0;">
                   <p style="font-size:12px;color:#94a3b8;margin:0;">
@@ -75,8 +68,7 @@ export async function POST(req: NextRequest) {
   `;
 
   const payload = {
-    // 🔁 Replace with a verified sender in your Brevo account
-    sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
+    sender: { name: "SiteSafe", email: "hello@thesift.space" },
     to: [{ email }],
     subject: "Your Visitor Log Audit Checklist",
     htmlContent,
@@ -90,10 +82,7 @@ export async function POST(req: NextRequest) {
 
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
-    headers: {
-      "api-key": apiKey,
-      "Content-Type": "application/json",
-    },
+    headers: { "api-key": apiKey, "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
