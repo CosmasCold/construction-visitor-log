@@ -34,8 +34,11 @@ export default function ChecklistForm() {
       <h3 className="text-lg font-semibold text-white mb-2">
         Free Visitor Log Audit Checklist
       </h3>
-      <p className="text-sm text-slate-300 mb-4">
-        10 things an inspector checks in any visitor log. Get the printable PDF delivered to your inbox.
+      <p className="text-sm text-slate-300 mb-2">
+        10 things an inspector checks in any visitor log — and exactly how to fix each one.
+      </p>
+      <p className="text-xs text-slate-400 mb-4">
+        Printable 2‑page PDF. No sign‑up required.
       </p>
 
       {status === "sent" ? (

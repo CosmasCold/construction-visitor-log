@@ -1,42 +1,97 @@
 // app/checklist/page.tsx
 export default function ChecklistPage() {
   const items = [
-    "Full name of every visitor (no nicknames, no initials)",
-    "Company or trade the visitor represents",
-    "Host name – who the visitor came to see",
-    "Date and time of arrival (accurate to the minute)",
-    "Date and time of departure, or confirmation they left",
-    "A signed or acknowledged safety / policy briefing",
-    "Legible handwriting – if you can’t read it, an inspector can’t either",
-    "No blank lines between entries (they invite fraudulent additions)",
-    "Consistent format across all pages and all sites",
-    "Secure storage – not a damp clipboard that gets thrown in a truck",
+    {
+      point: "Full legal name, every time",
+      inspector: "Auditors need to confirm exactly who was on site. Initials or nicknames won’t hold up.",
+      fix: "Make the full name field required before submission.",
+    },
+    {
+      point: "Company or trade affiliation",
+      inspector: "Tells the inspector why the visitor was there and who was responsible for them.",
+      fix: "Add a mandatory company field and pre‑fill it for known contractors.",
+    },
+    {
+      point: "Host name (who they came to see)",
+      inspector: "During an emergency or audit, you need to know which employee or department authorised the visit.",
+      fix: "Provide a dropdown of current hosts so the correct person is always selected.",
+    },
+    {
+      point: "Precise arrival time (down to the minute)",
+      inspector: "Vague entries like 'morning' are useless. Inspectors need a timestamp.",
+      fix: "Automatically stamp the arrival time on sign‑in.",
+    },
+    {
+      point: "Departure time or confirmation they left",
+      inspector: "You don’t want to be searching for someone who already left. Missing departure times are a red flag.",
+      fix: "Offer a one‑tap sign‑out button and allow hosts to sign people out remotely.",
+    },
+    {
+      point: "Acknowledged safety or policy briefing",
+      inspector: "Without proof a visitor was informed of hazards, you’re exposed. A signature or checkbox is mandatory.",
+      fix: "Make the acknowledgment a required step before the visitor can proceed.",
+    },
+    {
+      point: "Legible handwriting",
+      inspector: "If you can’t read it, the inspector can’t either. Scribbled entries are a liability.",
+      fix: "Use a digital form to eliminate handwriting entirely.",
+    },
+    {
+      point: "No blank lines between entries",
+      inspector: "Gaps invite fraudulent additions after the fact.",
+      fix: "Use a system that logs every entry sequentially and prevents after‑the‑fact inserts.",
+    },
+    {
+      point: "Consistent format across all pages and sites",
+      inspector: "If you have multiple locations with different log styles, comparing records is impossible.",
+      fix: "Standardise your check‑in process across every site with the same digital tool.",
+    },
+    {
+      point: "Secure, backed‑up storage",
+      inspector: "A damp clipboard or a drawer full of loose sheets won’t survive an audit request.",
+      fix: "Store visitor records in the cloud with encrypted access and automatic backups.",
+    },
   ];
 
   return (
-    <div className="min-h-screen py-12 px-4 print:py-4 print:px-2">
+    <div className="min-h-screen py-12 px-4">
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-sm p-8 print:shadow-none print:p-0">
-        <h1 className="text-2xl font-bold text-slate-800 mb-2 print:text-xl">
-          Visitor Log Audit Checklist
-        </h1>
+        <div className="flex items-center justify-between mb-4 print:hidden">
+          <h1 className="text-2xl font-bold text-slate-800">Visitor Log Audit Checklist</h1>
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium rounded-lg transition-colors"
+          >
+            Download PDF
+          </button>
+        </div>
         <p className="text-sm text-slate-500 mb-6 print:text-xs">
-          10 things an inspector looks for in your visitor log – regardless of
-          industry.
+          10 things an inspector looks for in your visitor log – regardless of industry.
         </p>
-        <ol className="space-y-3 text-slate-700 print:text-sm">
+
+        <ol className="space-y-6 print:space-y-4">
           {items.map((item, i) => (
-            <li key={i} className="flex gap-3">
-              <span className="font-bold text-sky-600">{i + 1}.</span>
-              <span>{item}</span>
+            <li key={i} className="border-b border-slate-100 pb-4 last:border-0">
+              <h2 className="text-base font-semibold text-slate-800 print:text-sm">
+                {i + 1}. {item.point}
+              </h2>
+              <p className="text-sm text-slate-600 mt-1 print:text-xs">
+                <strong className="text-slate-700">What an inspector checks:</strong> {item.inspector}
+              </p>
+              <p className="text-sm text-slate-600 mt-0.5 print:text-xs">
+                <strong className="text-slate-700">Quick fix:</strong> {item.fix}
+              </p>
             </li>
           ))}
         </ol>
-        <p className="text-sm text-slate-400 mt-8 print:hidden">
+
+        <p className="text-sm text-slate-400 mt-8 border-t pt-6 print:hidden">
           Want a digital solution that covers all of this automatically?{" "}
           <a href="/signup" className="text-sky-600 underline">
             Try SiteSafe free for 14 days.
           </a>
         </p>
+
         <div className="hidden print:block text-xs text-slate-400 mt-6 border-t pt-4">
           Generated by SiteSafe – sitesafe.thesift.space
         </div>
