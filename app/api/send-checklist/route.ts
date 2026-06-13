@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
   `;
 
   const payload = {
-    sender: { name: "SiteSafe", email: "hello@thesift.space" },
+    sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
     to: [{ email }],
     subject: "Your Visitor Log Audit Checklist",
     htmlContent,

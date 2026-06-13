@@ -1,3 +1,4 @@
+// app/api/send-audit-report/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -7,7 +8,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Missing email or score" }, { status: 400 });
   }
 
-  // ---- Determine rating and next steps (same logic as before) ----
   let ratingText = "High risk";
   let color = "#ef4444";
   let nextSteps = [
@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
     .map((step) => `<li style="margin-bottom:8px;">${step}</li>`)
     .join("");
 
-  // ---- Light, branded email template (matching checklist email style) ----
   const htmlContent = `
   <!DOCTYPE html>
   <html lang="en">
@@ -62,13 +61,11 @@ export async function POST(request: NextRequest) {
       <tr>
         <td align="center">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
-            <!-- Logo -->
             <tr>
               <td style="padding:16px 20px 0;text-align:center;">
                 <img src="https://sitesafe.thesift.space/favicon.svg" alt="SiteSafe" style="height:36px;width:auto;display:block;margin:0 auto;" />
               </td>
             </tr>
-            <!-- OG Image -->
             <tr>
               <td style="padding:0;">
                 <img src="https://sitesafe.thesift.space/og-image.png" alt="SiteSafe – smart visitor management" style="width:100%;height:auto;display:block;border:none;" />
@@ -78,18 +75,14 @@ export async function POST(request: NextRequest) {
               <td style="padding:24px 20px;font-size:15px;line-height:1.6;color:#334155;">
                 <p style="margin:0 0 16px;">Hi,</p>
                 <p style="margin:0 0 16px;">Here are your <strong>SiteSafe self‑audit results</strong>.</p>
-
-                <!-- Score card -->
                 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;text-align:center;margin-bottom:24px;">
                   <div style="font-size:40px;font-weight:bold;color:#0f172a;">${score}/10</div>
                   <div style="font-size:18px;font-weight:600;color:${color};margin-top:4px;">${ratingText}</div>
                 </div>
-
                 <p style="margin:0 0 12px;">Based on your answers, here are the next steps to strengthen your visitor log:</p>
                 <ul style="padding-left:20px;margin:0 0 24px;color:#334155;">
                   ${nextStepsHtml}
                 </ul>
-
                 <p style="margin:0 0 16px;">
                   <a href="https://sitesafe.thesift.space/audit" target="_blank" style="color:#0ea5e9;font-weight:600;">Retake the audit</a> anytime, or 
                   <a href="https://sitesafe.thesift.space/signup" target="_blank" style="color:#0ea5e9;font-weight:600;">start a free trial</a> to fix everything automatically.
@@ -103,7 +96,7 @@ export async function POST(request: NextRequest) {
                   &copy; 2026 SiteSafe &nbsp;·&nbsp;
                   <a href="https://sitesafe.thesift.space/terms" style="color:#94a3b8;text-decoration:underline;">Terms</a> &nbsp;·&nbsp;
                   <a href="https://sitesafe.thesift.space/privacy" style="color:#94a3b8;text-decoration:underline;">Privacy</a> &nbsp;·&nbsp;
-                  <a href="mailto:hello@thesift.space" style="color:#94a3b8;text-decoration:underline;">Contact</a>
+                  <a href="mailto:hello@sitesafe.thesift.space" style="color:#94a3b8;text-decoration:underline;">Contact</a>
                 </p>
               </td>
             </tr>
@@ -116,7 +109,7 @@ export async function POST(request: NextRequest) {
   `;
 
   const payload = {
-    sender: { name: "SiteSafe", email: "hello@thesift.space" },
+    sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" }, // ✅ verified sender
     to: [{ email }],
     subject: `Your SiteSafe Audit Score: ${score}/10 – ${ratingText}`,
     htmlContent,
