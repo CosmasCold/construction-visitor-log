@@ -313,6 +313,19 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* Self‑audit promo */}
+<div className="max-w-2xl mx-auto mb-12 px-4">
+  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
+    <p className="text-sm text-slate-300">
+      Not sure if your visitor log is audit‑ready?{" "}
+      <Link href="/audit" className="text-sky-400 hover:underline transition-colors font-medium">
+        Take our free 10‑point self‑audit
+      </Link>{" "}
+      and find out in 60 seconds.
+    </p>
+  </div>
+</div>
+
       {/* Security card – updated tracker wording */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
