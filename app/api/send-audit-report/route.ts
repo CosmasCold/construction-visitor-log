@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BREVO_API_KEY = process.env.BREVO_API_KEY!;
-const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || "cloudandclipboard@gmail.com";
-const BREVO_SENDER_NAME = process.env.BREVO_SENDER_NAME || "SiteSafe";
-
 export async function POST(request: NextRequest) {
   try {
-    const { email, score, answers } = await request.json();
+    const { email, score } = await request.json();
 
     if (!email || score === undefined) {
-      return NextResponse.json({ success: false, error: "Missing email or score" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "Missing email or score" },
+        { status: 400 }
+      );
     }
 
     let ratingText = "High risk";
@@ -76,29 +75,33 @@ export async function POST(request: NextRequest) {
       <p style="color: #64748b; font-size: 12px; margin-top: 32px;">No credit card · No sales call · Cancel anytime</p>
     </div>`;
 
-    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    const payload = {
+      sender: { name: "SiteSafe", email: "hello@thesift.space" }, // ✅ exactly the working sender
+      to: [{ email }],
+      subject: `Your SiteSafe Audit Score: ${score}/10 – ${ratingText}`,
+      htmlContent,
+    };
+
+    const apiKey = process.env.BREVO_API_KEY;
+    if (!apiKey) {
+      console.error("BREVO_API_KEY is not set");
+      return NextResponse.json({ error: "Email service not configured" }, { status: 500 });
+    }
+
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
-      headers: {
-        "api-key": BREVO_API_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sender: { name: BREVO_SENDER_NAME, email: BREVO_SENDER_EMAIL },
-        to: [{ email }],
-        subject: `Your SiteSafe Audit Score: ${score}/10 – ${ratingText}`,
-        htmlContent,
-      }),
+      headers: { "api-key": apiKey, "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      console.error("Brevo error:", error);
-      return NextResponse.json({ success: false, error: "Failed to send email" }, { status: 500 });
+    if (!res.ok) {
+      console.error("Brevo send failed:", await res.text());
+      return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Audit report email error:", error);
-    return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
