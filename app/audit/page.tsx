@@ -125,24 +125,28 @@ export default function AuditPage() {
   function handleSeeMyScore() {
     if (Object.keys(answers).length < questions.length) return;
     setShowEmailCapture(true);
-    setSubmitted(true); // mark submitted so answers can't change, but score not yet revealed
+    setSubmitted(true);
   }
 
   async function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
     setEmailStatus("loading");
+    const trueCount = Object.values(answers).filter((v) => v === true).length;
     try {
-      const res = await fetch("/api/send-checklist", {
+      const res = await fetch("/api/send-audit-report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          score: trueCount,
+          answers,
+        }),
       });
       const data = await res.json();
       if (data.success) {
         track("self_audit_report_requested");
         setEmailStatus("sent");
-        // reveal score after a brief moment
         setTimeout(() => {
           setScoreRevealed(true);
         }, 500);
@@ -156,7 +160,9 @@ export default function AuditPage() {
 
   function skipEmail() {
     setScoreRevealed(true);
-    track("self_audit_completed", { score: Object.values(answers).filter(v => v === true).length });
+    track("self_audit_completed", {
+      score: Object.values(answers).filter((v) => v === true).length,
+    });
   }
 
   function reset() {
