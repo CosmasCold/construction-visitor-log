@@ -9,6 +9,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import NavWrapper from "@/components/NavWrapper";
 import { Analytics } from "@vercel/analytics/react";
+import ExitIntentPopup from "@/components/ExitIntentPopup";
 
 export const metadata: Metadata = {
   title: "SiteSafe – Smart Visitor Management",
@@ -217,6 +218,7 @@ export default async function RootLayout({
         <Analytics />
         <Script src="/crisp-init.js" strategy="lazyOnload" />
         {/* Structured data is now inlined above – external file no longer needed */}
+        <ExitIntentPopup />
       </body>
     </html>
   );
