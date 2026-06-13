@@ -1,8 +1,13 @@
-// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // ✅ Enable automatic WebP/AVIF serving for imported/local images
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
+
   async headers() {
     return [
+      // Global security headers
       {
         source: "/(.*)",
         headers: [
@@ -27,6 +32,26 @@ const nextConfig = {
           {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
+
+      // ✅ Cache static assets aggressively
+      {
+        source: "/hero-bg.webp",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/(checkin|dashboard|analytics|sites|integrations).png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400",
           },
         ],
       },
