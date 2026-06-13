@@ -63,7 +63,7 @@ const featureGroups = [
     category: "Integrations",
     items: [
       { icon: Code, title: "REST API", desc: "Connect to Slack, HR tools, or custom dashboards." },
-      { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier, and a full REST API for custom tools." },
+      { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier – plus a full REST API." },
     ],
   },
 ];
@@ -106,11 +106,8 @@ export default function LandingPage() {
         <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
             <span className="text-sky-400">SiteSafe</span>
-            <span className="block mt-2 text-white">Smart visitor management</span>
+            <span className="block mt-2 text-white">Smart visitor management – the digital check‑in for any workplace.</span>
           </h1>
-          <p className="mt-4 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            the digital check‑in for any workplace.
-          </p>
           <p className="mt-4 text-base text-slate-400 max-w-2xl mx-auto">
             QR check‑in. Real‑time dashboard (auto‑refreshes). Audit‑ready exports. No sales calls ever.
           </p>
@@ -288,7 +285,7 @@ export default function LandingPage() {
             &ldquo;I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.&rdquo;
           </blockquote>
           <p className="mt-4 text-sm text-slate-400">
-            – Matteus, Facility Manager – NY
+            – Matteus R., Facility Manager – Mid‑size Office, NY
           </p>
         </div>
       </div>
@@ -314,17 +311,17 @@ export default function LandingPage() {
       </div>
 
       {/* Self‑audit promo */}
-<div className="max-w-2xl mx-auto mb-12 px-4">
-  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
-    <p className="text-sm text-slate-300">
-      Not sure if your visitor log is audit‑ready?{" "}
-      <Link href="/audit" className="text-sky-400 hover:underline transition-colors font-medium">
-        Take our free 10‑point self‑audit
-      </Link>{" "}
-      and find out in 60 seconds.
-    </p>
-  </div>
-</div>
+      <div className="max-w-2xl mx-auto mb-12 px-4">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
+          <p className="text-sm text-slate-300">
+            Not sure if your visitor log is audit‑ready?{" "}
+            <Link href="/audit" className="text-sky-400 hover:underline transition-colors font-medium">
+              Take our free 10‑point self‑audit
+            </Link>{" "}
+            and find out in 60 seconds.
+          </p>
+        </div>
+      </div>
 
       {/* Security card – updated tracker wording */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
