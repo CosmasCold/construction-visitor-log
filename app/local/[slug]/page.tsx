@@ -45,16 +45,24 @@ export async function generateMetadata({
     return { title: "Visitor Management Solution | SiteSafe" };
   }
 
+  const canonical = `https://sitesafe.thesift.space/local/${slug}`;   // ✅ defined first
+
   return {
     title: `${industryData.name} Visitor Check‑in in ${cityData.name}, ${cityData.state} – SiteSafe`,
     description: `Looking for a ${industryData.name.toLowerCase()} visitor check‑in solution in ${cityData.name}? SiteSafe offers QR check‑in, mandatory safety acknowledgment, and flat $49/mo pricing.`,
-    alternates: {
-      canonical: `https://sitesafe.thesift.space/local/${slug}`,
-    },
+    alternates: { canonical },
     openGraph: {
       title: `${industryData.name} Visitor Check‑in in ${cityData.name}, ${cityData.state} – SiteSafe`,
       description: `Looking for a ${industryData.name.toLowerCase()} visitor check‑in solution in ${cityData.name}? SiteSafe offers QR check‑in, mandatory safety acknowledgment, and flat $49/mo pricing.`,
-      images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+      type: "website",
+      url: canonical,
+      images: [
+        {
+          url: "https://sitesafe.thesift.space/og-image.png",
+          width: 1200,
+          height: 630,
+        },
+      ],
     },
   };
 }
