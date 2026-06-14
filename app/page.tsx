@@ -77,31 +77,11 @@ const featureGroups = [
 const pricingFeature = { icon: DollarSign, title: "Flat $49/mo", desc: "No per‑site or per‑user fees. Cancel anytime." };
 
 const screenshots = [
-  {
-    src: "/checkin.png",
-    alt: "Visitor sign‑in form with host selection and photo capture",
-    caption: "Visitor sign‑in with host dropdown and photo capture",
-  },
-  {
-    src: "/dashboard.png",
-    alt: "SiteSafe real‑time visitor dashboard",
-    caption: "Live dashboard – auto‑refreshes every few seconds",
-  },
-  {
-    src: "/analytics.png",
-    alt: "SiteSafe analytics chart with date and site filters",
-    caption: "Analytics with custom date ranges and site filters",
-  },
-  {
-    src: "/sites.png",
-    alt: "Multi‑site management card with edit and delete options",
-    caption: "Multi‑site management – unlimited sites, one account",
-  },
-  {
-    src: "/integrations.png",
-    alt: "SiteSafe integrations hub – Slack, Google Sheets, Zapier",
-    caption: "Built‑in integrations with Slack, Sheets, Zapier, and API",
-  },
+  { src: "/checkin.png", alt: "Visitor sign‑in form with host selection and photo capture", caption: "Visitor sign‑in with host dropdown and photo capture" },
+  { src: "/dashboard.png", alt: "SiteSafe real‑time visitor dashboard", caption: "Live dashboard – auto‑refreshes every few seconds" },
+  { src: "/analytics.png", alt: "SiteSafe analytics chart with date and site filters", caption: "Analytics with custom date ranges and site filters" },
+  { src: "/sites.png", alt: "Multi‑site management card with edit and delete options", caption: "Multi‑site management – unlimited sites, one account" },
+  { src: "/integrations.png", alt: "SiteSafe integrations hub – Slack, Google Sheets, Zapier", caption: "Built‑in integrations with Slack, Sheets, Zapier, and API" },
 ];
 
 const industries = [
@@ -155,61 +135,26 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Trust badges – social proof */}
+      {/* Trust badges */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex flex-wrap justify-center gap-6 items-center">
-          <a
-            href="https://saasdb.net"
-            rel="noopener noreferrer"
-            className="inline-flex flex-col items-center gap-1 text-center"
-          >
-            <Image
-              src="https://saasdb.net/badge/featured-dark.svg"
-              alt="Featured on SaasDB"
-              width={150}
-              height={56}
-              unoptimized
-              className="h-12 w-auto sm:h-14"
-            />
+          <a href="https://saasdb.net" rel="noopener noreferrer" className="inline-flex flex-col items-center gap-1 text-center">
+            <Image src="https://saasdb.net/badge/featured-dark.svg" alt="Featured on SaasDB" width={150} height={56} unoptimized className="h-12 w-auto sm:h-14" />
             <span className="text-xs text-slate-400">Featured on SaasDB</span>
           </a>
-          <a
-            href="https://fazier.com/launches/sitesafe.thesift.space"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex flex-col items-center gap-1 text-center"
-          >
-            <Image
-              src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light"
-              alt="Launched on Fazier"
-              width={120}
-              height={40}
-              unoptimized
-              className="h-10 w-auto"
-            />
+          <a href="https://fazier.com/launches/sitesafe.thesift.space" target="_blank" rel="noopener noreferrer" className="inline-flex flex-col items-center gap-1 text-center">
+            <Image src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" alt="Launched on Fazier" width={120} height={40} unoptimized className="h-10 w-auto" />
             <span className="text-xs text-slate-400">Launched on Fazier</span>
           </a>
-          <a
-            href="https://www.saashub.com/sitesafe-by-thesift?utm_source=badge&utm_campaign=badge&utm_content=sitesafe-by-thesift&badge_variant=dark&badge_kind=approved"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex flex-col items-center gap-1 text-center"
-          >
-            <Image
-              src="https://cdn-b.saashub.com/img/badges/approved-dark.png?v=1"
-              alt="SiteSafe by TheSift badge – approved on SaaS Hub"
-              width={150}
-              height={50}
-              unoptimized
-              className="h-10 w-auto"
-            />
+          <a href="https://www.saashub.com/sitesafe-by-thesift?utm_source=badge&utm_campaign=badge&utm_content=sitesafe-by-thesift&badge_variant=dark&badge_kind=approved" target="_blank" rel="noopener noreferrer" className="inline-flex flex-col items-center gap-1 text-center">
+            <Image src="https://cdn-b.saashub.com/img/badges/approved-dark.png?v=1" alt="SiteSafe by TheSift badge – approved on SaaS Hub" width={150} height={50} unoptimized className="h-10 w-auto" />
             <span className="text-xs text-slate-400">Featured on SaaS Hub</span>
           </a>
           <ReviewBadges />
         </div>
       </div>
 
-      {/* Problem section – now in a glass card */}
+      {/* Problem section */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
@@ -222,21 +167,16 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Features grid – grouped by capability */}
+      {/* Features grid */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get</h2>
 
         {featureGroups.map((group) => (
           <div key={group.category} className="mb-8">
-            <h3 className="text-lg font-semibold text-sky-300 mb-4 text-center sm:text-left">
-              {group.category}
-            </h3>
+            <h3 className="text-lg font-semibold text-sky-300 mb-4 text-center sm:text-left">{group.category}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {group.items.map((f, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300"
-                >
+                <div key={idx} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300">
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
                     <f.icon className="w-5 h-5 text-sky-300" />
                   </div>
@@ -250,7 +190,7 @@ export default function LandingPage() {
           </div>
         ))}
 
-        {/* Pricing feature callout */}
+        {/* Pricing callout */}
         <div className="mt-8 flex justify-center">
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start max-w-md w-full hover:bg-white/[0.08] transition-all duration-300">
             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
@@ -265,10 +205,7 @@ export default function LandingPage() {
 
         {/* Mid‑page CTA */}
         <div className="mt-12 text-center">
-          <TrackedCtaLink
-            href="/signup"
-            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
-          >
+          <TrackedCtaLink href="/signup" className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg">
             Ready to try? Start free trial <ArrowRight className="ml-2 w-4 h-4" />
           </TrackedCtaLink>
         </div>
@@ -277,7 +214,7 @@ export default function LandingPage() {
       {/* Screenshot gallery */}
       <ScreenshotGallery screenshots={screenshots} />
 
-      {/* Trusted by – with industry icons */}
+      {/* Trusted by */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-xl font-semibold tracking-tight text-white text-center mb-6">Trusted across industries</h2>
         <div className="flex flex-wrap justify-center gap-6">
@@ -296,61 +233,41 @@ export default function LandingPage() {
           <blockquote className="text-lg text-slate-200 italic leading-relaxed">
             &ldquo;I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.&rdquo;
           </blockquote>
-          <p className="mt-4 text-sm text-slate-400">
-            – Matteus, Facility Manager – NY
-          </p>
+          <p className="mt-4 text-sm text-slate-400">– Matteus, Facility Manager – NY</p>
         </div>
-        <p className="text-center text-sm text-slate-400 mt-4">
-          Join 500+ site managers already using SiteSafe.
-        </p>
+        <p className="text-center text-sm text-slate-400 mt-4">Join 500+ site managers already using SiteSafe.</p>
       </div>
 
-      {/* Free Tools – audit + calculator combined */}
+      {/* Free Tools */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-2xl font-bold text-white text-center mb-8">Free tools to get started</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
-          <Link
-            href="/audit"
-            className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group"
-          >
+          <Link href="/audit" className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group">
             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5 text-sky-300" />
             </div>
             <div>
               <h3 className="font-semibold text-white text-sm">Visitor Log Self‑Audit</h3>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                10 questions to see if your log would survive an inspection. Takes 60 seconds.
-              </p>
-              <span className="text-sky-400 text-xs mt-2 inline-flex items-center gap-1 group-hover:underline">
-                Take the audit <ArrowRight className="w-3 h-3" />
-              </span>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">10 questions to see if your log would survive an inspection. Takes 60 seconds.</p>
+              <span className="text-sky-400 text-xs mt-2 inline-flex items-center gap-1 group-hover:underline">Take the audit <ArrowRight className="w-3 h-3" /></span>
             </div>
           </Link>
-          <Link
-            href="/roi-calculator"
-            className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group"
-          >
+          <Link href="/roi-calculator" className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group">
             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-emerald-300" />
             </div>
             <div>
               <h3 className="font-semibold text-white text-sm">ROI Calculator</h3>
-              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                See exactly how much paper logs are costing you in labour and audit prep.
-              </p>
-              <span className="text-sky-400 text-xs mt-2 inline-flex items-center gap-1 group-hover:underline">
-                Calculate savings <ArrowRight className="w-3 h-3" />
-              </span>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">See exactly how much paper logs are costing you in labour and audit prep.</p>
+              <span className="text-sky-400 text-xs mt-2 inline-flex items-center gap-1 group-hover:underline">Calculate savings <ArrowRight className="w-3 h-3" /></span>
             </div>
           </Link>
         </div>
       </div>
 
-      {/* ROI benefit – moved above comparison, but short */}
+      {/* ROI benefit */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 text-center">
-        <p className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-          SiteSafe pays for itself if it saves you just two hours of audit prep per month.
-        </p>
+        <p className="text-xl sm:text-2xl font-bold tracking-tight text-white">SiteSafe pays for itself if it saves you just two hours of audit prep per month.</p>
         <p className="mt-2 text-slate-400">Most users save five hours or more.</p>
       </div>
 
@@ -359,14 +276,12 @@ export default function LandingPage() {
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
           <p className="text-sm text-slate-300">
             See how SiteSafe compares to Envoy, SwipedOn, and paper logs{" "}
-            <Link href="/compare" className="text-sky-400 hover:underline transition-colors font-medium">
-              side‑by‑side
-            </Link>.
+            <Link href="/compare" className="text-sky-400 hover:underline transition-colors font-medium">side‑by‑side</Link>.
           </p>
         </div>
       </div>
 
-      {/* Security card – updated tracker wording */}
+      {/* Security card – updated with Watchlist screening */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <h3 className="text-lg font-semibold text-white text-center mb-4">Security you can trust</h3>
@@ -384,8 +299,8 @@ export default function LandingPage() {
               Payments via Stripe
             </div>
             <div className="flex flex-col items-center gap-1">
-              <CheckCircle2 className="w-6 h-6 text-sky-400" />
-              No behavioural ad trackers
+              <ShieldCheck className="w-6 h-6 text-sky-400" />
+              Watchlist screening
             </div>
           </div>
           <p className="text-center text-xs text-slate-500 mt-4">
@@ -402,10 +317,7 @@ export default function LandingPage() {
       {/* Developer / API quick mention */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex justify-center">
-          <Link
-            href="/docs"
-            className="inline-flex items-center gap-2 bg-white/[0.04] backdrop-blur-md rounded-xl border border-white/5 px-4 py-3 text-sm text-slate-400 hover:text-white transition-colors duration-150"
-          >
+          <Link href="/docs" className="inline-flex items-center gap-2 bg-white/[0.04] backdrop-blur-md rounded-xl border border-white/5 px-4 py-3 text-sm text-slate-400 hover:text-white transition-colors duration-150">
             <Code className="w-4 h-4 text-sky-400" />
             Developers: REST API available – integrate SiteSafe with your own tools
           </Link>
@@ -415,16 +327,9 @@ export default function LandingPage() {
       {/* Footer CTA */}
       <div className="bg-white/[0.03] backdrop-blur-sm py-16 border-t border-white/5">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white">
-            Start your 14‑day free trial
-          </h2>
-          <p className="mt-3 text-lg text-slate-400">
-            No credit card. No sales call. Trial starts instantly.
-          </p>
-          <TrackedCtaLink
-            href="/signup"
-            className="inline-flex items-center justify-center mt-8 px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
-          >
+          <h2 className="text-3xl font-bold tracking-tight text-white">Start your 14‑day free trial</h2>
+          <p className="mt-3 text-lg text-slate-400">No credit card. No sales call. Trial starts instantly.</p>
+          <TrackedCtaLink href="/signup" className="inline-flex items-center justify-center mt-8 px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg">
             Try SiteSafe free <ArrowRight className="ml-2 w-4 h-4" />
           </TrackedCtaLink>
         </div>

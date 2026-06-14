@@ -23,6 +23,36 @@ export async function POST(request: Request) {
       );
     }
 
+    // ── Blocklist check ────────────────────────────────────────────
+    const site = await prisma.site.findUnique({
+      where: { id: siteId },
+      select: { companyId: true },
+    });
+
+    if (site?.companyId) {
+      const blocklistMatch = await prisma.blocklistEntry.findFirst({
+        where: {
+          companyId: site.companyId,
+          OR: [
+            { type: "name", value: fullName },
+            email ? { type: "email", value: email } : {},
+            phone ? { type: "phone", value: phone } : {},
+          ],
+        },
+      });
+
+      if (blocklistMatch) {
+        return NextResponse.json(
+          {
+            blocked: true,
+            message: "Your entry has been flagged. Please contact security.",
+          },
+          { status: 403 }
+        );
+      }
+    }
+    // ────────────────────────────────────────────────────────────────
+
     let resolvedHostName = hostName || null;
     if (hostId) {
       const host = await prisma.host.findUnique({
@@ -47,10 +77,7 @@ export async function POST(request: Request) {
     });
 
     // ── Slack notification ─────────────────────────────────────────
-    const site = await prisma.site.findUnique({
-      where: { id: siteId },
-      select: { name: true, companyId: true },
-    });
+    // (unchanged)
     if (site) {
       const companyRecord = await prisma.company.findUnique({
         where: { id: site.companyId },
@@ -58,7 +85,7 @@ export async function POST(request: Request) {
       });
       if (companyRecord?.slackWebhookUrl) {
         const slackPayload = {
-          text: `🚪 New visitor: *${visitor.fullName}* from *${visitor.company || "unknown"}* just signed in at *${site.name}*${resolvedHostName ? ` (host: ${resolvedHostName})` : ""}.`,
+          text: `🚪 New visitor: *${visitor.fullName}* from *${visitor.company || "unknown"}* just signed in at *${(await prisma.site.findUnique({ where: { id: siteId }, select: { name: true } }))?.name}*${resolvedHostName ? ` (host: ${resolvedHostName})` : ""}.`,
           username: "SiteSafe",
           icon_emoji: ":clipboard:",
         };

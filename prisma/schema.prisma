@@ -24,6 +24,7 @@ model Company {
   users            User[]
   subscription     Subscription?
   slackWebhookUrl   String?          // ✅ Slack incoming webhook URL
+  blocklistEntries BlocklistEntry[]
 }
 
 model Plan {
@@ -149,5 +150,15 @@ model AnalyticsEvent {
   id        String   @id @default(cuid())
   name      String
   data      Json?    // optional extra info like { format: "csv" }
+  createdAt DateTime @default(now())
+}
+
+model BlocklistEntry {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  value     String   // name, email, or phone
+  type      String   // "name", "email", "phone"
+  note      String?
   createdAt DateTime @default(now())
 }

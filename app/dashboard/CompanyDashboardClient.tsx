@@ -24,6 +24,7 @@ import {
   XCircle,
   QrCode,
   DoorClosed,
+  ShieldCheck,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
@@ -65,6 +66,13 @@ type ExpectedVisitor = {
   company: string;
 };
 
+type BlocklistEntry = {
+  id: string;
+  value: string;
+  type: string;
+  note?: string | null;
+};
+
 export default function CompanyDashboardClient({
   companyId,
   companySlug,
@@ -90,23 +98,35 @@ export default function CompanyDashboardClient({
   const [editingSiteId, setEditingSiteId] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-  const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(
-    null
-  );
+  const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(null);
 
+  // Edit form fields
   const [editName, setEditName] = useState("");
   const [editSlug, setEditSlug] = useState("");
   const [editAddress, setEditAddress] = useState("");
   const [editBriefing, setEditBriefing] = useState("");
+
+  // Host management
   const [hostsForEdit, setHostsForEdit] = useState<Host[]>([]);
   const [newHostName, setNewHostName] = useState("");
   const [newHostEmail, setNewHostEmail] = useState("");
+
+  // Expected visitor management
   const [expectedForEdit, setExpectedForEdit] = useState<ExpectedVisitor[]>([]);
   const [newVisitorName, setNewVisitorName] = useState("");
   const [newVisitorCompany, setNewVisitorCompany] = useState("");
+
+  // Pre‑screening questions management
   const [editQuestions, setEditQuestions] = useState<string[]>([]);
   const [newQuestion, setNewQuestion] = useState("");
 
+  // Blocklist state
+  const [blocklistEntries, setBlocklistEntries] = useState<BlocklistEntry[]>([]);
+  const [newBlocklistValue, setNewBlocklistValue] = useState("");
+  const [newBlocklistType, setNewBlocklistType] = useState("name");
+  const [newBlocklistNote, setNewBlocklistNote] = useState("");
+
+  // Auto‑refresh every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       router.refresh();
@@ -114,6 +134,17 @@ export default function CompanyDashboardClient({
     return () => clearInterval(interval);
   }, [router]);
 
+  // Fetch blocklist on mount
+  useEffect(() => {
+    fetch("/api/blocklist")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setBlocklistEntries(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  // ── remote sign‑out ────────────────────────────────────────────────
   async function handleSignOutRemote(visitorId: string) {
     const res = await fetch("/api/checkin/signout", {
       method: "POST",
@@ -230,15 +261,7 @@ export default function CompanyDashboardClient({
 
   function exportCSV() {
     const headers = [
-      "Site",
-      "Name",
-      "Company",
-      "Phone",
-      "Host",
-      "Safety OK",
-      "Signed In",
-      "Signed Out",
-      "Pre‑screening",
+      "Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out", "Pre‑screening",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -256,9 +279,7 @@ export default function CompanyDashboardClient({
         : "",
     ]);
     const csvContent = [headers, ...rows]
-      .map((row) =>
-        row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(",")
-      )
+      .map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(","))
       .join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const link = document.createElement("a");
@@ -307,15 +328,7 @@ export default function CompanyDashboardClient({
       format: "a4",
     });
     const headers = [
-      "Site",
-      "Name",
-      "Company",
-      "Phone",
-      "Host",
-      "Safety OK",
-      "Signed In",
-      "Signed Out",
-      "Pre‑screening",
+      "Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out", "Pre‑screening",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -348,6 +361,33 @@ export default function CompanyDashboardClient({
       `visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.pdf`
     );
     logEvent("export", { format: "pdf" });
+  }
+
+  // Blocklist handlers
+  async function addBlocklistEntry() {
+    if (!newBlocklistValue.trim()) return;
+    const res = await fetch("/api/blocklist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        value: newBlocklistValue.trim(),
+        type: newBlocklistType,
+        note: newBlocklistNote || null,
+      }),
+    });
+    if (res.ok) {
+      const created = await res.json();
+      setBlocklistEntries((prev) => [created, ...prev]);
+      setNewBlocklistValue("");
+      setNewBlocklistNote("");
+    }
+  }
+
+  async function removeBlocklistEntry(id: string) {
+    const res = await fetch(`/api/blocklist/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setBlocklistEntries((prev) => prev.filter((e) => e.id !== id));
+    }
   }
 
   const showOnboarding =
@@ -477,11 +517,7 @@ export default function CompanyDashboardClient({
               onClick={() => setShowNewSite(!showNewSite)}
               className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150 flex items-center gap-1"
             >
-              {showNewSite ? (
-                <X className="w-4 h-4" />
-              ) : (
-                <Plus className="w-4 h-4" />
-              )}
+              {showNewSite ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
               {showNewSite ? "Cancel" : "New Site"}
             </button>
             {showNewSite && (
@@ -864,6 +900,85 @@ export default function CompanyDashboardClient({
                 )}
               </div>
             ))
+          )}
+        </div>
+
+        {/* Blocklist section */}
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-sky-400" /> Watchlist / Blocklist
+          </h3>
+          <p className="text-xs text-slate-400 mb-4">
+            Automatically flag visitors whose name, email, or phone number matches
+            an entry. Alerts are shown at check‑in.
+          </p>
+
+          {/* Add form */}
+          <div className="flex flex-col sm:flex-row gap-2 mb-4">
+            <input
+              type="text"
+              placeholder="Name, email, or phone"
+              value={newBlocklistValue}
+              onChange={(e) => setNewBlocklistValue(e.target.value)}
+              className="flex-1 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+            />
+            <select
+              value={newBlocklistType}
+              onChange={(e) => setNewBlocklistType(e.target.value)}
+              className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+            >
+              <option value="name">Name</option>
+              <option value="email">Email</option>
+              <option value="phone">Phone</option>
+            </select>
+            <input
+              type="text"
+              placeholder="Note (optional)"
+              value={newBlocklistNote}
+              onChange={(e) => setNewBlocklistNote(e.target.value)}
+              className="flex-1 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+            />
+            <button
+              onClick={addBlocklistEntry}
+              className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-xs font-medium"
+            >
+              Add
+            </button>
+          </div>
+
+          {/* Entries table */}
+          {blocklistEntries.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-slate-400 uppercase tracking-wider">
+                    <th className="p-2 text-left">Value</th>
+                    <th className="p-2 text-left">Type</th>
+                    <th className="p-2 text-left">Note</th>
+                    <th className="p-2"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5 text-slate-300">
+                  {blocklistEntries.map((entry) => (
+                    <tr key={entry.id}>
+                      <td className="p-2">{entry.value}</td>
+                      <td className="p-2 capitalize">{entry.type}</td>
+                      <td className="p-2">{entry.note || "—"}</td>
+                      <td className="p-2 text-right">
+                        <button
+                          onClick={() => removeBlocklistEntry(entry.id)}
+                          className="text-rose-400 hover:text-rose-300"
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-xs text-slate-500">No entries yet.</p>
           )}
         </div>
 
