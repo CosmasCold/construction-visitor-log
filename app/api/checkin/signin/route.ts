@@ -84,7 +84,7 @@ export async function POST(request: Request) {
         const ownerEmails = companyRecord?.users.map((u) => u.email) ?? [];
         if (ownerEmails.length > 0) {
           const emailPayload = {
-            sender: { name: "SiteSafe", email: "noreply@sitesafe.app" },
+            sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
             to: ownerEmails.map((email) => ({ email })),
             subject: `🚨 Blocked visitor attempt at ${site.name}`,
             htmlContent: `<p>A visitor was blocked by your watchlist:</p>
