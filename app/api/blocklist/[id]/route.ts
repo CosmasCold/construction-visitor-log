@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -21,14 +21,16 @@ export async function DELETE(
     return NextResponse.json({ error: "No company" }, { status: 400 });
   }
 
+  const { id } = await params;   // ✅ await params
+
   // Ensure entry belongs to user's company
   const entry = await prisma.blocklistEntry.findFirst({
-    where: { id: params.id, companyId },
+    where: { id, companyId },
   });
   if (!entry) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  await prisma.blocklistEntry.delete({ where: { id: params.id } });
+  await prisma.blocklistEntry.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }
