@@ -80,22 +80,58 @@ export async function POST(request: Request) {
           }).catch((err) => console.error("Slack blocklist alert failed:", err));
         }
 
-        // Email notification to all company owners
+        // Professional blocklist email to all company owners
         const ownerEmails = companyRecord?.users.map((u) => u.email) ?? [];
         if (ownerEmails.length > 0) {
           const emailPayload = {
             sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
             to: ownerEmails.map((email) => ({ email })),
-            subject: `🚨 Blocked visitor attempt at ${site.name}`,
-            htmlContent: `<p>A visitor was blocked by your watchlist:</p>
-              <ul>
-                <li><strong>Name:</strong> ${fullName}</li>
-                <li><strong>Company:</strong> ${company}</li>
-                <li><strong>Phone:</strong> ${phone || "—"}</li>
-                <li><strong>Email:</strong> ${email || "—"}</li>
-                <li><strong>Site:</strong> ${site.name}</li>
-              </ul>
-              <p>They were not allowed to sign in.</p>`,
+            subject: `Blocked visitor attempt at ${site.name}`,
+            htmlContent: `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head><meta charset="UTF-8"></head>
+            <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:20px;">
+                <tr>
+                  <td align="center">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+                      <!-- Logo -->
+                      <tr>
+                        <td style="padding:16px 20px 0;text-align:center;">
+                          <img src="https://sitesafe.thesift.space/favicon.svg" alt="SiteSafe" style="height:36px;width:auto;display:block;margin:0 auto;" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:24px 20px;font-size:15px;line-height:1.6;color:#334155;">
+                          <p style="margin:0 0 16px;">A visitor was <strong>blocked by your watchlist</strong> and not allowed to sign in.</p>
+                          <table role="presentation" cellpadding="8" cellspacing="0" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;width:100%;margin-bottom:16px;">
+                            <tr><td style="color:#334155;font-weight:600;">Name</td><td style="color:#0f172a;">${fullName}</td></tr>
+                            <tr><td style="color:#334155;font-weight:600;">Company</td><td style="color:#0f172a;">${company}</td></tr>
+                            <tr><td style="color:#334155;font-weight:600;">Phone</td><td style="color:#0f172a;">${phone || "—"}</td></tr>
+                            <tr><td style="color:#334155;font-weight:600;">Email</td><td style="color:#0f172a;">${email || "—"}</td></tr>
+                            <tr><td style="color:#334155;font-weight:600;">Site</td><td style="color:#0f172a;">${site.name}</td></tr>
+                          </table>
+                          <p style="margin:0 0 16px;">No further action is required — the visitor was denied entry. If this was a mistake, you can remove the entry from your dashboard.</p>
+                          <p style="margin:0;">– SiteSafe</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="background-color:#f8fafc;padding:16px 20px;text-align:center;border-top:1px solid #e2e8f0;">
+                          <p style="font-size:12px;color:#94a3b8;margin:0;">
+                            &copy; 2026 SiteSafe &nbsp;·&nbsp;
+                            <a href="https://sitesafe.thesift.space/terms" style="color:#94a3b8;text-decoration:underline;">Terms</a> &nbsp;·&nbsp;
+                            <a href="https://sitesafe.thesift.space/privacy" style="color:#94a3b8;text-decoration:underline;">Privacy</a>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </body>
+            </html>
+            `,
           };
           fetch("https://api.brevo.com/v3/smtp/email", {
             method: "POST",
@@ -165,7 +201,7 @@ export async function POST(request: Request) {
     }
     // ──────────────────────────────────────────────────────────────
 
-    // Host email notification (unchanged)
+    // Host email notification (professional styling)
     if (hostId) {
       const host = await prisma.host.findUnique({
         where: { id: hostId },
@@ -176,7 +212,42 @@ export async function POST(request: Request) {
           sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
           to: [{ email: host.email }],
           subject: `${visitor.fullName} has arrived`,
-          htmlContent: `<p><strong>${visitor.fullName}</strong> from <strong>${visitor.company || "unknown"}</strong> has signed in and is waiting for you.</p>`,
+          htmlContent: `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head><meta charset="UTF-8"></head>
+          <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:20px;">
+              <tr>
+                <td align="center">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+                    <tr>
+                      <td style="padding:16px 20px 0;text-align:center;">
+                        <img src="https://sitesafe.thesift.space/favicon.svg" alt="SiteSafe" style="height:36px;width:auto;display:block;margin:0 auto;" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:24px 20px;font-size:15px;line-height:1.6;color:#334155;">
+                        <p style="margin:0 0 16px;"><strong>${visitor.fullName}</strong> from <strong>${visitor.company || "unknown"}</strong> has signed in and is waiting for you.</p>
+                        <p style="margin:0;">– SiteSafe</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="background-color:#f8fafc;padding:16px 20px;text-align:center;border-top:1px solid #e2e8f0;">
+                        <p style="font-size:12px;color:#94a3b8;margin:0;">
+                          &copy; 2026 SiteSafe &nbsp;·&nbsp;
+                          <a href="https://sitesafe.thesift.space/terms" style="color:#94a3b8;text-decoration:underline;">Terms</a> &nbsp;·&nbsp;
+                          <a href="https://sitesafe.thesift.space/privacy" style="color:#94a3b8;text-decoration:underline;">Privacy</a>
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </body>
+          </html>
+          `,
         };
         fetch("https://api.brevo.com/v3/smtp/email", {
           method: "POST",
