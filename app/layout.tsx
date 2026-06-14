@@ -206,7 +206,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://www.saashub.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://www.youtube.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://client.crisp.chat" crossOrigin="anonymous" />
-        <link rel="preload" as="image" href="/hero-bg.webp" fetchpriority="high" />
+        <link rel="preload" as="image" href="/hero-bg.webp" fetchPriority="high" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
