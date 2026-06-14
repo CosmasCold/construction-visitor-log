@@ -41,7 +41,7 @@ export async function GET(
     orderBy: { signedInAt: "asc" },
   });
 
-  // Download photos and convert to base64 data URIs
+  // Fetch photos and convert to base64
   const visitorsWithPhotos = await Promise.all(
     activeVisitors.map(async (v) => {
       let photoBase64: string | null = null;
@@ -77,7 +77,7 @@ export async function GET(
 
   const headers = ["Photo", "Name", "Company", "Host", "Signed In", "Phone"];
   const rows = visitorsWithPhotos.map((v) => [
-    "", // placeholder, will be replaced by photo in didDrawCell
+    "", // placeholder replaced by didDrawCell
     v.fullName,
     v.company,
     v.hostName || "—",
@@ -92,17 +92,26 @@ export async function GET(
     styles: { fontSize: 9, cellPadding: 2 },
     headStyles: { fillColor: [15, 23, 42] },
     didDrawCell: (data) => {
-      // Only draw photo in the first column (index 0) and only for data rows (not header)
-      if (data.column.index === 0 && data.row.index >= 0) {
+      // Only draw in the first column (Photo) and only for data rows (not header)
+      if (data.column.index === 0 && data.row.section === "body") {
         const visitor = visitorsWithPhotos[data.row.index];
         if (visitor?.photoBase64) {
           const x = data.cell.x + 1;
           const y = data.cell.y + 1;
           const size = data.cell.height - 2;
           try {
-            doc.addImage(visitor.photoBase64, "JPEG", x, y, size, size, undefined, "FAST");
+            doc.addImage(
+              visitor.photoBase64,
+              "JPEG",
+              x,
+              y,
+              size,
+              size,
+              undefined,
+              "FAST"
+            );
           } catch {
-            // If image can't be rendered, do nothing
+            // Ignore rendering errors
           }
         }
       }
