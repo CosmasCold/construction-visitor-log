@@ -5,8 +5,8 @@
 html {
   font-size: 18px;
   scroll-behavior: smooth;
-  overflow-y: scroll;           /* ← always show vertical scrollbar */
-  background-color: #0f172a;    /* ← fills gutter so it's dark, not white */
+  overflow-y: scroll;
+  background-color: #0f172a;
 }
 
 /* Premium scrollbar */
@@ -33,10 +33,8 @@ body {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  will-change: transform;
 }
 
-/* Focus ring for all interactive elements */
 *:focus-visible {
   outline: 2px solid rgba(14, 165, 233, 0.6);
   outline-offset: 2px;
