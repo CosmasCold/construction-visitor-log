@@ -12,6 +12,7 @@ import {
   QrCode,
   Printer,
   Camera,
+  XCircle,
 } from "lucide-react";
 
 type ActiveVisitor = {
@@ -64,6 +65,9 @@ export default function CheckinClient({
   // Photo capture state
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  // Error message for blocklist / other errors
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Fetch hosts
   useEffect(() => {
@@ -144,12 +148,14 @@ export default function CheckinClient({
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMessage(null); // clear previous errors
+
     if (!fullName || !company) {
-      alert("Full name and company are required.");
+      setErrorMessage("Full name and company are required.");
       return;
     }
     if (!safetyAcknowledged) {
-      alert("You must acknowledge the safety briefing before signing in.");
+      setErrorMessage("You must acknowledge the safety briefing before signing in.");
       return;
     }
     setLoading(true);
@@ -173,6 +179,8 @@ export default function CheckinClient({
       body: JSON.stringify(body),
     });
 
+    const data = await res.json();
+
     if (res.ok) {
       alert("Signed in successfully.");
       setFullName("");
@@ -184,21 +192,28 @@ export default function CheckinClient({
       setSafetyAcknowledged(false);
       setAnswers({});
       setPhotoUrl(null);
+      setErrorMessage(null);
       const refresh = await fetch(`/api/checkin/${siteId}/active`);
       if (refresh.ok) setActiveVisitors(await refresh.json());
       const refreshExpected = await fetch(`/api/sites/${siteId}/expected-visitors`);
       if (refreshExpected.ok) setExpectedVisitors(await refreshExpected.json());
     } else {
-      alert("Sign‑in failed.");
+      // Blocklist or other error
+      if (res.status === 403 && data.blocked) {
+        setErrorMessage(data.message || "Your entry has been flagged. Please contact security.");
+      } else {
+        setErrorMessage(data.error || "Sign‑in failed.");
+      }
     }
     setLoading(false);
   }
 
   async function handleQuickSignIn(visitor: ExpectedVisitor) {
     if (!safetyAcknowledged) {
-      alert("You must acknowledge the safety briefing first.");
+      setErrorMessage("You must acknowledge the safety briefing first.");
       return;
     }
+    setErrorMessage(null);
     const res = await fetch("/api/checkin/quick-signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -215,12 +230,18 @@ export default function CheckinClient({
       const refreshActive = await fetch(`/api/checkin/${siteId}/active`);
       if (refreshActive.ok) setActiveVisitors(await refreshActive.json());
       setSafetyAcknowledged(false);
+      setErrorMessage(null);
     } else {
-      alert("Sign‑in failed.");
+      const data = await res.json().catch(() => ({}));
+      if (data.blocked) {
+        setErrorMessage(data.message);
+      } else {
+        setErrorMessage("Sign‑in failed.");
+      }
     }
   }
 
-    function printBadgeForVisitor(
+  function printBadgeForVisitor(
     visitorName: string,
     visitorCompany: string,
     visitorHost?: string | null,
@@ -289,7 +310,6 @@ export default function CheckinClient({
         </html>
       `);
       win.document.close();
-      // Small delay to let styles apply, then print
       setTimeout(() => {
         win.print();
       }, 200);
@@ -306,7 +326,7 @@ export default function CheckinClient({
       const refresh = await fetch(`/api/checkin/${siteId}/active`);
       if (refresh.ok) setActiveVisitors(await refresh.json());
     } else {
-      alert("Sign‑out failed");
+      setErrorMessage("Sign‑out failed");
     }
   }
 
@@ -409,6 +429,14 @@ export default function CheckinClient({
 
         {/* Sign‑in form (raised) */}
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+          {/* Error message display */}
+          {errorMessage && (
+            <div className="mb-4 bg-rose-500/10 backdrop-blur-md rounded-xl border border-rose-400/30 p-4 flex items-start gap-3">
+              <XCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-rose-200">{errorMessage}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSignIn} className="space-y-4">
             <input
               type="text"
