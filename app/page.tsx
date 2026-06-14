@@ -8,28 +8,9 @@ import ScreenshotGallery from "@/components/ScreenshotGallery";
 import TrackedCtaLink from "@/components/TrackedCtaLink";
 import HeroVideo from "@/components/HeroVideo";
 import {
-  QrCode,
-  ShieldCheck,
-  Users,
-  Mail,
-  UserPlus,
-  Printer,
-  FileDown,
-  Building,
-  TrendingUp,
-  Code,
-  DollarSign,
-  ArrowRight,
-  CheckCircle2,
-  Camera,
-  ListChecks,
-  Zap,
-  Wrench,
-  Package,
-  Truck,
-  Factory,
-  Building2,
-  BarChart3,
+  QrCode, ShieldCheck, Users, Mail, UserPlus, Printer, FileDown, Building,
+  TrendingUp, Code, DollarSign, ArrowRight, CheckCircle2, Camera, ListChecks,
+  Zap, Wrench, Package, Truck, Factory, Building2, BarChart3, AlertTriangle
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -58,13 +39,14 @@ const featureGroups = [
     ],
   },
   {
-    category: "Compliance & Export",
-    items: [
-      { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
-      { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
-      { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
-    ],
-  },
+  category: "Compliance & Export",
+  items: [
+    { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
+    { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
+    { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
+    { icon: AlertTriangle, title: "Emergency evacuation list", desc: "One‑click PDF of everyone on site – vital for drills and real emergencies." },
+  ],
+},
   {
     category: "Integrations",
     items: [

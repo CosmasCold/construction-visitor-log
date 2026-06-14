@@ -25,6 +25,7 @@ import {
   QrCode,
   DoorClosed,
   ShieldCheck,
+  AlertTriangle,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
@@ -144,7 +145,6 @@ export default function CompanyDashboardClient({
       .catch(() => {});
   }, []);
 
-  // ── remote sign‑out ────────────────────────────────────────────────
   async function handleSignOutRemote(visitorId: string) {
     const res = await fetch("/api/checkin/signout", {
       method: "POST",
@@ -261,7 +261,15 @@ export default function CompanyDashboardClient({
 
   function exportCSV() {
     const headers = [
-      "Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out", "Pre‑screening",
+      "Site",
+      "Name",
+      "Company",
+      "Phone",
+      "Host",
+      "Safety OK",
+      "Signed In",
+      "Signed Out",
+      "Pre‑screening",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -279,7 +287,9 @@ export default function CompanyDashboardClient({
         : "",
     ]);
     const csvContent = [headers, ...rows]
-      .map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(","))
+      .map((row) =>
+        row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(",")
+      )
       .join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const link = document.createElement("a");
@@ -328,7 +338,15 @@ export default function CompanyDashboardClient({
       format: "a4",
     });
     const headers = [
-      "Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out", "Pre‑screening",
+      "Site",
+      "Name",
+      "Company",
+      "Phone",
+      "Host",
+      "Safety OK",
+      "Signed In",
+      "Signed Out",
+      "Pre‑screening",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -872,6 +890,19 @@ export default function CompanyDashboardClient({
                         >
                           <QrCode className="w-4 h-4" />
                         </button>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(
+                              `/api/sites/${site.id}/emergency-list`
+                            );
+                          }}
+                          className="text-amber-400 hover:text-amber-300 inline-flex items-center transition-colors duration-150"
+                          title="Download emergency list"
+                        >
+                          <AlertTriangle className="w-4 h-4" />
+                        </button>
                       </p>
                       <p className="text-xs text-slate-500 mt-1">
                         {site.visitorsToday} today
@@ -920,23 +951,23 @@ export default function CompanyDashboardClient({
               placeholder="Name, email, or phone"
               value={newBlocklistValue}
               onChange={(e) => setNewBlocklistValue(e.target.value)}
-              className="flex-1 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+              className="flex-1 bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-400"
             />
             <select
-  value={newBlocklistType}
-  onChange={(e) => setNewBlocklistType(e.target.value)}
-  className="bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
->
-  <option value="name">Name</option>
-  <option value="email">Email</option>
-  <option value="phone">Phone</option>
-</select>
+              value={newBlocklistType}
+              onChange={(e) => setNewBlocklistType(e.target.value)}
+              className="bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+            >
+              <option value="name">Name</option>
+              <option value="email">Email</option>
+              <option value="phone">Phone</option>
+            </select>
             <input
               type="text"
               placeholder="Note (optional)"
               value={newBlocklistNote}
               onChange={(e) => setNewBlocklistNote(e.target.value)}
-              className="flex-1 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+              className="flex-1 bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-400"
             />
             <button
               onClick={addBlocklistEntry}
