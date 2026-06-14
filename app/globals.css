@@ -5,6 +5,8 @@
 html {
   font-size: 18px;
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  background-color: #0f172a; /* ✅ fills the scrollbar gutter area */
 }
 
 /* Premium scrollbar */
