@@ -10,6 +10,13 @@ export const metadata: Metadata = {
 
 const posts = [
   {
+    slug: "cold-email-failure",
+    title: "I Sent 13 Cold Email Campaigns and Got 0 Sign‑ups",
+    date: "2026-06-14",
+    excerpt:
+      "A honest look at what I tried, what failed, and what I learned from reaching out to 200+ site managers about SiteSafe.",
+  },
+  {
     slug: "envoy-alternative",
     title: "Envoy Alternative: Why SiteSafe Is the Better Choice for Small Teams",
     date: "2026-06-13",

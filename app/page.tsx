@@ -310,6 +310,19 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* ROI Calculator promo */}
+<div className="max-w-2xl mx-auto mb-12 px-4">
+  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
+    <p className="text-sm text-slate-300">
+      How much is your paper visitor log actually costing you?{" "}
+      <Link href="/roi-calculator" className="text-sky-400 hover:underline transition-colors font-medium">
+        Calculate your hidden costs
+      </Link>{" "}
+      in 30 seconds.
+    </p>
+  </div>
+</div>
+
       {/* Self‑audit promo */}
       <div className="max-w-2xl mx-auto mb-12 px-4">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
