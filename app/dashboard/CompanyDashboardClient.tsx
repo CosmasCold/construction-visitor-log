@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { track } from "@vercel/analytics";
+import { logEvent } from "@/lib/analytics";
 import Image from "next/image";
 import {
   RefreshCw,
@@ -90,7 +90,9 @@ export default function CompanyDashboardClient({
   const [editingSiteId, setEditingSiteId] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-  const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(null);
+  const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(
+    null
+  );
 
   const [editName, setEditName] = useState("");
   const [editSlug, setEditSlug] = useState("");
@@ -228,7 +230,15 @@ export default function CompanyDashboardClient({
 
   function exportCSV() {
     const headers = [
-      "Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out", "Pre‑screening",
+      "Site",
+      "Name",
+      "Company",
+      "Phone",
+      "Host",
+      "Safety OK",
+      "Signed In",
+      "Signed Out",
+      "Pre‑screening",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -246,7 +256,9 @@ export default function CompanyDashboardClient({
         : "",
     ]);
     const csvContent = [headers, ...rows]
-      .map((row) => row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(","))
+      .map((row) =>
+        row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(",")
+      )
       .join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const link = document.createElement("a");
@@ -256,7 +268,7 @@ export default function CompanyDashboardClient({
       .slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(link.href);
-    track("export", { format: "csv" });
+    logEvent("export", { format: "csv" });
   }
 
   async function exportExcel() {
@@ -283,7 +295,7 @@ export default function CompanyDashboardClient({
       wb,
       `visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.xlsx`
     );
-    track("export", { format: "xlsx" });
+    logEvent("export", { format: "xlsx" });
   }
 
   async function exportPDF() {
@@ -295,7 +307,15 @@ export default function CompanyDashboardClient({
       format: "a4",
     });
     const headers = [
-      "Site", "Name", "Company", "Phone", "Host", "Safety OK", "Signed In", "Signed Out", "Pre‑screening",
+      "Site",
+      "Name",
+      "Company",
+      "Phone",
+      "Host",
+      "Safety OK",
+      "Signed In",
+      "Signed Out",
+      "Pre‑screening",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -327,7 +347,7 @@ export default function CompanyDashboardClient({
     doc.save(
       `visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.pdf`
     );
-    track("export", { format: "pdf" });
+    logEvent("export", { format: "pdf" });
   }
 
   const showOnboarding =
@@ -376,7 +396,9 @@ export default function CompanyDashboardClient({
               <FileDown className="w-4 h-4" /> PDF
             </button>
             <button
-              onClick={() => router.push(`/dashboard/analytics?slug=${companySlug}`)}
+              onClick={() =>
+                router.push(`/dashboard/analytics?slug=${companySlug}`)
+              }
               className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
             >
               <FileSpreadsheet className="w-4 h-4" /> Analytics
@@ -455,7 +477,11 @@ export default function CompanyDashboardClient({
               onClick={() => setShowNewSite(!showNewSite)}
               className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150 flex items-center gap-1"
             >
-              {showNewSite ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {showNewSite ? (
+                <X className="w-4 h-4" />
+              ) : (
+                <Plus className="w-4 h-4" />
+              )}
               {showNewSite ? "Cancel" : "New Site"}
             </button>
             {showNewSite && (
@@ -600,7 +626,9 @@ export default function CompanyDashboardClient({
                               `/api/sites/${site.id}/hosts`,
                               {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
                                 body: JSON.stringify({
                                   name: newHostName,
                                   email: newHostEmail,
@@ -680,7 +708,9 @@ export default function CompanyDashboardClient({
                               `/api/sites/${site.id}/expected-visitors`,
                               {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
                                 body: JSON.stringify({
                                   name: newVisitorName,
                                   company: newVisitorCompany,
@@ -689,7 +719,10 @@ export default function CompanyDashboardClient({
                             );
                             if (res.ok) {
                               const created = await res.json();
-                              setExpectedForEdit((prev) => [...prev, created]);
+                              setExpectedForEdit((prev) => [
+                                ...prev,
+                                created,
+                              ]);
                               setNewVisitorName("");
                               setNewVisitorCompany("");
                             }
@@ -741,7 +774,10 @@ export default function CompanyDashboardClient({
                           type="button"
                           onClick={() => {
                             if (!newQuestion.trim()) return;
-                            setEditQuestions((prev) => [...prev, newQuestion.trim()]);
+                            setEditQuestions((prev) => [
+                              ...prev,
+                              newQuestion.trim(),
+                            ]);
                             setNewQuestion("");
                           }}
                           className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
@@ -836,23 +872,48 @@ export default function CompanyDashboardClient({
           <table className="w-full text-sm">
             <thead className="bg-white/5">
               <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
-                <th scope="col" className="p-3 text-left">Photo</th>
-                <th scope="col" className="p-3 text-left">Site</th>
-                <th scope="col" className="p-3 text-left">Name</th>
-                <th scope="col" className="p-3 text-left">Company</th>
-                <th scope="col" className="p-3 text-left">Phone</th>
-                <th scope="col" className="p-3 text-left">Host</th>
-                <th scope="col" className="p-3 text-left">Signed In</th>
-                <th scope="col" className="p-3 text-left">Signed Out</th>
-                <th scope="col" className="p-3 text-left">Safety</th>
-                <th scope="col" className="p-3 text-left">Pre‑screening</th>
-                <th scope="col" className="p-3 text-left">Actions</th>
+                <th scope="col" className="p-3 text-left">
+                  Photo
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Site
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Name
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Company
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Phone
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Host
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Signed In
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Signed Out
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Safety
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Pre‑screening
+                </th>
+                <th scope="col" className="p-3 text-left">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {logs.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="p-4 text-center text-slate-500">
+                  <td
+                    colSpan={11}
+                    className="p-4 text-center text-slate-500"
+                  >
                     <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
                     <p>
                       No visitors yet. Share the check‑in link with your team
@@ -868,7 +929,11 @@ export default function CompanyDashboardClient({
                   >
                     <td className="p-3">
                       {v.photoUrl ? (
-                        <a href={v.photoUrl} target="_blank" rel="noopener noreferrer">
+                        <a
+                          href={v.photoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
                           <Image
                             src={v.photoUrl}
                             alt={v.fullName}

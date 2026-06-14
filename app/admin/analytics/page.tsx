@@ -1,7 +1,9 @@
+// app/admin/analytics/page.tsx
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import type { AnalyticsEvent } from "@prisma/client";
 import {
   BarChart3,
   Users,
@@ -16,21 +18,21 @@ export default async function AdminAnalyticsPage() {
     redirect("/admin/login");
   }
 
-  // Count events by type (last 30 days)
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const events = await prisma.analyticsEvent.findMany({
+  const events: AnalyticsEvent[] = await prisma.analyticsEvent.findMany({
     where: { createdAt: { gte: thirtyDaysAgo } },
     orderBy: { createdAt: "desc" },
   });
 
   const ctaClicks = events.filter((e) => e.name === "cta_click").length;
   const auditCompleted = events.filter((e) => e.name === "self_audit_completed").length;
-  const checklistSubmitted = events.filter((e) => e.name === "checklist_submitted" || e.name === "checklist_submitted_exit_popup").length;
+  const checklistSubmitted = events.filter(
+    (e) => e.name === "checklist_submitted" || e.name === "checklist_submitted_exit_popup"
+  ).length;
   const exports = events.filter((e) => e.name === "export").length;
 
-  // Recent sign‑ups (last 30 days)
   const recentUsers = await prisma.user.count({
     where: { createdAt: { gte: thirtyDaysAgo } },
   });
@@ -43,7 +45,6 @@ export default async function AdminAnalyticsPage() {
     { icon: BarChart3, label: "Exports (30d)", value: exports },
   ];
 
-  // Recent events for table
   const recentEvents = events.slice(0, 20);
 
   return (

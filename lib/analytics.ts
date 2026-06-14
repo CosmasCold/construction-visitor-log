@@ -1,6 +1,7 @@
+// lib/analytics.ts
 import { track } from "@vercel/analytics";
 
-export function logEvent(name: string, data?: Record<string, unknown>) {
+export function logEvent(name: string, data?: Record<string, string | number | boolean>) {
   // Vercel Analytics
   track(name, data);
 
