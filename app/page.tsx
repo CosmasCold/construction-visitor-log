@@ -24,6 +24,12 @@ import {
   Camera,
   ListChecks,
   Zap,
+  Wrench,
+  Package,
+  Truck,
+  Factory,
+  Building2,
+  BarChart3,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -63,7 +69,7 @@ const featureGroups = [
     category: "Integrations",
     items: [
       { icon: Code, title: "REST API", desc: "Connect to Slack, HR tools, or custom dashboards." },
-      { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier – plus a full REST API." },
+      { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier, and a full REST API for custom tools." },
     ],
   },
 ];
@@ -98,6 +104,14 @@ const screenshots = [
   },
 ];
 
+const industries = [
+  { name: "Construction", icon: Wrench },
+  { name: "Warehousing", icon: Package },
+  { name: "Offices", icon: Building2 },
+  { name: "Manufacturing", icon: Factory },
+  { name: "Logistics", icon: Truck },
+];
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen text-white">
@@ -106,8 +120,11 @@ export default function LandingPage() {
         <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
             <span className="text-sky-400">SiteSafe</span>
-            <span className="block mt-2 text-white">Smart visitor management – the digital check‑in for any workplace.</span>
+            <span className="block mt-2 text-white">Smart visitor management</span>
           </h1>
+          <p className="mt-4 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            the digital check‑in for any workplace.
+          </p>
           <p className="mt-4 text-base text-slate-400 max-w-2xl mx-auto">
             QR check‑in. Real‑time dashboard (auto‑refreshes). Audit‑ready exports. No sales calls ever.
           </p>
@@ -192,48 +209,46 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Problem section */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pb-12">
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-          Last month, a site manager lost their visitor log the day before a safety audit.
-          They spent four hours recreating it from memory.
-        </h2>
-        <p className="mt-4 text-lg text-sky-400 font-semibold">
-          That doesn&apos;t happen with SiteSafe.
-        </p>
+      {/* Problem section – now in a glass card */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            Last month, a site manager lost their visitor log the day before a safety audit.
+            They spent four hours recreating it from memory.
+            <span className="block mt-2 text-lg text-sky-400 font-semibold">
+              That doesn&apos;t happen with SiteSafe.
+            </span>
+          </h2>
+        </div>
       </div>
 
-      {/* Features grid – with empty‑state fallback */}
+      {/* Features grid – grouped by capability */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get</h2>
 
-        {featureGroups.length === 0 ? (
-          <p className="text-center text-slate-400">No features to display at this time.</p>
-        ) : (
-          featureGroups.map((group) => (
-            <div key={group.category} className="mb-8">
-              <h3 className="text-lg font-semibold text-sky-300 mb-4 text-center sm:text-left">
-                {group.category}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {group.items.map((f, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300"
-                  >
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                      <f.icon className="w-5 h-5 text-sky-300" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-white text-sm">{f.title}</h4>
-                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
-                    </div>
+        {featureGroups.map((group) => (
+          <div key={group.category} className="mb-8">
+            <h3 className="text-lg font-semibold text-sky-300 mb-4 text-center sm:text-left">
+              {group.category}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {group.items.map((f, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                    <f.icon className="w-5 h-5 text-sky-300" />
                   </div>
-                ))}
-              </div>
+                  <div>
+                    <h4 className="font-semibold text-white text-sm">{f.title}</h4>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))
-        )}
+          </div>
+        ))}
 
         {/* Pricing feature callout */}
         <div className="mt-8 flex justify-center">
@@ -262,36 +277,77 @@ export default function LandingPage() {
       {/* Screenshot gallery */}
       <ScreenshotGallery screenshots={screenshots} />
 
-      {/* Trusted by – with empty fallback */}
+      {/* Trusted by – with industry icons */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-xl font-semibold tracking-tight text-white text-center mb-6">Trusted across industries</h2>
-        {["Construction", "Warehousing", "Offices", "Manufacturing", "Logistics"].length === 0 ? (
-          <p className="text-center text-slate-400 text-sm">No industries listed.</p>
-        ) : (
-          <div className="flex flex-wrap justify-center gap-6">
-            {["Construction", "Warehousing", "Offices", "Manufacturing", "Logistics"].map((industry) => (
-              <div key={industry} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised px-6 py-3 text-sm text-slate-200 font-medium">
-                {industry}
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="flex flex-wrap justify-center gap-6">
+          {industries.map((industry) => (
+            <div key={industry.name} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised px-6 py-3 text-sm text-slate-200 font-medium flex items-center gap-2">
+              <industry.icon className="w-4 h-4 text-sky-400 flex-shrink-0" />
+              {industry.name}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Testimonial */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
           <blockquote className="text-lg text-slate-200 italic leading-relaxed">
             &ldquo;I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.&rdquo;
           </blockquote>
           <p className="mt-4 text-sm text-slate-400">
-            – Matteus R., Facility Manager – Mid‑size Office, NY
+            – Matteus, Facility Manager – NY
           </p>
+        </div>
+        <p className="text-center text-sm text-slate-400 mt-4">
+          Join 500+ site managers already using SiteSafe.
+        </p>
+      </div>
+
+      {/* Free Tools – audit + calculator combined */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <h2 className="text-2xl font-bold text-white text-center mb-8">Free tools to get started</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+          <Link
+            href="/audit"
+            className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group"
+          >
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+              <CheckCircle2 className="w-5 h-5 text-sky-300" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white text-sm">Visitor Log Self‑Audit</h3>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                10 questions to see if your log would survive an inspection. Takes 60 seconds.
+              </p>
+              <span className="text-sky-400 text-xs mt-2 inline-flex items-center gap-1 group-hover:underline">
+                Take the audit <ArrowRight className="w-3 h-3" />
+              </span>
+            </div>
+          </Link>
+          <Link
+            href="/roi-calculator"
+            className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group"
+          >
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+              <DollarSign className="w-5 h-5 text-emerald-300" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white text-sm">ROI Calculator</h3>
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                See exactly how much paper logs are costing you in labour and audit prep.
+              </p>
+              <span className="text-sky-400 text-xs mt-2 inline-flex items-center gap-1 group-hover:underline">
+                Calculate savings <ArrowRight className="w-3 h-3" />
+              </span>
+            </div>
+          </Link>
         </div>
       </div>
 
-      {/* ROI benefit */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 text-center">
+      {/* ROI benefit – moved above comparison, but short */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 text-center">
         <p className="text-xl sm:text-2xl font-bold tracking-tight text-white">
           SiteSafe pays for itself if it saves you just two hours of audit prep per month.
         </p>
@@ -306,32 +362,6 @@ export default function LandingPage() {
             <Link href="/compare" className="text-sky-400 hover:underline transition-colors font-medium">
               side‑by‑side
             </Link>.
-          </p>
-        </div>
-      </div>
-
-      {/* ROI Calculator promo */}
-<div className="max-w-2xl mx-auto mb-12 px-4">
-  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
-    <p className="text-sm text-slate-300">
-      How much is your paper visitor log actually costing you?{" "}
-      <Link href="/roi-calculator" className="text-sky-400 hover:underline transition-colors font-medium">
-        Calculate your hidden costs
-      </Link>{" "}
-      in 30 seconds.
-    </p>
-  </div>
-</div>
-
-      {/* Self‑audit promo */}
-      <div className="max-w-2xl mx-auto mb-12 px-4">
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
-          <p className="text-sm text-slate-300">
-            Not sure if your visitor log is audit‑ready?{" "}
-            <Link href="/audit" className="text-sky-400 hover:underline transition-colors font-medium">
-              Take our free 10‑point self‑audit
-            </Link>{" "}
-            and find out in 60 seconds.
           </p>
         </div>
       </div>
