@@ -14,7 +14,6 @@ export async function GET(
 
   const { siteId } = await params;
 
-  // Verify the user belongs to the company that owns the site
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     include: { company: { select: { id: true } } },
@@ -29,12 +28,8 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Fetch active visitors (not signed out)
   const activeVisitors = await prisma.visitorLog.findMany({
-    where: {
-      siteId,
-      signedOutAt: null,
-    },
+    where: { siteId, signedOutAt: null },
     select: {
       fullName: true,
       company: true,
@@ -46,7 +41,27 @@ export async function GET(
     orderBy: { signedInAt: "asc" },
   });
 
-  // Generate PDF with dynamic imports (keeps function cold start light)
+  // Download photos and convert to base64 data URIs
+  const visitorsWithPhotos = await Promise.all(
+    activeVisitors.map(async (v) => {
+      let photoBase64: string | null = null;
+      if (v.photoUrl) {
+        try {
+          const resp = await fetch(v.photoUrl);
+          if (resp.ok) {
+            const buffer = await resp.arrayBuffer();
+            const contentType = resp.headers.get("content-type") || "image/jpeg";
+            const base64 = Buffer.from(buffer).toString("base64");
+            photoBase64 = `data:${contentType};base64,${base64}`;
+          }
+        } catch {
+          photoBase64 = null;
+        }
+      }
+      return { ...v, photoBase64 };
+    })
+  );
+
   const jsPDF = (await import("jspdf")).default;
   const autoTable = (await import("jspdf-autotable")).default;
 
@@ -54,14 +69,15 @@ export async function GET(
   const now = new Date().toLocaleString();
 
   doc.setFontSize(14);
-  doc.text(`Emergency Evacuation List`, 14, 20);
+  doc.text("Emergency Evacuation List", 14, 20);
   doc.setFontSize(10);
   doc.text(`Site: ${site.name}`, 14, 28);
   doc.text(`Generated: ${now}`, 14, 34);
-  doc.text(`Total on site: ${activeVisitors.length}`, 14, 40);
+  doc.text(`Total on site: ${visitorsWithPhotos.length}`, 14, 40);
 
-  const headers = [["Name", "Company", "Host", "Signed In", "Phone"]];
-  const rows = activeVisitors.map((v) => [
+  const headers = ["Photo", "Name", "Company", "Host", "Signed In", "Phone"];
+  const rows = visitorsWithPhotos.map((v) => [
+    "", // placeholder, will be replaced by photo in didDrawCell
     v.fullName,
     v.company,
     v.hostName || "—",
@@ -70,11 +86,27 @@ export async function GET(
   ]);
 
   autoTable(doc, {
-    head: headers,
+    head: [headers],
     body: rows,
     startY: 48,
     styles: { fontSize: 9, cellPadding: 2 },
     headStyles: { fillColor: [15, 23, 42] },
+    didDrawCell: (data) => {
+      // Only draw photo in the first column (index 0) and only for data rows (not header)
+      if (data.column.index === 0 && data.row.index >= 0) {
+        const visitor = visitorsWithPhotos[data.row.index];
+        if (visitor?.photoBase64) {
+          const x = data.cell.x + 1;
+          const y = data.cell.y + 1;
+          const size = data.cell.height - 2;
+          try {
+            doc.addImage(visitor.photoBase64, "JPEG", x, y, size, size, undefined, "FAST");
+          } catch {
+            // If image can't be rendered, do nothing
+          }
+        }
+      }
+    },
   });
 
   const pdfBuffer = Buffer.from(doc.output("arraybuffer"));
