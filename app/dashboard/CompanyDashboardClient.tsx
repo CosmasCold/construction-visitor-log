@@ -923,14 +923,14 @@ export default function CompanyDashboardClient({
               className="flex-1 bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
             />
             <select
-              value={newBlocklistType}
-              onChange={(e) => setNewBlocklistType(e.target.value)}
-              className="bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
-            >
-              <option value="name">Name</option>
-              <option value="email">Email</option>
-              <option value="phone">Phone</option>
-            </select>
+  value={newBlocklistType}
+  onChange={(e) => setNewBlocklistType(e.target.value)}
+  className="bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-white"
+>
+  <option value="name">Name</option>
+  <option value="email">Email</option>
+  <option value="phone">Phone</option>
+</select>
             <input
               type="text"
               placeholder="Note (optional)"

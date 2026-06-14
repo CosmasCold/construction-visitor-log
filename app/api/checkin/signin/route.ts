@@ -4,16 +4,28 @@ import { prisma } from "@/lib/prisma";
 import { checkinLimiter } from "@/lib/ratelimit";
 
 export async function POST(request: Request) {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const { success } = await checkinLimiter.limit(ip);
   if (!success) {
-    return NextResponse.json({ error: "Too many requests. Please slow down." }, { status: 429 });
+    return NextResponse.json(
+      { error: "Too many requests. Please slow down." },
+      { status: 429 }
+    );
   }
 
   try {
     const {
-      fullName, company, phone, email, hostName, hostId,
-      safetyAcknowledged, siteId, answers, photoUrl,
+      fullName,
+      company,
+      phone,
+      email,
+      hostName,
+      hostId,
+      safetyAcknowledged,
+      siteId,
+      answers,
+      photoUrl,
     } = await request.json();
 
     if (!fullName || !company || !siteId) {
@@ -26,7 +38,7 @@ export async function POST(request: Request) {
     // ── Blocklist check ────────────────────────────────────────────
     const site = await prisma.site.findUnique({
       where: { id: siteId },
-      select: { companyId: true },
+      select: { name: true, companyId: true },
     });
 
     if (site?.companyId) {
@@ -42,10 +54,65 @@ export async function POST(request: Request) {
       });
 
       if (blocklistMatch) {
+        // ── Alert notifications ─────────────────────────────────
+        const companyRecord = await prisma.company.findUnique({
+          where: { id: site.companyId },
+          select: {
+            slackWebhookUrl: true,
+            users: {
+              where: { role: "company_owner" },
+              select: { email: true },
+            },
+          },
+        });
+
+        // Slack notification
+        if (companyRecord?.slackWebhookUrl) {
+          const slackPayload = {
+            text: `🚨 Blocked visitor attempt: *${fullName}* (${company}) tried to sign in at *${site.name}* but was flagged by the watchlist.`,
+            username: "SiteSafe",
+            icon_emoji: ":warning:",
+          };
+          fetch(companyRecord.slackWebhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(slackPayload),
+          }).catch((err) => console.error("Slack blocklist alert failed:", err));
+        }
+
+        // Email notification to all company owners
+        const ownerEmails = companyRecord?.users.map((u) => u.email) ?? [];
+        if (ownerEmails.length > 0) {
+          const emailPayload = {
+            sender: { name: "SiteSafe", email: "noreply@sitesafe.app" },
+            to: ownerEmails.map((email) => ({ email })),
+            subject: `🚨 Blocked visitor attempt at ${site.name}`,
+            htmlContent: `<p>A visitor was blocked by your watchlist:</p>
+              <ul>
+                <li><strong>Name:</strong> ${fullName}</li>
+                <li><strong>Company:</strong> ${company}</li>
+                <li><strong>Phone:</strong> ${phone || "—"}</li>
+                <li><strong>Email:</strong> ${email || "—"}</li>
+                <li><strong>Site:</strong> ${site.name}</li>
+              </ul>
+              <p>They were not allowed to sign in.</p>`,
+          };
+          fetch("https://api.brevo.com/v3/smtp/email", {
+            method: "POST",
+            headers: {
+              "api-key": process.env.BREVO_API_KEY!,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(emailPayload),
+          }).catch((err) => console.error("Brevo blocklist email failed:", err));
+        }
+        // ─────────────────────────────────────────────────────────
+
         return NextResponse.json(
           {
             blocked: true,
-            message: "Your entry has been flagged. Please contact security.",
+            message:
+              "Your entry has been flagged. Please contact security.",
           },
           { status: 403 }
         );
@@ -76,16 +143,16 @@ export async function POST(request: Request) {
       },
     });
 
-    // ── Slack notification ─────────────────────────────────────────
-    // (unchanged)
+    // ── Slack notification (normal sign‑in) ──────────────────────
     if (site) {
       const companyRecord = await prisma.company.findUnique({
         where: { id: site.companyId },
         select: { slackWebhookUrl: true },
       });
       if (companyRecord?.slackWebhookUrl) {
+        const siteName = site.name;
         const slackPayload = {
-          text: `🚪 New visitor: *${visitor.fullName}* from *${visitor.company || "unknown"}* just signed in at *${(await prisma.site.findUnique({ where: { id: siteId }, select: { name: true } }))?.name}*${resolvedHostName ? ` (host: ${resolvedHostName})` : ""}.`,
+          text: `🚪 New visitor: *${visitor.fullName}* from *${visitor.company || "unknown"}* just signed in at *${siteName}*${resolvedHostName ? ` (host: ${resolvedHostName})` : ""}.`,
           username: "SiteSafe",
           icon_emoji: ":clipboard:",
         };
@@ -96,7 +163,7 @@ export async function POST(request: Request) {
         }).catch((err) => console.error("Slack notification failed:", err));
       }
     }
-    // ────────────────────────────────────────────────────────────────
+    // ──────────────────────────────────────────────────────────────
 
     // Host email notification (unchanged)
     if (hostId) {
