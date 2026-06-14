@@ -75,12 +75,16 @@ export default function BlogPost() {
           </p>
         </div>
       </div>
-      <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
-        Want to make sure your visitor log survives an audit?{" "}
-        <a href="/checklist" className="text-sky-400 hover:underline">
-          Grab our free 10‑point checklist
-        </a>.
-      </p>
+      <p className="italic text-slate-300 mt-6">
+  Check the full feature‑by‑feature{" "}
+  <a
+    href="/compare"
+    className="text-sky-400 hover:text-sky-300 transition-colors"
+  >
+    comparison
+  </a>{" "}
+  to see how SiteSafe matches up.
+</p>
     </div>
   );
 }

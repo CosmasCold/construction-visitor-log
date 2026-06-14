@@ -84,6 +84,12 @@ export default function BlogPost() {
   <a href="/checklist" className="text-sky-400 hover:underline">
     Grab our free 10‑point checklist
   </a>.
+  <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
+  How much is your paper log really costing you?{" "}
+  <a href="/roi-calculator" className="text-sky-400 hover:underline">
+    Use our free cost calculator
+  </a>.
+</p>
 </p>
     </div>
   );

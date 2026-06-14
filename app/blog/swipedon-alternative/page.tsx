@@ -72,12 +72,15 @@ export default function BlogPost() {
           </p>
         </div>
       </div>
-      <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
-        Ready to make the switch?{" "}
-        <a href="/signup" className="text-sky-400 hover:underline">
-          Start your free 14‑day trial
-        </a>.
-      </p>
+      <p className="italic text-slate-300 mt-6">
+  See the side‑by‑side breakdown on our{" "}
+  <a
+    href="/compare"
+    className="text-sky-400 hover:text-sky-300 transition-colors"
+  >
+    comparison page
+  </a>.
+</p>
     </div>
   );
 }

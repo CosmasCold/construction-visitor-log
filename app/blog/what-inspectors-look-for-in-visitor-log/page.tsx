@@ -24,56 +24,62 @@ export default function BlogPost() {
           </p>
 
           <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            1. Is every visitor recorded?
+            Is every visitor recorded?
           </h2>
           <p>
-            Gaps are the number one red flag. Inspectors will compare the log
-            against known visitors (like deliveries or contractors) and look
-            for missing entries. A digital system that forces check‑in before
+            <strong>Yes, inspectors look for complete records.</strong> Gaps
+            are the number one red flag. They will compare the log against
+            known visitors (like deliveries or contractors) and look for
+            missing entries. A digital system that forces check‑in before
             entry eliminates this problem.
           </p>
 
           <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            2. Are sign‑in and sign‑out times accurate?
+            Are sign‑in and sign‑out times accurate?
           </h2>
           <p>
-            Hand‑written times are often estimates. Inspectors prefer
-            time‑stamped digital records. They’ll also look for anyone who
-            signed in but never signed out — a potential safety issue.
+            <strong>Inspectors expect precise, time‑stamped records.</strong>
+            Hand‑written times are often estimates. Digital records with
+            automatic timestamps are considered far more reliable. They’ll
+            also check for anyone still on site — a safety liability.
           </p>
 
           <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            3. Was the safety briefing acknowledged?
+            Was the safety briefing acknowledged?
           </h2>
           <p>
-            This is the big one. If your site requires hard hats, high‑vis
-            vests, or specific behavior rules, you must prove that every
-            visitor was informed. A mandatory digital acknowledgment (with a
-            timestamp) is the gold standard.
+            <strong>Proof of safety acknowledgment is non‑negotiable.</strong>
+            If your site requires hard hats, high‑vis vests, or specific
+            behavior rules, you must prove that every visitor was informed. A
+            mandatory digital acknowledgment with a timestamp is the gold
+            standard.
           </p>
 
           <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            4. Can you quickly filter and export the data?
+            Can you filter and export the data quickly?
           </h2>
           <p>
-            Inspectors won’t wait for you to search through a binder. They
-            expect a filtered report (by date, by site, by host) within
-            minutes. CSV, Excel, or PDF exports are ideal.
+            <strong>Yes, rapid exports are critical.</strong> Inspectors won’t
+            wait for you to search through a binder. They expect a filtered
+            report — by date, site, or host — within minutes. CSV, Excel, or
+            PDF exports are ideal.
           </p>
 
           <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            5. Is the host clearly identified?
+            Is the host clearly identified?
           </h2>
           <p>
-            For many sites, every visitor must have a designated host. The
-            log should show who they were meeting and ideally notify that
-            host automatically.
+            <strong>Every visitor should have a designated host.</strong> The
+            log must show who they were meeting. Automatic host notifications
+            are a plus, because they prove the host knew the guest had
+            arrived.
           </p>
 
           <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            6. Are there any pre‑screening questions?
+            Are there pre‑screening questions?
           </h2>
           <p>
+            <strong>Pre‑screening adds an extra layer of compliance.</strong>
             Some inspectors want to see that visitors were asked about recent
             illness, site‑specific hazards, or other safety concerns before
             entering.
