@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 import ReviewBadges from "@/components/ReviewBadges";
 import {
   QrCode,
@@ -69,17 +70,13 @@ export default function IndustryCityPage({
   const cityData = cities.find((c) => c.slug === params.city);
 
   if (!industryData || !cityData) {
-    return (
-      <div className="min-h-screen text-white text-center py-20">
-        <p>Location not found.</p>
-      </div>
-    );
+    notFound();  // ✅ proper 404 instead of 5xx or soft 404
   }
 
-  const cityName = cityData.name;
-  const stateCode = cityData.state;
-  const industryName = industryData.name;
-  const industryDesc = industryData.description;
+  const cityName = cityData!.name;
+  const stateCode = cityData!.state;
+  const industryName = industryData!.name;
+  const industryDesc = industryData!.description;
 
   return (
     <div className="min-h-screen text-white">

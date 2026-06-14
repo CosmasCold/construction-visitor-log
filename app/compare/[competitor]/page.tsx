@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Check, X, ArrowRight, ShieldCheck, Building2, Wallet } from "lucide-react";
 
 const competitors = {
@@ -115,11 +116,7 @@ export default function CompareCompetitorPage({
   const comp = competitors[params.competitor as keyof typeof competitors];
 
   if (!comp) {
-    return (
-      <div className="min-h-screen text-white text-center py-20">
-        <p>Competitor not found.</p>
-      </div>
-    );
+    notFound();  // ✅ proper 404 for invalid slugs
   }
 
   return (
