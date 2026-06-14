@@ -38,6 +38,7 @@ export function GET() {
     "/integrations/slack",
     "/integrations/google-sheets",
     "/integrations/zapier",
+    "/locations",
     "/press",
     "/pricing",
     "/privacy",

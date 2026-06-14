@@ -8,9 +8,29 @@ import ScreenshotGallery from "@/components/ScreenshotGallery";
 import TrackedCtaLink from "@/components/TrackedCtaLink";
 import HeroVideo from "@/components/HeroVideo";
 import {
-  QrCode, ShieldCheck, Users, Mail, UserPlus, Printer, FileDown, Building,
-  TrendingUp, Code, DollarSign, ArrowRight, CheckCircle2, Camera, ListChecks,
-  Zap, Wrench, Package, Truck, Factory, Building2, BarChart3, AlertTriangle
+  QrCode,
+  ShieldCheck,
+  Users,
+  Mail,
+  UserPlus,
+  Printer,
+  FileDown,
+  Building,
+  TrendingUp,
+  Code,
+  DollarSign,
+  ArrowRight,
+  CheckCircle2,
+  Camera,
+  ListChecks,
+  Zap,
+  Wrench,
+  Package,
+  Truck,
+  Factory,
+  Building2,
+  BarChart3,
+  AlertTriangle,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -27,6 +47,7 @@ const featureGroups = [
       { icon: ShieldCheck, title: "Mandatory safety briefing", desc: "Visitor cannot skip acknowledgment. Compliance proof." },
       { icon: Camera, title: "Photo capture", desc: "Take a visitor photo at check‑in, stored with their log. Improves security." },
       { icon: ListChecks, title: "Pre‑screening questions", desc: "Custom yes/no questions before sign‑in. Answers stored with the record." },
+      { icon: ShieldCheck, title: "Watchlist / Blocklist", desc: "Flag names, emails, or phone numbers. Blocked visitors are stopped at check‑in and you’re alerted instantly." },
     ],
   },
   {
@@ -39,14 +60,14 @@ const featureGroups = [
     ],
   },
   {
-  category: "Compliance & Export",
-  items: [
-    { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
-    { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
-    { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
-    { icon: AlertTriangle, title: "Emergency evacuation list", desc: "One‑click PDF of everyone on site – vital for drills and real emergencies." },
-  ],
-},
+    category: "Compliance & Export",
+    items: [
+      { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
+      { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
+      { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
+      { icon: AlertTriangle, title: "Emergency evacuation list", desc: "One‑click PDF of everyone on site – vital for drills and real emergencies." },
+    ],
+  },
   {
     category: "Integrations",
     items: [
