@@ -29,12 +29,14 @@ export default function ScreenshotGallery({
     if (selected) {
       document.addEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "hidden";
+      // No need to add padding because scrollbar is always visible (overflow-y: scroll)
     } else {
       document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKeyDown);
     }
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [selected, handleKeyDown]);
 
@@ -115,6 +117,7 @@ export default function ScreenshotGallery({
         </p>
       </div>
 
+      {/* Full‑size overlay – correctly centered in viewport */}
       {selected && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
@@ -131,7 +134,7 @@ export default function ScreenshotGallery({
             <X className="w-6 h-6" />
           </button>
           <div
-            className="relative max-w-5xl w-full max-h-[90vh]"
+            className="relative max-w-5xl w-full max-h-full flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -140,7 +143,7 @@ export default function ScreenshotGallery({
               width={1200}
               height={900}
               sizes="100vw"
-              className="rounded-xl w-full h-auto object-contain max-h-[90vh]"
+              className="rounded-xl w-auto max-h-[80vh] object-contain"
               priority
             />
             <p className="text-center text-sm text-slate-300 mt-3">

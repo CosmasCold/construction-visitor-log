@@ -5,8 +5,8 @@
 html {
   font-size: 18px;
   scroll-behavior: smooth;
-  scrollbar-gutter: stable;
-  background-color: #0f172a; /* ✅ fills the scrollbar gutter area */
+  overflow-y: scroll;           /* ← always show vertical scrollbar */
+  background-color: #0f172a;    /* ← fills gutter so it's dark, not white */
 }
 
 /* Premium scrollbar */
