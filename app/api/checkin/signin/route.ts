@@ -173,7 +173,7 @@ export async function POST(request: Request) {
       });
       if (host?.email) {
         const emailPayload = {
-          sender: { name: "SiteSafe", email: "noreply@sitesafe.app" },
+          sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
           to: [{ email: host.email }],
           subject: `${visitor.fullName} has arrived`,
           htmlContent: `<p><strong>${visitor.fullName}</strong> from <strong>${visitor.company || "unknown"}</strong> has signed in and is waiting for you.</p>`,
