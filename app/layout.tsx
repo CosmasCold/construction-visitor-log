@@ -143,6 +143,9 @@ export default async function RootLayout({
         </div>
 
         <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
+          <Link href="/press" className="hover:text-white transition-colors duration-150">
+  Press
+</Link>
           <Link href="/terms" className="hover:text-white transition-colors duration-150">Terms of Service</Link>
           <Link href="/privacy" className="hover:text-white transition-colors duration-150">Privacy Policy</Link>
           <Link href="/blog" className="hover:text-white transition-colors duration-150">Blog</Link>
