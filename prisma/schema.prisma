@@ -144,3 +144,10 @@ model ChecklistRequest {
   email     String
   createdAt DateTime @default(now())
 }
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  name      String
+  data      Json?    // optional extra info like { format: "csv" }
+  createdAt DateTime @default(now())
+}

@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { track } from "@vercel/analytics";
+import { logEvent } from "@/lib/analytics";
 import {
   ArrowRight,
   CheckCircle2,
@@ -36,17 +36,20 @@ const questions = [
   },
   {
     id: 5,
-    question: "Can you filter and export your visitor records by date, site, or host?",
+    question:
+      "Can you filter and export your visitor records by date, site, or host?",
     hint: "During an audit you’ll need to produce a filtered report in minutes, not hours.",
   },
   {
     id: 6,
-    question: "Are host notifications sent automatically when a visitor arrives?",
+    question:
+      "Are host notifications sent automatically when a visitor arrives?",
     hint: "The person being visited should know immediately — without you having to call or text.",
   },
   {
     id: 7,
-    question: "Can you pre‑register expected visitors so they can sign in with one tap?",
+    question:
+      "Can you pre‑register expected visitors so they can sign in with one tap?",
     hint: "Pre‑registration saves time at the front desk and reduces typing errors.",
   },
   {
@@ -56,7 +59,8 @@ const questions = [
   },
   {
     id: 9,
-    question: "Is your check‑in system available on any device without installing an app?",
+    question:
+      "Is your check‑in system available on any device without installing an app?",
     hint: "Visitors should be able to sign in on their own phone or a shared tablet — no app store required.",
   },
   {
@@ -145,7 +149,7 @@ export default function AuditPage() {
       });
       const data = await res.json();
       if (data.success) {
-        track("self_audit_report_requested");
+        logEvent("self_audit_report_requested");
         setEmailStatus("sent");
         setTimeout(() => {
           setScoreRevealed(true);
@@ -160,7 +164,7 @@ export default function AuditPage() {
 
   function skipEmail() {
     setScoreRevealed(true);
-    track("self_audit_completed", {
+    logEvent("self_audit_completed", {
       score: Object.values(answers).filter((v) => v === true).length,
     });
   }
@@ -181,7 +185,7 @@ export default function AuditPage() {
     navigator.clipboard.writeText(badgeCode);
     setBadgeCopied(true);
     setTimeout(() => setBadgeCopied(false), 2000);
-    track("audit_badge_copied", { score });
+    logEvent("audit_badge_copied", { score });
   }
 
   const ScoreIcon = scoreRevealed ? getScoreCategory(score).icon : CheckCircle2;
@@ -222,7 +226,9 @@ export default function AuditPage() {
                     : "border-white/5 bg-white/[0.02]"
                 }`}
               >
-                <p className="text-sm font-medium text-white mb-2">{q.question}</p>
+                <p className="text-sm font-medium text-white mb-2">
+                  {q.question}
+                </p>
                 <p className="text-xs text-slate-400 mb-3">{q.hint}</p>
                 <div className="flex gap-2">
                   <button
@@ -260,10 +266,14 @@ export default function AuditPage() {
               </h3>
               <p className="text-sm text-slate-300">
                 Enter your email and we’ll send you a detailed breakdown of your
-                score, plus the exact steps to fix each gap. No spam, no sales call.
+                score, plus the exact steps to fix each gap. No spam, no sales
+                call.
               </p>
               {emailStatus !== "sent" ? (
-                <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-2">
+                <form
+                  onSubmit={handleEmailSubmit}
+                  className="flex flex-col sm:flex-row gap-2"
+                >
                   <input
                     type="email"
                     placeholder="your@email.com"
@@ -281,10 +291,14 @@ export default function AuditPage() {
                   </button>
                 </form>
               ) : (
-                <p className="text-emerald-400 text-sm">Report sent! Check your inbox.</p>
+                <p className="text-emerald-400 text-sm">
+                  Report sent! Check your inbox.
+                </p>
               )}
               {emailStatus === "error" && (
-                <p className="text-rose-400 text-xs">Something went wrong. Please try again.</p>
+                <p className="text-rose-400 text-xs">
+                  Something went wrong. Please try again.
+                </p>
               )}
               <button
                 onClick={skipEmail}
@@ -310,7 +324,9 @@ export default function AuditPage() {
           {scoreRevealed ? (
             <div className="text-center pt-4">
               <div className="inline-flex items-center gap-2 text-3xl font-extrabold text-white">
-                <ScoreIcon className={`w-6 h-6 ${getScoreCategory(score).color}`} />
+                <ScoreIcon
+                  className={`w-6 h-6 ${getScoreCategory(score).color}`}
+                />
                 {score}/10
               </div>
               <p
@@ -331,19 +347,27 @@ export default function AuditPage() {
                 </p>
                 <div className="flex items-center gap-3 justify-center">
                   <div className="bg-slate-800 rounded-lg px-4 py-2 inline-flex items-center gap-2 border border-white/10">
-                    <CheckCircle2 className={`w-4 h-4 ${getScoreCategory(score).color}`} />
+                    <CheckCircle2
+                      className={`w-4 h-4 ${
+                        getScoreCategory(score).color
+                      }`}
+                    />
                     <span className="text-white font-bold">{score}/10</span>
-                    <span className="text-xs text-slate-300">SiteSafe Audit</span>
+                    <span className="text-xs text-slate-300">
+                      SiteSafe Audit
+                    </span>
                   </div>
                   <button
                     onClick={copyBadge}
                     className="text-sky-400 hover:text-sky-300 text-xs flex items-center gap-1 transition-colors"
                   >
-                    <Copy className="w-3.5 h-3.5" /> {badgeCopied ? "Copied!" : "Copy embed code"}
+                    <Copy className="w-3.5 h-3.5" />{" "}
+                    {badgeCopied ? "Copied!" : "Copy embed code"}
                   </button>
                 </div>
                 <p className="text-xs text-slate-500 mt-2 max-w-xs mx-auto">
-                  Embed this badge on your website to show you take visitor safety seriously.
+                  Embed this badge on your website to show you take visitor
+                  safety seriously.
                 </p>
               </div>
 
@@ -351,7 +375,7 @@ export default function AuditPage() {
                 <Link
                   href="/signup"
                   className="inline-flex items-center justify-center bg-white hover:bg-slate-100 text-slate-900 font-medium rounded-xl px-6 py-3 text-sm transition-all"
-                  onClick={() => track("audit_cta_click")}
+                  onClick={() => logEvent("audit_cta_click")}
                 >
                   Start free trial <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
@@ -363,7 +387,8 @@ export default function AuditPage() {
                 </button>
               </div>
               <p className="text-xs text-slate-500 mt-4">
-                SiteSafe fixes all 10 of these automatically — no credit card, no sales call.
+                SiteSafe fixes all 10 of these automatically — no credit card,
+                no sales call.
               </p>
             </div>
           ) : null}

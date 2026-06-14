@@ -5,7 +5,6 @@ import { cities } from "@/data/cities";
 const BASE_URL = "https://sitesafe.thesift.space";
 
 export function GET() {
-  // ── Static pages ─────────────────────────────────────────────────
   const staticPaths = [
     "",
     "/about",
@@ -39,6 +38,7 @@ export function GET() {
     "/integrations/slack",
     "/integrations/google-sheets",
     "/integrations/zapier",
+    "/press",
     "/pricing",
     "/privacy",
     "/roi-calculator",
@@ -48,13 +48,10 @@ export function GET() {
     "/terms",
   ];
 
-  // ── Dynamic city × industry pages ────────────────────────────────
   const dynamicPaths = [];
   for (const industry of industries) {
     for (const city of cities) {
-      dynamicPaths.push(
-        `/${industry.slug}-visitor-log-${city.slug}`
-      );
+      dynamicPaths.push(`/${industry.slug}-visitor-log-${city.slug}`);
     }
   }
 

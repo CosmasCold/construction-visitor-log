@@ -1,7 +1,7 @@
 "use client";
 
 import { Play } from "lucide-react";
-import { track } from "@vercel/analytics";
+import { logEvent } from "@/lib/analytics";
 
 export default function HeroVideo() {
   return (
@@ -14,7 +14,7 @@ export default function HeroVideo() {
           allowFullScreen
           loading="lazy"
           className="absolute top-0 left-0 w-full h-full rounded-xl border border-white/10"
-          onLoad={() => track("video_play")}
+          onLoad={() => logEvent("video_play")}
         />
       </div>
       <p className="text-xs text-slate-500 mt-2 flex items-center justify-center gap-1">

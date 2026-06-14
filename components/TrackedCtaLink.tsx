@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { track } from "@vercel/analytics";
+import { logEvent } from "@/lib/analytics";
 
 export default function TrackedCtaLink({
   href,
@@ -16,7 +16,7 @@ export default function TrackedCtaLink({
     <Link
       href={href}
       className={className}
-      onClick={() => track("cta_click", { href })}
+      onClick={() => logEvent("cta_click", { href })}
     >
       {children}
     </Link>

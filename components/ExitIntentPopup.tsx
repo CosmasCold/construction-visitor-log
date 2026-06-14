@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { track } from "@vercel/analytics";
+import { logEvent } from "@/lib/analytics";
 
 export default function ExitIntentPopup() {
   const [show, setShow] = useState(false);
@@ -43,7 +43,7 @@ export default function ExitIntentPopup() {
       });
       const data = await res.json();
       if (data.success) {
-        track("checklist_submitted_exit_popup");
+        logEvent("checklist_submitted_exit_popup");
         setStatus("sent");
         setTimeout(() => {
           handleDismiss();
