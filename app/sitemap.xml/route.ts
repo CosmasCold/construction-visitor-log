@@ -48,10 +48,11 @@ export function GET() {
     "/terms",
   ];
 
+  // New dynamic pattern: [industry]-visitor-[city]
   const dynamicPaths = [];
   for (const industry of industries) {
     for (const city of cities) {
-      dynamicPaths.push(`/${industry.slug}-visitor-log-${city.slug}`);
+      dynamicPaths.push(`/${industry.slug}-visitor-${city.slug}`);
     }
   }
 
