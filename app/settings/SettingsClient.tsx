@@ -190,7 +190,7 @@ export default function SettingsClient({
           <h2 className="text-lg font-semibold tracking-tight text-white flex items-center gap-2">
             <Key className="w-5 h-5 text-sky-400" /> API Access
           </h2>
-          <p className="text-sm text-slate-300">Use this key to integrate SiteSafe with your own systems. Keep it secret!</p>
+          <p className="text-sm text-slate-300">Use this key to integrate SiteSafe with your own systems. Keep it secret! Keep it safe!</p>
           {apiKey ? (
             <div className="space-y-3">
               <div className="flex items-center gap-2">
