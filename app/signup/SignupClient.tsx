@@ -70,14 +70,14 @@ export default function SignupClient() {
             className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
           />
           <input
-            type="password"
-            placeholder="Password (min 8 characters)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={8}
-            className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-          />
+  type="password"
+  placeholder="Password (8+ chars, 1 uppercase, 1 number)"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  required
+  minLength={8}
+  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+/>
           {error && (
             <p className="text-rose-400 text-sm text-center">{error}</p>
           )}

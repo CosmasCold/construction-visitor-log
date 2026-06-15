@@ -1,14 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { signupLimiter } from "@/lib/ratelimit";
 
 export async function POST(req: NextRequest) {
+  // Rate limit
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const { success } = await signupLimiter.limit(ip);
+  if (!success) {
+    return NextResponse.json(
+      { error: "Too many signup attempts. Please try again later." },
+      { status: 429 }
+    );
+  }
+
   try {
     const { email, password } = await req.json();
 
-    if (!email || !password || !email.includes("@") || password.length < 8) {
+    if (!email || !password || !email.includes("@")) {
       return NextResponse.json(
-        { error: "Valid email and password (min 8 characters) required." },
+        { error: "Valid email is required." },
+        { status: 400 }
+      );
+    }
+
+    // Password complexity check
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return NextResponse.json(
+        {
+          error:
+            "Password must be at least 8 characters and include one uppercase letter, one lowercase letter, and one number.",
+        },
         { status: 400 }
       );
     }
@@ -23,7 +47,7 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Find or create the default plan (just need an id for the subscription)
+    // Find or create a default plan
     let plan = await prisma.plan.findFirst({ where: { name: "Pro" } });
     if (!plan) {
       plan = await prisma.plan.create({
@@ -36,7 +60,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Create user, company, and subscription in one transaction
     const user = await prisma.$transaction(async (tx) => {
       const company = await tx.company.create({
         data: {
@@ -49,7 +72,6 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // 14‑day trial subscription
       await tx.subscription.create({
         data: {
           companyId: company.id,
