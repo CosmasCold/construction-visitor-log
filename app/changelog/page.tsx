@@ -9,12 +9,34 @@ export const metadata: Metadata = {
 
 const updates = [
   {
+    date: "2026-06-15",
+    changes: [
+      "Launched Lockdown Mode – instantly block all new check‑ins and flag active visitors from the dashboard.",
+      "Added Webhooks support – real‑time event streaming for check‑ins, check‑outs, and blocklist hits.",
+      "Introduced digital document signing – require visitors to sign NDAs, waivers, or policies before entry.",
+      "Added Watchlist / Blocklist to the landing page feature grid.",
+      "Updated the comparison page with new safety and security rows.",
+      "Fixed video thumbnail loading and internal linking for city pages.",
+    ],
+  },
+  {
+    date: "2026-06-14",
+    changes: [
+      "Added Emergency Evacuation List with visitor photos – one‑click PDF of everyone on site.",
+      "Added Lockdown Mode toggle per site.",
+      "Added Webhooks settings in the company dashboard.",
+      "Integrated digital document signing with signature pad on check‑in page.",
+      "Launched programmatic city+industry landing pages (500+ locations).",
+      "Fixed Open Graph metadata and added IndexNow support.",
+    ],
+  },
+  {
     date: "2026-06-13",
     changes: [
       "Revamped the landing page: new neutral hero subtitle (“the digital check‑in for any workplace”), grouped features by capability, and added a mid‑page call‑to‑action.",
       "Screenshot gallery redesigned with a darker display case, left/right scroll buttons, keyboard navigation, and click‑to‑enlarge for any image.",
       "Launched dedicated Pricing and Compare pages so visitors can see pricing instantly and compare SiteSafe side‑by‑side with Envoy, SwipedOn, and paper logs.",
-      "Performance overhaul: lazy‑loaded Excel/PDF export libraries (saves ~150 KB on dashboard page loads), inlined structured data, added preconnects for external domains.",
+      "Performance overhaul: lazy‑loaded Excel/PDF export libraries, inlined structured data, added preconnects for external domains.",
       "Switched hero background from external Unsplash image to a local optimized WebP — faster loads, no third‑party dependency.",
       "Enabled automatic next‑gen image formats (WebP/AVIF) for all local screenshots and added cache headers for static assets.",
       "Added Vercel Analytics event tracking for CTA clicks, checklist submissions, demo video plays, and file exports.",

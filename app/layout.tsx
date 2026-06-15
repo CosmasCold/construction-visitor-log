@@ -171,7 +171,9 @@ export default async function RootLayout({
           <Link href="/pricing" className="hover:text-white transition-colors duration-150">Pricing</Link>
           <Link href="/about" className="hover:text-white transition-colors duration-150">About</Link>
           <Link href="/security" className="hover:text-white transition-colors duration-150">Security</Link>
-          <a href="mailto:cloudandclipboard@gmail.com" className="hover:text-white transition-colors duration-150">Contact</a>
+          <Link href="/contact" className="hover:text-white transition-colors duration-150">
+  Contact
+</Link>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-500">
