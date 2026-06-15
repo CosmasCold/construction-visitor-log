@@ -13,7 +13,7 @@ export async function GET(
       id: true,
       name: true,
       documentSigningEnabled: true,
-      documentTemplateUrl: true,
+      documentTemplateData: true,
     },
   });
 
