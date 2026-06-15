@@ -877,65 +877,73 @@ export default function CompanyDashboardClient({
                     </div>
 
                     {/* Document Signing */}
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-sky-400" /> Document Signing (NDA)
-                      </h4>
-                      <label className="flex items-center gap-2 text-xs text-slate-200 mb-2">
-                        <input
-                          type="checkbox"
-                          checked={docSigningEnabled}
-                          onChange={(e) => setDocSigningEnabled(e.target.checked)}
-                          className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
-                        />
-                        Require visitors to sign a document before entry
-                      </label>
-                      {site.documentTemplateUrl ? (
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-slate-400">Template uploaded</span>
-                          <button
-                            type="button"
-                            onClick={async () => {
-                              await fetch(`/api/sites/${site.id}/document-template`, { method: 'DELETE' });
-                              setEditingSiteId(null); // refresh
-                              startEdit(site);
-                            }}
-                            className="text-rose-400 text-xs hover:text-rose-300"
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex gap-2">
-                          <input
-                            type="file"
-                            accept=".pdf"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              setDocTemplateUploading(true);
-                              const formData = new FormData();
-                              formData.append('file', file);
-                              const res = await fetch(`/api/sites/${site.id}/document-template`, {
-                                method: 'POST',
-                                body: formData,
-                              });
-                              if (res.ok) {
-                                alert('Template uploaded');
-                                setDocTemplateUploading(false);
-                                setEditingSiteId(null); // refresh
-                                startEdit(site);
-                              } else {
-                                alert('Upload failed');
-                                setDocTemplateUploading(false);
-                              }
-                            }}
-                            className="text-xs text-white"
-                          />
-                          {docTemplateUploading && <span className="text-xs text-sky-400">Uploading…</span>}
-                        </div>
-                      )}
-                    </div>
+<div className="mt-4 pt-4 border-t border-white/10">
+  <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+    <FileText className="w-4 h-4 text-sky-400" /> Document Signing (NDA)
+  </h4>
+  <label className="flex items-center gap-2 text-xs text-slate-200 mb-2">
+    <input
+      type="checkbox"
+      checked={docSigningEnabled}
+      onChange={(e) => setDocSigningEnabled(e.target.checked)}
+      className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
+    />
+    Require visitors to sign a document before entry
+  </label>
+  {sites.find((s) => s.id === editingSiteId)?.documentTemplateUrl ? (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-slate-400">Template uploaded</span>
+      <button
+        type="button"
+        onClick={async () => {
+          await fetch(`/api/sites/${editingSiteId}/document-template`, { method: 'DELETE' });
+          // Remove the template URL from the local state
+          setSites((prev) =>
+            prev.map((s) =>
+              s.id === editingSiteId ? { ...s, documentTemplateUrl: null } : s
+            )
+          );
+        }}
+        className="text-rose-400 text-xs hover:text-rose-300"
+      >
+        Remove
+      </button>
+    </div>
+  ) : (
+    <div className="flex gap-2">
+      <input
+        type="file"
+        accept=".pdf"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          setDocTemplateUploading(true);
+          const formData = new FormData();
+          formData.append('file', file);
+          const res = await fetch(`/api/sites/${editingSiteId}/document-template`, {
+            method: 'POST',
+            body: formData,
+          });
+          if (res.ok) {
+            const { url } = await res.json();
+            // Update the local state with the new template URL
+            setSites((prev) =>
+              prev.map((s) =>
+                s.id === editingSiteId ? { ...s, documentTemplateUrl: url } : s
+              )
+            );
+            alert('Template uploaded');
+          } else {
+            alert('Upload failed');
+          }
+          setDocTemplateUploading(false);
+        }}
+        className="text-xs text-white"
+      />
+      {docTemplateUploading && <span className="text-xs text-sky-400">Uploading…</span>}
+    </div>
+  )}
+</div>
 
                     <div className="flex gap-2">
                       <button
