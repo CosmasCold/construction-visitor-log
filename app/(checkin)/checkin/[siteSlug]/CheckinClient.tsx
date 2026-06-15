@@ -521,6 +521,9 @@ export default function CheckinClient({
                       onClick={async () => {
                         const url = await uploadSignature(signatureDataUrl);
                         if (url) setSignatureUrl(url);
+                        setSignatureDataUrl(null);       // clear preview
+      setShowSignaturePad(false);      // hide pad
+      clearSignature();
                       }}
                       disabled={uploading}
                       className="text-xs bg-sky-500 hover:bg-sky-600 text-white px-3 py-1 rounded"

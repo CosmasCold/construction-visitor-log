@@ -27,6 +27,7 @@ import {
   ShieldCheck,
   AlertTriangle,
   Zap,
+  ShieldAlert,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
@@ -57,6 +58,7 @@ type Site = {
   questions?: string[] | null;
   documentSigningEnabled?: boolean;
   documentTemplateData?: string | null;
+  lockdownEnabled?: boolean;
 };
 
 type Host = {
@@ -625,8 +627,15 @@ export default function CompanyDashboardClient({
             sites.map((site) => (
               <div
                 key={site.id}
-                className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised hover:shadow-card-raised transition-shadow duration-300 p-4"
+                className={`relative bg-white/[0.06] backdrop-blur-md rounded-2xl border ${
+                  site.lockdownEnabled ? "border-red-400/30" : "border-white/10"
+                } shadow-card-raised hover:shadow-card-raised transition-shadow duration-300 p-4`}
               >
+                {site.lockdownEnabled && (
+                  <div className="absolute top-0 left-0 right-0 bg-red-500/10 text-red-400 text-xs text-center py-0.5 rounded-t-2xl border-b border-red-400/20">
+                    🔒 LOCKDOWN
+                  </div>
+                )}
                 {editingSiteId === site.id ? (
                   <div className="space-y-3">
                     <input
@@ -877,96 +886,91 @@ export default function CompanyDashboardClient({
                     </div>
 
                     {/* Document Signing */}
-<div className="mt-4 pt-4 border-t border-white/10">
-  <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-    <FileText className="w-4 h-4 text-sky-400" /> Document Signing (NDA)
-  </h4>
-  <label className="flex items-center gap-2 text-xs text-slate-200 mb-2">
-    <input
-      type="checkbox"
-      checked={docSigningEnabled}
-      onChange={(e) => setDocSigningEnabled(e.target.checked)}
-      className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
-    />
-    Require visitors to sign a document before entry
-  </label>
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-sky-400" /> Document Signing (NDA)
+                      </h4>
+                      <label className="flex items-center gap-2 text-xs text-slate-200 mb-2">
+                        <input
+                          type="checkbox"
+                          checked={docSigningEnabled}
+                          onChange={(e) => setDocSigningEnabled(e.target.checked)}
+                          className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
+                        />
+                        Require visitors to sign a document before entry
+                      </label>
+                      {(() => {
+                        const currentSite = sites.find((s) => s.id === editingSiteId);
+                        if (currentSite?.documentTemplateData) {
+                          return (
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-slate-400">Template uploaded</span>
+                              <a
+                                href={currentSite.documentTemplateData}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sky-400 text-xs underline"
+                              >
+                                View
+                              </a>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  await fetch(`/api/sites/${editingSiteId}/document-template`, { method: 'DELETE' });
+                                  setSites((prev) =>
+                                    prev.map((s) =>
+                                      s.id === editingSiteId ? { ...s, documentTemplateData: null } : s
+                                    )
+                                  );
+                                }}
+                                className="text-rose-400 text-xs hover:text-rose-300"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          );
+                        }
 
-  {/* Find the site being edited from the sites array */}
-  {(() => {
-    const currentSite = sites.find((s) => s.id === editingSiteId);
-    if (currentSite?.documentTemplateData) {
-      return (
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400">Template uploaded</span>
-          <a
-            href={currentSite.documentTemplateData}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sky-400 text-xs underline"
-          >
-            View
-          </a>
-          <button
-            type="button"
-            onClick={async () => {
-              await fetch(`/api/sites/${editingSiteId}/document-template`, { method: 'DELETE' });
-              // Update local state
-              setSites((prev) =>
-                prev.map((s) =>
-                  s.id === editingSiteId ? { ...s, documentTemplateData: null } : s
-                )
-              );
-            }}
-            className="text-rose-400 text-xs hover:text-rose-300"
-          >
-            Remove
-          </button>
-        </div>
-      );
-    }
+                        return (
+                          <div className="flex gap-2">
+                            <input
+                              type="file"
+                              accept=".pdf"
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setDocTemplateUploading(true);
 
-    return (
-      <div className="flex gap-2">
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={async (e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            setDocTemplateUploading(true);
+                                const reader = new FileReader();
+                                reader.onload = async (ev) => {
+                                  const fileBase64 = ev.target?.result as string;
+                                  const res = await fetch(`/api/sites/${editingSiteId}/document-template`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ fileBase64 }),
+                                  });
 
-            // Read the file as a base64 data URL
-            const reader = new FileReader();
-            reader.onload = async (ev) => {
-              const fileBase64 = ev.target?.result as string;
-              const res = await fetch(`/api/sites/${editingSiteId}/document-template`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fileBase64 }),
-              });
-
-              if (res.ok) {
-                // Update local state with the base64 data URL
-                setSites((prev) =>
-                  prev.map((s) =>
-                    s.id === editingSiteId ? { ...s, documentTemplateData: fileBase64 } : s
-                  )
-                );
-                alert('Template uploaded');
-              } else {
-                alert('Upload failed');
-              }
-              setDocTemplateUploading(false);
-            };
-            reader.readAsDataURL(file);
-          }}
-          className="text-xs text-white"
-        />
-        {docTemplateUploading && <span className="text-xs text-sky-400">Uploading…</span>}
-      </div>
-    );
-  })()}
-</div>
+                                  if (res.ok) {
+                                    setSites((prev) =>
+                                      prev.map((s) =>
+                                        s.id === editingSiteId ? { ...s, documentTemplateData: fileBase64 } : s
+                                      )
+                                    );
+                                    alert('Template uploaded');
+                                  } else {
+                                    alert('Upload failed');
+                                  }
+                                  setDocTemplateUploading(false);
+                                };
+                                reader.readAsDataURL(file);
+                              }}
+                              className="text-xs text-white"
+                            />
+                            {docTemplateUploading && <span className="text-xs text-sky-400">Uploading…</span>}
+                          </div>
+                        );
+                      })()}
+                    </div>
 
                     <div className="flex gap-2">
                       <button
@@ -1029,6 +1033,33 @@ export default function CompanyDashboardClient({
                           title="Download emergency list"
                         >
                           <AlertTriangle className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const newLockdown = !site.lockdownEnabled;
+                            const res = await fetch(`/api/sites/${site.id}/lockdown`, {
+                              method: "PUT",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({ lockdown: newLockdown }),
+                            });
+                            if (res.ok) {
+                              setSites((prev) =>
+                                prev.map((s) =>
+                                  s.id === site.id ? { ...s, lockdownEnabled: newLockdown } : s
+                                )
+                              );
+                            }
+                          }}
+                          className={`inline-flex items-center transition-colors duration-150 ${
+                            site.lockdownEnabled
+                              ? "text-red-400 hover:text-red-300"
+                              : "text-slate-400 hover:text-white"
+                          }`}
+                          title={site.lockdownEnabled ? "End lockdown" : "Activate lockdown"}
+                        >
+                          <ShieldAlert className="w-4 h-4" />
                         </button>
                       </p>
                       <p className="text-xs text-slate-500 mt-1">

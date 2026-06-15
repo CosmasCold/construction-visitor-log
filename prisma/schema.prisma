@@ -67,6 +67,7 @@ model Site {
   createdAt          DateTime          @default(now())
   documentSigningEnabled Boolean  @default(false)
 documentTemplateData   String?   // store the PDF as a base64 data URL
+lockdownEnabled       Boolean  @default(false)
 }
 
 model VisitorLog {

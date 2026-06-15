@@ -21,6 +21,7 @@ import {
   AlertTriangle,
   FileText,
   DoorClosed,
+  ShieldAlert,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -98,6 +99,11 @@ const featureGroups = [
         title: "Remote sign‑out",
         desc: "Sign out visitors from the dashboard if they forget. Keeps your active‑on‑site list accurate.",
       },
+      {
+  icon: ShieldAlert,
+  title: "Lockdown mode",
+  desc: "Instantly block all new check‑ins and flag active visitors with one click. Essential for schools, healthcare, and corporate security.",
+},
     ],
   },
   {

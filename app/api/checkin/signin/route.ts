@@ -37,6 +37,19 @@ export async function POST(request: Request) {
       );
     }
 
+    // Lockdown check
+const siteLockdown = await prisma.site.findUnique({
+  where: { id: siteId },
+  select: { lockdownEnabled: true },
+});
+
+if (siteLockdown?.lockdownEnabled) {
+  return NextResponse.json(
+    { error: "This site is currently in lockdown. Please contact security." },
+    { status: 403 }
+  );
+}
+
     // ── Blocklist check ────────────────────────────────────────────
     const site = await prisma.site.findUnique({
       where: { id: siteId },
