@@ -26,6 +26,8 @@ import {
   DoorClosed,
   ShieldCheck,
   AlertTriangle,
+  Clock,
+  Zap,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
@@ -127,6 +129,13 @@ export default function CompanyDashboardClient({
   const [newBlocklistType, setNewBlocklistType] = useState("name");
   const [newBlocklistNote, setNewBlocklistNote] = useState("");
 
+  // Auto‑checkout settings (retained but can be ignored if feature removed)
+  const [autoCheckoutEnabled, setAutoCheckoutEnabled] = useState(false);
+  const [autoCheckoutHours, setAutoCheckoutHours] = useState(8);
+
+  // Webhook settings
+  const [webhookUrl, setWebhookUrl] = useState("");
+
   // Auto‑refresh every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -135,12 +144,21 @@ export default function CompanyDashboardClient({
     return () => clearInterval(interval);
   }, [router]);
 
-  // Fetch blocklist on mount
+  // Fetch blocklist and company settings on mount
   useEffect(() => {
     fetch("/api/blocklist")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) setBlocklistEntries(data);
+      })
+      .catch(() => {});
+
+    fetch("/api/company/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        setAutoCheckoutEnabled(data.autoCheckoutEnabled || false);
+        setAutoCheckoutHours(data.autoCheckoutHours || 8);
+        setWebhookUrl(data.webhookUrl || "");
       })
       .catch(() => {});
   }, []);
@@ -406,6 +424,15 @@ export default function CompanyDashboardClient({
     if (res.ok) {
       setBlocklistEntries((prev) => prev.filter((e) => e.id !== id));
     }
+  }
+
+  // Webhook handler
+  async function saveWebhookUrl(url: string) {
+    await fetch("/api/company/settings", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ webhookUrl: url }),
+    });
   }
 
   const showOnboarding =
@@ -1010,6 +1037,42 @@ export default function CompanyDashboardClient({
             </div>
           ) : (
             <p className="text-xs text-slate-500">No entries yet.</p>
+          )}
+        </div>
+
+        {/* Webhook Settings */}
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+          <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+            <Zap className="w-5 h-5 text-sky-400" /> Webhooks
+          </h3>
+          <p className="text-xs text-slate-400 mb-4">
+            Send real‑time events (check‑in, check‑out, blocklist hits) to your own tools. Enter a URL to receive JSON payloads.
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="url"
+              placeholder="https://your-tool.com/webhook"
+              value={webhookUrl}
+              onChange={(e) => setWebhookUrl(e.target.value)}
+              className="flex-1 bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-400"
+            />
+            <button
+              onClick={() => saveWebhookUrl(webhookUrl)}
+              className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-xs font-medium"
+            >
+              Save
+            </button>
+          </div>
+          {webhookUrl && (
+            <button
+              onClick={async () => {
+                await fetch("/api/webhook/test", { method: "POST" });
+                alert("Test event sent");
+              }}
+              className="mt-3 text-xs text-sky-400 hover:text-sky-300"
+            >
+              Send test event
+            </button>
           )}
         </div>
 

@@ -14,12 +14,20 @@ import ExitIntentPopup from "@/components/ExitIntentPopup";
 export const metadata: Metadata = {
   title: "SiteSafe – Smart Visitor Management",
   description:
-    "Smart visitor management for construction sites, warehouses, and offices. QR check‑in, real‑time dashboard, audit‑ready exports.",
+    "Smart visitor management for construction sites, warehouses, and offices.",
   openGraph: {
     title: "SiteSafe – Smart Visitor Management",
     description:
       "Smart visitor management for construction sites, warehouses, and offices.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    type: "website",                               // ← required
+    url: "https://sitesafe.thesift.space",          // ← required
+    images: [
+      {
+        url: "https://sitesafe.thesift.space/og-image.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
   },
   icons: {
     icon: "/favicon.svg",

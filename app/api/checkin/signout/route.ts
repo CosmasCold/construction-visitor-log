@@ -1,34 +1,40 @@
-// app/api/checkin/signout/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { checkinLimiter } from "@/lib/ratelimit";
+import { fireWebhook } from "@/lib/webhook";
 
 export async function POST(request: Request) {
-  // ---------- rate limit ----------
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const { success } = await checkinLimiter.limit(ip);
-  if (!success) {
-    return NextResponse.json(
-      { error: "Too many requests. Please slow down." },
-      { status: 429 }
-    );
-  }
-  // -------------------------------
-
   try {
     const { id } = await request.json();
-
     if (!id) {
-      return NextResponse.json({ error: "Missing visitor ID" }, { status: 400 });
+      return NextResponse.json({ error: "Visitor ID is required" }, { status: 400 });
     }
 
-    const updated = await prisma.visitorLog.update({
+    const visitor = await prisma.visitorLog.update({
       where: { id },
       data: { signedOutAt: new Date() },
+      include: {
+        site: { select: { name: true, companyId: true } },
+      },
     });
 
-    return NextResponse.json(updated, { status: 200 });
+    if (visitor.site?.companyId) {
+      const company = await prisma.company.findUnique({
+        where: { id: visitor.site.companyId },
+        select: { webhookUrl: true },
+      });
+
+      if (company?.webhookUrl) {
+        fireWebhook(company.webhookUrl, "checkout.created", {
+          visitorId: visitor.id,
+          fullName: visitor.fullName,
+          company: visitor.company,
+          siteName: visitor.site.name,
+          signedOutAt: visitor.signedOutAt,
+        });
+      }
+    }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Sign‑out error:", error);
     return NextResponse.json({ error: "Failed to sign out" }, { status: 500 });

@@ -25,6 +25,7 @@ model Company {
   subscription     Subscription?
   slackWebhookUrl   String?          // ✅ Slack incoming webhook URL
   blocklistEntries BlocklistEntry[]
+  webhookUrl             String?
 }
 
 model Plan {
