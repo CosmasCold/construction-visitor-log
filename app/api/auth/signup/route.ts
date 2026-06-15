@@ -23,13 +23,39 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create user and a default company in a single transaction
+    // Find or create the default plan (just need an id for the subscription)
+    let plan = await prisma.plan.findFirst({ where: { name: "Pro" } });
+    if (!plan) {
+      plan = await prisma.plan.create({
+        data: {
+          name: "Pro",
+          stripePriceId: "free_trial",
+          maxSites: 999,
+          features: ["all"],
+        },
+      });
+    }
+
+    // Create user, company, and subscription in one transaction
     const user = await prisma.$transaction(async (tx) => {
       const company = await tx.company.create({
         data: {
           name: "My Company",
           email: email,
-          slug: email.split("@")[0] + "-" + Math.random().toString(36).slice(2, 8),
+          slug:
+            email.split("@")[0] +
+            "-" +
+            Math.random().toString(36).slice(2, 8),
+        },
+      });
+
+      // 14‑day trial subscription
+      await tx.subscription.create({
+        data: {
+          companyId: company.id,
+          planId: plan!.id,
+          status: "trialing",
+          currentPeriodEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
         },
       });
 
@@ -37,7 +63,7 @@ export async function POST(req: NextRequest) {
         data: {
           email,
           passwordHash,
-          verified: true,          // ✅ no email verification block
+          verified: true,
           role: "company_owner",
           companyId: company.id,
         },

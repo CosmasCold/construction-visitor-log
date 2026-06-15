@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ShieldCheck, ArrowRight } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { ArrowRight } from "lucide-react";
 
 export default function SignupClient() {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function SignupClient() {
     setError("");
     setLoading(true);
 
+    // 1. Create the account
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -25,12 +27,27 @@ export default function SignupClient() {
 
     const data = await res.json();
 
-    if (res.ok) {
-      router.push("/dashboard");
-    } else {
+    if (!res.ok) {
       setError(data.error || "Signup failed. Please try again.");
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    // 2. Immediately sign the new user in
+    const signInResult = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (signInResult?.error) {
+      setError("Account created but sign in failed. Please sign in manually.");
+      setLoading(false);
+      return;
+    }
+
+    // 3. Go to the dashboard
+    router.push("/dashboard");
   }
 
   return (
