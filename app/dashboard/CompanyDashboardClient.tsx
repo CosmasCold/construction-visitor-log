@@ -129,9 +129,6 @@ export default function CompanyDashboardClient({
   const [newBlocklistType, setNewBlocklistType] = useState("name");
   const [newBlocklistNote, setNewBlocklistNote] = useState("");
 
-  // Auto‑checkout settings (retained but can be ignored if feature removed)
-  const [autoCheckoutEnabled, setAutoCheckoutEnabled] = useState(false);
-  const [autoCheckoutHours, setAutoCheckoutHours] = useState(8);
 
   // Webhook settings
   const [webhookUrl, setWebhookUrl] = useState("");
@@ -156,8 +153,6 @@ export default function CompanyDashboardClient({
     fetch("/api/company/settings")
       .then((res) => res.json())
       .then((data) => {
-        setAutoCheckoutEnabled(data.autoCheckoutEnabled || false);
-        setAutoCheckoutHours(data.autoCheckoutHours || 8);
         setWebhookUrl(data.webhookUrl || "");
       })
       .catch(() => {});
