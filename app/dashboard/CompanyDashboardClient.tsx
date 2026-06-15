@@ -56,7 +56,7 @@ type Site = {
   visitorsToday: number;
   questions?: string[] | null;
   documentSigningEnabled?: boolean;
-  documentTemplateUrl?: string | null;
+  documentTemplateData?: string | null;
 };
 
 type Host = {
@@ -890,59 +890,82 @@ export default function CompanyDashboardClient({
     />
     Require visitors to sign a document before entry
   </label>
-  {sites.find((s) => s.id === editingSiteId)?.documentTemplateUrl ? (
-    <div className="flex items-center gap-2">
-      <span className="text-xs text-slate-400">Template uploaded</span>
-      <button
-        type="button"
-        onClick={async () => {
-          await fetch(`/api/sites/${editingSiteId}/document-template`, { method: 'DELETE' });
-          // Remove the template URL from the local state
-          setSites((prev) =>
-            prev.map((s) =>
-              s.id === editingSiteId ? { ...s, documentTemplateUrl: null } : s
-            )
-          );
-        }}
-        className="text-rose-400 text-xs hover:text-rose-300"
-      >
-        Remove
-      </button>
-    </div>
-  ) : (
-    <div className="flex gap-2">
-      <input
-        type="file"
-        accept=".pdf"
-        onChange={async (e) => {
-          const file = e.target.files?.[0];
-          if (!file) return;
-          setDocTemplateUploading(true);
-          const formData = new FormData();
-          formData.append('file', file);
-          const res = await fetch(`/api/sites/${editingSiteId}/document-template`, {
-            method: 'POST',
-            body: formData,
-          });
-          if (res.ok) {
-            const { url } = await res.json();
-            // Update the local state with the new template URL
-            setSites((prev) =>
-              prev.map((s) =>
-                s.id === editingSiteId ? { ...s, documentTemplateUrl: url } : s
-              )
-            );
-            alert('Template uploaded');
-          } else {
-            alert('Upload failed');
-          }
-          setDocTemplateUploading(false);
-        }}
-        className="text-xs text-white"
-      />
-      {docTemplateUploading && <span className="text-xs text-sky-400">Uploading…</span>}
-    </div>
-  )}
+
+  {/* Find the site being edited from the sites array */}
+  {(() => {
+    const currentSite = sites.find((s) => s.id === editingSiteId);
+    if (currentSite?.documentTemplateData) {
+      return (
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-400">Template uploaded</span>
+          <a
+            href={currentSite.documentTemplateData}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sky-400 text-xs underline"
+          >
+            View
+          </a>
+          <button
+            type="button"
+            onClick={async () => {
+              await fetch(`/api/sites/${editingSiteId}/document-template`, { method: 'DELETE' });
+              // Update local state
+              setSites((prev) =>
+                prev.map((s) =>
+                  s.id === editingSiteId ? { ...s, documentTemplateData: null } : s
+                )
+              );
+            }}
+            className="text-rose-400 text-xs hover:text-rose-300"
+          >
+            Remove
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex gap-2">
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            setDocTemplateUploading(true);
+
+            // Read the file as a base64 data URL
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+              const fileBase64 = ev.target?.result as string;
+              const res = await fetch(`/api/sites/${editingSiteId}/document-template`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fileBase64 }),
+              });
+
+              if (res.ok) {
+                // Update local state with the base64 data URL
+                setSites((prev) =>
+                  prev.map((s) =>
+                    s.id === editingSiteId ? { ...s, documentTemplateData: fileBase64 } : s
+                  )
+                );
+                alert('Template uploaded');
+              } else {
+                alert('Upload failed');
+              }
+              setDocTemplateUploading(false);
+            };
+            reader.readAsDataURL(file);
+          }}
+          className="text-xs text-white"
+        />
+        {docTemplateUploading && <span className="text-xs text-sky-400">Uploading…</span>}
+      </div>
+    );
+  })()}
 </div>
 
                     <div className="flex gap-2">

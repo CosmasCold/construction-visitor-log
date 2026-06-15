@@ -66,7 +66,7 @@ model Site {
   expectedVisitors   ExpectedVisitor[]
   createdAt          DateTime          @default(now())
   documentSigningEnabled Boolean  @default(false)
-documentTemplateUrl    String?
+documentTemplateData   String?   // store the PDF as a base64 data URL
 }
 
 model VisitorLog {

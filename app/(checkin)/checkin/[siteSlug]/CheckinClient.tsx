@@ -69,9 +69,9 @@ export default function CheckinClient({
   // Error message
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Document signing
+  // Document signing state
   const [documentSigningEnabled, setDocumentSigningEnabled] = useState(false);
-  const [documentTemplateUrl, setDocumentTemplateUrl] = useState<string | null>(null);
+  const [documentTemplateData, setDocumentTemplateData] = useState<string | null>(null);
   const [showSignaturePad, setShowSignaturePad] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
@@ -100,7 +100,7 @@ export default function CheckinClient({
       .then((res) => res.json())
       .then((data) => {
         setDocumentSigningEnabled(data.documentSigningEnabled || false);
-        setDocumentTemplateUrl(data.documentTemplateUrl || null);
+        setDocumentTemplateData(data.documentTemplateData || null);
       })
       .catch(() => {});
   }, [siteId]);
@@ -480,9 +480,9 @@ export default function CheckinClient({
             <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
               <FileText className="w-4 h-4 text-sky-400" /> Document Signing
             </h3>
-            {documentTemplateUrl && (
+            {documentTemplateData && (
               <a
-                href={documentTemplateUrl}
+                href={documentTemplateData}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sky-400 hover:text-sky-300 text-xs underline mb-3 block"

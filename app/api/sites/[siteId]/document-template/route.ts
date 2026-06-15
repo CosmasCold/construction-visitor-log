@@ -2,33 +2,31 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { put } from "@vercel/blob";
 
+// Expect a JSON body with `fileBase64` (data URL) and optional `fileName`
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ siteId: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email)
+  if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const { siteId } = await params;
-  const formData = await req.formData();
-  const file = formData.get("file") as File | null;
-  if (!file)
-    return NextResponse.json({ error: "No file" }, { status: 400 });
+  const { fileBase64 } = await req.json();
 
-  try {
-    const blob = await put(file.name, file, { access: "public" });
-    await prisma.site.update({
-      where: { id: siteId },
-      data: { documentTemplateUrl: blob.url },
-    });
-    return NextResponse.json({ url: blob.url });
-  } catch (error) {
-    console.error("Upload failed:", error);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+  if (!fileBase64 || typeof fileBase64 !== "string" || !fileBase64.startsWith("data:application/pdf")) {
+    return NextResponse.json({ error: "Invalid PDF data" }, { status: 400 });
   }
+
+  // Store the base64 data URL directly in the database
+  await prisma.site.update({
+    where: { id: siteId },
+    data: { documentTemplateData: fileBase64 },
+  });
+
+  return NextResponse.json({ success: true });
 }
 
 export async function DELETE(
@@ -36,13 +34,14 @@ export async function DELETE(
   { params }: { params: Promise<{ siteId: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session?.user?.email)
+  if (!session?.user?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const { siteId } = await params;
   await prisma.site.update({
     where: { id: siteId },
-    data: { documentTemplateUrl: null },
+    data: { documentTemplateData: null },
   });
   return NextResponse.json({ success: true });
 }
