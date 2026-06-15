@@ -158,6 +158,15 @@ const rows: CompareRow[] = [
     highlight: true,
   },
   {
+    feature: "Lockdown mode",
+    icon: ShieldAlert,
+    sitesafe: true,
+    envoy: false,
+    swipedon: false,
+    paper: false,
+    highlight: true,
+  },
+  {
     feature: "Webhooks",
     icon: Zap,
     sitesafe: true,
@@ -166,15 +175,6 @@ const rows: CompareRow[] = [
     paper: false,
     highlight: true,
   },
-  {
-  feature: "Lockdown mode",
-  icon: ShieldAlert,
-  sitesafe: true,
-  envoy: false,
-  swipedon: false,
-  paper: false,
-  highlight: true,
-},
   {
     feature: "Digital document signing",
     icon: FileText,

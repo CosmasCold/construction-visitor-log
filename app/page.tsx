@@ -29,9 +29,9 @@ import {
   Truck,
   Factory,
   Building2,
-  FileText,
   AlertTriangle,
   ShieldAlert,
+  FileText,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -48,7 +48,7 @@ const featureGroups = [
       { icon: ShieldCheck, title: "Mandatory safety briefing", desc: "Visitor cannot skip acknowledgment. Compliance proof." },
       { icon: Camera, title: "Photo capture", desc: "Take a visitor photo at check‑in, stored with their log. Improves security." },
       { icon: ListChecks, title: "Pre‑screening questions", desc: "Custom yes/no questions before sign‑in. Answers stored with the record." },
-      { icon: ShieldCheck, title: "Watchlist / Blocklist", desc: "Flag names, emails, or phone numbers. Blocked visitors are stopped at check‑in and you’re alerted instantly." },
+      { icon: ShieldCheck, title: "Watchlist / Blocklist", desc: "Flag unwanted visitors. Blocked visitors are stopped at check‑in and you’re alerted instantly." },
     ],
   },
   {
@@ -59,22 +59,23 @@ const featureGroups = [
       { icon: UserPlus, title: "Pre‑registration", desc: "Add expected visitors for one‑tap sign‑in." },
       { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list, with photo if available." },
       { icon: ShieldAlert, title: "Lockdown mode", desc: "Instantly block all new check‑ins and flag active visitors with one click. Essential for schools, healthcare, and corporate security." },
+      { icon: AlertTriangle, title: "Emergency evacuation list", desc: "One‑click PDF of everyone on site – vital for drills and real emergencies." },
     ],
   },
-    {
-  category: "Compliance & Export",
-  items: [
-    { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
-    { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
-    { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
-    { icon: AlertTriangle, title: "Emergency evacuation list", desc: "One‑click PDF of everyone on site – vital for drills and real emergencies." },
-    { icon: FileText, title: "Digital document signing", desc: "Require visitors to sign NDAs or waivers before entry. Signatures are stored for audit." },
-  ],
-},
+  {
+    category: "Compliance & Export",
+    items: [
+      { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
+      { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
+      { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
+      { icon: FileText, title: "Digital document signing", desc: "Require visitors to sign NDAs or waivers before entry. Signatures are stored for audit." },
+    ],
+  },
   {
     category: "Integrations",
     items: [
       { icon: Code, title: "REST API", desc: "Connect to Slack, HR tools, or custom dashboards." },
+      { icon: Zap, title: "Webhooks", desc: "Real‑time event streaming to your own tools." },
       { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier, and a full REST API for custom tools." },
     ],
   },
@@ -287,7 +288,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Security card – updated with Watchlist screening */}
+      {/* Security card */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <h3 className="text-lg font-semibold text-white text-center mb-4">Security you can trust</h3>
