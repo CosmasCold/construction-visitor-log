@@ -1,20 +1,19 @@
-// app/signup/verify-email/page.tsx
 import Link from "next/link";
 
 export default function VerifyEmailPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-sm w-full bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
-        <h2 className="text-xl font-semibold text-white mb-2">Check your email</h2>
-        <p className="text-sm text-slate-300 mb-4">
-          We sent a verification link to your email address. Click the link to activate your account.
+    <div className="min-h-screen flex items-center justify-center py-12 px-4">
+      <div className="max-w-md text-white text-center">
+        <h1 className="text-2xl font-bold mb-2">Check your inbox</h1>
+        <p className="text-slate-400 mb-4">
+          We sent a verification link to your email. It usually arrives in 1‑2 minutes.
         </p>
-        <Link
-          href="/admin/login"
-          className="text-sky-400 hover:text-sky-300 text-sm transition-colors"
-        >
-          Back to sign in
-        </Link>
+        <p className="text-xs text-slate-500">
+          <Link href="/admin/login" className="text-sky-400 hover:underline">
+            Sign in
+          </Link>{" "}
+          once you’ve verified your account.
+        </p>
       </div>
     </div>
   );
