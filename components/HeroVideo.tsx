@@ -6,6 +6,7 @@ import { logEvent } from "@/lib/analytics";
 
 export default function HeroVideo() {
   const [playing, setPlaying] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   if (!playing) {
     return (
@@ -18,13 +19,16 @@ export default function HeroVideo() {
           className="relative w-full rounded-xl border border-white/10 overflow-hidden group"
           style={{ paddingBottom: "56.25%" }}
         >
-          {/* Thumbnail */}
-          <img
-            src="https://img.youtube.com/vi/JmVMm-4s6B4/maxresdefault.jpg"
-            alt="SiteSafe demo video"
-            className="absolute top-0 left-0 w-full h-full object-cover"
-          />
-          {/* Play button overlay */}
+          {!imgError ? (
+            <img
+              src="https://img.youtube.com/vi/JmVMm-4s6B4/hqdefault.jpg"
+              alt="SiteSafe demo video"
+              onError={() => setImgError(true)}
+              className="absolute top-0 left-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-slate-800 flex items-center justify-center" />
+          )}
           <span className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
             <span className="bg-white/90 rounded-full p-3 shadow-lg">
               <Play className="w-6 h-6 text-slate-900 ml-0.5" />
@@ -38,7 +42,6 @@ export default function HeroVideo() {
     );
   }
 
-  // Once clicked, load the real iframe
   return (
     <div className="mt-8 max-w-xl mx-auto">
       <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>

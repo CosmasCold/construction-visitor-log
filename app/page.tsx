@@ -31,6 +31,7 @@ import {
   Building2,
   FileText,
   AlertTriangle,
+  ShieldAlert,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -57,6 +58,7 @@ const featureGroups = [
       { icon: Mail, title: "Host notifications", desc: "Visitor selects a host; automatic email alert (via Brevo)." },
       { icon: UserPlus, title: "Pre‑registration", desc: "Add expected visitors for one‑tap sign‑in." },
       { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list, with photo if available." },
+      { icon: ShieldAlert, title: "Lockdown mode", desc: "Instantly block all new check‑ins and flag active visitors with one click. Essential for schools, healthcare, and corporate security." },
     ],
   },
     {

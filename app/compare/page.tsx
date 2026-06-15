@@ -21,6 +21,7 @@ import {
   TrendingUp,
   Zap,
   AlertTriangle,
+  ShieldAlert,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -165,6 +166,15 @@ const rows: CompareRow[] = [
     paper: false,
     highlight: true,
   },
+  {
+  feature: "Lockdown mode",
+  icon: ShieldAlert,
+  sitesafe: true,
+  envoy: false,
+  swipedon: false,
+  paper: false,
+  highlight: true,
+},
   {
     feature: "Digital document signing",
     icon: FileText,
