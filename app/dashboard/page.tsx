@@ -19,7 +19,7 @@ interface SelectedVisitor {
   signedOutAt: Date | null;
   answers: Record<string, boolean> | null;
   photoUrl: string | null;
-  signatureUrl: string | null;   // ✅ new
+  signatureUrl: string | null;
 }
 
 interface SelectedSite {
@@ -30,6 +30,7 @@ interface SelectedSite {
   safetyBriefingText: string;
   questions: string[];
   visitors: SelectedVisitor[];
+  lockdownEnabled: boolean;   // ✅ new
 }
 
 // ── client‑ready types ───────────────────────────────────────────────
@@ -46,7 +47,7 @@ export interface DashboardVisitor {
   siteId: string;
   answers: Record<string, boolean> | null;
   photoUrl: string | null;
-  signatureUrl: string | null;   // ✅ new
+  signatureUrl: string | null;
 }
 
 export interface DashboardSite {
@@ -57,6 +58,7 @@ export interface DashboardSite {
   safetyBriefingText: string;
   visitorsToday: number;
   questions: string[];
+  lockdownEnabled?: boolean;   // ✅ new
 }
 
 export default async function DashboardPage({
@@ -104,7 +106,7 @@ export default async function DashboardPage({
                   signedOutAt: true,
                   answers: true,
                   photoUrl: true,
-                  signatureUrl: true,   // ✅ new
+                  signatureUrl: true,
                 },
               },
             },
@@ -167,7 +169,7 @@ export default async function DashboardPage({
   // Cast the nested sites to our explicit type
   const selectedSites = company.sites as unknown as SelectedSite[];
 
-  // Combine visitors across all sites, apply date filter, include signatureUrl
+  // Combine visitors across all sites, apply date filter
   const allVisitors: DashboardVisitor[] = selectedSites.flatMap((site) =>
     site.visitors
       .filter((v) => {
@@ -189,7 +191,7 @@ export default async function DashboardPage({
         siteId: site.id,
         answers: v.answers,
         photoUrl: v.photoUrl,
-        signatureUrl: v.signatureUrl,   // ✅ new
+        signatureUrl: v.signatureUrl,
       }))
   );
 
@@ -209,6 +211,7 @@ export default async function DashboardPage({
       (v) => new Date(v.signedInAt).toDateString() === new Date().toDateString()
     ).length,
     questions: site.questions,
+    lockdownEnabled: site.lockdownEnabled,   // ✅ new
   }));
 
   return (
