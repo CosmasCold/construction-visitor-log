@@ -29,7 +29,7 @@ import {
   Truck,
   Factory,
   Building2,
-  BarChart3,
+  FileText,
   AlertTriangle,
 } from "lucide-react";
 
@@ -59,15 +59,16 @@ const featureGroups = [
       { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list, with photo if available." },
     ],
   },
-  {
-    category: "Compliance & Export",
-    items: [
-      { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
-      { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
-      { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
-      { icon: AlertTriangle, title: "Emergency evacuation list", desc: "One‑click PDF of everyone on site – vital for drills and real emergencies." },
-    ],
-  },
+    {
+  category: "Compliance & Export",
+  items: [
+    { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
+    { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
+    { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
+    { icon: AlertTriangle, title: "Emergency evacuation list", desc: "One‑click PDF of everyone on site – vital for drills and real emergencies." },
+    { icon: FileText, title: "Digital document signing", desc: "Require visitors to sign NDAs or waivers before entry. Signatures are stored for audit." },
+  ],
+},
   {
     category: "Integrations",
     items: [

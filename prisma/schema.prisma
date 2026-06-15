@@ -65,6 +65,8 @@ model Site {
   hosts              Host[]
   expectedVisitors   ExpectedVisitor[]
   createdAt          DateTime          @default(now())
+  documentSigningEnabled Boolean  @default(false)
+documentTemplateUrl    String?
 }
 
 model VisitorLog {
@@ -81,6 +83,7 @@ model VisitorLog {
   siteId              String
   site                Site      @relation(fields: [siteId], references: [id])
   photoUrl            String?          // ✅ URL of the visitor's photo
+  signatureUrl           String?
 }
 
 model Host {

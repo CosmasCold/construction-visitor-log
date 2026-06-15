@@ -26,7 +26,6 @@ import {
   DoorClosed,
   ShieldCheck,
   AlertTriangle,
-  Clock,
   Zap,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -45,6 +44,7 @@ type Visitor = {
   siteId: string;
   answers?: Record<string, boolean> | null;
   photoUrl?: string | null;
+  signatureUrl?: string | null;
 };
 
 type Site = {
@@ -55,6 +55,8 @@ type Site = {
   safetyBriefingText: string;
   visitorsToday: number;
   questions?: string[] | null;
+  documentSigningEnabled?: boolean;
+  documentTemplateUrl?: string | null;
 };
 
 type Host = {
@@ -129,9 +131,12 @@ export default function CompanyDashboardClient({
   const [newBlocklistType, setNewBlocklistType] = useState("name");
   const [newBlocklistNote, setNewBlocklistNote] = useState("");
 
-
   // Webhook settings
   const [webhookUrl, setWebhookUrl] = useState("");
+
+  // Document signing settings
+  const [docSigningEnabled, setDocSigningEnabled] = useState(false);
+  const [docTemplateUploading, setDocTemplateUploading] = useState(false);
 
   // Auto‑refresh every 5 seconds
   useEffect(() => {
@@ -202,6 +207,7 @@ export default function CompanyDashboardClient({
     setEditAddress(site.address || "");
     setEditBriefing(site.safetyBriefingText);
     setEditQuestions(site.questions || []);
+    setDocSigningEnabled(site.documentSigningEnabled || false);
 
     fetch(`/api/sites/${site.id}/hosts`)
       .then((res) => res.json())
@@ -237,6 +243,7 @@ export default function CompanyDashboardClient({
         address: editAddress,
         safetyBriefingText: editBriefing,
         questions: editQuestions,
+        documentSigningEnabled: docSigningEnabled,
       }),
     });
     if (res.ok) {
@@ -251,6 +258,7 @@ export default function CompanyDashboardClient({
                 address: updated.address,
                 safetyBriefingText: updated.safetyBriefingText,
                 questions: updated.questions,
+                documentSigningEnabled: updated.documentSigningEnabled,
               }
             : s
         )
@@ -283,6 +291,7 @@ export default function CompanyDashboardClient({
       "Signed In",
       "Signed Out",
       "Pre‑screening",
+      "Signature",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -298,6 +307,7 @@ export default function CompanyDashboardClient({
             .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
             .join("; ")
         : "",
+      v.signatureUrl || "—",
     ]);
     const csvContent = [headers, ...rows]
       .map((row) =>
@@ -331,6 +341,7 @@ export default function CompanyDashboardClient({
             .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
             .join("; ")
         : "",
+      Signature: v.signatureUrl || "—",
     }));
     const ws = XLSX.utils.json_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
@@ -360,6 +371,7 @@ export default function CompanyDashboardClient({
       "Signed In",
       "Signed Out",
       "Pre‑screening",
+      "Signature",
     ];
     const rows = logs.map((v) => [
       v.siteName,
@@ -375,6 +387,7 @@ export default function CompanyDashboardClient({
             .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
             .join("; ")
         : "",
+      v.signatureUrl ? "Yes" : "No",
     ]);
     autoTable(doc, {
       head: [headers],
@@ -863,6 +876,67 @@ export default function CompanyDashboardClient({
                       </div>
                     </div>
 
+                    {/* Document Signing */}
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-sky-400" /> Document Signing (NDA)
+                      </h4>
+                      <label className="flex items-center gap-2 text-xs text-slate-200 mb-2">
+                        <input
+                          type="checkbox"
+                          checked={docSigningEnabled}
+                          onChange={(e) => setDocSigningEnabled(e.target.checked)}
+                          className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
+                        />
+                        Require visitors to sign a document before entry
+                      </label>
+                      {site.documentTemplateUrl ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-400">Template uploaded</span>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              await fetch(`/api/sites/${site.id}/document-template`, { method: 'DELETE' });
+                              setEditingSiteId(null); // refresh
+                              startEdit(site);
+                            }}
+                            className="text-rose-400 text-xs hover:text-rose-300"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <input
+                            type="file"
+                            accept=".pdf"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setDocTemplateUploading(true);
+                              const formData = new FormData();
+                              formData.append('file', file);
+                              const res = await fetch(`/api/sites/${site.id}/document-template`, {
+                                method: 'POST',
+                                body: formData,
+                              });
+                              if (res.ok) {
+                                alert('Template uploaded');
+                                setDocTemplateUploading(false);
+                                setEditingSiteId(null); // refresh
+                                startEdit(site);
+                              } else {
+                                alert('Upload failed');
+                                setDocTemplateUploading(false);
+                              }
+                            }}
+                            className="text-xs text-white"
+                          />
+                          {docTemplateUploading && <span className="text-xs text-sky-400">Uploading…</span>}
+                        </div>
+                      )}
+                    </div>
+
                     <div className="flex gap-2">
                       <button
                         onClick={() => saveEdit(site.id)}
@@ -1107,6 +1181,9 @@ export default function CompanyDashboardClient({
                   Pre‑screening
                 </th>
                 <th scope="col" className="p-3 text-left">
+                  Signature
+                </th>
+                <th scope="col" className="p-3 text-left">
                   Actions
                 </th>
               </tr>
@@ -1115,7 +1192,7 @@ export default function CompanyDashboardClient({
               {logs.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={11}
+                    colSpan={12}
                     className="p-4 text-center text-slate-500"
                   >
                     <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -1179,6 +1256,20 @@ export default function CompanyDashboardClient({
                             .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
                             .join(", ")
                         : "—"}
+                    </td>
+                    <td className="p-3">
+                      {v.signatureUrl ? (
+                        <Image
+                          src={v.signatureUrl}
+                          alt="Signature"
+                          width={40}
+                          height={20}
+                          unoptimized
+                          className="rounded"
+                        />
+                      ) : (
+                        "—"
+                      )}
                     </td>
                     <td className="p-3">
                       {!v.signedOutAt && (

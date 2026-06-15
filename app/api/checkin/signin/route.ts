@@ -27,6 +27,7 @@ export async function POST(request: Request) {
       siteId,
       answers,
       photoUrl,
+      signatureUrl,
     } = await request.json();
 
     if (!fullName || !company || !siteId) {
@@ -55,7 +56,6 @@ export async function POST(request: Request) {
       });
 
       if (blocklistMatch) {
-        // Alert notifications
         const companyRecord = await prisma.company.findUnique({
           where: { id: site.companyId },
           select: {
@@ -79,19 +79,14 @@ export async function POST(request: Request) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(slackPayload),
-          }).catch((err) =>
-            console.error("Slack blocklist alert failed:", err)
-          );
+          }).catch((err) => console.error("Slack blocklist alert failed:", err));
         }
 
-        // Email notification to company owners
+        // Professional blocklist email to all company owners
         const ownerEmails = companyRecord?.users.map((u) => u.email) ?? [];
         if (ownerEmails.length > 0) {
           const emailPayload = {
-            sender: {
-              name: "SiteSafe",
-              email: "hello@sitesafe.thesift.space",
-            },
+            sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
             to: ownerEmails.map((email) => ({ email })),
             subject: `Blocked visitor attempt at ${site.name}`,
             htmlContent: `
@@ -146,9 +141,7 @@ export async function POST(request: Request) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(emailPayload),
-          }).catch((err) =>
-            console.error("Brevo blocklist email failed:", err)
-          );
+          }).catch((err) => console.error("Brevo blocklist email failed:", err));
         }
 
         // Fire webhook for blocklist hit
@@ -164,15 +157,13 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             blocked: true,
-            message:
-              "Your entry has been flagged. Please contact security.",
+            message: "Your entry has been flagged. Please contact security.",
           },
           { status: 403 }
         );
       }
     }
 
-    // Resolve host name
     let resolvedHostName = hostName || null;
     if (hostId) {
       const host = await prisma.host.findUnique({
@@ -193,6 +184,7 @@ export async function POST(request: Request) {
         siteId,
         answers: answers || null,
         photoUrl: photoUrl || null,
+        signatureUrl: signatureUrl || null,
       },
     });
 
@@ -227,7 +219,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Host email notification (unchanged)
+    // Host email notification
     if (hostId) {
       const host = await prisma.host.findUnique({
         where: { id: hostId },
@@ -235,13 +227,45 @@ export async function POST(request: Request) {
       });
       if (host?.email) {
         const emailPayload = {
-          sender: {
-            name: "SiteSafe",
-            email: "hello@sitesafe.thesift.space",
-          },
+          sender: { name: "SiteSafe", email: "hello@sitesafe.thesift.space" },
           to: [{ email: host.email }],
           subject: `${visitor.fullName} has arrived`,
-          htmlContent: `<p><strong>${visitor.fullName}</strong> from <strong>${visitor.company || "unknown"}</strong> has signed in and is waiting for you.</p>`,
+          htmlContent: `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head><meta charset="UTF-8"></head>
+          <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:20px;">
+              <tr>
+                <td align="center">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+                    <tr>
+                      <td style="padding:16px 20px 0;text-align:center;">
+                        <img src="https://sitesafe.thesift.space/favicon.svg" alt="SiteSafe" style="height:36px;width:auto;display:block;margin:0 auto;" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:24px 20px;font-size:15px;line-height:1.6;color:#334155;">
+                        <p style="margin:0 0 16px;"><strong>${visitor.fullName}</strong> from <strong>${visitor.company || "unknown"}</strong> has signed in and is waiting for you.</p>
+                        <p style="margin:0;">– SiteSafe</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="background-color:#f8fafc;padding:16px 20px;text-align:center;border-top:1px solid #e2e8f0;">
+                        <p style="font-size:12px;color:#94a3b8;margin:0;">
+                          &copy; 2026 SiteSafe &nbsp;·&nbsp;
+                          <a href="https://sitesafe.thesift.space/terms" style="color:#94a3b8;text-decoration:underline;">Terms</a> &nbsp;·&nbsp;
+                          <a href="https://sitesafe.thesift.space/privacy" style="color:#94a3b8;text-decoration:underline;">Privacy</a>
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </body>
+          </html>
+          `,
         };
         fetch("https://api.brevo.com/v3/smtp/email", {
           method: "POST",
@@ -257,9 +281,6 @@ export async function POST(request: Request) {
     return NextResponse.json(visitor, { status: 200 });
   } catch (error) {
     console.error("Sign‑in error:", error);
-    return NextResponse.json(
-      { error: "Failed to sign in" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to sign in" }, { status: 500 });
   }
 }
