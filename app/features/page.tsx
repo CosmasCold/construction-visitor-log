@@ -12,161 +12,186 @@ import {
   Building,
   TrendingUp,
   Code,
+  DollarSign,
   ArrowRight,
-  ListChecks,
+  CheckCircle2,
   Camera,
+  ListChecks,
   Zap,
-  MessageSquare,
-  FileSpreadsheet,
+  AlertTriangle,
+  FileText,
+  DoorClosed,
 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Features – SiteSafe",
   description:
-    "Explore every SiteSafe feature: QR check‑in, mandatory policy acknowledgment, real‑time dashboard, pre‑screening questions, photo capture, host notifications, pre‑registration, badge printing, audit exports, multi‑site management, analytics, integrations, and REST API.",
+    "Explore all SiteSafe features: QR check‑in, mandatory safety briefing, watchlist screening, emergency evacuation list, webhooks, digital document signing, and more.",
 };
 
-const visitorFeatures = [
-  { icon: QrCode, title: "QR check‑in", desc: "Each site gets its own scannable QR code. Visitors use their phone camera to open the check‑in page instantly." },
-  { icon: ShieldCheck, title: "Mandatory policy acknowledgment", desc: "Your safety or conduct policy appears before the sign‑in form. The visitor must check a box confirming they've read it. The acknowledgment is timestamped and stored permanently. It cannot be skipped." },
-  { icon: ListChecks, title: "Pre‑screening questions", desc: "Add custom yes/no questions (e.g., 'Completed induction?'). Answers are stored with each visitor record and displayed in the dashboard." },
-  { icon: Camera, title: "Photo capture", desc: "Take a visitor photo directly from the check‑in page. The photo is stored securely on Vercel Blob and attached to the visitor record for identification." },
-  { icon: UserPlus, title: "Pre‑registration", desc: "Add expected visitors ahead of time. When they arrive, they tap their name and sign in with one touch." },
-  { icon: Printer, title: "Badge printing", desc: "Print visitor badges from the active list, with photo if available. Perfect for events or security‑conscious environments." },
-];
-
-const managerFeatures = [
-  { icon: Users, title: "Real‑time dashboard", desc: "A live view of everyone currently on site, updated every few seconds automatically. No manual refresh needed." },
-  { icon: Mail, title: "Host notifications", desc: "When a visitor selects a host, an automatic email alert is sent via Brevo. The host knows their guest has arrived instantly." },
-  { icon: Users, title: "Remote sign‑out", desc: "Sign any visitor out from your dashboard. Handy when someone forgets to sign out or leaves early." },
-  { icon: Building, title: "Multi‑site management", desc: "One account, unlimited sites. Each location has its own QR code, check‑in page, and settings. Manage everything from a single dashboard." },
-];
-
-const complianceFeatures = [
-  { icon: FileDown, title: "Instant audit exports", desc: "Filter by date, host, or site, then export a complete visitor log as CSV, Excel, or PDF. Pre‑screening answers and photos are included in exports." },
-  { icon: TrendingUp, title: "Built‑in analytics", desc: "View 30‑day trend charts and total visitor counts. Export the data as CSV for your own reports." },
-  { icon: Code, title: "REST API", desc: "Integrate SiteSafe with your own tools—Slack, HR systems, custom dashboards. Full documentation and per‑company API keys are included." },
+const featureGroups = [
+  {
+    category: "Check‑in",
+    items: [
+      {
+        icon: QrCode,
+        title: "QR check‑in",
+        desc: "Each site gets a unique QR code. Visitors scan it with their phone and sign in instantly — no app download, no clipboard.",
+      },
+      {
+        icon: ShieldCheck,
+        title: "Mandatory safety briefing",
+        desc: "Every visitor must acknowledge your safety rules before they can enter. Non‑skippable, time‑stamped, and audit‑ready.",
+      },
+      {
+        icon: Camera,
+        title: "Photo capture",
+        desc: "Take a visitor photo at check‑in. Stored securely with their record and printed on badges for extra security.",
+      },
+      {
+        icon: ListChecks,
+        title: "Pre‑screening questions",
+        desc: "Ask custom yes/no questions before entry. Answers are stored with the visitor log for full compliance.",
+      },
+      {
+        icon: ShieldCheck,
+        title: "Watchlist / Blocklist",
+        desc: "Flag names, emails, or phone numbers. Blocked visitors are stopped at check‑in, and you’re alerted instantly via email, Slack, or webhook.",
+      },
+      {
+        icon: FileText,
+        title: "Digital document signing",
+        desc: "Require visitors to sign NDAs, waivers, or policies directly on the check‑in screen. Signatures are stored for audit.",
+      },
+    ],
+  },
+  {
+    category: "Management & Safety",
+    items: [
+      {
+        icon: Users,
+        title: "Real‑time dashboard",
+        desc: "See exactly who is on site right now — auto‑refreshes every few seconds. Filter by site, host, or date.",
+      },
+      {
+        icon: Mail,
+        title: "Host notifications",
+        desc: "Your team gets an automatic email when their visitor arrives. No more calling the front desk.",
+      },
+      {
+        icon: UserPlus,
+        title: "Pre‑registration",
+        desc: "Add expected visitors ahead of time. They sign in with one tap — no typing required.",
+      },
+      {
+        icon: Printer,
+        title: "Badge printing",
+        desc: "Print visitor badges (with photo) directly from the dashboard or check‑in page. Compact label format.",
+      },
+      {
+        icon: AlertTriangle,
+        title: "Emergency evacuation list",
+        desc: "One click generates a PDF of every person currently on site, including names, hosts, and photos. Essential for drills and real emergencies.",
+      },
+      {
+        icon: DoorClosed,
+        title: "Remote sign‑out",
+        desc: "Sign out visitors from the dashboard if they forget. Keeps your active‑on‑site list accurate.",
+      },
+    ],
+  },
+  {
+    category: "Compliance & Exports",
+    items: [
+      {
+        icon: FileDown,
+        title: "Audit exports",
+        desc: "Export filtered visitor logs in CSV, Excel, or PDF. Include pre‑screening answers and signatures.",
+      },
+      {
+        icon: TrendingUp,
+        title: "Built‑in analytics",
+        desc: "30‑day trend chart, visitor totals, and CSV export. Understand traffic patterns at a glance.",
+      },
+      {
+        icon: Building,
+        title: "Multi‑site management",
+        desc: "Unlimited sites under one account. Each site has its own QR code, hosts, and settings — all for one flat price.",
+      },
+    ],
+  },
+  {
+    category: "Integrations & Developer Tools",
+    items: [
+      {
+        icon: Code,
+        title: "REST API",
+        desc: "Full REST API with Bearer token authentication. Connect SiteSafe to your HR tools, Slack, custom dashboards, or anything else.",
+      },
+      {
+        icon: Zap,
+        title: "Webhooks",
+        desc: "Send real‑time events (check‑in, check‑out, blocklist hits) to any URL. Integrate with Zapier, Google Sheets, or your own backend.",
+      },
+      {
+        icon: Zap,
+        title: "Built‑in integrations",
+        desc: "Slack notifications, Google Sheets sync, and Zapier support come standard. No extra configuration needed.",
+      },
+    ],
+  },
 ];
 
 export default function FeaturesPage() {
   return (
     <div className="min-h-screen py-12 px-4">
-      <div className="max-w-5xl mx-auto space-y-16">
+      <div className="max-w-6xl mx-auto space-y-12">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Everything you get</h1>
-          <p className="text-lg text-slate-400">All features included. No premium tiers.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
+            Everything you get with SiteSafe
+          </h1>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            A complete visitor management system built for modern workplaces — all
+            features included in the flat $49/month plan.
+          </p>
         </div>
 
-        <section>
-          <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
-            <Users className="w-6 h-6 text-sky-400" /> For Visitors
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {visitorFeatures.map((f, idx) => (
-              <div key={idx} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                  <f.icon className="w-5 h-5 text-sky-300" />
+        {featureGroups.map((group) => (
+          <div key={group.category}>
+            <h2 className="text-xl font-semibold text-sky-300 mb-5 text-center sm:text-left">
+              {group.category}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {group.items.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                    <item.icon className="w-5 h-5 text-sky-300" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white text-sm">{item.title}</h3>
+                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-white text-sm">{f.title}</h3>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
-            <Building className="w-6 h-6 text-sky-400" /> For Site Managers
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {managerFeatures.map((f, idx) => (
-              <div key={idx} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                  <f.icon className="w-5 h-5 text-sky-300" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white text-sm">{f.title}</h3>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-sky-400" /> For Compliance
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {complianceFeatures.map((f, idx) => (
-              <div key={idx} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
-                <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                  <f.icon className="w-5 h-5 text-sky-300" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white text-sm">{f.title}</h3>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Integrations section */}
-        <section>
-          <h2 className="text-2xl font-semibold text-white mb-6 flex items-center gap-2">
-            <Zap className="w-6 h-6 text-sky-400" /> Integrations
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                <MessageSquare className="w-5 h-5 text-sky-300" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-white text-sm">Slack notifications</h3>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Post a message in any Slack channel when a visitor signs in. Set it up in one minute from your Settings page.</p>
-              </div>
-            </div>
-            <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                <FileSpreadsheet className="w-5 h-5 text-sky-300" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-white text-sm">Google Sheets sync</h3>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Append new visitor records to a Google Sheet automatically with a simple Apps Script.</p>
-              </div>
-            </div>
-            <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-sky-300" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-white text-sm">Zapier & Make</h3>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Connect SiteSafe to 5,000+ apps without writing code. Trigger workflows when a visitor signs in.</p>
-              </div>
-            </div>
-            <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                <Code className="w-5 h-5 text-sky-300" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-white text-sm">REST API</h3>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">Full developer API with Bearer token auth. List sites, fetch visitors, create check‑ins programmatically.</p>
-              </div>
+              ))}
             </div>
           </div>
-        </section>
+        ))}
 
-        <div className="text-center">
+        <div className="text-center pt-8">
           <Link
             href="/signup"
             className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
           >
             Start Free Trial <ArrowRight className="ml-2 w-4 h-4" />
           </Link>
-          <p className="text-sm text-slate-400 mt-3">No credit card. No sales call.</p>
+          <p className="text-xs text-slate-500 mt-3">
+            No credit card required · 14‑day trial · Cancel anytime
+          </p>
         </div>
       </div>
     </div>

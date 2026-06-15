@@ -20,6 +20,7 @@ import {
   Wallet,
   TrendingUp,
   Zap,
+  AlertTriangle,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -138,6 +139,42 @@ const rows: CompareRow[] = [
     paper: false,
   },
   {
+    feature: "Watchlist / Blocklist",
+    icon: ShieldCheck,
+    sitesafe: true,
+    envoy: "Paid add‑on",
+    swipedon: false,
+    paper: false,
+    highlight: true,
+  },
+  {
+    feature: "Emergency evacuation list",
+    icon: AlertTriangle,
+    sitesafe: true,
+    envoy: false,
+    swipedon: false,
+    paper: false,
+    highlight: true,
+  },
+  {
+    feature: "Webhooks",
+    icon: Zap,
+    sitesafe: true,
+    envoy: "Enterprise",
+    swipedon: false,
+    paper: false,
+    highlight: true,
+  },
+  {
+    feature: "Digital document signing",
+    icon: FileText,
+    sitesafe: true,
+    envoy: "Enterprise",
+    swipedon: false,
+    paper: false,
+    highlight: true,
+  },
+  {
     feature: "Free trial",
     icon: Wallet,
     sitesafe: "14 days, no card",
@@ -176,18 +213,14 @@ const rows: CompareRow[] = [
 
 function renderCell(value: string | boolean) {
   if (value === true) return <Check className="w-5 h-5 text-emerald-400" />;
-  if (value === false)
-    return <X className="w-5 h-5 text-slate-600" />;
-  return (
-    <span className="text-sm font-medium text-slate-200">{value}</span>
-  );
+  if (value === false) return <X className="w-5 h-5 text-slate-600" />;
+  return <span className="text-sm font-medium text-slate-200">{value}</span>;
 }
 
 export default function ComparePage() {
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-5xl mx-auto space-y-8">
-        {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
           <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
             SiteSafe vs the alternatives
@@ -198,7 +231,6 @@ export default function ComparePage() {
           </p>
         </div>
 
-        {/* Table */}
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -237,12 +269,8 @@ export default function ComparePage() {
                       {renderCell(row.sitesafe)}
                     </span>
                   </td>
-                  <td className="p-4 text-center">
-                    {renderCell(row.envoy)}
-                  </td>
-                  <td className="p-4 text-center">
-                    {renderCell(row.swipedon)}
-                  </td>
+                  <td className="p-4 text-center">{renderCell(row.envoy)}</td>
+                  <td className="p-4 text-center">{renderCell(row.swipedon)}</td>
                   <td className="p-4 text-center text-slate-500">
                     {renderCell(row.paper)}
                   </td>
@@ -252,7 +280,6 @@ export default function ComparePage() {
           </table>
         </div>
 
-        {/* Footer CTAs */}
         <div className="text-center space-y-4">
           <Link
             href="/signup"
