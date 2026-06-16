@@ -7,6 +7,39 @@ export const metadata: Metadata = {
     "Official logos, screenshots, and brand assets for SiteSafe – the smart visitor management platform.",
 };
 
+const screenshots = [
+  {
+    src: "/checkin.png",
+    alt: "Visitor check‑in form with host selection and photo capture",
+    caption: "Check‑in form",
+  },
+  {
+    src: "/dashboard.png",
+    alt: "Real‑time dashboard with active visitors and quick actions",
+    caption: "Real‑time dashboard",
+  },
+  {
+    src: "/analytics.png",
+    alt: "Analytics page with trend chart, date filters, and CSV export",
+    caption: "Analytics",
+  },
+  {
+    src: "/activevisitors.png",
+    alt: "Active visitors list with photos and sign‑out buttons",
+    caption: "Active visitors",
+  },
+  {
+    src: "/lockdown.png",
+    alt: "Lockdown mode toggle on a site card",
+    caption: "Lockdown mode",
+  },
+  {
+    src: "/newsite.png",
+    alt: "New site creation form",
+    caption: "New site setup",
+  },
+];
+
 export default function PressPage() {
   return (
     <div className="min-h-screen py-12 px-4">
@@ -16,21 +49,26 @@ export default function PressPage() {
             Press Kit
           </h1>
           <p className="text-sm text-slate-400">
-            Everything you need to write about SiteSafe.
+            Official brand assets and product screenshots. All images can be
+            downloaded directly.
           </p>
         </div>
 
-        {/* Boilerplate */}
+                {/* Boilerplate */}
         <section className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6">
           <h2 className="text-lg font-semibold text-white mb-2">Boilerplate</h2>
           <p className="text-sm text-slate-300 leading-relaxed">
-            SiteSafe is a smart digital visitor check‑in built for
-            construction sites, warehouses, offices, and any workplace that
-            needs to track visitors. It replaces paper sign‑in sheets with QR
-            codes, enforces mandatory safety acknowledgments, and gives teams a
-            real‑time dashboard and instant audit exports. Flat $49/month,
-            unlimited sites, no sales calls — just a simple, reliable tool
-            trusted across over 100 U.S. cities.
+            SiteSafe is a smart digital check‑in platform that replaces paper
+            visitor logs with QR codes, mandatory safety briefings, and
+            real‑time dashboards. It includes advanced security features as
+            standard — watchlist/blocklist with instant alerts, one‑click
+            emergency evacuation lists with photos, lockdown mode, digital
+            document signing, and webhooks — all for a flat $49/month with
+            unlimited sites and visitors. No per‑site fees, no sales calls,
+            and a 14‑day free trial with no credit card required. SiteSafe
+            serves construction companies, warehouses, corporate offices,
+            manufacturing plants, logistics hubs, schools, and healthcare
+            facilities across the United States and internationally.
           </p>
         </section>
 
@@ -39,48 +77,42 @@ export default function PressPage() {
           <h2 className="text-lg font-semibold text-white mb-2">Founder</h2>
           <p className="text-sm text-slate-300 leading-relaxed">
             Gabriel Freitas founded SiteSafe to solve the problem he kept hearing
-            from facility managers: paper visitor logs fail audits, and
-            existing software is too expensive or complicated. He built the
-            entire platform — from check‑in to analytics — with a focus on
-            simplicity, compliance, and transparent pricing.
+            from facility managers: paper visitor logs fail audits, and existing
+            software is too expensive or complicated. He built the entire
+            platform with a focus on simplicity, compliance, and transparent
+            pricing.
           </p>
         </section>
 
-        {/* Logos */}
+        {/* Logo */}
         <section className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Logos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="bg-slate-900 rounded-xl p-6 text-center">
+          <h2 className="text-lg font-semibold text-white mb-4">Logo</h2>
+          <div className="flex items-center gap-6">
+            <div className="bg-slate-900 rounded-xl p-6 flex items-center justify-center w-32 h-32">
               <Image
                 src="/favicon.svg"
                 alt="SiteSafe logo"
-                width={48}
-                height={48}
-                className="mx-auto mb-2"
+                width={64}
+                height={64}
               />
-              <p className="text-xs text-slate-400">Icon (SVG)</p>
             </div>
-            <div className="bg-white rounded-xl p-6 text-center">
-              <Image
-                src="/favicon.svg"
-                alt="SiteSafe logo light bg"
-                width={48}
-                height={48}
-                className="mx-auto mb-2"
-              />
-              <p className="text-xs text-slate-500">Icon on light background</p>
+            <div>
+              <p className="text-sm text-slate-300 mb-2">
+                Download the SVG version:
+              </p>
+              <a
+                href="/favicon.svg"
+                download
+                className="inline-block bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg px-4 py-2 text-sm transition-colors"
+              >
+                Download SVG
+              </a>
+              <p className="text-xs text-slate-500 mt-2">
+                The logo appears on a dark background above. For light
+                backgrounds, use the same SVG — it remains fully readable.
+              </p>
             </div>
           </div>
-          <p className="text-xs text-slate-500 mt-3">
-            Download: right‑click → Save image as. For additional formats,
-            email{" "}
-            <a
-              href="mailto:hello@sitesafe.thesift.space"
-              className="text-sky-400 hover:underline"
-            >
-              hello@thesift.space
-            </a>.
-          </p>
         </section>
 
         {/* Screenshots */}
@@ -88,24 +120,31 @@ export default function PressPage() {
           <h2 className="text-lg font-semibold text-white mb-4">
             Screenshots
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Image
-              src="/checkin.png"
-              alt="Visitor check‑in screen"
-              width={400}
-              height={300}
-              className="rounded-lg border border-white/10"
-            />
-            <Image
-              src="/dashboard.png"
-              alt="Real‑time dashboard"
-              width={400}
-              height={300}
-              className="rounded-lg border border-white/10"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {screenshots.map((shot, idx) => (
+              <a
+                key={idx}
+                href={shot.src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-slate-800 rounded-xl overflow-hidden border border-white/10 hover:border-white/20 transition-colors"
+              >
+                <Image
+                  src={shot.src}
+                  alt={shot.alt}
+                  width={400}
+                  height={300}
+                  className="w-full h-auto object-cover"
+                />
+                <p className="px-3 py-2 text-xs text-slate-400">
+                  {shot.caption}
+                </p>
+              </a>
+            ))}
           </div>
           <p className="text-xs text-slate-500 mt-3">
-            Right‑click to download. High‑res versions available on request.
+            Click any screenshot to open the full‑size version. Right‑click →
+            Save image as to download.
           </p>
         </section>
 
@@ -117,10 +156,10 @@ export default function PressPage() {
           <p className="text-sm text-slate-300">
             Email:{" "}
             <a
-              href="mailto:hello@sitesafe.thesift.space"
+              href="mailto:hello@thesift.space"
               className="text-sky-400 hover:underline"
             >
-              hello@thesift.space
+              hello@sitesafe.thesift.space
             </a>
           </p>
         </section>
