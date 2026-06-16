@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import BlogPostJsonLd from "@/components/BlogPostJsonLd";
 
 export const metadata: Metadata = {
   title: "What Inspectors Look for in a Visitor Log – SiteSafe Guide",
@@ -87,20 +89,27 @@ export default function BlogPost() {
 
           <p className="italic text-slate-300 mt-6">
             Get the full 10‑point checklist in a printable PDF.{" "}
-            <a
+            <Link
               href="/checklist"
               className="text-sky-400 hover:text-sky-300 transition-colors"
             >
               Download it free here
-            </a>.
+            </Link>.
           </p>
         </div>
+        <BlogPostJsonLd
+          title="What Inspectors Look for in a Visitor Log"
+          description="A complete guide to what OSHA, HSE, and local safety inspectors check when reviewing a visitor log. Includes a free 10‑point checklist you can download."
+          datePublished="2026-06-13"
+          dateModified="2026-06-15"
+          slug="what-inspectors-look-for-in-visitor-log"
+        />
       </div>
       <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
         Want a system that handles all of this automatically?{" "}
-        <a href="/signup" className="text-sky-400 hover:underline">
+        <Link href="/signup" className="text-sky-400 hover:underline">
           Start your free trial of SiteSafe
-        </a>.
+        </Link>.
       </p>
     </div>
   );

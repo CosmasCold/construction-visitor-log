@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import BlogPostJsonLd from "@/components/BlogPostJsonLd";
 
 export const metadata: Metadata = {
   title: "SwipedOn Alternative – Flat Pricing, No Per‑Location Fees | SiteSafe",
@@ -63,24 +65,28 @@ export default function BlogPost() {
           <p className="italic text-slate-300 mt-6">
             See how SiteSafe stacks up side‑by‑side with SwipedOn, Envoy, and
             paper logs.{" "}
-            <a
+            <Link
               href="/compare"
               className="text-sky-400 hover:text-sky-300 transition-colors"
             >
               View the full comparison
-            </a>.
+            </Link>.
           </p>
         </div>
+        <BlogPostJsonLd
+          title="SwipedOn Alternative: Why SiteSafe Is a Better Fit for Multi‑Site Teams"
+          description="Looking for a SwipedOn alternative? SiteSafe offers unlimited sites for a flat $49/mo, mandatory safety acknowledgment, host notifications, and a free 14‑day trial."
+          datePublished="2026-06-13"
+          dateModified="2026-06-15"
+          slug="swipedon-alternative"
+        />
       </div>
-      <p className="italic text-slate-300 mt-6">
-  See the side‑by‑side breakdown on our{" "}
-  <a
-    href="/compare"
-    className="text-sky-400 hover:text-sky-300 transition-colors"
-  >
-    comparison page
-  </a>.
-</p>
+      <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
+        Ready to make the switch?{" "}
+        <Link href="/signup" className="text-sky-400 hover:underline">
+          Start your free 14‑day trial
+        </Link>.
+      </p>
     </div>
   );
 }

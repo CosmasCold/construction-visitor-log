@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import BlogPostJsonLd from "@/components/BlogPostJsonLd";
 
 export const metadata: Metadata = {
   title: "The 5 Best Visitor Management Systems for Small Businesses | SiteSafe",
@@ -68,25 +70,28 @@ export default function BlogPost() {
 
           <p className="italic text-slate-300 mt-6">
             See a side‑by‑side breakdown of all these options on our{" "}
-            <a
+            <Link
               href="/compare"
               className="text-sky-400 hover:text-sky-300 transition-colors"
             >
               comparison page
-            </a>.
+            </Link>.
           </p>
         </div>
+        <BlogPostJsonLd
+          title="The 5 Best Visitor Management Systems for Small Businesses"
+          description="Compare the top visitor management systems for small businesses in 2025. Envoy, SwipedOn, iLobby, SiteSafe, and paper logs compared on pricing, compliance, and ease of use."
+          datePublished="2026-06-13"
+          dateModified="2026-06-15"
+          slug="best-visitor-management-systems"
+        />
       </div>
-      <p className="italic text-slate-300 mt-6">
-  All these options and more are compared on our{" "}
-  <a
-    href="/pricing"
-    className="text-sky-400 hover:text-sky-300 transition-colors"
-  >
-    pricing page
-  </a>{" "}
-  — no hidden fees, no sales calls.
-</p>
+      <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
+        Want the full checklist of what inspectors look for?{" "}
+        <Link href="/checklist" className="text-sky-400 hover:underline">
+          Download our free 10‑point audit checklist
+        </Link>.
+      </p>
     </div>
   );
 }

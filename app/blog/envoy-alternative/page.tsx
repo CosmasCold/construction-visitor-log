@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import BlogPostJsonLd from "@/components/BlogPostJsonLd";
 
 export const metadata: Metadata = {
   title: "Envoy Alternative – Why SiteSafe Is the Better Choice for Small Teams",
@@ -69,26 +71,29 @@ export default function BlogPost() {
 
           <p className="italic text-slate-300 mt-6">
             Ready to switch?{" "}
-            <a
+            <Link
               href="/signup"
               className="text-sky-400 hover:text-sky-300 transition-colors"
             >
               Start your free 14‑day trial
-            </a>{" "}
+            </Link>{" "}
             — no credit card, no sales call.
           </p>
         </div>
+        <BlogPostJsonLd
+          title="Envoy Alternative: Why SiteSafe Is the Better Choice for Small Teams"
+          description="Looking for an Envoy alternative? SiteSafe offers mandatory safety acknowledgment, flat $49/mo pricing, no sales calls, and a 14‑day free trial."
+          datePublished="2026-06-13"
+          dateModified="2026-06-15"
+          slug="envoy-alternative"
+        />
       </div>
-      <p className="italic text-slate-300 mt-6">
-  See how SiteSafe stacks up side‑by‑side with Envoy, SwipedOn, and paper
-  logs.{" "}
-  <a
-    href="/compare"
-    className="text-sky-400 hover:text-sky-300 transition-colors"
-  >
-    View the full comparison
-  </a>.
-</p>
+      <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
+        Want to make sure your visitor log survives an audit?{" "}
+        <Link href="/checklist" className="text-sky-400 hover:underline">
+          Grab our free 10‑point checklist
+        </Link>.
+      </p>
     </div>
   );
 }

@@ -1,5 +1,6 @@
-// app/blog/case-study-small-business/page.tsx
 import type { Metadata } from "next";
+import Link from "next/link";
+import BlogPostJsonLd from "@/components/BlogPostJsonLd";
 
 export const metadata: Metadata = {
   title: "How a Small Business Chooses a Visitor Log – SiteSafe Blog",
@@ -99,22 +100,29 @@ export default function BlogPost() {
 
           <p className="italic text-slate-300 mt-6">
             If you’re in the same spot as Sarah,{" "}
-            <a href="/signup" className="text-sky-400 hover:text-sky-300 transition-colors">
+            <Link
+              href="/signup"
+              className="text-sky-400 hover:text-sky-300 transition-colors"
+            >
               try SiteSafe free for 14 days
-            </a>{" "}
+            </Link>{" "}
             — no credit card, no sales calls.
           </p>
         </div>
+        <BlogPostJsonLd
+          title="How a Small Business Chooses a Visitor Log"
+          description="A walk through how a fictional small business owner compares Envoy, SwipedOn, and SiteSafe — and why the simplest, most affordable option wins."
+          datePublished="2026-06-06"
+          dateModified="2026-06-15"
+          slug="case-study-small-business"
+        />
       </div>
-      <p className="italic text-slate-300 mt-6">
-  Want the complete side‑by‑side comparison Sarah used?{" "}
-  <a
-    href="/compare"
-    className="text-sky-400 hover:text-sky-300 transition-colors"
-  >
-    See it here
-  </a>.
-</p>
+      <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
+        Want to make sure your visitor log survives an audit?{" "}
+        <Link href="/checklist" className="text-sky-400 hover:underline">
+          Grab our free 10‑point checklist
+        </Link>.
+      </p>
     </div>
   );
 }

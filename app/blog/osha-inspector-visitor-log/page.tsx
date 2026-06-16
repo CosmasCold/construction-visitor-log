@@ -1,94 +1,46 @@
-// app/blog/osha-inspector-visitor-log/page.tsx
 import type { Metadata } from "next";
+import BlogPostJsonLd from "@/components/BlogPostJsonLd";
 
 export const metadata: Metadata = {
-  title: "What an OSHA Inspector Actually Looks For – SiteSafe Blog",
+  title: "What an OSHA Inspector Actually Looks For in a Visitor Log – SiteSafe Blog",
   description:
-    "A complete visitor log can make or break an inspection. Learn what inspectors check and how to prepare.",
+    "A complete visitor log can make or break an inspection. Here is what inspectors check.",
 };
 
 export default function BlogPost() {
   return (
     <div className="min-h-screen py-12 px-4">
-      <div className="max-w-2xl mx-auto bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.12)] p-8 text-white">
+      <div className="max-w-2xl mx-auto bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-white">
         <h1 className="text-2xl font-bold tracking-tight mb-2">
           What an OSHA Inspector Actually Looks For in a Visitor Log
         </h1>
-        <p className="text-sm text-slate-400 mb-6">By the SiteSafe team · 3 min read</p>
+        <p className="text-sm text-slate-400 mb-6">By the SiteSafe team · 5 min read</p>
 
         <div className="space-y-4 text-sm leading-relaxed text-slate-200">
           <p>
-            When an OSHA inspector shows up at your job site, one of the first things they ask for is
-            documentation. And one of the first documents they want to see is your visitor log. If that
-            log is missing, incomplete, or illegible, you are already on the back foot.
+            When an OSHA inspector arrives, one of the first documents they’ll
+            ask for is your visitor log. Here’s exactly what they check:
           </p>
-
-          <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            Why the visitor log matters
-          </h2>
-          <p>
-            The visitor log is not just a courtesy. It is a record of who was on site, when they
-            arrived, and whether they were aware of the hazards around them. In the event of an
-            incident, that log becomes a legal document. If you cannot produce it, or if it is full of
-            gaps, the inspector will assume your safety management is just as sloppy.
-          </p>
-
-          <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            What inspectors are trained to look for
-          </h2>
-          <p>A complete visitor log should show, at minimum:</p>
-          <ul className="list-disc list-inside space-y-1">
-            <li>Full name of every visitor</li>
-            <li>The company or trade they represent</li>
-            <li>Who they came to see (the host)</li>
-            <li>Date and time of arrival</li>
-            <li>Date and time of departure (or confirmation they left)</li>
-            <li>A signed or acknowledged safety briefing</li>
+          <ul className="space-y-2 text-slate-200">
+            <li>• Complete names, companies, and times for every visitor</li>
+            <li>• Proof that safety briefings were acknowledged</li>
+            <li>• Accurate sign‑in and sign‑out times</li>
+            <li>• Host identification</li>
+            <li>• The ability to quickly filter and export records</li>
           </ul>
           <p>
-            If any of these fields are missing, the inspector will flag it. If they cannot read the
-            handwriting, that is just as bad.
-          </p>
-
-          <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            The problem with paper
-          </h2>
-          <p>
-            Paper logs are notoriously incomplete. People skip the departure time because they forget.
-            They scribble their name because they are in a hurry. The safety briefing page gets
-            separated from the sign‑in sheet. After a few weeks in the trailer, the whole thing looks
-            like a coffee‑stained mess.
-          </p>
-
-          <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            How to be inspection‑ready in 30 seconds
-          </h2>
-          <p>
-            A Smart Visitor Management System solves all of this. Workers cannot check in without acknowledging the
-            safety briefing. Their entry is timestamped automatically. When the inspector asks, you
-            open a dashboard and export a clean PDF. No scrambling, no excuses.
-          </p>
-
-          <p>
-            That is exactly why we built <strong className="text-white">SiteSafe</strong> — a simple
-            tablet‑based check‑in that gives you a complete, audit‑ready record of every visitor. It
-            takes minutes to set up and works on any device.
-          </p>
-
-          <p className="mt-6 italic text-slate-300">
-            See how it works — free 14‑day trial, no credit card needed.{" "}
-            <a href="/signup" className="text-sky-400 hover:text-sky-300 transition-colors duration-150">
-              Start your trial here
-            </a>.
+            A digital system like SiteSafe automates all of this, turning an
+            inspection from a stressful event into a non‑issue.
           </p>
         </div>
+        <BlogPostJsonLd
+          title="What an OSHA Inspector Actually Looks For in a Visitor Log"
+          description="A complete visitor log can make or break an inspection. Here is what inspectors check."
+          datePublished="2026-06-02"
+          dateModified="2026-06-15"
+          slug="osha-inspector-visitor-log"
+        />
       </div>
-      <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10">
-  Want to make sure your visitor log survives an audit?{" "}
-  <a href="/checklist" className="text-sky-400 hover:underline">
-    Grab our free 10‑point checklist
-  </a>.
-</p>
     </div>
   );
 }

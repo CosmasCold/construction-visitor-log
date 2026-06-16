@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import BlogPostJsonLd from "@/components/BlogPostJsonLd";
 
 export const metadata: Metadata = {
   title: "iLobby Alternative – Simpler Visitor Management for Small Teams | SiteSafe",
@@ -65,26 +67,29 @@ export default function BlogPost() {
 
           <p className="italic text-slate-300 mt-6">
             See if SiteSafe fits your workflow.{" "}
-            <a
+            <Link
               href="/signup"
               className="text-sky-400 hover:text-sky-300 transition-colors"
             >
               Start your free trial
-            </a>{" "}
+            </Link>{" "}
             — no credit card, no sales call.
           </p>
         </div>
+        <BlogPostJsonLd
+          title="iLobby Alternative: Why SiteSafe Is the Simpler Choice"
+          description="Looking for an iLobby alternative? SiteSafe offers a simpler check‑in flow, mandatory safety acknowledgment, flat $49/mo pricing, and a free trial."
+          datePublished="2026-06-13"
+          dateModified="2026-06-15"
+          slug="ilobby-alternative"
+        />
       </div>
-      <p className="italic text-slate-300 mt-6">
-  Check the full feature‑by‑feature{" "}
-  <a
-    href="/compare"
-    className="text-sky-400 hover:text-sky-300 transition-colors"
-  >
-    comparison
-  </a>{" "}
-  to see how SiteSafe matches up.
-</p>
+      <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
+        Want to make sure your visitor log survives an audit?{" "}
+        <Link href="/checklist" className="text-sky-400 hover:underline">
+          Grab our free 10‑point checklist
+        </Link>.
+      </p>
     </div>
   );
 }

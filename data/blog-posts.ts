@@ -1,0 +1,106 @@
+export const posts = [
+  {
+    slug: "cold-email-failure",
+    title: "I Sent 13 Cold Email Campaigns and Got 0 Sign‑ups",
+    date: "2026-06-14",
+    lastModified: "2026-06-15",
+    excerpt:
+      "A honest look at what I tried, what failed, and what I learned from reaching out to 200+ site managers about SiteSafe.",
+  },
+  {
+    slug: "envoy-alternative",
+    title: "Envoy Alternative: Why SiteSafe Is the Better Choice for Small Teams",
+    date: "2026-06-13",
+    lastModified: "2026-06-15",
+    excerpt:
+      "Envoy's mandatory demos, per‑site fees, and hidden pricing don't work for small teams. Here's how SiteSafe compares — flat $49/mo, no sales calls, and a mandatory safety acknowledgment Envoy can't match.",
+  },
+  {
+    slug: "swipedon-alternative",
+    title: "SwipedOn Alternative: Flat Pricing, No Per‑Location Fees",
+    date: "2026-06-13",
+    lastModified: "2026-06-15",
+    excerpt:
+      "SwipedOn's per‑location pricing adds up fast. SiteSafe offers unlimited sites for one flat price, plus host notifications and mandatory safety briefings included.",
+  },
+  {
+    slug: "ilobby-alternative",
+    title: "iLobby Alternative: Simpler Visitor Management for Small Teams",
+    date: "2026-06-13",
+    lastModified: "2026-06-15",
+    excerpt:
+      "iLobby is built for enterprises with complex needs. SiteSafe gives small teams fast check‑in, compliance proof, and flat pricing — no long deployment, no sales calls.",
+  },
+  {
+    slug: "best-visitor-management-systems",
+    title: "The 5 Best Visitor Management Systems for Small Businesses",
+    date: "2026-06-13",
+    lastModified: "2026-06-15",
+    excerpt:
+      "Compare Envoy, SwipedOn, iLobby, SiteSafe, and paper logs side‑by‑side on pricing, compliance features, and ease of use. Find the right fit for your workplace.",
+  },
+  {
+    slug: "what-inspectors-look-for-in-visitor-log",
+    title: "What Inspectors Look for in a Visitor Log",
+    date: "2026-06-13",
+    lastModified: "2026-06-15",
+    excerpt:
+      "From mandatory safety acknowledgments to time‑stamped records, here's exactly what OSHA and safety inspectors check when they review your visitor log.",
+  },
+  {
+    slug: "ultimate-guide-modern-visitor-management",
+    title: "The Ultimate Guide to Modern Visitor Management",
+    date: "2026-06-09",
+    lastModified: "2026-06-15",
+    excerpt:
+      "Why paper visitor logs fail audits, how digital check‑in works, and the essential features a modern visitor management system should have.",
+  },
+  {
+    slug: "case-study-small-business",
+    title: "How a Small Business Chooses a Visitor Log",
+    date: "2026-06-06",
+    lastModified: "2026-06-15",
+    excerpt:
+      "A walk through how a fictional small business owner compares Envoy, SwipedOn, and SiteSafe — and why the simplest, most affordable option wins.",
+  },
+  {
+    slug: "sitesafe-vs-envoy-swipedon-paper",
+    title: "SiteSafe vs Envoy vs SwipedOn vs Paper Logs",
+    date: "2026-06-04",
+    lastModified: "2026-06-15",
+    excerpt:
+      "An honest side‑by‑side comparison of digital visitor log solutions, including pricing, features, and hidden costs.",
+  },
+  {
+    slug: "feedback-wanted",
+    title: "Help Us Improve SiteSafe – Feedback Wanted",
+    date: "2026-06-04",
+    lastModified: "2026-06-15",
+    excerpt:
+      "We built a simple digital visitor log and need your honest feedback to make it better.",
+  },
+  {
+    slug: "cost-of-failed-safety-audit",
+    title: "The Real Cost of a Failed Safety Audit",
+    date: "2026-06-03",
+    lastModified: "2026-06-15",
+    excerpt:
+      "Fines are just the start. A failed audit can cost contracts, reputation, and months of work.",
+  },
+  {
+    slug: "osha-inspector-visitor-log",
+    title: "What an OSHA Inspector Actually Looks For in a Visitor Log",
+    date: "2026-06-02",
+    lastModified: "2026-06-15",
+    excerpt:
+      "A complete visitor log can make or break an inspection. Here is what inspectors check.",
+  },
+  {
+    slug: "paper-sign-in-sheets-safety-risk",
+    title: "Why Paper Sign‑In Sheets Are a Safety Risk",
+    date: "2026-06-01",
+    lastModified: "2026-06-15",
+    excerpt:
+      "Paper logs get lost, ruined, and are illegible. Here is why a digital check‑in is safer.",
+  },
+];

@@ -1,5 +1,6 @@
-// app/blog/cold-email-failure/page.tsx
 import type { Metadata } from "next";
+import Link from "next/link";
+import BlogPostJsonLd from "@/components/BlogPostJsonLd";
 
 export const metadata: Metadata = {
   title: "I Sent 13 Cold Email Campaigns and Got 0 Sign‑ups – SiteSafe Blog",
@@ -100,12 +101,19 @@ export default function BlogPost() {
 
           <p className="italic text-slate-300 mt-6">
             Want to see if your visitor log would survive an audit?{" "}
-            <a href="/audit" className="text-sky-400 hover:text-sky-300 transition-colors">
+            <Link href="/audit" className="text-sky-400 hover:text-sky-300 transition-colors">
               Take the free self‑audit
-            </a>{" "}
+            </Link>{" "}
             — no sign‑up required.
           </p>
         </div>
+        <BlogPostJsonLd
+          title="I Sent 13 Cold Email Campaigns and Got 0 Sign‑ups"
+          description="A honest look at what I tried, what failed, and what I learned from reaching out to 200+ site managers about SiteSafe."
+          datePublished="2026-06-14"
+          dateModified="2026-06-15"
+          slug="cold-email-failure"
+        />
       </div>
     </div>
   );
