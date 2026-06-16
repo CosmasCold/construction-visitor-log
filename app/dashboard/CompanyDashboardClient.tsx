@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
+import DashboardTutorial from "@/components/DashboardTutorial";
 
 type Visitor = {
   id: string;
@@ -1366,6 +1367,7 @@ export default function CompanyDashboardClient({
         qrUrl={qrSite ? `/api/sites/${qrSite.id}/qr` : ""}
         onClose={() => setQrSite(null)}
       />
+      <DashboardTutorial />
     </div>
   );
 }
