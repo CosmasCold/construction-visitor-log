@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { ArrowRight } from "lucide-react";
+import { logEvent } from "@/lib/analytics";
 
 export default function SignupClient() {
   const router = useRouter();
@@ -32,6 +33,9 @@ export default function SignupClient() {
       setLoading(false);
       return;
     }
+
+    // Track successful signup
+    logEvent("signup_completed");
 
     // 2. Immediately sign the new user in
     const signInResult = await signIn("credentials", {
@@ -70,14 +74,14 @@ export default function SignupClient() {
             className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
           />
           <input
-  type="password"
-  placeholder="Password (8+ chars, 1 uppercase, 1 number)"
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-  required
-  minLength={8}
-  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-/>
+            type="password"
+            placeholder="Password (8+ chars, 1 uppercase, 1 number)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={8}
+            className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+          />
           {error && (
             <p className="text-rose-400 text-sm text-center">{error}</p>
           )}
