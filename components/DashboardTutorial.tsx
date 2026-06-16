@@ -7,7 +7,7 @@ const steps = [
   {
     title: "Welcome to SiteSafe",
     description:
-      "Let's quickly walk through your dashboard. You can skip this anytime.",
+      "Let’s quickly walk through your dashboard. You can skip this anytime.",
   },
   {
     title: "Your sites",
@@ -63,72 +63,52 @@ export default function DashboardTutorial() {
     top: number;
     left: number;
   } | null>(null);
-  const [spotlightRect, setSpotlightRect] = useState<{
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-  } | null>(null);
 
   const step = steps[currentStep];
 
-  // Recalculate position and spotlight after the highlighted element is scrolled into view
-  const calculateLayout = useCallback(() => {
+  const calculatePosition = useCallback(() => {
     if (!step.highlight) {
       setTooltipPos(null);
-      setSpotlightRect(null);
       return;
     }
     const el = document.getElementById(step.highlight);
     if (!el) {
       setTooltipPos(null);
-      setSpotlightRect(null);
       return;
     }
 
-    // scroll to the element
     el.scrollIntoView({ behavior: "smooth", block: "center" });
 
     // Wait for scroll to settle, then measure
-    const measure = () => {
+    setTimeout(() => {
       const rect = el.getBoundingClientRect();
-      // position tooltip to the right, vertically centered
       setTooltipPos({
         top: rect.top + rect.height / 2,
         left: rect.right + 16,
       });
-      setSpotlightRect({
-        top: rect.top,
-        left: rect.left,
-        width: rect.width,
-        height: rect.height,
-      });
-    };
-
-    // Use a slightly longer timeout because smooth scroll can take a moment
-    setTimeout(measure, 350);
+    }, 350);
   }, [step.highlight]);
 
   // Recalculate on step change
   useEffect(() => {
     if (!visible) return;
     const raf = requestAnimationFrame(() => {
-      calculateLayout();
+      calculatePosition();
     });
     return () => cancelAnimationFrame(raf);
-  }, [visible, calculateLayout]);
+  }, [visible, calculatePosition]);
 
   // Recalculate on window resize
   useEffect(() => {
     if (!visible) return;
     const handleResize = () => {
       requestAnimationFrame(() => {
-        calculateLayout();
+        calculatePosition();
       });
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [visible, calculateLayout]);
+  }, [visible, calculatePosition]);
 
   function dismiss() {
     localStorage.setItem("sitesafe_tutorial_done", "true");
@@ -145,28 +125,10 @@ export default function DashboardTutorial() {
 
   if (!visible) return null;
 
-  // Spotlight cutout
-    const spotlightStyle = spotlightRect
-    ? {
-        clipPath: `polygon(
-          0% 0%, 0% 100%, 100% 100%, 100% 0%,
-          0% 0%,
-          ${spotlightRect.left}px ${spotlightRect.top}px,
-          ${spotlightRect.left + spotlightRect.width}px ${spotlightRect.top}px,
-          ${spotlightRect.left + spotlightRect.width}px ${spotlightRect.top + spotlightRect.height}px,
-          ${spotlightRect.left}px ${spotlightRect.top + spotlightRect.height}px,
-          ${spotlightRect.left}px ${spotlightRect.top}px
-        )`,
-      }
-    : undefined;
-
   return (
     <div className="fixed inset-0 z-50">
-      {/* Spotlight overlay */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        style={spotlightStyle}
-      />
+      {/* Plain dim overlay – no cutout */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       {/* Tooltip */}
       <div
