@@ -6,7 +6,6 @@ import {
   ShieldAlert,
   FileText,
   ArrowRight,
-  CheckCircle2,
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -53,11 +52,11 @@ export default function SecurityFeaturesPage() {
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
           Security features that go beyond sign‑in
         </h1>
-        <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-4">
+        <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-4">
           Most visitor logs can’t answer a simple question:{" "}
           <em>“Who is on site right now — and what can you do about it?”</em>
         </p>
-        <p className="text-sm text-slate-500 max-w-xl mx-auto mb-12">
+        <p className="text-sm text-slate-400 max-w-xl mx-auto mb-12">
           SiteSafe answers that question and gives you the tools to act on it —
           whether it’s a drill, a real emergency, or an unwanted visitor.
         </p>
@@ -75,19 +74,19 @@ export default function SecurityFeaturesPage() {
               <h3 className="font-semibold text-white text-sm mb-1">
                 {f.title}
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-2">
+              <p className="text-xs text-slate-300 leading-relaxed mb-2">
                 {f.description}
               </p>
-              <span className="text-xs text-sky-400">{f.bullet}</span>
+              <span className="text-xs text-sky-300">{f.bullet}</span>
             </div>
           ))}
         </div>
 
         {/* Pricing & CTA */}
         <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6 max-w-md mx-auto">
-          <p className="text-sm text-slate-300 mb-2">
+          <p className="text-sm text-slate-200 mb-2">
             All security features are included in the{" "}
-            <strong>$49/month</strong> plan.
+            <strong className="text-white">$49/month</strong> plan.
           </p>
           <p className="text-xs text-slate-400 mb-4">
             Unlimited sites · Unlimited visitors · No per‑site fees · No sales
@@ -99,12 +98,12 @@ export default function SecurityFeaturesPage() {
           >
             Start free trial <ArrowRight className="ml-2 w-4 h-4" />
           </Link>
-          <p className="text-xs text-slate-500 mt-3">
+          <p className="text-xs text-slate-400 mt-3">
             No credit card required · 14‑day trial
           </p>
         </div>
 
-        <p className="text-xs text-slate-600 mt-8">
+        <p className="text-xs text-slate-400 mt-8">
           Still evaluating?{" "}
           <Link
             href="/audit"
