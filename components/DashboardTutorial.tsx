@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, X } from "lucide-react";
 
 const steps = [
@@ -53,9 +53,16 @@ const steps = [
 
 export default function DashboardTutorial() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [visible, setVisible] = useState(() => {
-    return localStorage.getItem("sitesafe_tutorial_done") ? false : true;
-  });
+  const [visible, setVisible] = useState(false);
+
+  // Defer visibility check to an animation frame (asynchronous)
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      const done = localStorage.getItem("sitesafe_tutorial_done");
+      if (!done) setVisible(true);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   const step = steps[currentStep];
 
