@@ -64,11 +64,12 @@ export default function DashboardTutorial() {
     left: number;
   } | null>(null);
 
-  const step = steps[currentStep];
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rafRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
 
-  // Position the tooltip next to the highlighted element (deferred)
+  const highlight = steps[currentStep].highlight;
+
+  // Position the tooltip – all setState calls are deferred inside requestAnimationFrame
   useEffect(() => {
     if (!visible) return;
 
@@ -76,13 +77,13 @@ export default function DashboardTutorial() {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
-    const doUpdate = () => {
-      if (!step.highlight) {
+    const updateTooltip = () => {
+      if (!highlight) {
         setTooltipPos(null);
         return;
       }
 
-      const el = document.getElementById(step.highlight);
+      const el = document.getElementById(highlight);
       if (!el) {
         setTooltipPos(null);
         return;
@@ -101,20 +102,20 @@ export default function DashboardTutorial() {
     };
 
     // Defer all state changes to the next animation frame (asynchronous)
-    rafRef.current = requestAnimationFrame(doUpdate);
+    rafRef.current = requestAnimationFrame(updateTooltip);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [visible, step]);
+  }, [visible, currentStep, highlight]);
 
-  // Recalculate on window resize
+  // Recalculate on window resize (also deferred)
   useEffect(() => {
-    if (!visible || !step.highlight) return;
+    if (!visible || !highlight) return;
 
     const handleResize = () => {
-      const el = document.getElementById(step.highlight!);
+      const el = document.getElementById(highlight);
       if (!el) return;
       const rect = el.getBoundingClientRect();
       setTooltipPos({
@@ -125,7 +126,7 @@ export default function DashboardTutorial() {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [visible, step]);
+  }, [visible, highlight]);
 
   function dismiss() {
     localStorage.setItem("sitesafe_tutorial_done", "true");
@@ -141,6 +142,8 @@ export default function DashboardTutorial() {
   }
 
   if (!visible) return null;
+
+  const step = steps[currentStep];
 
   return (
     <div className="fixed inset-0 z-50">
