@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowRight, X, Share2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { ArrowRight, X } from "lucide-react";
 
 const steps = [
   {
@@ -39,6 +39,52 @@ export default function DashboardTutorial() {
   const [visible, setVisible] = useState(() => {
     return localStorage.getItem("sitesafe_tutorial_done") ? false : true;
   });
+  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
+
+  const step = steps[currentStep];
+
+  const calculatePosition = useCallback(() => {
+    if (!step.highlight) {
+      setTooltipPos(null);
+      return;
+    }
+    const el = document.getElementById(step.highlight);
+    if (!el) {
+      setTooltipPos(null);
+      return;
+    }
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Wait for scroll to settle, then measure
+    setTimeout(() => {
+      const rect = el.getBoundingClientRect();
+      setTooltipPos({
+        top: rect.top + rect.height / 2,
+        left: rect.right + 16,
+      });
+    }, 300);
+  }, [step.highlight]);
+
+  // Recalculate position whenever the step changes, using requestAnimationFrame
+  // to defer the state update and avoid the setState-in-effect lint rule.
+  useEffect(() => {
+    if (!visible) return;
+    const raf = requestAnimationFrame(() => {
+      calculatePosition();
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [visible, calculatePosition]);
+
+  // Recalculate on window resize
+  useEffect(() => {
+    if (!visible) return;
+    const handleResize = () => {
+      requestAnimationFrame(() => {
+        calculatePosition();
+      });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [visible, calculatePosition]);
 
   function dismiss() {
     localStorage.setItem("sitesafe_tutorial_done", "true");
@@ -55,44 +101,83 @@ export default function DashboardTutorial() {
 
   if (!visible) return null;
 
-  const step = steps[currentStep];
+  // Spotlight cutout for highlighted element
+  const spotlightStyle = step.highlight
+    ? (() => {
+        const el = document.getElementById(step.highlight);
+        if (!el) return undefined;
+        const rect = el.getBoundingClientRect();
+        return {
+          clipPath: `polygon(
+            0% 0%, 0% 100%, 100% 100%, 100% 0%,
+            0% 0%,
+            ${rect.left}px ${rect.top}px,
+            ${rect.right}px ${rect.top}px,
+            ${rect.right}px ${rect.bottom}px,
+            ${rect.left}px ${rect.bottom}px,
+            ${rect.left}px ${rect.top}px
+          )`,
+        };
+      })()
+    : undefined;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-2xl text-center relative">
-        <button
-          onClick={dismiss}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white"
-          aria-label="Close tutorial"
-        >
-          <X className="w-5 h-5" />
-        </button>
+    <div className="fixed inset-0 z-50">
+      {/* Spotlight overlay */}
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        style={spotlightStyle}
+      />
 
-        <div className="mb-4">
-          <span className="text-xs text-slate-500">
-            {currentStep + 1} of {steps.length}
-          </span>
-        </div>
-
-        <h3 className="text-xl font-semibold text-white mb-2">{step.title}</h3>
-        <p className="text-sm text-slate-300 mb-6">{step.description}</p>
-
-        <button
-          onClick={next}
-          className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-xl px-6 py-3 text-sm transition-colors"
-        >
-          {currentStep === steps.length - 1 ? "Start using SiteSafe" : "Next"}
-          <ArrowRight className="w-4 h-4" />
-        </button>
-
-        {currentStep > 0 && (
+      {/* Tooltip */}
+      <div
+        className={`absolute max-w-xs w-full transition-all duration-300 ${
+          tooltipPos ? "" : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        }`}
+        style={
+          tooltipPos
+            ? {
+                top: tooltipPos.top,
+                left: tooltipPos.left,
+                transform: "translateY(-50%)",
+              }
+            : undefined
+        }
+      >
+        <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 shadow-2xl relative">
           <button
             onClick={dismiss}
-            className="text-xs text-slate-400 hover:text-white block mx-auto mt-3"
+            className="absolute top-3 right-3 text-slate-400 hover:text-white"
+            aria-label="Close tutorial"
           >
-            Skip tutorial
+            <X className="w-5 h-5" />
           </button>
-        )}
+
+          <div className="mb-2">
+            <span className="text-xs text-slate-500">
+              {currentStep + 1} of {steps.length}
+            </span>
+          </div>
+
+          <h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
+          <p className="text-sm text-slate-300 mb-4">{step.description}</p>
+
+          <div className="flex justify-between items-center">
+            <button
+              onClick={dismiss}
+              className="text-xs text-slate-400 hover:text-white"
+            >
+              Skip tutorial
+            </button>
+            <button
+              onClick={next}
+              className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-xl px-4 py-2 text-sm transition-colors"
+            >
+              {currentStep === steps.length - 1 ? "Start using SiteSafe" : "Next"}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
