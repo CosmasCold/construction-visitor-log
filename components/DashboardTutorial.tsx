@@ -7,7 +7,7 @@ const steps = [
   {
     title: "Welcome to SiteSafe",
     description:
-      "Let’s quickly walk through your dashboard. You can skip this anytime.",
+      "Let's quickly walk through your dashboard. You can skip this anytime.",
   },
   {
     title: "Your sites",
@@ -28,6 +28,26 @@ const steps = [
     highlight: "webhook-section",
   },
   {
+    title: "Analytics & Exports",
+    description:
+      "Use the toolbar at the top to export visitor logs as CSV, Excel, or PDF, and visit the Analytics page to see 30‑day trend charts.",
+  },
+  {
+    title: "Emergency Evacuation List",
+    description:
+      "Click the ⚠️ icon on any site card to instantly download a PDF of everyone currently on site — including photos and host names.",
+  },
+  {
+    title: "Lockdown Mode",
+    description:
+      "Activate lockdown from the shield icon on a site card. It blocks all new check‑ins and flags the site. One click to end it.",
+  },
+  {
+    title: "Document Signing",
+    description:
+      "When editing a site, enable document signing to require visitors to sign an NDA or waiver right on the check‑in screen.",
+  },
+  {
     title: "You're all set",
     description:
       "Create your first site, share the QR code or link, and start checking in visitors. No sales calls, no hidden fees.",
@@ -39,52 +59,76 @@ export default function DashboardTutorial() {
   const [visible, setVisible] = useState(() => {
     return localStorage.getItem("sitesafe_tutorial_done") ? false : true;
   });
-  const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const [spotlightRect, setSpotlightRect] = useState<{
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const step = steps[currentStep];
 
-  const calculatePosition = useCallback(() => {
+  // Recalculate position and spotlight after the highlighted element is scrolled into view
+  const calculateLayout = useCallback(() => {
     if (!step.highlight) {
       setTooltipPos(null);
+      setSpotlightRect(null);
       return;
     }
     const el = document.getElementById(step.highlight);
     if (!el) {
       setTooltipPos(null);
+      setSpotlightRect(null);
       return;
     }
+
+    // scroll to the element
     el.scrollIntoView({ behavior: "smooth", block: "center" });
+
     // Wait for scroll to settle, then measure
-    setTimeout(() => {
+    const measure = () => {
       const rect = el.getBoundingClientRect();
+      // position tooltip to the right, vertically centered
       setTooltipPos({
         top: rect.top + rect.height / 2,
         left: rect.right + 16,
       });
-    }, 300);
+      setSpotlightRect({
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+      });
+    };
+
+    // Use a slightly longer timeout because smooth scroll can take a moment
+    setTimeout(measure, 350);
   }, [step.highlight]);
 
-  // Recalculate position whenever the step changes, using requestAnimationFrame
-  // to defer the state update and avoid the setState-in-effect lint rule.
+  // Recalculate on step change
   useEffect(() => {
     if (!visible) return;
     const raf = requestAnimationFrame(() => {
-      calculatePosition();
+      calculateLayout();
     });
     return () => cancelAnimationFrame(raf);
-  }, [visible, calculatePosition]);
+  }, [visible, calculateLayout]);
 
   // Recalculate on window resize
   useEffect(() => {
     if (!visible) return;
     const handleResize = () => {
       requestAnimationFrame(() => {
-        calculatePosition();
+        calculateLayout();
       });
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [visible, calculatePosition]);
+  }, [visible, calculateLayout]);
 
   function dismiss() {
     localStorage.setItem("sitesafe_tutorial_done", "true");
@@ -101,24 +145,19 @@ export default function DashboardTutorial() {
 
   if (!visible) return null;
 
-  // Spotlight cutout for highlighted element
-  const spotlightStyle = step.highlight
-    ? (() => {
-        const el = document.getElementById(step.highlight);
-        if (!el) return undefined;
-        const rect = el.getBoundingClientRect();
-        return {
-          clipPath: `polygon(
-            0% 0%, 0% 100%, 100% 100%, 100% 0%,
-            0% 0%,
-            ${rect.left}px ${rect.top}px,
-            ${rect.right}px ${rect.top}px,
-            ${rect.right}px ${rect.bottom}px,
-            ${rect.left}px ${rect.bottom}px,
-            ${rect.left}px ${rect.top}px
-          )`,
-        };
-      })()
+  // Spotlight cutout
+    const spotlightStyle = spotlightRect
+    ? {
+        clipPath: `polygon(
+          0% 0%, 0% 100%, 100% 100%, 100% 0%,
+          0% 0%,
+          ${spotlightRect.left}px ${spotlightRect.top}px,
+          ${spotlightRect.left + spotlightRect.width}px ${spotlightRect.top}px,
+          ${spotlightRect.left + spotlightRect.width}px ${spotlightRect.top + spotlightRect.height}px,
+          ${spotlightRect.left}px ${spotlightRect.top + spotlightRect.height}px,
+          ${spotlightRect.left}px ${spotlightRect.top}px
+        )`,
+      }
     : undefined;
 
   return (
@@ -132,7 +171,9 @@ export default function DashboardTutorial() {
       {/* Tooltip */}
       <div
         className={`absolute max-w-xs w-full transition-all duration-300 ${
-          tooltipPos ? "" : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          tooltipPos
+            ? ""
+            : "top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         }`}
         style={
           tooltipPos
@@ -159,7 +200,9 @@ export default function DashboardTutorial() {
             </span>
           </div>
 
-          <h3 className="text-lg font-semibold text-white mb-2">{step.title}</h3>
+          <h3 className="text-lg font-semibold text-white mb-2">
+            {step.title}
+          </h3>
           <p className="text-sm text-slate-300 mb-4">{step.description}</p>
 
           <div className="flex justify-between items-center">
@@ -173,7 +216,9 @@ export default function DashboardTutorial() {
               onClick={next}
               className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-xl px-4 py-2 text-sm transition-colors"
             >
-              {currentStep === steps.length - 1 ? "Start using SiteSafe" : "Next"}
+              {currentStep === steps.length - 1
+                ? "Start using SiteSafe"
+                : "Next"}
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
