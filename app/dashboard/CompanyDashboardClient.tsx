@@ -615,7 +615,7 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Sites grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="sites-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sites.length === 0 ? (
             <div className="col-span-2 text-center py-12 text-slate-400">
               <Building2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
@@ -1094,7 +1094,7 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Blocklist section */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+        <div id="blocklist-section" className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-sky-400" /> Watchlist / Blocklist
           </h3>
@@ -1173,7 +1173,7 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Webhook Settings */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+        <div id="webhook-section" className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
             <Zap className="w-5 h-5 text-sky-400" /> Webhooks
           </h3>
