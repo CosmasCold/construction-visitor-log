@@ -12,7 +12,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto text-white space-y-8">
         <h1 className="text-3xl font-bold tracking-tight">Privacy Policy</h1>
-        <p className="text-sm text-slate-400">Last updated: June 15, 2026</p>
+        <p className="text-sm text-slate-400">Last updated: June 16, 2026</p>
 
         <div className="space-y-6 text-sm leading-relaxed text-slate-200">
           <h2 className="text-lg font-semibold text-white">1. Information we collect</h2>
@@ -94,7 +94,13 @@ export default function PrivacyPage() {
             Depending on your jurisdiction, you may have the right to access,
             correct, or delete your personal data, or to object to or restrict
             certain processing. To exercise these rights, contact us at
-            hello@sitesafe.thesift.space. We will respond within 30 days.
+            hello@thesift.space. We will respond within 30 days.
+          </p>
+
+          <p className="text-sm text-slate-200 mt-2">
+            If you are located in Brazil, you have additional rights under the
+            Lei Geral de Proteção de Dados (LGPD). We respond to all requests
+            in compliance with LGPD guidelines.
           </p>
 
           <h2 className="text-lg font-semibold text-white mt-8">7. Changes to this policy</h2>
@@ -112,7 +118,7 @@ export default function PrivacyPage() {
               href="mailto:hello@thesift.space"
               className="text-sky-400 hover:underline"
             >
-              hello@sitesafe.thesift.space
+              hello@thesift.space
             </a>.
           </p>
         </div>

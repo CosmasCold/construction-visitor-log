@@ -12,7 +12,7 @@ export default function TermsPage() {
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto text-white space-y-8">
         <h1 className="text-3xl font-bold tracking-tight">Terms of Service</h1>
-        <p className="text-sm text-slate-400">Last updated: June 15, 2026</p>
+        <p className="text-sm text-slate-400">Last updated: June 16, 2026</p>
 
         <div className="space-y-6 text-sm leading-relaxed text-slate-200">
           <h2 className="text-lg font-semibold text-white">1. Acceptance of terms</h2>
@@ -89,25 +89,33 @@ export default function TermsPage() {
             arising from your use of the service.
           </p>
 
-          <h2 className="text-lg font-semibold text-white mt-8">10. Termination</h2>
+          <h2 className="text-lg font-semibold text-white mt-8">10. Governing law</h2>
+          <p>
+            These Terms shall be governed by and construed in accordance with
+            the laws of the United States and the State of New York, without
+            regard to its conflict of law provisions. For customers located in
+            Brazil, we also comply with applicable LGPD requirements.
+          </p>
+
+          <h2 className="text-lg font-semibold text-white mt-8">11. Termination</h2>
           <p>
             We reserve the right to suspend or terminate your account for
             violation of these terms. Upon termination, your data will be
             deleted within 30 days.
           </p>
 
-          <h2 className="text-lg font-semibold text-white mt-8">11. Changes to these terms</h2>
+          <h2 className="text-lg font-semibold text-white mt-8">12. Changes to these terms</h2>
           <p>
             We may update these Terms of Service from time to time. We will
             notify you of material changes via email. Continued use after
             changes take effect constitutes acceptance.
           </p>
 
-          <h2 className="text-lg font-semibold text-white mt-8">12. Contact</h2>
+          <h2 className="text-lg font-semibold text-white mt-8">13. Contact</h2>
           <p>
             Questions about these terms?{" "}
             <a
-              href="mailto:hello@sitesafe.thesift.space"
+              href="mailto:hello@thesift.space"
               className="text-sky-400 hover:underline"
             >
               hello@thesift.space
