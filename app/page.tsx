@@ -83,12 +83,38 @@ const featureGroups = [
 
 const pricingFeature = { icon: DollarSign, title: "Flat $49/mo", desc: "No per‑site or per‑user fees. Cancel anytime." };
 
+// ✅ Updated screenshot list with new file names and captions
 const screenshots = [
-  { src: "/checkin.png", alt: "Visitor sign‑in form with host selection and photo capture", caption: "Visitor sign‑in with host dropdown and photo capture" },
-  { src: "/dashboard.png", alt: "SiteSafe real‑time visitor dashboard", caption: "Live dashboard – auto‑refreshes every few seconds" },
-  { src: "/analytics.png", alt: "SiteSafe analytics chart with date and site filters", caption: "Analytics with custom date ranges and site filters" },
-  { src: "/sites.png", alt: "Multi‑site management card with edit and delete options", caption: "Multi‑site management – unlimited sites, one account" },
-  { src: "/integrations.png", alt: "SiteSafe integrations hub – Slack, Google Sheets, Zapier", caption: "Built‑in integrations with Slack, Sheets, Zapier, and API" },
+  {
+    src: "/Dashboard.png",
+    alt: "SiteSafe real‑time visitor dashboard with active visitors and quick actions",
+    caption: "Real‑time dashboard – see who's on site, auto‑refreshes",
+  },
+  {
+    src: "/Analytics.png",
+    alt: "SiteSafe analytics page with trend chart, date filters, and CSV export",
+    caption: "Analytics – 30‑day trends, custom date ranges, export CSV",
+  },
+  {
+    src: "/Activevisitors.png",
+    alt: "Active visitors list with photos, host names, sign‑in times, and sign‑out buttons",
+    caption: "Active visitors – detailed list with photos and quick sign‑out",
+  },
+  {
+    src: "/Checkin.png",
+    alt: "Visitor check‑in form with host selection, photo capture, and safety acknowledgment",
+    caption: "Visitor check‑in – QR code, host dropdown, photo capture",
+  },
+  {
+    src: "/Lockdown.png",
+    alt: "Lockdown mode toggle on a site card, blocking new check‑ins",
+    caption: "Lockdown mode – one‑click block of all new check‑ins",
+  },
+  {
+    src: "/Newsite.png",
+    alt: "New site creation form with name, address, and URL slug fields",
+    caption: "New site setup – create a site in seconds",
+  },
 ];
 
 const industries = [
@@ -218,7 +244,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Screenshot gallery */}
+      {/* Screenshot gallery – now uses new files */}
       <ScreenshotGallery screenshots={screenshots} />
 
       {/* Trusted by */}
