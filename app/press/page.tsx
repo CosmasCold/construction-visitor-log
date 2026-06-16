@@ -159,7 +159,7 @@ export default function PressPage() {
               href="mailto:hello@thesift.space"
               className="text-sky-400 hover:underline"
             >
-              hello@sitesafe.thesift.space
+              hello@thesift.space
             </a>
           </p>
         </section>
