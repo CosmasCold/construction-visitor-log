@@ -106,11 +106,6 @@ const screenshots = [
     caption: "Visitor check‑in – QR code, host dropdown, photo capture",
   },
   {
-    src: "/lockdown.png",
-    alt: "Lockdown mode toggle on a site card, blocking new check‑ins",
-    caption: "Lockdown mode – one‑click block of all new check‑ins",
-  },
-  {
     src: "/newsite.png",
     alt: "New site creation form with name, address, and URL slug fields",
     caption: "New site setup – create a site in seconds",
