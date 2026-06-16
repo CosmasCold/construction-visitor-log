@@ -1,18 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, X, Share2 } from "lucide-react";
 
 const steps = [
   {
     title: "Welcome to SiteSafe",
     description:
-      "Let's quickly walk through your dashboard. You can skip this anytime.",
+      "Let’s quickly walk through your dashboard. You can skip this anytime.",
   },
   {
     title: "Your sites",
     description:
-      "Each site has its own QR code and settings. Click 'Edit' to add hosts, questions, or a safety briefing.",
+      "Each site gets its own QR code and a check‑in link. Share the QR code at reception, or send the link to each floor, station, or device — it all goes to the same place.",
     highlight: "sites-grid",
   },
   {
@@ -28,16 +28,15 @@ const steps = [
     highlight: "webhook-section",
   },
   {
-    title: "Ready to go",
+    title: "You're all set",
     description:
-      "Create your first site, share the QR code, and start checking in visitors. Need help? Just reply to this chat.",
+      "Create your first site, share the QR code or link, and start checking in visitors. No sales calls, no hidden fees.",
   },
 ];
 
 export default function DashboardTutorial() {
   const [currentStep, setCurrentStep] = useState(0);
   const [visible, setVisible] = useState(() => {
-    // Initialize directly from localStorage
     return localStorage.getItem("sitesafe_tutorial_done") ? false : true;
   });
 
@@ -60,7 +59,7 @@ export default function DashboardTutorial() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-2xl text-center">
+      <div className="bg-slate-900 border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-2xl text-center relative">
         <button
           onClick={dismiss}
           className="absolute top-4 right-4 text-slate-400 hover:text-white"
@@ -82,7 +81,7 @@ export default function DashboardTutorial() {
           onClick={next}
           className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-xl px-6 py-3 text-sm transition-colors"
         >
-          {currentStep === steps.length - 1 ? "Get started" : "Next"}
+          {currentStep === steps.length - 1 ? "Start using SiteSafe" : "Next"}
           <ArrowRight className="w-4 h-4" />
         </button>
 
