@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowRight, X } from "lucide-react";
 
 const steps = [
@@ -65,50 +65,67 @@ export default function DashboardTutorial() {
   } | null>(null);
 
   const step = steps[currentStep];
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rafRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
 
-  const calculatePosition = useCallback(() => {
-    if (!step.highlight) {
-      setTooltipPos(null);
-      return;
-    }
-    const el = document.getElementById(step.highlight);
-    if (!el) {
-      setTooltipPos(null);
-      return;
-    }
+  // Position the tooltip next to the highlighted element (deferred)
+  useEffect(() => {
+    if (!visible) return;
 
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Cancel any pending animation / timeout
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
-    // Wait for scroll to settle, then measure
-    setTimeout(() => {
+    const doUpdate = () => {
+      if (!step.highlight) {
+        setTooltipPos(null);
+        return;
+      }
+
+      const el = document.getElementById(step.highlight);
+      if (!el) {
+        setTooltipPos(null);
+        return;
+      }
+
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+
+      timeoutRef.current = setTimeout(() => {
+        const rect = el.getBoundingClientRect();
+        setTooltipPos({
+          top: rect.top + rect.height / 2,
+          left: rect.right + 16,
+        });
+        timeoutRef.current = null;
+      }, 350);
+    };
+
+    // Defer all state changes to the next animation frame (asynchronous)
+    rafRef.current = requestAnimationFrame(doUpdate);
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [visible, step]);
+
+  // Recalculate on window resize
+  useEffect(() => {
+    if (!visible || !step.highlight) return;
+
+    const handleResize = () => {
+      const el = document.getElementById(step.highlight!);
+      if (!el) return;
       const rect = el.getBoundingClientRect();
       setTooltipPos({
         top: rect.top + rect.height / 2,
         left: rect.right + 16,
       });
-    }, 350);
-  }, [step.highlight]);
-
-  // Recalculate on step change
-  useEffect(() => {
-    if (!visible) return;
-    const raf = requestAnimationFrame(() => {
-      calculatePosition();
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [visible, calculatePosition]);
-
-  // Recalculate on window resize
-  useEffect(() => {
-    if (!visible) return;
-    const handleResize = () => {
-      requestAnimationFrame(() => {
-        calculatePosition();
-      });
     };
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [visible, calculatePosition]);
+  }, [visible, step]);
 
   function dismiss() {
     localStorage.setItem("sitesafe_tutorial_done", "true");
@@ -127,7 +144,7 @@ export default function DashboardTutorial() {
 
   return (
     <div className="fixed inset-0 z-50">
-      {/* Plain dim overlay – no cutout */}
+      {/* Plain dim overlay */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       {/* Tooltip */}
