@@ -44,3 +44,6 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+*.cjs
+export-db.cjs
