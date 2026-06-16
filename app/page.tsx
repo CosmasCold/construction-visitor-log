@@ -86,32 +86,32 @@ const pricingFeature = { icon: DollarSign, title: "Flat $49/mo", desc: "No per�
 // ✅ Updated screenshot list with new file names and captions
 const screenshots = [
   {
-    src: "/Dashboard.png",
+    src: "/dashboard.png",
     alt: "SiteSafe real‑time visitor dashboard with active visitors and quick actions",
     caption: "Real‑time dashboard – see who's on site, auto‑refreshes",
   },
   {
-    src: "/Analytics.png",
+    src: "/analytics.png",
     alt: "SiteSafe analytics page with trend chart, date filters, and CSV export",
     caption: "Analytics – 30‑day trends, custom date ranges, export CSV",
   },
   {
-    src: "/Activevisitors.png",
+    src: "/activevisitors.png",
     alt: "Active visitors list with photos, host names, sign‑in times, and sign‑out buttons",
     caption: "Active visitors – detailed list with photos and quick sign‑out",
   },
   {
-    src: "/Checkin.png",
+    src: "/checkin.png",
     alt: "Visitor check‑in form with host selection, photo capture, and safety acknowledgment",
     caption: "Visitor check‑in – QR code, host dropdown, photo capture",
   },
   {
-    src: "/Lockdown.png",
+    src: "/lockdown.png",
     alt: "Lockdown mode toggle on a site card, blocking new check‑ins",
     caption: "Lockdown mode – one‑click block of all new check‑ins",
   },
   {
-    src: "/Newsite.png",
+    src: "/newsite.png",
     alt: "New site creation form with name, address, and URL slug fields",
     caption: "New site setup – create a site in seconds",
   },
