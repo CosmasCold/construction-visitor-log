@@ -14,22 +14,22 @@ export default function TouchDynamicPartnerPage() {
   return (
     <div className="min-h-screen py-16 px-4 text-white">
       <div className="max-w-3xl mx-auto text-center space-y-10">
-        {/* Dual logos */}
-        <div className="flex items-center justify-center gap-8">
+        {/* Dual logos – now in a light container */}
+        <div className="inline-flex items-center gap-6 bg-white/90 backdrop-blur-sm rounded-full px-6 py-3">
           <Image
             src="/tdlogo.webp"
             alt="Touch Dynamic"
             width={160}
             height={40}
-            className="h-10 w-auto"
+            className="h-8 w-auto"
           />
-          <span className="text-slate-500 text-2xl">+</span>
+          <span className="text-slate-400 text-2xl font-light">+</span>
           <Image
             src="/favicon.svg"
             alt="SiteSafe"
-            width={40}
-            height={40}
-            className="h-10 w-auto"
+            width={36}
+            height={36}
+            className="h-8 w-auto"
           />
         </div>
 
