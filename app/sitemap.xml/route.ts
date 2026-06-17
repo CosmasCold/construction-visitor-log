@@ -23,6 +23,9 @@ export function GET() {
     "/blog/cost-of-failed-safety-audit",
     "/blog/osha-inspector-visitor-log",
     "/blog/paper-sign-in-sheets-safety-risk",
+    "/blog/proxyclick-alternative",
+    "/blog/traction-guest-alternative",
+    "/blog/the-receptionist-alternative",
     "/changelog",
     "/checklist",
     "/compare",
@@ -30,6 +33,7 @@ export function GET() {
     "/compare/proxyclick",
     "/compare/traction-guest",
     "/compare/the-receptionist",
+    "/contact",
     "/docs",
     "/faq",
     "/features",
@@ -44,12 +48,12 @@ export function GET() {
     "/privacy",
     "/roi-calculator",
     "/security",
+    "/security-features",
     "/signup",
     "/admin/login",
     "/terms",
   ];
 
-  // New pattern: /local/construction-visitor-houston, etc.
   const dynamicPaths = [];
   for (const industry of industries) {
     for (const city of cities) {

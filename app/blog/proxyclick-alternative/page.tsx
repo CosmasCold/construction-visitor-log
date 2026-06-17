@@ -3,9 +3,9 @@ import Link from "next/link";
 import BlogPostJsonLd from "@/components/BlogPostJsonLd";
 
 export const metadata: Metadata = {
-  title: "Envoy Alternative – Why SiteSafe Is the Better Choice for Small Teams",
+  title: "Proxyclick Alternative – Simple, Flat‑Priced Visitor Management | SiteSafe",
   description:
-    "Looking for an Envoy alternative? SiteSafe offers mandatory safety acknowledgment, flat $49/mo pricing, no sales calls, and a 14‑day free trial. Compare features, pricing, and user reviews.",
+    "Looking for a Proxyclick alternative? SiteSafe offers mandatory safety acknowledgment, flat $49/mo pricing, and no sales calls. Compare features and pricing side‑by‑side.",
 };
 
 export default function BlogPost() {
@@ -13,27 +13,26 @@ export default function BlogPost() {
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-2xl mx-auto bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-white">
         <h1 className="text-2xl font-bold tracking-tight mb-2">
-          Envoy Alternative: Why SiteSafe Is the Better Choice for Small Teams
+          Proxyclick Alternative: Why SiteSafe Fits Small Teams Better
         </h1>
-        <p className="text-sm text-slate-400 mb-6">By the SiteSafe team · 6 min read</p>
+        <p className="text-sm text-slate-400 mb-6">By the SiteSafe team · 5 min read</p>
 
         <div className="space-y-4 text-sm leading-relaxed text-slate-200">
           <p>
-            Envoy is a well‑known visitor management platform, but if you’re a
-            small or mid‑sized business, you’ve probably hit a wall: mandatory
-            demos, per‑site fees, and features locked behind expensive tiers.
-            That’s exactly why we built SiteSafe — to give you a faster, cheaper,
-            and more compliance‑focused alternative.
+            Proxyclick is a powerful visitor management platform aimed at
+            mid‑market and enterprise companies. While it offers deep
+            customization and integrations, its complex setup, custom pricing,
+            and feature gating often overwhelm smaller teams.
           </p>
 
           <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            1. Pricing – the real difference
+            1. Pricing – custom quotes vs flat $49
           </h2>
           <p>
-            Envoy does not show pricing publicly. You must book a demo and speak
-            with sales. Based on user reports, Envoy’s plans start at <strong>$99/month</strong> and
-            increase with per‑location fees and add‑on features. For three sites,
-            you could easily pay $300+/month.
+            Proxyclick does not list public pricing; you must request a custom
+            quote. Enterprise features like SSO, advanced reporting, and API
+            access are typically gated behind higher‑tier plans. This makes
+            budgeting unpredictable for small organizations.
           </p>
           <p>
             SiteSafe is <strong>$49/month flat</strong>. Unlimited sites, unlimited
@@ -46,29 +45,29 @@ export default function BlogPost() {
               <thead className="bg-white/5">
                 <tr>
                   <th className="p-2 text-left">Plan</th>
-                  <th className="p-2 text-left">Envoy</th>
+                  <th className="p-2 text-left">Proxyclick</th>
                   <th className="p-2 text-left text-sky-300">SiteSafe</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 <tr>
                   <td className="p-2">Starting price</td>
-                  <td className="p-2">$99/mo (approx)</td>
+                  <td className="p-2">Custom quote</td>
                   <td className="p-2 text-sky-300">$49/mo</td>
                 </tr>
                 <tr>
                   <td className="p-2">Per‑site fee</td>
-                  <td className="p-2">Yes</td>
+                  <td className="p-2">Often yes</td>
                   <td className="p-2 text-sky-300">None</td>
                 </tr>
                 <tr>
                   <td className="p-2">Free trial</td>
-                  <td className="p-2">Requires demo</td>
+                  <td className="p-2">Demo required</td>
                   <td className="p-2 text-sky-300">14 days, no card</td>
                 </tr>
                 <tr>
                   <td className="p-2">Hidden costs</td>
-                  <td className="p-2">Per‑visitor fees possible</td>
+                  <td className="p-2">Possible per‑visitor fees</td>
                   <td className="p-2 text-sky-300">None</td>
                 </tr>
               </tbody>
@@ -83,19 +82,19 @@ export default function BlogPost() {
               <thead className="bg-white/5">
                 <tr>
                   <th className="p-2 text-left">Feature</th>
-                  <th className="p-2 text-left">Envoy</th>
+                  <th className="p-2 text-left">Proxyclick</th>
                   <th className="p-2 text-left text-sky-300">SiteSafe</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 <tr>
                   <td className="p-2">Mandatory safety briefing</td>
-                  <td className="p-2">Optional</td>
+                  <td className="p-2">Not available</td>
                   <td className="p-2 text-sky-300">Mandatory (non‑skippable)</td>
                 </tr>
                 <tr>
                   <td className="p-2">Watchlist / blocklist</td>
-                  <td className="p-2">Paid add‑on</td>
+                  <td className="p-2">Not available</td>
                   <td className="p-2 text-sky-300">Included</td>
                 </tr>
                 <tr>
@@ -128,41 +127,27 @@ export default function BlogPost() {
           </div>
 
           <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            3. Who should use Envoy (and who should not)
+            3. Who should use Proxyclick (and who should not)
           </h2>
           <p>
-            Envoy is best for large enterprises that need custom integrations,
-            enterprise SSO, and a dedicated account manager. If you have 500+
-            employees and a security team, Envoy might be the right fit — but
-            be prepared for a lengthy sales process and per‑location pricing.
+            Proxyclick is ideal for large organizations that need custom
+            workflows, complex integrations, and a dedicated account manager.
+            If you’re a global enterprise with a security team, Proxyclick may
+            be worth the investment — but expect a longer onboarding and
+            higher price tag.
           </p>
           <p>
-            SiteSafe is built for small to mid‑sized workplaces — construction
-            sites, warehouses, offices, and manufacturing plants. If you need
-            fast setup, mandatory safety compliance, and a price that doesn’t
-            grow with every new site, SiteSafe is the better choice.
+            SiteSafe is built for small to mid‑sized workplaces that need to
+            get up and running quickly, without lengthy negotiations or setup.
+            If compliance, affordability, and simplicity are your priorities,
+            SiteSafe is the better fit.
           </p>
 
           <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            4. Real‑world feedback
+            4. Try before you buy
           </h2>
           <p>
-            Envoy has a strong presence on G2 and Capterra, with scores around
-            4.5/5. Users praise its design and integrations but frequently
-            mention high costs and mandatory sales calls as drawbacks.
-          </p>
-          <p>
-            SiteSafe is independently owned and operated, with all customer
-            feedback handled directly by the founder. We’re listed on multiple
-            SaaS directories, and you can verify our ratings on those platforms.
-            Every review you see comes from a real user.
-          </p>
-
-          <h2 className="text-lg font-semibold tracking-tight text-white mt-6">
-            5. Try before you buy
-          </h2>
-          <p>
-            Envoy requires a demo before you can see pricing or test the product.
+            Proxyclick requires a demo before you can evaluate the product.
             SiteSafe lets you start a <strong>14‑day free trial</strong> instantly —
             no credit card, no sales call. You can set up your first site and
             start checking in visitors in under two minutes.
@@ -181,41 +166,30 @@ export default function BlogPost() {
               </p>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-sky-300">Can I switch from Envoy to SiteSafe?</h3>
+              <h3 className="text-sm font-semibold text-sky-300">Can I switch from Proxyclick to SiteSafe?</h3>
               <p className="text-xs text-slate-300 mt-1">
                 Switching is straightforward. You can export your existing visitor
-                records from Envoy as a CSV for your own archive, then start fresh
-                with SiteSafe. There’s no complex data migration — just set up your
-                sites, add your hosts, and you’re ready to go.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-sky-300">Do I need to talk to sales?</h3>
-              <p className="text-xs text-slate-300 mt-1">
-                Never. Sign up, set up, and start using SiteSafe without ever
-                speaking to a salesperson. Support is available via email if you
-                need help.
+                records from Proxyclick for your own archive, then start fresh
+                with SiteSafe. Set up your sites, add your hosts, and you’re
+                ready to go.
               </p>
             </div>
           </div>
 
           <p className="italic text-slate-300 mt-6">
             Ready to switch?{" "}
-            <Link
-              href="/signup"
-              className="text-sky-400 hover:text-sky-300 transition-colors"
-            >
+            <Link href="/signup" className="text-sky-400 hover:text-sky-300 transition-colors">
               Start your free 14‑day trial
             </Link>{" "}
             — no credit card, no sales call.
           </p>
         </div>
         <BlogPostJsonLd
-          title="Envoy Alternative: Why SiteSafe Is the Better Choice for Small Teams"
-          description="Looking for an Envoy alternative? SiteSafe offers mandatory safety acknowledgment, flat $49/mo pricing, no sales calls, and a 14‑day free trial."
-          datePublished="2026-06-13"
+          title="Proxyclick Alternative: Why SiteSafe Fits Small Teams Better"
+          description="Looking for a Proxyclick alternative? SiteSafe offers mandatory safety acknowledgment, flat $49/mo pricing, and no sales calls. Compare features and pricing side‑by‑side."
+          datePublished="2026-06-17"
           dateModified="2026-06-17"
-          slug="envoy-alternative"
+          slug="proxyclick-alternative"
         />
       </div>
       <p className="text-sm text-slate-400 italic mt-8 pt-6 border-t border-white/10 max-w-2xl mx-auto">
@@ -223,7 +197,7 @@ export default function BlogPost() {
         <Link href="/compare" className="text-sky-400 hover:underline">
           See the full side‑by‑side comparison
         </Link>{" "}
-        with SwipedOn, iLobby, and paper logs.
+        with Envoy, SwipedOn, and paper logs.
       </p>
     </div>
   );

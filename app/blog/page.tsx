@@ -1,3 +1,4 @@
+// app/blog/page.tsx
 import Link from "next/link";
 import type { Metadata } from "next";
 import { posts } from "@/data/blog-posts";

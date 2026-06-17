@@ -1,5 +1,29 @@
 export const posts = [
   {
+    slug: "proxyclick-alternative",
+    title: "Proxyclick Alternative: Why SiteSafe Fits Small Teams Better",
+    date: "2026-06-17",
+    lastModified: "2026-06-17",
+    excerpt:
+      "Proxyclick is powerful but complex and costly for smaller teams. SiteSafe offers flat $49/mo pricing, mandatory safety briefings, watchlist, and emergency features — all included.",
+  },
+  {
+    slug: "traction-guest-alternative",
+    title: "Traction Guest Alternative: Why SiteSafe Is a Better Fit for Smaller Teams",
+    date: "2026-06-17",
+    lastModified: "2026-06-17",
+    excerpt:
+      "Traction Guest is highly customizable but expensive and slow to deploy. SiteSafe gives small to mid‑sized teams the compliance and security features they need at a flat $49/mo.",
+  },
+  {
+    slug: "the-receptionist-alternative",
+    title: "The Receptionist Alternative: Why SiteSafe Fits Growing Teams Better",
+    date: "2026-06-17",
+    lastModified: "2026-06-17",
+    excerpt:
+      "The Receptionist works for a single office but gets expensive with more sites. SiteSafe offers unlimited sites, watchlist, lockdown, and document signing — all for $49/mo flat.",
+  },
+  {
     slug: "cold-email-failure",
     title: "I Sent 13 Cold Email Campaigns and Got 0 Sign‑ups",
     date: "2026-06-14",
@@ -11,7 +35,7 @@ export const posts = [
     slug: "envoy-alternative",
     title: "Envoy Alternative: Why SiteSafe Is the Better Choice for Small Teams",
     date: "2026-06-13",
-    lastModified: "2026-06-15",
+    lastModified: "2026-06-17",
     excerpt:
       "Envoy's mandatory demos, per‑site fees, and hidden pricing don't work for small teams. Here's how SiteSafe compares — flat $49/mo, no sales calls, and a mandatory safety acknowledgment Envoy can't match.",
   },
