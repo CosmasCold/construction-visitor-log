@@ -1,3 +1,4 @@
+// app/(checkin)/checkin/[siteSlug]/CheckinClient.tsx
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -78,6 +79,9 @@ export default function CheckinClient({
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Visitor list privacy
+  const [showVisitorList, setShowVisitorList] = useState(true);
+
   // Fetch hosts
   useEffect(() => {
     fetch(`/api/sites/${siteId}/hosts`)
@@ -94,13 +98,14 @@ export default function CheckinClient({
       .catch(() => setExpectedVisitors([]));
   }, [siteId]);
 
-  // Fetch site settings for document signing
+  // Fetch site settings for document signing and visitor list privacy
   useEffect(() => {
     fetch(`/api/sites/${siteId}`)
       .then((res) => res.json())
       .then((data) => {
         setDocumentSigningEnabled(data.documentSigningEnabled || false);
         setDocumentTemplateData(data.documentTemplateData || null);
+        setShowVisitorList(data.showVisitorListOnCheckin ?? true);
       })
       .catch(() => {});
   }, [siteId]);
@@ -521,9 +526,6 @@ export default function CheckinClient({
                       onClick={async () => {
                         const url = await uploadSignature(signatureDataUrl);
                         if (url) setSignatureUrl(url);
-                        setSignatureDataUrl(null);       // clear preview
-      setShowSignaturePad(false);      // hide pad
-      clearSignature();
                       }}
                       disabled={uploading}
                       className="text-xs bg-sky-500 hover:bg-sky-600 text-white px-3 py-1 rounded"
@@ -629,43 +631,45 @@ export default function CheckinClient({
           </form>
         </div>
 
-        {/* Active visitors */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-              <Users className="w-4 h-4" /> Currently on Site
-            </h2>
-            <span className="inline-flex items-center justify-center min-w-[24px] h-6 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold px-2">
-              {activeVisitors.length}
-            </span>
+        {/* Active visitors – conditionally shown */}
+        {showVisitorList && (
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+                <Users className="w-4 h-4" /> Currently on Site
+              </h2>
+              <span className="inline-flex items-center justify-center min-w-[24px] h-6 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold px-2">
+                {activeVisitors.length}
+              </span>
+            </div>
+            {activeVisitors.length === 0 ? (
+              <p className="text-sm text-slate-400 italic">No active visitors</p>
+            ) : (
+              <ul className="divide-y divide-white/5">
+                {activeVisitors.map((v) => (
+                  <li key={v.id} className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-white">{v.fullName}</p>
+                      <p className="text-xs text-slate-400">{v.company}</p>
+                      {v.hostName && <p className="text-xs text-sky-300">Host: {v.hostName}</p>}
+                      <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> In since {new Date(v.signedInAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => printBadgeForVisitor(v.fullName, v.company, v.hostName)} className="inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-2 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200" title="Print badge">
+                        <Printer className="w-3 h-3" />
+                      </button>
+                      <button onClick={() => handleSignOut(v.id)} className="inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200 active:scale-[0.98] gap-1">
+                        <LogOut className="w-3 h-3" /> Sign out
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          {activeVisitors.length === 0 ? (
-            <p className="text-sm text-slate-400 italic">No active visitors</p>
-          ) : (
-            <ul className="divide-y divide-white/5">
-              {activeVisitors.map((v) => (
-                <li key={v.id} className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium text-white">{v.fullName}</p>
-                    <p className="text-xs text-slate-400">{v.company}</p>
-                    {v.hostName && <p className="text-xs text-sky-300">Host: {v.hostName}</p>}
-                    <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> In since {new Date(v.signedInAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => printBadgeForVisitor(v.fullName, v.company, v.hostName)} className="inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-2 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200" title="Print badge">
-                      <Printer className="w-3 h-3" />
-                    </button>
-                    <button onClick={() => handleSignOut(v.id)} className="inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200 active:scale-[0.98] gap-1">
-                      <LogOut className="w-3 h-3" /> Sign out
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        )}
 
         <p className="text-center text-xs text-slate-500">
           Secure digital log – replaces paper forms

@@ -60,6 +60,7 @@ type Site = {
   documentSigningEnabled?: boolean;
   documentTemplateData?: string | null;
   lockdownEnabled?: boolean;
+  showVisitorListOnCheckin?: boolean;
 };
 
 type Host = {
@@ -141,6 +142,9 @@ export default function CompanyDashboardClient({
   const [docSigningEnabled, setDocSigningEnabled] = useState(false);
   const [docTemplateUploading, setDocTemplateUploading] = useState(false);
 
+  // Visitor list privacy toggle
+  const [showVisitorList, setShowVisitorList] = useState(true);
+
   // Auto‑refresh every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -211,6 +215,7 @@ export default function CompanyDashboardClient({
     setEditBriefing(site.safetyBriefingText);
     setEditQuestions(site.questions || []);
     setDocSigningEnabled(site.documentSigningEnabled || false);
+    setShowVisitorList(site.showVisitorListOnCheckin ?? true);
 
     fetch(`/api/sites/${site.id}/hosts`)
       .then((res) => res.json())
@@ -247,6 +252,7 @@ export default function CompanyDashboardClient({
         safetyBriefingText: editBriefing,
         questions: editQuestions,
         documentSigningEnabled: docSigningEnabled,
+        showVisitorListOnCheckin: showVisitorList,
       }),
     });
     if (res.ok) {
@@ -262,6 +268,7 @@ export default function CompanyDashboardClient({
                 safetyBriefingText: updated.safetyBriefingText,
                 questions: updated.questions,
                 documentSigningEnabled: updated.documentSigningEnabled,
+                showVisitorListOnCheckin: updated.showVisitorListOnCheckin,
               }
             : s
         )
@@ -971,6 +978,22 @@ export default function CompanyDashboardClient({
                           </div>
                         );
                       })()}
+                    </div>
+
+                    {/* Visitor list privacy toggle */}
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <h4 className="text-sm font-semibold text-white mb-2">
+                        Check‑in Page Privacy
+                      </h4>
+                      <label className="flex items-center gap-2 text-xs text-slate-200 mb-2">
+                        <input
+                          type="checkbox"
+                          checked={showVisitorList}
+                          onChange={(e) => setShowVisitorList(e.target.checked)}
+                          className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
+                        />
+                        Show visitor list on check‑in page (disabling hides it for privacy)
+                      </label>
                     </div>
 
                     <div className="flex gap-2">

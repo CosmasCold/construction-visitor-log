@@ -16,6 +16,7 @@ export async function GET(
       name: true,
       documentSigningEnabled: true,
       documentTemplateData: true,
+      showVisitorListOnCheckin: true,
     },
   });
 
@@ -59,6 +60,7 @@ export async function PUT(
     safetyBriefingText,
     questions,
     documentSigningEnabled,
+    showVisitorListOnCheckin,
   } = await req.json();
 
   const updated = await prisma.site.update({
@@ -70,6 +72,7 @@ export async function PUT(
       safetyBriefingText,
       questions,
       documentSigningEnabled,
+      showVisitorListOnCheckin,
     },
   });
 
