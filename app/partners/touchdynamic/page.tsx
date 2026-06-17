@@ -23,7 +23,7 @@ export default function TouchDynamicPartnerPage() {
             height={40}
             className="h-10 w-auto"
           />
-          <span className="text-slate-600 text-2xl">+</span>
+          <span className="text-slate-500 text-2xl">+</span>
           <Image
             src="/favicon.svg"
             alt="SiteSafe"
@@ -75,13 +75,13 @@ export default function TouchDynamicPartnerPage() {
           >
             Start free trial <ArrowRight className="ml-2 w-4 h-4" />
           </Link>
-          <p className="text-xs text-slate-500 mt-3">
+          <p className="text-xs text-slate-400 mt-3">
             No credit card required · Cancel anytime
           </p>
         </div>
 
         {/* Footer note */}
-        <p className="text-xs text-slate-600">
+        <p className="text-xs text-slate-500">
           Touch Dynamic and the Touch Dynamic logo are trademarks of Touch
           Dynamic, Inc. SiteSafe is an independent software provider.
         </p>
@@ -101,7 +101,7 @@ function BenefitCard({
     <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6 text-left">
       <CheckCircle2 className="w-5 h-5 text-sky-400 mb-2" />
       <h3 className="font-semibold text-white text-sm mb-1">{title}</h3>
-      <p className="text-xs text-slate-400 leading-relaxed">{desc}</p>
+      <p className="text-xs text-slate-300 leading-relaxed">{desc}</p>
     </div>
   );
 }
