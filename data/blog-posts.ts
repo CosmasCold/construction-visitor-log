@@ -1,5 +1,21 @@
 export const posts = [
   {
+    slug: "sine-alternative",
+    title: "Sine Alternative: Why SiteSafe Is a Better Fit for Compliance‑First Teams",
+    date: "2026-06-17",
+    lastModified: "2026-06-17",
+    excerpt:
+      "Sine works for basic check‑in but lacks mandatory safety acknowledgment, watchlist, and emergency features. SiteSafe includes all of that at a flat $49/mo with unlimited sites.",
+  },
+  {
+    slug: "pass-osha-audit-visitor-log",
+    title: "How to Pass an OSHA Audit with a Visitor Log",
+    date: "2026-06-17",
+    lastModified: "2026-06-17",
+    excerpt:
+      "What an OSHA inspector actually checks in your visitor log, the most common failures, and how a digital system makes you audit‑ready in minutes.",
+  },
+  {
     slug: "proxyclick-alternative",
     title: "Proxyclick Alternative: Why SiteSafe Fits Small Teams Better",
     date: "2026-06-17",
@@ -67,9 +83,9 @@ export const posts = [
     slug: "what-inspectors-look-for-in-visitor-log",
     title: "What Inspectors Look for in a Visitor Log",
     date: "2026-06-13",
-    lastModified: "2026-06-15",
+    lastModified: "2026-06-17",
     excerpt:
-      "From mandatory safety acknowledgments to time‑stamped records, here's exactly what OSHA and safety inspectors check when they review your visitor log.",
+      "From mandatory safety acknowledgments to time‑stamped records, here's exactly what OSHA and safety inspectors check when they review your visitor log. Includes a free 10‑point self‑audit.",
   },
   {
     slug: "ultimate-guide-modern-visitor-management",
@@ -121,10 +137,10 @@ export const posts = [
   },
   {
     slug: "paper-sign-in-sheets-safety-risk",
-    title: "Why Paper Sign‑In Sheets Are a Safety Risk",
+    title: "Why Paper Visitor Logs Fail Audits – and What to Use Instead",
     date: "2026-06-01",
-    lastModified: "2026-06-15",
+    lastModified: "2026-06-17",
     excerpt:
-      "Paper logs get lost, ruined, and are illegible. Here is why a digital check‑in is safer.",
+      "Paper visitor logs fail safety audits for six specific reasons. Learn why paper sign‑in sheets are a risk and how a digital check‑in system solves every one.",
   },
 ];
