@@ -7,6 +7,7 @@ import {
   FileText,
   ArrowRight,
 } from "lucide-react";
+import SecurityVideo from "./SecurityVideo";
 
 export const metadata: Metadata = {
   title: "Security Features – SiteSafe",
@@ -56,10 +57,15 @@ export default function SecurityFeaturesPage() {
           Most visitor logs can’t answer a simple question:{" "}
           <em>“Who is on site right now — and what can you do about it?”</em>
         </p>
-        <p className="text-sm text-slate-400 max-w-xl mx-auto mb-12">
+        <p className="text-sm text-slate-400 max-w-xl mx-auto mb-8">
           SiteSafe answers that question and gives you the tools to act on it —
           whether it’s a drill, a real emergency, or an unwanted visitor.
         </p>
+
+        {/* Video */}
+        <div className="mb-12">
+          <SecurityVideo />
+        </div>
 
         {/* Feature cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
