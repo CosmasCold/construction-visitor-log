@@ -480,67 +480,72 @@ export default function CheckinClient({
         )}
 
         {/* Document signing */}
-        {documentSigningEnabled && (
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
-            <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-sky-400" /> Document Signing
-            </h3>
-            {documentTemplateData && (
-              <a
-                href={documentTemplateData}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sky-400 hover:text-sky-300 text-xs underline mb-3 block"
-              >
-                View the document
-              </a>
-            )}
+{documentSigningEnabled && (
+  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+    <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+      <FileText className="w-4 h-4 text-sky-400" /> Document Signing
+    </h3>
+    {documentTemplateData && (
+      <a
+        href={documentTemplateData}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-sky-400 hover:text-sky-300 text-xs underline mb-3 block"
+      >
+        View the document
+      </a>
+    )}
+    <button
+      onClick={() => setShowSignaturePad(!showSignaturePad)}
+      className="text-sky-400 text-xs hover:text-sky-300 mb-2"
+    >
+      {showSignaturePad ? "Hide signature pad" : "Sign the document"}
+    </button>
+    {showSignaturePad && (
+      <div className="space-y-2">
+        <canvas
+          ref={canvasRef}
+          width={300}
+          height={100}
+          className="border border-white/10 bg-white rounded"
+          onMouseDown={startDrawing}
+          onMouseMove={draw}
+          onMouseUp={stopDrawing}
+          onMouseLeave={stopDrawing}
+          onTouchStart={startDrawing}
+          onTouchMove={draw}
+          onTouchEnd={stopDrawing}
+        />
+        <button onClick={clearSignature} className="text-xs text-slate-400 hover:text-white">
+          Clear
+        </button>
+        {signatureDataUrl && (
+          <div className="flex gap-2 items-center">
+            <img src={signatureDataUrl} alt="Preview" className="h-8 bg-white rounded" />
             <button
-              onClick={() => setShowSignaturePad(!showSignaturePad)}
-              className="text-sky-400 text-xs hover:text-sky-300 mb-2"
+              onClick={async () => {
+                const url = await uploadSignature(signatureDataUrl);
+                if (url) {
+                  setSignatureUrl(url);
+                  setSignatureDataUrl(null);   // clear preview
+                  setShowSignaturePad(false);  // hide pad
+                  clearSignature();            // wipe canvas
+                }
+              }}
+              disabled={uploading}
+              className="text-xs bg-sky-500 hover:bg-sky-600 text-white px-3 py-1 rounded"
             >
-              {showSignaturePad ? "Hide signature pad" : "Sign the document"}
+              {uploading ? "Uploading…" : "Accept signature"}
             </button>
-            {showSignaturePad && (
-              <div className="space-y-2">
-                <canvas
-                  ref={canvasRef}
-                  width={300}
-                  height={100}
-                  className="border border-white/10 bg-white rounded"
-                  onMouseDown={startDrawing}
-                  onMouseMove={draw}
-                  onMouseUp={stopDrawing}
-                  onMouseLeave={stopDrawing}
-                  onTouchStart={startDrawing}
-                  onTouchMove={draw}
-                  onTouchEnd={stopDrawing}
-                />
-                <button onClick={clearSignature} className="text-xs text-slate-400 hover:text-white">
-                  Clear
-                </button>
-                {signatureDataUrl && (
-                  <div className="flex gap-2 items-center">
-                    <img src={signatureDataUrl} alt="Preview" className="h-8 bg-white rounded" />
-                    <button
-                      onClick={async () => {
-                        const url = await uploadSignature(signatureDataUrl);
-                        if (url) setSignatureUrl(url);
-                      }}
-                      disabled={uploading}
-                      className="text-xs bg-sky-500 hover:bg-sky-600 text-white px-3 py-1 rounded"
-                    >
-                      {uploading ? "Uploading…" : "Accept signature"}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-            {signatureUrl && (
-              <p className="text-emerald-400 text-xs mt-2">Signature captured</p>
-            )}
           </div>
         )}
+      </div>
+    )}
+    {signatureUrl && (
+      <p className="text-emerald-400 text-xs mt-2">Signature captured</p>
+    )}
+  </div>
+)}
 
         {/* Expected visitors (quick sign‑in) */}
         {expectedVisitors.length > 0 && (
