@@ -12,7 +12,7 @@ export async function GET() {
     where: { email: session.user.email },
     include: {
       company: {
-        select: { id: true, webhookUrl: true },
+        select: { id: true, name: true, webhookUrl: true },
       },
     },
   });
@@ -20,6 +20,7 @@ export async function GET() {
     return NextResponse.json({ error: "No company" }, { status: 400 });
 
   return NextResponse.json({
+    name: user.company.name,
     webhookUrl: user.company.webhookUrl || "",
   });
 }
@@ -36,11 +37,14 @@ export async function PUT(req: NextRequest) {
   if (!user?.company)
     return NextResponse.json({ error: "No company" }, { status: 400 });
 
-  const { webhookUrl } = await req.json();
+  const { webhookUrl, name } = await req.json();
 
   await prisma.company.update({
     where: { id: user.company.id },
-    data: { webhookUrl: webhookUrl ?? undefined },
+    data: {
+      webhookUrl: webhookUrl ?? undefined,
+      name: name ?? undefined,
+    },
   });
 
   return NextResponse.json({ success: true });
