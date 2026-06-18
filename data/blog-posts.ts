@@ -1,5 +1,13 @@
 export const posts = [
   {
+  slug: "visitor-management-for-schools",
+  title: "Visitor Management for Schools: What Principals Need to Know",
+  date: "2026-06-18",
+  lastModified: "2026-06-18",
+  excerpt:
+    "A practical guide for K‑12 principals on modern visitor management — from photo capture and emergency evacuation lists to watchlist screening and flat pricing.",
+},
+  {
     slug: "sine-alternative",
     title: "Sine Alternative: Why SiteSafe Is a Better Fit for Compliance‑First Teams",
     date: "2026-06-17",

@@ -28,6 +28,7 @@ export function GET() {
     "/blog/traction-guest-alternative",
     "/blog/the-receptionist-alternative",
     "/blog/sine-alternative",
+    "/blog/visitor-management-for-schools",
     "/changelog",
     "/checklist",
     "/compare",
