@@ -56,7 +56,7 @@ export default function SignupClient() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4">
-      <div className="w-full max-w-md bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-white">
+      <div className="w-full max-w-md bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-8 text-white">
         <h1 className="text-2xl font-bold tracking-tight text-center mb-2">
           Start your free trial
         </h1>
