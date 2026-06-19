@@ -7,6 +7,7 @@ import ReviewBadges from "@/components/ReviewBadges";
 import ScreenshotGallery from "@/components/ScreenshotGallery";
 import TrackedCtaLink from "@/components/TrackedCtaLink";
 import HeroVideo from "@/components/HeroVideo";
+import FadeInSection from "@/components/FadeInSection";
 import {
   QrCode,
   ShieldCheck,
@@ -111,23 +112,28 @@ export default function LandingPage() {
       <div className="max-w-6xl mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8 text-center">
         <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
-            <span className="text-sky-400">SiteSafe</span>
-            <span className="block mt-2 text-white">Compliance‑ready visitor management</span>
-            <span className="block mt-2 text-lg sm:text-xl text-slate-300 font-medium">
+            <span className="inline-block animate-fade-in-up delay-100">
+              <span className="text-sky-400">SiteSafe</span>
+            </span>
+            <span className="block mt-2 text-white animate-fade-in-up delay-300">
+              Compliance‑ready visitor management
+            </span>
+            <span className="block mt-2 text-lg sm:text-xl text-slate-300 font-medium animate-fade-in-up delay-500">
               for mid‑sized workplaces with multiple locations
             </span>
           </h1>
-          <p className="mt-4 text-base text-slate-400 max-w-2xl mx-auto">
-            QR check‑in. Mandatory safety briefings. Watchlist screening.
-            Emergency evacuation lists. Lockdown mode. All included in a flat
-            $49/month plan with up to 20 sites. No per‑site fees. No sales calls.
-          </p>
-          <p className="mt-3 inline-flex items-center gap-1.5 bg-sky-500/10 border border-sky-400/30 rounded-full px-4 py-1.5 text-sm text-sky-300 font-semibold">
-            <ShieldCheck className="w-4 h-4" />
-            14‑day free trial – no credit card required
-          </p>
-
-          <div className="mt-8 flex flex-col items-center gap-4">
+          <div className="animate-fade-in-up delay-700">
+            <p className="mt-4 text-base text-slate-400 max-w-2xl mx-auto">
+              QR check‑in. Mandatory safety briefings. Watchlist screening.
+              Emergency evacuation lists. Lockdown mode. All included in a flat
+              $49/month plan with up to 20 sites. No per‑site fees. No sales calls.
+            </p>
+            <p className="mt-3 inline-flex items-center gap-1.5 bg-sky-500/10 border border-sky-400/30 rounded-full px-4 py-1.5 text-sm text-sky-300 font-semibold">
+              <ShieldCheck className="w-4 h-4" />
+              14‑day free trial – no credit card required
+            </p>
+          </div>
+          <div className="mt-8 flex flex-col items-center gap-4 animate-fade-in-up delay-900">
             <TrackedCtaLink
               href="/signup"
               className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
@@ -144,7 +150,6 @@ export default function LandingPage() {
               </Link>
             </div>
           </div>
-
           <HeroVideo />
         </div>
       </div>
@@ -169,20 +174,20 @@ export default function LandingPage() {
       </div>
 
       {/* Problem section – multi‑site pain point */}
-<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
-    <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-      A facility manager with 12 locations had no single view of who was on site
-      at any given time. Contractors signed in at one location and signed out at
-      another. Records were scattered across paper logs and spreadsheets.
-    </h2>
-    <p className="mt-4 text-lg text-sky-400 font-semibold">
-      That’s a compliance nightmare — and it doesn’t happen with SiteSafe.
-    </p>
-  </div>
-</div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            A facility manager with 12 locations had no single view of who was on site
+            at any given time. Contractors signed in at one location and signed out at
+            another. Records were scattered across paper logs and spreadsheets.
+          </h2>
+          <p className="mt-4 text-lg text-sky-400 font-semibold">
+            That’s a compliance nightmare — and it doesn’t happen with SiteSafe.
+          </p>
+        </div>
+      </div>
 
-      {/* Features grid */}
+      {/* Features grid – with scroll‑triggered FadeInSection */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get, for up to 20 sites</h2>
 
@@ -191,15 +196,17 @@ export default function LandingPage() {
             <h3 className="text-lg font-semibold text-sky-300 mb-4 text-center sm:text-left">{group.category}</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {group.items.map((f, idx) => (
-                <div key={idx} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300">
-                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
-                    <f.icon className="w-5 h-5 text-sky-300" />
+                <FadeInSection key={idx} delay={idx * 100}>
+                  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+                      <f.icon className="w-5 h-5 text-sky-300" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white text-sm">{f.title}</h4>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-white text-sm">{f.title}</h4>
-                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">{f.desc}</p>
-                  </div>
-                </div>
+                </FadeInSection>
               ))}
             </div>
           </div>
@@ -243,21 +250,21 @@ export default function LandingPage() {
       </div>
 
       {/* Testimonial */}
-<div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
-    <blockquote className="text-lg text-slate-200 italic leading-relaxed">
-      &ldquo;We have 8 locations and used to rely on paper logs at each site.
-      SiteSafe gives me a single dashboard across all of them. I can see
-      who&apos;s on site at any location in seconds.&rdquo;
-    </blockquote>
-    <p className="mt-4 text-sm text-slate-400">
-      – Marcus, Director of Facilities – TX
-    </p>
-  </div>
-  <p className="text-center text-sm text-slate-400 mt-4">
-    Site managers choose SiteSafe for its simple pricing and real‑time visibility.
-  </p>
-</div>
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
+          <blockquote className="text-lg text-slate-200 italic leading-relaxed">
+            &ldquo;We have 8 locations and used to rely on paper logs at each site.
+            SiteSafe gives me a single dashboard across all of them. I can see
+            who&apos;s on site at any location in seconds.&rdquo;
+          </blockquote>
+          <p className="mt-4 text-sm text-slate-400">
+            – Marcus, Director of Facilities – TX
+          </p>
+        </div>
+        <p className="text-center text-sm text-slate-400 mt-4">
+          Site managers choose SiteSafe for its simple pricing and real‑time visibility.
+        </p>
+      </div>
 
       {/* Free Tools */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
