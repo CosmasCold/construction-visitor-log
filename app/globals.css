@@ -25,9 +25,16 @@ html {
 }
 
 body {
-  background-color: #0f172a;   /* fallback color */
-  position: relative;
-  min-height: 100vh;
+  background-color: #0b1120;   /* deep premium fallback */
+  background-image: linear-gradient(
+      135deg,
+      rgba(15, 23, 42, 0.55),
+      rgba(30, 27, 75, 0.65)
+    ),
+    url('/hero-bg.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 /* Blurred background image layer */
