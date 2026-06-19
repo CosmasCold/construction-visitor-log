@@ -30,25 +30,6 @@ body {
   min-height: 100vh;
 }
 
-/* Blurred background layer – sits behind everything */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  display: block;
-  width: 100vw;
-  height: 100vh;
-  background-image: linear-gradient(
-      rgba(15, 23, 42, 0.55),
-      rgba(15, 23, 42, 0.55)
-    ),
-    url('/hero-bg.webp');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  filter: blur(6px);
-}
 
 /* Subtle grain overlay – pure CSS noise texture */
 body::after {
@@ -256,4 +237,24 @@ body::after {
 }
 .photo-flash {
   animation: flash 0.3s ease-out;
+}
+
+/* Blurred background layer – moved to html for reliable viewport coverage */
+html::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  background-image: linear-gradient(
+      rgba(15, 23, 42, 0.55),
+      rgba(15, 23, 42, 0.55)
+    ),
+    url('/hero-bg.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  filter: blur(6px);
 }
