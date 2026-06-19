@@ -14,8 +14,6 @@ import {
   Camera,
   XCircle,
   FileText,
-  CheckCircle2,
-  ArrowRight,
 } from "lucide-react";
 
 type ActiveVisitor = {
@@ -149,7 +147,6 @@ export default function CheckinClient({
       const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
       stream.getTracks().forEach((track) => track.stop());
       video.remove();
-      // flash animation
       return dataUrl;
     } catch (err) {
       alert("Could not access camera: " + (err as Error).message);
@@ -272,9 +269,9 @@ export default function CheckinClient({
     const body: Record<string, unknown> = {
       fullName,
       company,
-      phone: phone || null,
-      email: email || null,
-      hostName: selectedHostId ? undefined : hostName || null,
+      phone: phone || undefined,
+      email: email || undefined,
+      hostName: selectedHostId ? undefined : hostName || undefined,
       hostId: selectedHostId || undefined,
       safetyAcknowledged,
       siteId,
@@ -421,7 +418,7 @@ export default function CheckinClient({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 px-4>
+    <div className="min-h-screen flex items-center justify-center py-10 px-4">
       <div className="w-full max-w-md space-y-6 animate-fade-in-up">
         {/* Header + QR */}
         <div className="text-center">
@@ -487,7 +484,7 @@ export default function CheckinClient({
 
         {/* Pre‑screening questions */}
         {questions.length > 0 && (
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow bg-white/[0.10] aurora-bg">
+          <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
             <h3 className="text-sm font-semibold text-white mb-3">Pre‑screening questions</h3>
             {questions.map((q, idx) => (
               <label key={idx} className="flex items-center gap-2 text-sm text-slate-200 mb-2">
@@ -507,13 +504,13 @@ export default function CheckinClient({
 
         {/* Document signing */}
         {documentSigningEnabled && (
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow bg-white/[0.10] aurora-bg">
+          <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
             <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
               <FileText className="w-4 h-4 text-sky-400" /> Document Signing
             </h3>
             {documentTemplateData && (
               <a
-                href={documentTemplateData}
+                href={documentTemplateData ?? "#"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sky-400 hover:text-sky-300 text-xs underline mb-3 block"
@@ -547,10 +544,10 @@ export default function CheckinClient({
                 </button>
                 {signatureDataUrl && (
                   <div className="flex gap-2 items-center">
-                    <img src={signatureDataUrl} alt="Preview" className="h-8 bg-white rounded" />
+                    <img src={signatureDataUrl ?? ""} alt="Preview" className="h-8 bg-white rounded" />
                     <button
                       onClick={async () => {
-                        const url = await uploadSignature(signatureDataUrl);
+                        const url = await uploadSignature(signatureDataUrl!);
                         if (url) setSignatureUrl(url);
                       }}
                       disabled={uploading}
@@ -570,7 +567,7 @@ export default function CheckinClient({
 
         {/* Expected visitors (quick sign‑in) */}
         {expectedVisitors.length > 0 && (
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow bg-white/[0.10] aurora-bg">
+          <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 mb-3">
               Expected today
             </h2>
@@ -594,9 +591,9 @@ export default function CheckinClient({
         )}
 
         {/* Sign‑in form */}
-        <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow bg-white/[0.10] aurora-bg">
+        <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
           {errorMessage && (
-            <div className="mb-4 bg-rose-500/10 backdrop-blur-lg rounded-xl border border-rose-400/30 p-4 flex items-start gap-3">
+            <div className="mb-4 bg-rose-500/10 backdrop-blur-md rounded-xl border border-rose-400/30 p-4 flex items-start gap-3">
               <XCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-rose-200">{errorMessage}</p>
             </div>
@@ -697,7 +694,7 @@ export default function CheckinClient({
               {photoUrl ? (
                 <>
                   <div className="relative">
-                    <img src={photoUrl} alt="Visitor" className="w-24 h-24 rounded-lg object-cover photo-flash" />
+                    <img src={photoUrl ?? ""} alt="Visitor" className="w-24 h-24 rounded-lg object-cover photo-flash" />
                     <button
                       type="button"
                       onClick={() => setPhotoUrl(null)}
@@ -755,7 +752,7 @@ export default function CheckinClient({
 
         {/* Active visitors – conditionally shown */}
         {showVisitorList && (
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow bg-white/[0.10] aurora-bg">
+          <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                 <Users className="w-4 h-4" /> Currently on Site
