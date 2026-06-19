@@ -3,13 +3,13 @@ import Image from "next/image";
 
 export default function HeroVideo() {
   return (
-    <div className="mt-8 max-w-xl mx-auto">
+    <div className="mt-8 max-w-sm mx-auto">
       <Image
         src="/checkin.png"
         alt="SiteSafe visitor check‑in screen"
-        width={800}
-        height={450}
-        className="rounded-xl border border-white/10 w-full h-auto"
+        width={600}
+        height={338}
+        className="rounded-xl border border-white/10 w-full h-auto max-h-64 object-contain"
         priority
       />
       <p className="text-xs text-slate-500 mt-2 text-center">

@@ -168,18 +168,19 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Problem section */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-            Last month, a site manager lost their visitor log the day before a safety audit.
-            They spent four hours recreating it from memory.
-            <span className="block mt-2 text-lg text-sky-400 font-semibold">
-              That doesn&apos;t happen with SiteSafe.
-            </span>
-          </h2>
-        </div>
-      </div>
+      {/* Problem section – multi‑site pain point */}
+<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
+    <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+      A facility manager with 12 locations had no single view of who was on site
+      at any given time. Contractors signed in at one location and signed out at
+      another. Records were scattered across paper logs and spreadsheets.
+    </h2>
+    <p className="mt-4 text-lg text-sky-400 font-semibold">
+      That’s a compliance nightmare — and it doesn’t happen with SiteSafe.
+    </p>
+  </div>
+</div>
 
       {/* Features grid */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
@@ -242,15 +243,21 @@ export default function LandingPage() {
       </div>
 
       {/* Testimonial */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
-          <blockquote className="text-lg text-slate-200 italic leading-relaxed">
-            &ldquo;I used to lose paper visitor logs all the time. With SiteSafe, I finally have a system I can trust – and I can pull up an audit report in seconds.&rdquo;
-          </blockquote>
-          <p className="mt-4 text-sm text-slate-400">– Matteus, Facility Manager – NY</p>
-        </div>
-        <p className="text-center text-sm text-slate-400 mt-4">Join 500+ site managers already using SiteSafe.</p>
-      </div>
+<div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
+    <blockquote className="text-lg text-slate-200 italic leading-relaxed">
+      &ldquo;We have 8 locations and used to rely on paper logs at each site.
+      SiteSafe gives me a single dashboard across all of them. I can see
+      who&apos;s on site at any location in seconds.&rdquo;
+    </blockquote>
+    <p className="mt-4 text-sm text-slate-400">
+      – Marcus, Director of Facilities – TX
+    </p>
+  </div>
+  <p className="text-center text-sm text-slate-400 mt-4">
+    Site managers choose SiteSafe for its simple pricing and real‑time visibility.
+  </p>
+</div>
 
       {/* Free Tools */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
