@@ -366,7 +366,7 @@ export default function LandingPage() {
       <div className="section-divider max-w-6xl mx-auto mb-16" />
 
       {/* Footer CTA */}
-      <div className="bg-white/[0.03] backdrop-blur-sm py-16 border-t border-white/5">
+      <div className="bg-white/[0.03] backdrop-blur-sm py-16 border-t border-white/5 accent-glow aurora-bg">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">Start your 14‑day free trial</h2>
           <p className="mt-3 text-lg text-slate-400">No credit card. No sales call. Trial starts instantly.</p>
