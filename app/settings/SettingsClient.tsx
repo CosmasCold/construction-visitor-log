@@ -1,3 +1,4 @@
+// app/settings/SettingsClient.tsx
 "use client";
 
 import { useState } from "react";
@@ -64,7 +65,13 @@ export default function SettingsClient({
   const [slackTesting, setSlackTesting] = useState(false);
   const [slackSaved, setSlackSaved] = useState(false);
 
-  // Handlers (same as before, just adding name save)
+  // Change password
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordSaving, setPasswordSaving] = useState(false);
+
+  // Handlers
   async function handleSubscribe() {
     setLoading(true);
     const res = await fetch("/api/stripe/checkout", { method: "POST" });
@@ -152,6 +159,30 @@ export default function SettingsClient({
     setNameLoading(false);
   }
 
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      alert("New passwords don't match.");
+      return;
+    }
+    setPasswordSaving(true);
+    const res = await fetch("/api/auth/change-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+    if (res.ok) {
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      alert("Password changed successfully.");
+    } else {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || "Failed to change password.");
+    }
+    setPasswordSaving(false);
+  }
+
   const showManageBilling = hasStripeCustomer && hasSubscription;
 
   return (
@@ -168,7 +199,7 @@ export default function SettingsClient({
         </h1>
 
         {/* Company info card – now with editable name */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 space-y-4">
+        <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 space-y-4 accent-glow aurora-bg">
           <h2 className="text-lg font-semibold tracking-tight text-white">Company</h2>
           <div>
             <p className="text-xs font-medium uppercase tracking-wider text-slate-400 flex items-center gap-1">
@@ -221,7 +252,7 @@ export default function SettingsClient({
         </div>
 
         {/* Billing card */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+        <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
           <h2 className="text-lg font-semibold tracking-tight text-white mb-2">Billing</h2>
           {showManageBilling ? (
             <>
@@ -255,7 +286,7 @@ export default function SettingsClient({
         </div>
 
         {/* Slack card */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 space-y-4">
+        <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 space-y-4 accent-glow aurora-bg">
           <h2 className="text-lg font-semibold tracking-tight text-white flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-sky-400" /> Slack Notifications
           </h2>
@@ -290,7 +321,7 @@ export default function SettingsClient({
         </div>
 
         {/* API Key card */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 space-y-4">
+        <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 space-y-4 accent-glow aurora-bg">
           <h2 className="text-lg font-semibold tracking-tight text-white flex items-center gap-2">
             <Key className="w-5 h-5 text-sky-400" /> API Access
           </h2>
@@ -325,6 +356,48 @@ export default function SettingsClient({
               <Key className="w-4 h-4" /> {keyLoading ? "Generating…" : "Generate API key"}
             </button>
           )}
+        </div>
+
+        {/* Change Password card */}
+        <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 space-y-4 accent-glow aurora-bg">
+          <h2 className="text-lg font-semibold tracking-tight text-white flex items-center gap-2">
+            <Key className="w-5 h-5 text-sky-400" /> Change Password
+          </h2>
+          <form onSubmit={handleChangePassword} className="space-y-3">
+            <input
+              type="password"
+              placeholder="Current password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              required
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
+            />
+            <input
+              type="password"
+              placeholder="New password (min 8 characters)"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              minLength={8}
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
+            />
+            <input
+              type="password"
+              placeholder="Confirm new password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={8}
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
+            />
+            <button
+              type="submit"
+              disabled={passwordSaving}
+              className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white font-medium rounded-xl px-4 py-2 text-sm transition-colors"
+            >
+              {passwordSaving ? "Changing…" : "Update password"}
+            </button>
+          </form>
         </div>
       </div>
     </div>

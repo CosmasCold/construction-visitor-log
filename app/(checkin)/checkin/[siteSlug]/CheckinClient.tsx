@@ -434,17 +434,22 @@ export default function CheckinClient({
             {showQr ? "Hide QR" : "Scan QR to open on your phone"}
           </button>
           {showQr && (
-            <div className="mt-3 flex justify-center">
-              <Image
-                src={`/api/sites/${siteId}/qr`}
-                alt="QR code for check‑in"
-                width={192}
-                height={192}
-                unoptimized
-                className="bg-white p-2 rounded-xl shadow-lg"
-              />
-            </div>
-          )}
+  <div className="mt-3 flex justify-center">
+    <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 p-4 accent-glow aurora-bg">
+      <Image
+        src={`/api/sites/${siteId}/qr`}
+        alt="QR code for check‑in"
+        width={192}
+        height={192}
+        unoptimized
+        className="rounded-xl"
+      />
+      <p className="text-xs text-slate-300 text-center mt-2">
+        Scan to check in
+      </p>
+    </div>
+  </div>
+)}
         </div>
 
         {/* Progress indicator */}

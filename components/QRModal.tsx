@@ -1,52 +1,44 @@
 // components/QRModal.tsx
-"use client";
-
 import Image from "next/image";
+import { X } from "lucide-react";
 
-interface QRModalProps {
+export default function QRModal({
+  open,
+  siteName,
+  qrUrl,
+  onClose,
+}: {
   open: boolean;
   siteName: string;
-  qrUrl: string;    // the URL to the QR image (e.g., /api/sites/[siteId]/qr)
+  qrUrl: string;
   onClose: () => void;
-}
-
-export default function QRModal({ open, siteName, qrUrl, onClose }: QRModalProps) {
+}) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-white">{siteName} – QR Code</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-white text-xl leading-none">&times;</button>
-        </div>
-        <div className="bg-white rounded-xl p-4 flex justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-2xl p-8 max-w-sm w-full text-center accent-glow aurora-bg relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        <h3 className="text-lg font-semibold text-white mb-4">{siteName}</h3>
+        <div className="bg-white p-4 rounded-xl inline-block mb-3">
           <Image
             src={qrUrl}
             alt={`QR code for ${siteName}`}
-            width={250}
-            height={250}
+            width={200}
+            height={200}
             unoptimized
-            className="w-full max-w-[250px] h-auto"
+            className="rounded-lg"
           />
         </div>
-        <p className="text-xs text-slate-400 mt-4 text-center">
-          Scan this code with any phone camera to go directly to the check‑in page.
+        <p className="text-sm text-slate-300">Scan to check in</p>
+        <p className="text-xs text-slate-400 mt-1">
+          Visitors can scan this QR code with their phone camera
         </p>
-        <div className="mt-4 flex justify-center">
-          <button
-            onClick={() => {
-              // Copy the check‑in URL to clipboard
-              const checkinUrl = qrUrl.replace(/\/api\/sites\/[^/]+\/qr/, (match) =>
-                match.replace(/\/api\/sites\/([^/]+)\/qr/, '/checkin/$1')
-              );
-              navigator.clipboard.writeText(checkinUrl).then(() => alert("Check‑in URL copied!"));
-            }}
-            className="text-xs text-sky-400 hover:text-sky-300"
-          >
-            Copy check‑in URL
-          </button>
-        </div>
       </div>
     </div>
   );
