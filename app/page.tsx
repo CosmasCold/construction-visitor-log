@@ -110,7 +110,7 @@ export default function LandingPage() {
     <div className="min-h-screen text-white">
       {/* Hero */}
       <div className="max-w-6xl mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8 text-center">
-        <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14 gradient-border aurora-bg">
+        <div className="bg-white/[0.10] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14 gradient-border aurora-bg">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
             <span className="inline-block animate-fade-in-up delay-100">
               <span className="text-sky-400">SiteSafe</span>
@@ -175,7 +175,7 @@ export default function LandingPage() {
 
       {/* Problem section – multi‑site pain point */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center accent-glow aurora-bg">
+        <div className="bg-white/[0.12] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center accent-glow aurora-bg">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
             A facility manager with 12 locations had no single view of who was on site
             at any given time. Contractors signed in at one location and signed out at
@@ -214,7 +214,7 @@ export default function LandingPage() {
 
         {/* Pricing callout */}
         <div className="mt-8 flex justify-center">
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start max-w-md w-full hover:bg-white/[0.08] transition-all duration-300 accent-glow aurora-bg">
+          <div className="bg-white/[0.12] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start max-w-md w-full hover:bg-white/[0.08] transition-all duration-300 accent-glow aurora-bg">
             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
               <pricingFeature.icon className="w-5 h-5 text-emerald-300" />
             </div>
@@ -244,7 +244,7 @@ export default function LandingPage() {
             {industries.map((industry) => (
               <div
                 key={industry.name}
-                className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised px-6 py-3 text-sm text-slate-200 font-medium flex items-center gap-2 hover:bg-white/[0.08] hover:-translate-y-0.5 transition-all duration-300"
+                className="bg-white/[0.12] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised px-6 py-3 text-sm text-slate-200 font-medium flex items-center gap-2 hover:bg-white/[0.08] hover:-translate-y-0.5 transition-all duration-300"
               >
                 <industry.icon className="w-4 h-4 text-sky-400 flex-shrink-0" />
                 {industry.name}
@@ -257,7 +257,7 @@ export default function LandingPage() {
       {/* Testimonial */}
       <FadeInSection>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center relative accent-glow aurora-bg">
+          <div className="bg-white/[0.12] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center relative accent-glow aurora-bg">
             <span className="absolute -top-4 left-4 text-6xl text-sky-400/20 font-serif leading-none select-none" aria-hidden="true">
               &ldquo;
             </span>
@@ -280,7 +280,7 @@ export default function LandingPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <h2 className="text-2xl font-bold text-white text-center mb-8">Free tools to get started</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-3xl mx-auto">
-          <Link href="/audit" className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group">
+          <Link href="/audit" className="bg-white/[0.12] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group">
             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5 text-sky-300" />
             </div>
@@ -290,7 +290,7 @@ export default function LandingPage() {
               <span className="text-sky-400 text-xs mt-2 inline-flex items-center gap-1 group-hover:underline">Take the audit <ArrowRight className="w-3 h-3" /></span>
             </div>
           </Link>
-          <Link href="/roi-calculator" className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group">
+          <Link href="/roi-calculator" className="bg-white/[0.12] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 hover:bg-white/[0.08] transition-all duration-300 flex gap-4 items-start group">
             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
               <DollarSign className="w-5 h-5 text-emerald-300" />
             </div>
@@ -311,7 +311,7 @@ export default function LandingPage() {
 
       {/* Comparison card */}
       <div className="max-w-2xl mx-auto mb-12 px-4">
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
+        <div className="bg-white/[0.12] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-5 text-center">
           <p className="text-sm text-slate-300">
             See how SiteSafe compares to Envoy, SwipedOn, and paper logs{" "}
             <Link href="/compare" className="text-sky-400 hover:underline transition-colors font-medium">side‑by‑side</Link>.
@@ -321,7 +321,7 @@ export default function LandingPage() {
 
       {/* Security card */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+        <div className="bg-white/[0.12] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
           <h3 className="text-lg font-semibold text-white text-center mb-4">Security you can trust</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center text-sm text-slate-300">
             <div className="flex flex-col items-center gap-1">
@@ -355,7 +355,7 @@ export default function LandingPage() {
       {/* Developer / API quick mention */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex justify-center">
-          <Link href="/docs" className="inline-flex items-center gap-2 bg-white/[0.04] backdrop-blur-md rounded-xl border border-white/5 px-4 py-3 text-sm text-slate-400 hover:text-white transition-colors duration-150">
+          <Link href="/docs" className="inline-flex items-center gap-2 bg-white/[0.10] backdrop-blur-md rounded-xl border border-white/5 px-4 py-3 text-sm text-slate-400 hover:text-white transition-colors duration-150">
             <Code className="w-4 h-4 text-sky-400" />
             Developers: REST API available – integrate SiteSafe with your own tools
           </Link>
@@ -366,7 +366,7 @@ export default function LandingPage() {
       <div className="section-divider max-w-6xl mx-auto mb-16" />
 
       {/* Footer CTA */}
-      <div className="bg-white/[0.03] backdrop-blur-sm py-16 border-t border-white/5 accent-glow aurora-bg">
+      <div className="bg-white/[0.08] backdrop-blur-sm py-16 border-t border-white/5 accent-glow aurora-bg">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">Start your 14‑day free trial</h2>
           <p className="mt-3 text-lg text-slate-400">No credit card. No sales call. Trial starts instantly.</p>
