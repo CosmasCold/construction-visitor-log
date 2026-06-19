@@ -70,6 +70,7 @@ export default function SettingsClient({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   // Handlers
   async function handleSubscribe() {
@@ -161,8 +162,9 @@ export default function SettingsClient({
 
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();
+    setPasswordError("");
     if (newPassword !== confirmPassword) {
-      alert("New passwords don't match.");
+      setPasswordError("New passwords don't match.");
       return;
     }
     setPasswordSaving(true);
@@ -171,14 +173,15 @@ export default function SettingsClient({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ currentPassword, newPassword }),
     });
+    const data = await res.json().catch(() => ({}));
     if (res.ok) {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
+      setPasswordError("");
       alert("Password changed successfully.");
     } else {
-      const data = await res.json().catch(() => ({}));
-      alert(data.error || "Failed to change password.");
+      setPasswordError(data.error || "Failed to change password.");
     }
     setPasswordSaving(false);
   }
@@ -198,7 +201,7 @@ export default function SettingsClient({
           <BadgeCheck className="w-6 h-6 text-sky-400" /> Settings
         </h1>
 
-        {/* Company info card – now with editable name */}
+        {/* Company info card */}
         <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 space-y-4 accent-glow aurora-bg">
           <h2 className="text-lg font-semibold tracking-tight text-white">Company</h2>
           <div>
@@ -374,7 +377,7 @@ export default function SettingsClient({
             />
             <input
               type="password"
-              placeholder="New password (min 8 characters)"
+              placeholder="New password (8+ chars, 1 uppercase, 1 number)"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
@@ -390,6 +393,12 @@ export default function SettingsClient({
               minLength={8}
               className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
             />
+            <p className="text-xs text-slate-400">
+              Must be at least 8 characters with one uppercase letter and one number.
+            </p>
+            {passwordError && (
+              <p className="text-rose-400 text-sm text-center">{passwordError}</p>
+            )}
             <button
               type="submit"
               disabled={passwordSaving}
