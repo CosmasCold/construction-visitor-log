@@ -574,72 +574,82 @@ export default function CompanyDashboardClient({
             </button>
           </div>
 
-          {showNewSite && (
-  <form
-    onSubmit={async (e) => {
-      e.preventDefault();
-      const form = e.currentTarget;
-      const formData = new FormData(form);
+          {/* New Site */}
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
+            <button
+              onClick={() => setShowNewSite(!showNewSite)}
+              className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150 flex items-center gap-1"
+            >
+              {showNewSite ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {showNewSite ? "Cancel" : "New Site"}
+            </button>
+            {showNewSite && (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget;
+                  const formData = new FormData(form);
 
-      const res = await fetch("/api/sites", {
-        method: "POST",
-        body: formData,
-      });
+                  const res = await fetch("/api/sites", {
+                    method: "POST",
+                    body: formData,
+                  });
 
-      if (res.ok) {
-        const newSite = await res.json();
-        setSites((prev) => [
-          ...prev,
-          {
-            id: newSite.id,
-            name: newSite.name,
-            slug: newSite.slug,
-            address: newSite.address,
-            safetyBriefingText: newSite.safetyBriefingText,
-            visitorsToday: 0,
-            questions: [],
-            documentSigningEnabled: false,
-            documentTemplateData: null,
-            lockdownEnabled: false,
-            showVisitorListOnCheckin: true,
-          },
-        ]);
-        setShowNewSite(false);
-      } else {
-        const data = await res.json().catch(() => ({}));
-        alert(data.error || "Failed to create site.");
-      }
-    }}
-    className="space-y-4 mt-3"
-  >
-    <input
-      type="text"
-      name="name"
-      placeholder="Site Name"
-      required
-      className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-    />
-    <input
-      type="text"
-      name="address"
-      placeholder="Address"
-      className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-    />
-    <input
-      type="text"
-      name="slug"
-      placeholder="URL Slug"
-      required
-      className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-    />
-    <button
-      type="submit"
-      className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]"
-    >
-      Create
-    </button>
-  </form>
-)}
+                  if (res.ok) {
+                    const newSite = await res.json();
+                    setSites((prev) => [
+                      ...prev,
+                      {
+                        id: newSite.id,
+                        name: newSite.name,
+                        slug: newSite.slug,
+                        address: newSite.address,
+                        safetyBriefingText: newSite.safetyBriefingText,
+                        visitorsToday: 0,
+                        questions: [],
+                        documentSigningEnabled: false,
+                        documentTemplateData: null,
+                        lockdownEnabled: false,
+                        showVisitorListOnCheckin: true,
+                      },
+                    ]);
+                    setShowNewSite(false);
+                  } else {
+                    const data = await res.json().catch(() => ({}));
+                    alert(data.error || "Failed to create site.");
+                  }
+                }}
+                className="space-y-4 mt-3"
+              >
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Site Name"
+                  required
+                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+                />
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Address"
+                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+                />
+                <input
+                  type="text"
+                  name="slug"
+                  placeholder="URL Slug"
+                  required
+                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+                />
+                <button
+                  type="submit"
+                  className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98]"
+                >
+                  Create
+                </button>
+              </form>
+            )}
+          </div>
         </div>
 
         {/* Sites grid */}
