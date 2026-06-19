@@ -78,3 +78,37 @@ export async function PUT(
 
   return NextResponse.json(updated);
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ siteId: string }> }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { siteId } = await params;
+
+  // Verify ownership
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    include: { company: { select: { id: true } } },
+  });
+
+  const site = await prisma.site.findUnique({
+    where: { id: siteId },
+    select: { companyId: true },
+  });
+
+  if (!site || !user?.company?.id || site.companyId !== user.company.id) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  // Delete the site (cascading will remove related visitor logs, hosts, etc.)
+  await prisma.site.delete({
+    where: { id: siteId },
+  });
+
+  return NextResponse.json({ success: true });
+}
