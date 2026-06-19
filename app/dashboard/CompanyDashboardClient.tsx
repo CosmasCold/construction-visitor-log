@@ -643,7 +643,7 @@ export default function CompanyDashboardClient({
           ].map((stat, i) => (
             <div
               key={i}
-              className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 p-4 flex items-center gap-3 accent-glow aurora-bg"
+              className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 p-4 flex items-center gap-3 accent-glow bg-white/[0.10] aurora-bg"
             >
               <stat.icon className={`w-5 h-5 ${stat.color}`} />
               <div>
@@ -657,7 +657,7 @@ export default function CompanyDashboardClient({
         {/* Two‑column row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Date filter */}
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-4 flex flex-wrap items-end gap-3 accent-glow aurora-bg">
+          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-4 flex flex-wrap items-end gap-3 accent-glow bg-white/[0.10] aurora-bg">
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
                 From
@@ -695,7 +695,7 @@ export default function CompanyDashboardClient({
           </div>
 
           {/* New Site */}
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-4 accent-glow aurora-bg">
+          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-4 accent-glow bg-white/[0.10] aurora-bg">
             <button
               onClick={() => setShowNewSite(!showNewSite)}
               className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150 flex items-center gap-1"
@@ -787,7 +787,7 @@ export default function CompanyDashboardClient({
                 key={site.id}
                 className={`relative bg-white/[0.12] backdrop-blur-lg rounded-2xl border ${
                   site.lockdownEnabled ? "border-red-400/30" : "border-white/10"
-                } shadow-card-raised hover:shadow-card-raised transition-all duration-300 p-4 accent-glow aurora-bg group`}
+                } shadow-card-raised hover:shadow-card-raised transition-all duration-300 p-4 accent-glow bg-white/[0.10] aurora-bg group`}
               >
                 {site.lockdownEnabled && (
                   <div className="absolute top-0 left-0 right-0 bg-red-500/10 text-red-400 text-xs text-center py-0.5 rounded-t-2xl border-b border-red-400/20">
@@ -1321,7 +1321,7 @@ export default function CompanyDashboardClient({
         {/* Blocklist section */}
         <div
           id="blocklist-section"
-          className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg"
+          className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow bg-white/[0.10] aurora-bg"
         >
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-sky-400" /> Watchlist /
@@ -1402,7 +1402,7 @@ export default function CompanyDashboardClient({
         {/* Webhook Settings */}
         <div
           id="webhook-section"
-          className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg"
+          className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow bg-white/[0.10] aurora-bg"
         >
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
             <Zap className="w-5 h-5 text-sky-400" /> Webhooks
@@ -1443,7 +1443,7 @@ export default function CompanyDashboardClient({
         {loading ? (
           <SkeletonTable />
         ) : (
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto accent-glow aurora-bg">
+          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto accent-glow bg-white/[0.10] aurora-bg">
             <table className="w-full text-sm">
               <thead className="bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
                 <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
