@@ -25,17 +25,33 @@ html {
 }
 
 body {
-  /* Solid fallback color */
-  background-color: #0f172a;
-  /* Background image with dark gradient overlay */
-  background-image: linear-gradient(
-      rgba(15, 23, 42, 0.55),
-      rgba(15, 23, 42, 0.55)
-    ),
-    url('/hero-bg.webp');
+  background-color: #0f172a;   /* fallback color */
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Blurred background image layer */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image: url('/hero-bg.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+  filter: blur(8px);
+  transform: scale(1.05);
+}
+
+/* Dark overlay for readability */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: rgba(15, 23, 42, 0.55);
+  pointer-events: none;
 }
 
 /* Subtle grain overlay */
