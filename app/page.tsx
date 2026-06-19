@@ -110,7 +110,7 @@ export default function LandingPage() {
     <div className="min-h-screen text-white">
       {/* Hero */}
       <div className="max-w-6xl mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8 text-center">
-        <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14">
+        <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14 gradient-border">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
             <span className="inline-block animate-fade-in-up delay-100">
               <span className="text-sky-400">SiteSafe</span>
@@ -136,7 +136,7 @@ export default function LandingPage() {
           <div className="mt-8 flex flex-col items-center gap-4 animate-fade-in-up delay-900">
             <TrackedCtaLink
               href="/signup"
-              className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
+              className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 hover:scale-[1.02] transition-all duration-200 active:scale-[0.98] shadow-lg cta-pulse"
             >
               Start Free Trial <ArrowRight className="ml-2 w-4 h-4" />
             </TrackedCtaLink>
@@ -227,7 +227,7 @@ export default function LandingPage() {
 
         {/* Mid‑page CTA */}
         <div className="mt-12 text-center">
-          <TrackedCtaLink href="/signup" className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg">
+          <TrackedCtaLink href="/signup" className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 hover:scale-[1.02] transition-all duration-200 active:scale-[0.98] shadow-lg cta-pulse">
             Ready to try? Start free trial <ArrowRight className="ml-2 w-4 h-4" />
           </TrackedCtaLink>
         </div>
@@ -237,34 +237,44 @@ export default function LandingPage() {
       <ScreenshotGallery screenshots={screenshots} />
 
       {/* Trusted by */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-        <h2 className="text-xl font-semibold tracking-tight text-white text-center mb-6">Trusted across industries</h2>
-        <div className="flex flex-wrap justify-center gap-6">
-          {industries.map((industry) => (
-            <div key={industry.name} className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised px-6 py-3 text-sm text-slate-200 font-medium flex items-center gap-2">
-              <industry.icon className="w-4 h-4 text-sky-400 flex-shrink-0" />
-              {industry.name}
-            </div>
-          ))}
+      <FadeInSection>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+          <h2 className="text-xl font-semibold tracking-tight text-white text-center mb-6">Trusted across industries</h2>
+          <div className="flex flex-wrap justify-center gap-6">
+            {industries.map((industry) => (
+              <div
+                key={industry.name}
+                className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised px-6 py-3 text-sm text-slate-200 font-medium flex items-center gap-2 hover:bg-white/[0.08] hover:-translate-y-0.5 transition-all duration-300"
+              >
+                <industry.icon className="w-4 h-4 text-sky-400 flex-shrink-0" />
+                {industry.name}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </FadeInSection>
 
       {/* Testimonial */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center">
-          <blockquote className="text-lg text-slate-200 italic leading-relaxed">
-            &ldquo;We have 8 locations and used to rely on paper logs at each site.
-            SiteSafe gives me a single dashboard across all of them. I can see
-            who&apos;s on site at any location in seconds.&rdquo;
-          </blockquote>
-          <p className="mt-4 text-sm text-slate-400">
-            – Marcus, Director of Facilities – TX
+      <FadeInSection>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center relative">
+            <span className="absolute -top-4 left-4 text-6xl text-sky-400/20 font-serif leading-none select-none" aria-hidden="true">
+              &ldquo;
+            </span>
+            <blockquote className="text-lg sm:text-xl text-slate-200 italic leading-relaxed mt-2">
+              &ldquo;We have 8 locations and used to rely on paper logs at each site.
+              SiteSafe gives me a single dashboard across all of them. I can see
+              who&apos;s on site at any location in seconds.&rdquo;
+            </blockquote>
+            <p className="mt-4 text-sm text-slate-400">
+              – Marcus, Director of Facilities – TX
+            </p>
+          </div>
+          <p className="text-center text-sm text-slate-400 mt-4">
+            Site managers choose SiteSafe for its simple pricing and real‑time visibility.
           </p>
         </div>
-        <p className="text-center text-sm text-slate-400 mt-4">
-          Site managers choose SiteSafe for its simple pricing and real‑time visibility.
-        </p>
-      </div>
+      </FadeInSection>
 
       {/* Free Tools */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
@@ -352,12 +362,15 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* Section divider */}
+      <div className="section-divider max-w-6xl mx-auto mb-16" />
+
       {/* Footer CTA */}
       <div className="bg-white/[0.03] backdrop-blur-sm py-16 border-t border-white/5">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">Start your 14‑day free trial</h2>
           <p className="mt-3 text-lg text-slate-400">No credit card. No sales call. Trial starts instantly.</p>
-          <TrackedCtaLink href="/signup" className="inline-flex items-center justify-center mt-8 px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg">
+          <TrackedCtaLink href="/signup" className="inline-flex items-center justify-center mt-8 px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 hover:scale-[1.02] transition-all duration-200 active:scale-[0.98] shadow-lg cta-pulse">
             Try SiteSafe free <ArrowRight className="ml-2 w-4 h-4" />
           </TrackedCtaLink>
         </div>

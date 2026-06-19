@@ -1,11 +1,23 @@
 // components/HeroVideo.tsx
+"use client";
+
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function HeroVideo() {
+  const [offsetY, setOffsetY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setOffsetY(window.scrollY * 0.15); // subtle drift upward
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="mt-8 max-w-lg mx-auto relative">
-      {/* Floating illustration */}
-      <div className="animate-fade-in-up relative">
+      <div className="animate-fade-in-up relative" style={{ transform: `translateY(-${offsetY}px)` }}>
         {/* Main screen */}
         <div className="relative z-10 rounded-xl overflow-hidden border border-white/20 shadow-2xl">
           <Image
