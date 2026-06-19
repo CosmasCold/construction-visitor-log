@@ -25,9 +25,17 @@ html {
 }
 
 body {
+  /* Solid fallback color */
   background-color: #0f172a;
-  position: relative;
-  min-height: 100vh;
+  /* Background image with dark gradient overlay */
+  background-image: linear-gradient(
+      rgba(15, 23, 42, 0.55),
+      rgba(15, 23, 42, 0.55)
+    ),
+    url('/hero-bg.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 /* Subtle grain overlay */

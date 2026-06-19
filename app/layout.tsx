@@ -250,23 +250,13 @@ export default async function RootLayout({
         />
       </head>
       <body className="flex flex-col min-h-screen">
-         {/* Blurred background image with dark overlay – always visible */}
-  <div className="fixed inset-0 z-[-1]">
-    <img
-      src="/hero-bg.webp"
-      alt=""
-      className="absolute inset-0 w-full h-full object-cover blur-[6px] scale-105"
-    />
-    <div className="absolute inset-0 bg-slate-900/60" />
-  </div>
-
-        <NavWrapper header={header} footer={footer}>
-          <main className="flex-1">{children}</main>
-        </NavWrapper>
-        <Analytics />
-        <Script src="/crisp-init.js" strategy="lazyOnload" />
-        <ExitIntentPopup />
-      </body>
+  <NavWrapper header={header} footer={footer}>
+    <main className="flex-1">{children}</main>
+  </NavWrapper>
+  <Analytics />
+  <Script src="/crisp-init.js" strategy="lazyOnload" />
+  <ExitIntentPopup />
+</body>
     </html>
   );
 }
