@@ -239,15 +239,12 @@ body::after {
   animation: flash 0.3s ease-out;
 }
 
-/* Blurred background layer – moved to html for reliable viewport coverage */
-html::after {
-  content: "";
+
+/* Solid background layer – works everywhere */
+.bg-layer {
   position: fixed;
   inset: 0;
-  z-index: -3;
-  display: block;
-  width: 100vw;
-  height: 100vh;
+  z-index: -9999;
   background-image: linear-gradient(
       rgba(15, 23, 42, 0.55),
       rgba(15, 23, 42, 0.55)
@@ -255,6 +252,6 @@ html::after {
     url('/hero-bg.webp');
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
   filter: blur(6px);
+  transform: scale(1.05);
 }
