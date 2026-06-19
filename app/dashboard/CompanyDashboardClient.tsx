@@ -28,10 +28,15 @@ import {
   AlertTriangle,
   Zap,
   ShieldAlert,
+  Clock,
+  TrendingUp,
+  ChevronDown,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
 import DashboardTutorial from "@/components/DashboardTutorial";
+import SkeletonTable from "@/components/SkeletonTable";
+import { useToast } from "@/components/Toast";
 
 type Visitor = {
   id: string;
@@ -100,6 +105,8 @@ export default function CompanyDashboardClient({
   currentDateTo?: string;
 }) {
   const router = useRouter();
+  const { addToast } = useToast();
+
   const [dateFrom, setDateFrom] = useState(currentDateFrom || "");
   const [dateTo, setDateTo] = useState(currentDateTo || "");
   const [sites, setSites] = useState(initialSites);
@@ -145,6 +152,15 @@ export default function CompanyDashboardClient({
   // Visitor list privacy toggle
   const [showVisitorList, setShowVisitorList] = useState(true);
 
+  // Export loading states
+  const [exporting, setExporting] = useState<string | null>(null);
+
+  // Accordion state for site edit
+  const [openSection, setOpenSection] = useState<string | null>("basic");
+
+  // Skeleton loading state
+  const [loading, setLoading] = useState(true);
+
   // Auto‑refresh every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -152,6 +168,12 @@ export default function CompanyDashboardClient({
     }, 5000);
     return () => clearInterval(interval);
   }, [router]);
+
+  // Simulate initial load skeleton
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Fetch blocklist and company settings on mount
   useEffect(() => {
@@ -178,8 +200,9 @@ export default function CompanyDashboardClient({
     });
     if (res.ok) {
       router.refresh();
+      addToast("Visitor signed out", "success");
     } else {
-      alert("Failed to sign out visitor. Try again.");
+      addToast("Failed to sign out visitor", "error");
     }
   }
 
@@ -202,8 +225,9 @@ export default function CompanyDashboardClient({
     if (res.ok) {
       setSites((prev) => prev.filter((s) => s.id !== siteId));
       setDeleteTarget(null);
+      addToast("Site deleted", "success");
     } else {
-      alert("Failed to delete site.");
+      addToast("Failed to delete site", "error");
     }
   }
 
@@ -216,6 +240,7 @@ export default function CompanyDashboardClient({
     setEditQuestions(site.questions || []);
     setDocSigningEnabled(site.documentSigningEnabled || false);
     setShowVisitorList(site.showVisitorListOnCheckin ?? true);
+    setOpenSection("basic");
 
     fetch(`/api/sites/${site.id}/hosts`)
       .then((res) => res.json())
@@ -277,8 +302,9 @@ export default function CompanyDashboardClient({
       setHostsForEdit([]);
       setExpectedForEdit([]);
       setEditQuestions([]);
+      addToast("Site updated", "success");
     } else {
-      alert("Failed to update site.");
+      addToast("Failed to update site", "error");
     }
   }
 
@@ -286,7 +312,7 @@ export default function CompanyDashboardClient({
     const url = `${window.location.origin}/checkin/${slug}`;
     navigator.clipboard
       .writeText(url)
-      .then(() => alert("Check-in URL copied!"))
+      .then(() => addToast("Check-in URL copied!", "success"))
       .catch(() => prompt("Copy this URL:", url));
   }
 
@@ -417,6 +443,23 @@ export default function CompanyDashboardClient({
     logEvent("export", { format: "pdf" });
   }
 
+  // Export handlers with loading states
+  async function handleExportCSV() {
+    setExporting("csv");
+    exportCSV();
+    setTimeout(() => setExporting(null), 1000);
+  }
+  async function handleExportExcel() {
+    setExporting("xlsx");
+    await exportExcel();
+    setExporting(null);
+  }
+  async function handleExportPDF() {
+    setExporting("pdf");
+    await exportPDF();
+    setExporting(null);
+  }
+
   // Blocklist handlers
   async function addBlocklistEntry() {
     if (!newBlocklistValue.trim()) return;
@@ -434,6 +477,9 @@ export default function CompanyDashboardClient({
       setBlocklistEntries((prev) => [created, ...prev]);
       setNewBlocklistValue("");
       setNewBlocklistNote("");
+      addToast("Blocklist entry added", "success");
+    } else {
+      addToast("Failed to add blocklist entry", "error");
     }
   }
 
@@ -441,24 +487,44 @@ export default function CompanyDashboardClient({
     const res = await fetch(`/api/blocklist/${id}`, { method: "DELETE" });
     if (res.ok) {
       setBlocklistEntries((prev) => prev.filter((e) => e.id !== id));
+      addToast("Entry removed", "success");
     }
   }
 
   // Webhook handler
   async function saveWebhookUrl(url: string) {
-    await fetch("/api/company/settings", {
+    const res = await fetch("/api/company/settings", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ webhookUrl: url }),
     });
+    if (res.ok) addToast("Webhook saved", "success");
   }
+
+  // Stats calculations
+  const activeVisitors = logs.filter((v) => !v.signedOutAt).length;
+  const todayVisitors = logs.filter(
+    (v) => new Date(v.signedInAt).toDateString() === new Date().toDateString()
+  ).length;
+  const avgDuration =
+    logs
+      .filter((v) => v.signedOutAt)
+      .reduce(
+        (acc, v) =>
+          acc +
+          (new Date(v.signedOutAt!).getTime() - new Date(v.signedInAt).getTime()),
+        0
+      ) /
+    (logs.filter((v) => v.signedOutAt).length || 1) /
+    60000;
+  const totalVisitors = logs.length;
 
   const showOnboarding =
     showWelcome && sites.length === 1 && sites[0].name === "Default Site";
 
   return (
     <div className="min-h-screen py-10 px-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6 animate-fade-in-up">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -472,44 +538,57 @@ export default function CompanyDashboardClient({
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => router.refresh()}
-              title="Refresh"
-              className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
             >
               <RefreshCw className="w-4 h-4" /> Refresh
             </button>
             <button
-              onClick={exportCSV}
-              title="CSV"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              onClick={handleExportCSV}
+              disabled={exporting === "csv"}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
             >
-              <FileText className="w-4 h-4" /> CSV
+              {exporting === "csv" ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <FileText className="w-4 h-4" />
+              )}{" "}
+              CSV
             </button>
             <button
-              onClick={exportExcel}
-              title="Excel"
-              className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              onClick={handleExportExcel}
+              disabled={exporting === "xlsx"}
+              className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
             >
-              <FileSpreadsheet className="w-4 h-4" /> Excel
+              {exporting === "xlsx" ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <FileSpreadsheet className="w-4 h-4" />
+              )}{" "}
+              Excel
             </button>
             <button
-              onClick={exportPDF}
-              title="PDF"
-              className="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              onClick={handleExportPDF}
+              disabled={exporting === "pdf"}
+              className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
             >
-              <FileDown className="w-4 h-4" /> PDF
+              {exporting === "pdf" ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <FileDown className="w-4 h-4" />
+              )}{" "}
+              PDF
             </button>
             <button
               onClick={() =>
                 router.push(`/dashboard/analytics?slug=${companySlug}`)
               }
-              className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              className="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
             >
               <FileSpreadsheet className="w-4 h-4" /> Analytics
             </button>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              title="Logout"
-              className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
             >
               <LogOut className="w-4 h-4" /> Logout
             </button>
@@ -518,7 +597,7 @@ export default function CompanyDashboardClient({
 
         {/* Onboarding banner */}
         {showOnboarding && (
-          <div className="bg-sky-500/10 backdrop-blur-sm border border-sky-400/30 rounded-2xl p-4 flex justify-between items-start">
+          <div className="bg-sky-500/10 backdrop-blur-sm border border-sky-400/30 rounded-2xl p-4 flex justify-between items-start accent-glow">
             <p className="text-sm text-sky-100">
               <ClipboardList className="w-4 h-4 inline-block mr-1" />
               Welcome! Start by renaming your first site or adding a new one
@@ -534,10 +613,51 @@ export default function CompanyDashboardClient({
           </div>
         )}
 
+        {/* Stats row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            {
+              icon: Users,
+              label: "Active now",
+              value: activeVisitors,
+              color: "text-emerald-400",
+            },
+            {
+              icon: TrendingUp,
+              label: "Today",
+              value: todayVisitors,
+              color: "text-sky-400",
+            },
+            {
+              icon: Clock,
+              label: "Avg visit (min)",
+              value: Math.round(avgDuration),
+              color: "text-amber-400",
+            },
+            {
+              icon: Building2,
+              label: "Sites",
+              value: sites.length,
+              color: "text-violet-400",
+            },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-4 flex items-center gap-3 accent-glow aurora-bg"
+            >
+              <stat.icon className={`w-5 h-5 ${stat.color}`} />
+              <div>
+                <p className="text-xs text-slate-400">{stat.label}</p>
+                <p className="text-lg font-bold text-white">{stat.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* Two‑column row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Date filter */}
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4 flex flex-wrap items-end gap-3">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4 flex flex-wrap items-end gap-3 accent-glow aurora-bg">
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
                 From
@@ -575,7 +695,7 @@ export default function CompanyDashboardClient({
           </div>
 
           {/* New Site */}
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4 accent-glow aurora-bg">
             <button
               onClick={() => setShowNewSite(!showNewSite)}
               className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150 flex items-center gap-1"
@@ -589,12 +709,10 @@ export default function CompanyDashboardClient({
                   e.preventDefault();
                   const form = e.currentTarget;
                   const formData = new FormData(form);
-
                   const res = await fetch("/api/sites", {
                     method: "POST",
                     body: formData,
                   });
-
                   if (res.ok) {
                     const newSite = await res.json();
                     setSites((prev) => [
@@ -614,9 +732,10 @@ export default function CompanyDashboardClient({
                       },
                     ]);
                     setShowNewSite(false);
+                    addToast("Site created", "success");
                   } else {
                     const data = await res.json().catch(() => ({}));
-                    alert(data.error || "Failed to create site.");
+                    addToast(data.error || "Failed to create site", "error");
                   }
                 }}
                 className="space-y-4 mt-3"
@@ -668,7 +787,7 @@ export default function CompanyDashboardClient({
                 key={site.id}
                 className={`relative bg-white/[0.06] backdrop-blur-md rounded-2xl border ${
                   site.lockdownEnabled ? "border-red-400/30" : "border-white/10"
-                } shadow-card-raised hover:shadow-card-raised transition-shadow duration-300 p-4`}
+                } shadow-card-raised hover:shadow-card-raised transition-all duration-300 p-4 accent-glow aurora-bg group`}
               >
                 {site.lockdownEnabled && (
                   <div className="absolute top-0 left-0 right-0 bg-red-500/10 text-red-400 text-xs text-center py-0.5 rounded-t-2xl border-b border-red-400/20">
@@ -677,366 +796,402 @@ export default function CompanyDashboardClient({
                 )}
                 {editingSiteId === site.id ? (
                   <div className="space-y-3">
-                    <input
-                      type="text"
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      placeholder="Site Name"
-                      className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-                    />
-                    <input
-                      type="text"
-                      value={editSlug}
-                      onChange={(e) => setEditSlug(e.target.value)}
-                      placeholder="Slug"
-                      className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-                    />
-                    <input
-                      type="text"
-                      value={editAddress}
-                      onChange={(e) => setEditAddress(e.target.value)}
-                      placeholder="Address"
-                      className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-                    />
-                    <textarea
-                      value={editBriefing}
-                      onChange={(e) => setEditBriefing(e.target.value)}
-                      placeholder="Safety Briefing"
-                      rows={2}
-                      className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-                    />
-
-                    {/* Hosts section */}
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <h4 className="text-sm font-semibold text-white mb-2">
-                        Hosts (for email notifications)
-                      </h4>
-                      {hostsForEdit.length > 0 && (
-                        <ul className="space-y-1 mb-3">
-                          {hostsForEdit.map((host) => (
-                            <li
-                              key={host.id}
-                              className="flex justify-between items-center text-xs text-slate-300"
-                            >
-                              <span>
-                                {host.name} &lt;{host.email}&gt;
-                              </span>
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  await fetch(
-                                    `/api/sites/${site.id}/hosts/${host.id}`,
-                                    { method: "DELETE" }
-                                  );
-                                  setHostsForEdit((prev) =>
-                                    prev.filter((h) => h.id !== host.id)
-                                  );
-                                }}
-                                className="text-rose-400 hover:text-rose-300"
-                              >
-                                Remove
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      <div className="flex gap-2">
+                    {/* Basic Info Accordion */}
+                    <button
+                      onClick={() =>
+                        setOpenSection(openSection === "basic" ? null : "basic")
+                      }
+                      className="w-full flex items-center justify-between text-sm font-semibold text-white"
+                    >
+                      <span>Basic Info</span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${
+                          openSection === "basic" ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    <div
+                      className={`accordion-content ${
+                        openSection === "basic" ? "open" : ""
+                      }`}
+                    >
+                      <div className="space-y-2 pt-2">
                         <input
                           type="text"
-                          placeholder="Name"
-                          value={newHostName}
-                          onChange={(e) => setNewHostName(e.target.value)}
-                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          placeholder="Site Name"
+                          className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
                         />
                         <input
-                          type="email"
-                          placeholder="Email"
-                          value={newHostEmail}
-                          onChange={(e) => setNewHostEmail(e.target.value)}
-                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                          type="text"
+                          value={editSlug}
+                          onChange={(e) => setEditSlug(e.target.value)}
+                          placeholder="Slug"
+                          className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
                         />
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            if (!newHostName || !newHostEmail) return;
-                            const res = await fetch(
-                              `/api/sites/${site.id}/hosts`,
-                              {
-                                method: "POST",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                  name: newHostName,
-                                  email: newHostEmail,
-                                }),
-                              }
-                            );
-                            if (res.ok) {
-                              const created = await res.json();
-                              setHostsForEdit((prev) => [...prev, created]);
-                              setNewHostName("");
-                              setNewHostEmail("");
-                            }
-                          }}
-                          className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
-                        >
-                          Add
-                        </button>
+                        <input
+                          type="text"
+                          value={editAddress}
+                          onChange={(e) => setEditAddress(e.target.value)}
+                          placeholder="Address"
+                          className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+                        />
+                        <textarea
+                          value={editBriefing}
+                          onChange={(e) => setEditBriefing(e.target.value)}
+                          placeholder="Safety Briefing"
+                          rows={2}
+                          className="w-full bg-white/10 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+                        />
                       </div>
                     </div>
 
-                    {/* Expected visitors section */}
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <h4 className="text-sm font-semibold text-white mb-2">
-                        Expected visitors (quick sign‑in)
-                      </h4>
-                      {expectedForEdit.length > 0 && (
-                        <ul className="space-y-1 mb-3">
-                          {expectedForEdit.map((visitor) => (
-                            <li
-                              key={visitor.id}
-                              className="flex justify-between items-center text-xs text-slate-300"
-                            >
-                              <span>
-                                {visitor.name} — {visitor.company}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  await fetch(
-                                    `/api/sites/${site.id}/expected-visitors/${visitor.id}`,
-                                    { method: "DELETE" }
-                                  );
-                                  setExpectedForEdit((prev) =>
-                                    prev.filter((v) => v.id !== visitor.id)
-                                  );
-                                }}
-                                className="text-rose-400 hover:text-rose-300"
+                    {/* Hosts Accordion */}
+                    <button
+                      onClick={() =>
+                        setOpenSection(openSection === "hosts" ? null : "hosts")
+                      }
+                      className="w-full flex items-center justify-between text-sm font-semibold text-white"
+                    >
+                      <span>Hosts</span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${
+                          openSection === "hosts" ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    <div
+                      className={`accordion-content ${
+                        openSection === "hosts" ? "open" : ""
+                      }`}
+                    >
+                      <div className="pt-2 space-y-2">
+                        {hostsForEdit.length > 0 && (
+                          <ul className="space-y-1 mb-3">
+                            {hostsForEdit.map((host) => (
+                              <li
+                                key={host.id}
+                                className="flex justify-between items-center text-xs text-slate-300"
                               >
-                                Remove
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Name"
-                          value={newVisitorName}
-                          onChange={(e) => setNewVisitorName(e.target.value)}
-                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Company"
-                          value={newVisitorCompany}
-                          onChange={(e) =>
-                            setNewVisitorCompany(e.target.value)
-                          }
-                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
-                        />
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            if (!newVisitorName || !newVisitorCompany) return;
-                            const res = await fetch(
-                              `/api/sites/${site.id}/expected-visitors`,
-                              {
-                                method: "POST",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                  name: newVisitorName,
-                                  company: newVisitorCompany,
-                                }),
-                              }
-                            );
-                            if (res.ok) {
-                              const created = await res.json();
-                              setExpectedForEdit((prev) => [
-                                ...prev,
-                                created,
-                              ]);
-                              setNewVisitorName("");
-                              setNewVisitorCompany("");
-                            }
-                          }}
-                          className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
-                        >
-                          Add
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Pre‑screening questions section */}
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <h4 className="text-sm font-semibold text-white mb-2">
-                        Pre‑screening questions (yes/no)
-                      </h4>
-                      {editQuestions.length > 0 && (
-                        <ul className="space-y-1 mb-3">
-                          {editQuestions.map((q, i) => (
-                            <li
-                              key={i}
-                              className="flex justify-between items-center text-xs text-slate-300"
-                            >
-                              <span>{q}</span>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setEditQuestions((prev) =>
-                                    prev.filter((_, idx) => idx !== i)
-                                  )
+                                <span>
+                                  {host.name} &lt;{host.email}&gt;
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    await fetch(
+                                      `/api/sites/${site.id}/hosts/${host.id}`,
+                                      { method: "DELETE" }
+                                    );
+                                    setHostsForEdit((prev) =>
+                                      prev.filter((h) => h.id !== host.id)
+                                    );
+                                  }}
+                                  className="text-rose-400 hover:text-rose-300"
+                                >
+                                  Remove
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Name"
+                            value={newHostName}
+                            onChange={(e) => setNewHostName(e.target.value)}
+                            className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                          />
+                          <input
+                            type="email"
+                            placeholder="Email"
+                            value={newHostEmail}
+                            onChange={(e) => setNewHostEmail(e.target.value)}
+                            className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                          />
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              if (!newHostName || !newHostEmail) return;
+                              const res = await fetch(
+                                `/api/sites/${site.id}/hosts`,
+                                {
+                                  method: "POST",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({
+                                    name: newHostName,
+                                    email: newHostEmail,
+                                  }),
                                 }
-                                className="text-rose-400 hover:text-rose-300"
-                              >
-                                Remove
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Question (e.g., Completed induction?)"
-                          value={newQuestion}
-                          onChange={(e) => setNewQuestion(e.target.value)}
-                          className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (!newQuestion.trim()) return;
-                            setEditQuestions((prev) => [
-                              ...prev,
-                              newQuestion.trim(),
-                            ]);
-                            setNewQuestion("");
-                          }}
-                          className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
-                        >
-                          Add
-                        </button>
+                              );
+                              if (res.ok) {
+                                const created = await res.json();
+                                setHostsForEdit((prev) => [...prev, created]);
+                                setNewHostName("");
+                                setNewHostEmail("");
+                              }
+                            }}
+                            className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
+                          >
+                            Add
+                          </button>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Document Signing */}
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-sky-400" /> Document Signing (NDA)
-                      </h4>
-                      <label className="flex items-center gap-2 text-xs text-slate-200 mb-2">
-                        <input
-                          type="checkbox"
-                          checked={docSigningEnabled}
-                          onChange={(e) => setDocSigningEnabled(e.target.checked)}
-                          className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
-                        />
-                        Require visitors to sign a document before entry
-                      </label>
-                      {(() => {
-                        const currentSite = sites.find((s) => s.id === editingSiteId);
-                        if (currentSite?.documentTemplateData) {
-                          return (
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-slate-400">Template uploaded</span>
-                              <a
-                                href={currentSite.documentTemplateData}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sky-400 text-xs underline"
+                    {/* Pre‑screening Questions Accordion */}
+                    <button
+                      onClick={() =>
+                        setOpenSection(openSection === "pre" ? null : "pre")
+                      }
+                      className="w-full flex items-center justify-between text-sm font-semibold text-white"
+                    >
+                      <span>Pre‑screening Questions</span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${
+                          openSection === "pre" ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    <div
+                      className={`accordion-content ${
+                        openSection === "pre" ? "open" : ""
+                      }`}
+                    >
+                      <div className="pt-2 space-y-2">
+                        {editQuestions.length > 0 && (
+                          <ul className="space-y-1 mb-3">
+                            {editQuestions.map((q, i) => (
+                              <li
+                                key={i}
+                                className="flex justify-between items-center text-xs text-slate-300"
                               >
-                                View
-                              </a>
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  await fetch(`/api/sites/${editingSiteId}/document-template`, { method: 'DELETE' });
-                                  setSites((prev) =>
-                                    prev.map((s) =>
-                                      s.id === editingSiteId ? { ...s, documentTemplateData: null } : s
+                                <span>{q}</span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setEditQuestions((prev) =>
+                                      prev.filter((_, idx) => idx !== i)
                                     )
-                                  );
-                                }}
-                                className="text-rose-400 text-xs hover:text-rose-300"
-                              >
-                                Remove
-                              </button>
-                            </div>
+                                  }
+                                  className="text-rose-400 hover:text-rose-300"
+                                >
+                                  Remove
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Question (e.g., Completed induction?)"
+                            value={newQuestion}
+                            onChange={(e) => setNewQuestion(e.target.value)}
+                            className="flex-1 bg-white/10 border border-white/10 rounded-lg px-2 py-1 text-xs text-white"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!newQuestion.trim()) return;
+                              setEditQuestions((prev) => [
+                                ...prev,
+                                newQuestion.trim(),
+                              ]);
+                              setNewQuestion("");
+                            }}
+                            className="bg-sky-500 hover:bg-sky-600 text-white px-2 py-1 rounded text-xs"
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Document Signing Accordion */}
+                    <button
+                      onClick={() =>
+                        setOpenSection(openSection === "doc" ? null : "doc")
+                      }
+                      className="w-full flex items-center justify-between text-sm font-semibold text-white"
+                    >
+                      <span>Document Signing</span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${
+                          openSection === "doc" ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    <div
+                      className={`accordion-content ${
+                        openSection === "doc" ? "open" : ""
+                      }`}
+                    >
+                      <div className="pt-2 space-y-2">
+                        <label className="flex items-center gap-2 text-xs text-slate-200">
+                          <input
+                            type="checkbox"
+                            checked={docSigningEnabled}
+                            onChange={(e) =>
+                              setDocSigningEnabled(e.target.checked)
+                            }
+                            className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
+                          />
+                          Require visitors to sign a document before entry
+                        </label>
+                        {(() => {
+                          const currentSite = sites.find(
+                            (s) => s.id === editingSiteId
                           );
-                        }
-
-                        return (
-                          <div className="flex gap-2">
-                            <input
-                              type="file"
-                              accept=".pdf"
-                              onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (!file) return;
-                                setDocTemplateUploading(true);
-
-                                const reader = new FileReader();
-                                reader.onload = async (ev) => {
-                                  const fileBase64 = ev.target?.result as string;
-                                  const res = await fetch(`/api/sites/${editingSiteId}/document-template`, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ fileBase64 }),
-                                  });
-
-                                  if (res.ok) {
+                          if (currentSite?.documentTemplateData) {
+                            return (
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-slate-400">
+                                  Template uploaded
+                                </span>
+                                <a
+                                  href={currentSite.documentTemplateData}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sky-400 text-xs underline"
+                                >
+                                  View
+                                </a>
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    await fetch(
+                                      `/api/sites/${editingSiteId}/document-template`,
+                                      { method: "DELETE" }
+                                    );
                                     setSites((prev) =>
                                       prev.map((s) =>
-                                        s.id === editingSiteId ? { ...s, documentTemplateData: fileBase64 } : s
+                                        s.id === editingSiteId
+                                          ? {
+                                              ...s,
+                                              documentTemplateData: null,
+                                            }
+                                          : s
                                       )
                                     );
-                                    alert('Template uploaded');
-                                  } else {
-                                    alert('Upload failed');
-                                  }
-                                  setDocTemplateUploading(false);
-                                };
-                                reader.readAsDataURL(file);
-                              }}
-                              className="text-xs text-white"
-                            />
-                            {docTemplateUploading && <span className="text-xs text-sky-400">Uploading…</span>}
-                          </div>
-                        );
-                      })()}
+                                  }}
+                                  className="text-rose-400 text-xs hover:text-rose-300"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div className="flex gap-2">
+                              <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  setDocTemplateUploading(true);
+                                  const reader = new FileReader();
+                                  reader.onload = async (ev) => {
+                                    const fileBase64 = ev.target
+                                      ?.result as string;
+                                    const res = await fetch(
+                                      `/api/sites/${editingSiteId}/document-template`,
+                                      {
+                                        method: "POST",
+                                        headers: {
+                                          "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify({ fileBase64 }),
+                                      }
+                                    );
+                                    if (res.ok) {
+                                      setSites((prev) =>
+                                        prev.map((s) =>
+                                          s.id === editingSiteId
+                                            ? {
+                                                ...s,
+                                                documentTemplateData:
+                                                  fileBase64,
+                                              }
+                                            : s
+                                        )
+                                      );
+                                      addToast(
+                                        "Template uploaded",
+                                        "success"
+                                      );
+                                    } else {
+                                      addToast("Upload failed", "error");
+                                    }
+                                    setDocTemplateUploading(false);
+                                  };
+                                  reader.readAsDataURL(file);
+                                }}
+                                className="text-xs text-white"
+                              />
+                              {docTemplateUploading && (
+                                <span className="text-xs text-sky-400">
+                                  Uploading…
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </div>
                     </div>
 
-                    {/* Visitor list privacy toggle */}
-                    <div className="mt-4 pt-4 border-t border-white/10">
-                      <h4 className="text-sm font-semibold text-white mb-2">
-                        Check‑in Page Privacy
-                      </h4>
-                      <label className="flex items-center gap-2 text-xs text-slate-200 mb-2">
-                        <input
-                          type="checkbox"
-                          checked={showVisitorList}
-                          onChange={(e) => setShowVisitorList(e.target.checked)}
-                          className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
-                        />
-                        Show visitor list on check‑in page (disabling hides it for privacy)
-                      </label>
+                    {/* Privacy Accordion */}
+                    <button
+                      onClick={() =>
+                        setOpenSection(
+                          openSection === "privacy" ? null : "privacy"
+                        )
+                      }
+                      className="w-full flex items-center justify-between text-sm font-semibold text-white"
+                    >
+                      <span>Privacy</span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${
+                          openSection === "privacy" ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    <div
+                      className={`accordion-content ${
+                        openSection === "privacy" ? "open" : ""
+                      }`}
+                    >
+                      <div className="pt-2">
+                        <label className="flex items-center gap-2 text-xs text-slate-200">
+                          <input
+                            type="checkbox"
+                            checked={showVisitorList}
+                            onChange={(e) =>
+                              setShowVisitorList(e.target.checked)
+                            }
+                            className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500"
+                          />
+                          Show visitor list on check‑in page (disabling hides it
+                          for privacy)
+                        </label>
+                      </div>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 pt-2">
                       <button
                         onClick={() => saveEdit(site.id)}
-                        className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 active:scale-[0.98]"
+                        className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
                       >
                         Save
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 active:scale-[0.98]"
+                        className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
                       >
                         Cancel
                       </button>
@@ -1094,15 +1249,27 @@ export default function CompanyDashboardClient({
                             e.preventDefault();
                             e.stopPropagation();
                             const newLockdown = !site.lockdownEnabled;
-                            const res = await fetch(`/api/sites/${site.id}/lockdown`, {
-                              method: "PUT",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ lockdown: newLockdown }),
-                            });
+                            const res = await fetch(
+                              `/api/sites/${site.id}/lockdown`,
+                              {
+                                method: "PUT",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                  lockdown: newLockdown,
+                                }),
+                              }
+                            );
                             if (res.ok) {
                               setSites((prev) =>
                                 prev.map((s) =>
-                                  s.id === site.id ? { ...s, lockdownEnabled: newLockdown } : s
+                                  s.id === site.id
+                                    ? {
+                                        ...s,
+                                        lockdownEnabled: newLockdown,
+                                      }
+                                    : s
                                 )
                               );
                             }
@@ -1112,7 +1279,11 @@ export default function CompanyDashboardClient({
                               ? "text-red-400 hover:text-red-300"
                               : "text-slate-400 hover:text-white"
                           }`}
-                          title={site.lockdownEnabled ? "End lockdown" : "Activate lockdown"}
+                          title={
+                            site.lockdownEnabled
+                              ? "End lockdown"
+                              : "Activate lockdown"
+                          }
                         >
                           <ShieldAlert className="w-4 h-4" />
                         </button>
@@ -1148,16 +1319,19 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Blocklist section */}
-        <div id="blocklist-section" className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+        <div
+          id="blocklist-section"
+          className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg"
+        >
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-sky-400" /> Watchlist / Blocklist
+            <ShieldCheck className="w-5 h-5 text-sky-400" /> Watchlist /
+            Blocklist
           </h3>
           <p className="text-xs text-slate-400 mb-4">
-            Automatically flag visitors whose name, email, or phone number matches
-            an entry. Alerts are shown at check‑in.
+            Automatically flag visitors whose name, email, or phone number
+            matches an entry. Alerts are shown at check‑in.
           </p>
 
-          {/* Add form */}
           <div className="flex flex-col sm:flex-row gap-2 mb-4">
             <input
               type="text"
@@ -1190,7 +1364,6 @@ export default function CompanyDashboardClient({
             </button>
           </div>
 
-          {/* Entries table */}
           {blocklistEntries.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
@@ -1227,12 +1400,16 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Webhook Settings */}
-        <div id="webhook-section" className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+        <div
+          id="webhook-section"
+          className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg"
+        >
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
             <Zap className="w-5 h-5 text-sky-400" /> Webhooks
           </h3>
           <p className="text-xs text-slate-400 mb-4">
-            Send real‑time events (check‑in, check‑out, blocklist hits) to your own tools. Enter a URL to receive JSON payloads.
+            Send real‑time events (check‑in, check‑out, blocklist hits) to your
+            own tools. Enter a URL to receive JSON payloads.
           </p>
           <div className="flex gap-2">
             <input
@@ -1253,7 +1430,7 @@ export default function CompanyDashboardClient({
             <button
               onClick={async () => {
                 await fetch("/api/webhook/test", { method: "POST" });
-                alert("Test event sent");
+                addToast("Test event sent", "success");
               }}
               className="mt-3 text-xs text-sky-400 hover:text-sky-300"
             >
@@ -1263,148 +1440,152 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Visitors table */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-white/5">
-              <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
-                <th scope="col" className="p-3 text-left">
-                  Photo
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Site
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Name
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Company
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Phone
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Host
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Signed In
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Signed Out
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Safety
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Pre‑screening
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Signature
-                </th>
-                <th scope="col" className="p-3 text-left">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {logs.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={12}
-                    className="p-4 text-center text-slate-500"
-                  >
-                    <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p>
-                      No visitors yet. Share the check‑in link with your team
-                      to get started!
-                    </p>
-                  </td>
+        {loading ? (
+          <SkeletonTable />
+        ) : (
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto accent-glow aurora-bg">
+            <table className="w-full text-sm">
+              <thead className="bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
+                <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
+                  <th scope="col" className="p-3 text-left">
+                    Photo
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Site
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Name
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Company
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Phone
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Host
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Signed In
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Signed Out
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Safety
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Pre‑screening
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Signature
+                  </th>
+                  <th scope="col" className="p-3 text-left">
+                    Actions
+                  </th>
                 </tr>
-              ) : (
-                logs.map((v) => (
-                  <tr
-                    key={v.id}
-                    className="text-slate-300 hover:bg-white/[0.03] transition-colors duration-150"
-                  >
-                    <td className="p-3">
-                      {v.photoUrl ? (
-                        <a
-                          href={v.photoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Image
-                            src={v.photoUrl}
-                            alt={v.fullName}
-                            width={40}
-                            height={40}
-                            unoptimized
-                            className="rounded object-cover"
-                          />
-                        </a>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td className="p-3">{v.siteName}</td>
-                    <td className="p-3 font-medium text-white">
-                      {v.fullName}
-                    </td>
-                    <td className="p-3">{v.company}</td>
-                    <td className="p-3">{v.phone || "—"}</td>
-                    <td className="p-3">{v.hostName || "—"}</td>
-                    <td className="p-3">
-                      {new Date(v.signedInAt).toLocaleString()}
-                    </td>
-                    <td className="p-3">
-                      {v.signedOutAt
-                        ? new Date(v.signedOutAt).toLocaleString()
-                        : "✓ On site"}
-                    </td>
-                    <td className="p-3">
-                      {v.safetyAcknowledged ? (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 inline" />
-                      ) : (
-                        <XCircle className="w-4 h-4 text-rose-400 inline" />
-                      )}
-                    </td>
-                    <td className="p-3">
-                      {v.answers
-                        ? Object.entries(v.answers)
-                            .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
-                            .join(", ")
-                        : "—"}
-                    </td>
-                    <td className="p-3">
-                      {v.signatureUrl ? (
-                        <Image
-                          src={v.signatureUrl}
-                          alt="Signature"
-                          width={40}
-                          height={20}
-                          unoptimized
-                          className="rounded"
-                        />
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td className="p-3">
-                      {!v.signedOutAt && (
-                        <button
-                          onClick={() => handleSignOutRemote(v.id)}
-                          className="inline-flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 transition-colors"
-                          title="Sign out remotely"
-                        >
-                          <DoorClosed className="w-3.5 h-3.5" /> Sign out
-                        </button>
-                      )}
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {logs.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={12}
+                      className="p-4 text-center text-slate-500"
+                    >
+                      <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p>
+                        No visitors yet. Share the check‑in link with your team
+                        to get started!
+                      </p>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : (
+                  logs.map((v) => (
+                    <tr
+                      key={v.id}
+                      className="text-slate-300 hover:bg-white/[0.05] transition-colors duration-150"
+                    >
+                      <td className="p-3">
+                        {v.photoUrl ? (
+                          <a
+                            href={v.photoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Image
+                              src={v.photoUrl}
+                              alt={v.fullName}
+                              width={40}
+                              height={40}
+                              unoptimized
+                              className="rounded object-cover"
+                            />
+                          </a>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className="p-3">{v.siteName}</td>
+                      <td className="p-3 font-medium text-white">
+                        {v.fullName}
+                      </td>
+                      <td className="p-3">{v.company}</td>
+                      <td className="p-3">{v.phone || "—"}</td>
+                      <td className="p-3">{v.hostName || "—"}</td>
+                      <td className="p-3">
+                        {new Date(v.signedInAt).toLocaleString()}
+                      </td>
+                      <td className="p-3">
+                        {v.signedOutAt
+                          ? new Date(v.signedOutAt).toLocaleString()
+                          : "✓ On site"}
+                      </td>
+                      <td className="p-3">
+                        {v.safetyAcknowledged ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 inline" />
+                        ) : (
+                          <XCircle className="w-4 h-4 text-rose-400 inline" />
+                        )}
+                      </td>
+                      <td className="p-3">
+                        {v.answers
+                          ? Object.entries(v.answers)
+                              .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
+                              .join(", ")
+                          : "—"}
+                      </td>
+                      <td className="p-3">
+                        {v.signatureUrl ? (
+                          <Image
+                            src={v.signatureUrl}
+                            alt="Signature"
+                            width={40}
+                            height={20}
+                            unoptimized
+                            className="rounded"
+                          />
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className="p-3">
+                        {!v.signedOutAt && (
+                          <button
+                            onClick={() => handleSignOutRemote(v.id)}
+                            className="inline-flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 transition-colors"
+                            title="Sign out remotely"
+                          >
+                            <DoorClosed className="w-3.5 h-3.5" /> Sign out
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <ConfirmModal

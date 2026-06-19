@@ -3,11 +3,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import CompanyDashboardClient from "./CompanyDashboardClient";
+import { ToastProvider } from "@/components/Toast";
 
 export const dynamic = "force-dynamic";
 
-// ── types matching the Prisma select ─────────────────────────────────
 interface SelectedVisitor {
   id: string;
   fullName: string;
@@ -30,10 +31,9 @@ interface SelectedSite {
   safetyBriefingText: string;
   questions: string[];
   visitors: SelectedVisitor[];
-  lockdownEnabled: boolean;   // ✅ new
+  lockdownEnabled: boolean;
 }
 
-// ── client‑ready types ───────────────────────────────────────────────
 export interface DashboardVisitor {
   id: string;
   fullName: string;
@@ -58,7 +58,7 @@ export interface DashboardSite {
   safetyBriefingText: string;
   visitorsToday: number;
   questions: string[];
-  lockdownEnabled?: boolean;   // ✅ new
+  lockdownEnabled?: boolean;
 }
 
 export default async function DashboardPage({
@@ -129,7 +129,6 @@ export default async function DashboardPage({
     );
   }
 
-  // Subscription check
   const subscription = company.subscription;
   const isTrialing = subscription?.status === "trialing";
   const isActive = subscription?.status === "active";
@@ -141,15 +140,17 @@ export default async function DashboardPage({
           <p className="text-slate-600 mb-6">
             Your free trial has expired. To continue using SiteSafe, please set up a payment method.
           </p>
-          <a href="/settings" className="inline-block bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 transition-colors">
+          <Link
+            href="/settings"
+            className="inline-block bg-sky-600 text-white px-6 py-2 rounded-xl text-sm font-medium hover:bg-sky-700 transition-colors"
+          >
             Manage subscription
-          </a>
+          </Link>
         </div>
       </div>
     );
   }
 
-  // Build date filter
   let dateFilter: { gte?: Date; lte?: Date } = {};
   if (dateFrom || dateTo) {
     if (typeof dateFrom === "string") dateFilter.gte = new Date(dateFrom);
@@ -166,10 +167,8 @@ export default async function DashboardPage({
     dateFilter = { gte: start, lte: end };
   }
 
-  // Cast the nested sites to our explicit type
   const selectedSites = company.sites as unknown as SelectedSite[];
 
-  // Combine visitors across all sites, apply date filter
   const allVisitors: DashboardVisitor[] = selectedSites.flatMap((site) =>
     site.visitors
       .filter((v) => {
@@ -195,12 +194,10 @@ export default async function DashboardPage({
       }))
   );
 
-  // Sort by signed in time descending
   allVisitors.sort(
     (a, b) => new Date(b.signedInAt).getTime() - new Date(a.signedInAt).getTime()
   );
 
-  // Build site cards
   const sites: DashboardSite[] = selectedSites.map((site) => ({
     id: site.id,
     name: site.name,
@@ -211,18 +208,20 @@ export default async function DashboardPage({
       (v) => new Date(v.signedInAt).toDateString() === new Date().toDateString()
     ).length,
     questions: site.questions,
-    lockdownEnabled: site.lockdownEnabled,   // ✅ new
+    lockdownEnabled: site.lockdownEnabled,
   }));
 
   return (
-    <CompanyDashboardClient
-      companyId={company.id}
-      companySlug={company.slug}
-      companyName={company.name}
-      logs={allVisitors}
-      sites={sites}
-      currentDateFrom={typeof dateFrom === "string" ? dateFrom : ""}
-      currentDateTo={typeof dateTo === "string" ? dateTo : ""}
-    />
+    <ToastProvider>
+      <CompanyDashboardClient
+        companyId={company.id}
+        companySlug={company.slug}
+        companyName={company.name}
+        logs={allVisitors}
+        sites={sites}
+        currentDateFrom={typeof dateFrom === "string" ? dateFrom : ""}
+        currentDateTo={typeof dateTo === "string" ? dateTo : ""}
+      />
+    </ToastProvider>
   );
 }

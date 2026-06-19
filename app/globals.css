@@ -73,6 +73,15 @@ body::after {
 .delay-800 { animation-delay: 0.8s; }
 .delay-900 { animation-delay: 0.9s; }
 
+/* Toast animation */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
 /* Floating animation */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
@@ -161,4 +170,85 @@ body::after {
 .section-divider {
   height: 1px;
   background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+}
+
+/* Toast animation */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Accordion animation */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.accordion-content.open {
+  max-height: 800px;
+}
+
+/* Sticky table header */
+.sticky-header th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Floating label */
+.floating-label {
+  position: relative;
+}
+.floating-label input:focus + label,
+.floating-label input:not(:placeholder-shown) + label {
+  transform: translateY(-1.5rem) scale(0.85);
+  color: #38bdf8;
+}
+.floating-label label {
+  position: absolute;
+  left: 1rem;
+  top: 0.75rem;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+/* Progress indicator */
+.step-indicator {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.step-indicator .step {
+  width: 2rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.3s ease;
+}
+.step-indicator .step.active {
+  background: #38bdf8;
+}
+.step-indicator .step.completed {
+  background: #10b981;
+}
+
+/* Photo capture flash */
+@keyframes flash {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.photo-flash {
+  animation: flash 0.3s ease-out;
 }
