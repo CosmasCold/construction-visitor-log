@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-// POST – create a new site for the company
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.email) {
@@ -12,12 +11,24 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    include: { company: { select: { id: true } } },
+    include: { company: { select: { id: true, _count: { select: { sites: true } } } } },
   });
 
-  const companyId = user?.company?.id;
-  if (!companyId) {
+  const company = user?.company;
+  if (!company) {
     return NextResponse.json({ error: "No company" }, { status: 400 });
+  }
+
+  // Enforce 20‑site limit
+  const siteCount = company._count?.sites ?? 0;
+  if (siteCount >= 20) {
+    return NextResponse.json(
+      {
+        error:
+          "You’ve reached the 20‑site limit for your plan. Contact us if you need more sites.",
+      },
+      { status: 403 }
+    );
   }
 
   const { name, slug, address } = await req.json();
@@ -30,12 +41,9 @@ export async function POST(req: NextRequest) {
       name,
       slug,
       address: address || null,
-      companyId,
+      companyId: company.id,
     },
   });
 
   return NextResponse.json(site, { status: 201 });
 }
-
-// OPTIONAL: you can add a GET handler here if you want to list sites, but DO NOT use `params`.
-// For now, we leave it out to avoid type issues.
