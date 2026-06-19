@@ -421,7 +421,7 @@ export default function CheckinClient({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 px-4 bg-slate-950/60">
+    <div className="min-h-screen flex items-center justify-center py-10 px-4>
       <div className="w-full max-w-md space-y-6 animate-fade-in-up">
         {/* Header + QR */}
         <div className="text-center">
