@@ -25,6 +25,17 @@ html {
 }
 
 body {
+  background-color: #0f172a;   /* fallback color */
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Blurred background layer – sits behind everything */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
   background-image: linear-gradient(
       rgba(15, 23, 42, 0.65),
       rgba(15, 23, 42, 0.65)
@@ -33,7 +44,8 @@ body {
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  position: relative;
+  filter: blur(8px);
+  transform: scale(1.05);
 }
 
 /* Subtle grain overlay – pure CSS noise texture */
@@ -72,15 +84,6 @@ body::after {
 .delay-700 { animation-delay: 0.7s; }
 .delay-800 { animation-delay: 0.8s; }
 .delay-900 { animation-delay: 0.9s; }
-
-/* Toast animation */
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
-}
 
 /* Floating animation */
 @keyframes float {
@@ -126,7 +129,19 @@ body::after {
   opacity: 0.3;
 }
 
-/* Soft aurora background animation – increased opacity */
+/* Static accent glow for secondary cards */
+.accent-glow {
+  box-shadow: 0 0 20px -8px rgba(14, 165, 233, 0.15);
+  border-color: rgba(14, 165, 233, 0.15);
+}
+
+/* Hover glow for feature cards */
+.feature-card-hover:hover {
+  box-shadow: 0 0 24px -6px rgba(14, 165, 233, 0.2);
+  border-color: rgba(14, 165, 233, 0.25);
+}
+
+/* Soft aurora background animation */
 .aurora-bg {
   background: linear-gradient(
     135deg,
@@ -141,18 +156,6 @@ body::after {
   0%   { background-position: 0% 50%; }
   50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
-}
-
-/* Static accent glow for secondary cards */
-.accent-glow {
-  box-shadow: 0 0 20px -8px rgba(14, 165, 233, 0.15);
-  border-color: rgba(14, 165, 233, 0.15);
-}
-
-/* Hover glow for feature cards */
-.feature-card-hover:hover {
-  box-shadow: 0 0 24px -6px rgba(14, 165, 233, 0.2);
-  border-color: rgba(14, 165, 233, 0.25);
 }
 
 /* CTA pulse */
