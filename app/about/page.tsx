@@ -5,7 +5,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "About – SiteSafe",
   description:
-    "SiteSafe is built by a small, independent team obsessed with making visitor management simple, flat‑priced, and audit‑ready for every workplace.",
+    "SiteSafe is a compliance‑ready visitor management platform for mid‑sized workplaces with multiple locations. Flat pricing, no sales calls, built for teams that care about safety.",
 };
 
 export default function AboutPage() {
@@ -17,8 +17,8 @@ export default function AboutPage() {
             About SiteSafe
           </h1>
           <p className="text-lg text-slate-400">
-            We believe visitor management should be simple, affordable, and actually
-            help you pass an audit.
+            We believe mid‑sized workplaces deserve enterprise‑grade visitor
+            management — without enterprise pricing or sales calls.
           </p>
         </div>
 
@@ -39,11 +39,13 @@ export default function AboutPage() {
               safety acknowledgment.
             </p>
             <p>
-              So we built SiteSafe: a digital check‑in that replaces the clipboard.
-              Each site gets a unique QR code. Visitors scan it, fill in their
-              details, and <strong>must</strong> confirm they’ve read your safety
-              rules—no skipping. You get a real‑time dashboard, instant audit
-              exports, and a system that actually helps you stay compliant.
+              So we built SiteSafe: a compliance‑ready visitor management platform
+              for mid‑sized workplaces with multiple locations. Each site gets a
+              unique QR code. Visitors scan it, fill in their details, and{" "}
+              <strong>must</strong> confirm they’ve read your safety rules—no
+              skipping. You get a real‑time dashboard, instant audit exports, and
+              security features like watchlist screening, emergency evacuation
+              lists, and lockdown mode — all standard, not upsold.
             </p>
             <p>
               We’re a small, independent team. No outside investors, no sales
@@ -65,8 +67,8 @@ export default function AboutPage() {
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 text-center">
             <h3 className="font-semibold text-white mb-2">Flat, transparent pricing</h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              $49/month for unlimited sites and visitors. No per‑site fees, no
-              hidden add‑ons. Cancel anytime.
+              $49/month for up to 20 sites and unlimited visitors. No per‑site
+              fees, no hidden add‑ons. Cancel anytime.
             </p>
           </div>
           <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 text-center">

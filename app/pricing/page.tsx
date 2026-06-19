@@ -8,11 +8,11 @@ import { CheckCircle2, ArrowRight, ShieldCheck } from "lucide-react";
 export const metadata: Metadata = {
   title: "Pricing – SiteSafe",
   description:
-    "Simple, flat pricing for smart visitor management. $49/month, unlimited sites and visitors, no hidden fees.",
+    "Simple, flat pricing for compliance‑ready visitor management. Up to 20 sites, unlimited visitors, $49/month, no hidden fees.",
 };
 
 const features = [
-  "Unlimited sites",
+  "Up to 20 sites",
   "Unlimited visitors",
   "QR check‑in per site",
   "Mandatory policy acknowledgment",
@@ -22,6 +22,11 @@ const features = [
   "Visitor badge printing",
   "Audit exports (CSV, Excel, PDF)",
   "Built‑in analytics",
+  "Watchlist / blocklist",
+  "Emergency evacuation list",
+  "Lockdown mode",
+  "Digital document signing",
+  "Webhooks",
   "REST API",
   "14‑day free trial",
 ];
@@ -33,10 +38,10 @@ export default function PricingPage() {
         {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-            Simple, flat pricing for teams of any size
+            Simple, flat pricing for multi‑site teams
           </h1>
           <p className="text-lg text-slate-400">
-            No per‑site fees. No per‑user charges. No surprises.
+            Up to 20 sites. Unlimited visitors. No per‑site fees. No surprises.
           </p>
         </div>
 
@@ -50,7 +55,7 @@ export default function PricingPage() {
               $49<span className="text-lg text-slate-400 font-medium">/mo</span>
             </p>
             <p className="text-sm text-slate-400 mb-6">
-              Unlimited sites and visitors — no per‑location fees
+              Up to 20 sites – unlimited visitors – all features included
             </p>
             <Link
               href="/signup"
@@ -82,6 +87,18 @@ export default function PricingPage() {
           </div>
           <p className="text-xs text-slate-500 text-center mt-4">
             All features work across all your sites — no feature‑gating or add‑on fees.
+          </p>
+        </div>
+
+        {/* FAQ about limit */}
+        <div className="max-w-2xl mx-auto bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6 text-center">
+          <h3 className="text-lg font-semibold text-white mb-2">
+            What if I need more than 20 sites?
+          </h3>
+          <p className="text-sm text-slate-300">
+            If your organization has more than 20 locations, reach out to us.
+            We’ll work with you on a custom plan that fits your needs — same flat
+            philosophy, no sales games.
           </p>
         </div>
 

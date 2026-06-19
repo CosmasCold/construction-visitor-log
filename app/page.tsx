@@ -66,7 +66,7 @@ const featureGroups = [
     category: "Compliance & Export",
     items: [
       { icon: FileDown, title: "Audit exports", desc: "CSV, Excel, PDF – filtered by date, host, or company. Includes pre‑screening answers." },
-      { icon: Building, title: "Multi‑site", desc: "One account, unlimited sites. Each with its own settings." },
+      { icon: Building, title: "Multi‑site", desc: "One account, up to 20 sites. Each with its own settings." },
       { icon: TrendingUp, title: "Analytics", desc: "30‑day trend chart, total visitors, export CSV, filter by date and site." },
       { icon: FileText, title: "Digital document signing", desc: "Require visitors to sign NDAs or waivers before entry. Signatures are stored for audit." },
     ],
@@ -81,35 +81,19 @@ const featureGroups = [
   },
 ];
 
-const pricingFeature = { icon: DollarSign, title: "Flat $49/mo", desc: "No per‑site or per‑user fees. Cancel anytime." };
+const pricingFeature = {
+  icon: DollarSign,
+  title: "Flat $49/mo — up to 20 sites",
+  desc: "Unlimited visitors. All compliance and security features included. No per‑site fees. Cancel anytime.",
+};
 
-// ✅ Updated screenshot list with new file names and captions
 const screenshots = [
-  {
-    src: "/dashboard.png",
-    alt: "SiteSafe real‑time visitor dashboard with active visitors and quick actions",
-    caption: "Real‑time dashboard – see who's on site, auto‑refreshes",
-  },
-  {
-    src: "/analytics.png",
-    alt: "SiteSafe analytics page with trend chart, date filters, and CSV export",
-    caption: "Analytics – 30‑day trends, custom date ranges, export CSV",
-  },
-  {
-    src: "/activevisitors.png",
-    alt: "Active visitors list with photos, host names, sign‑in times, and sign‑out buttons",
-    caption: "Active visitors – detailed list with photos and quick sign‑out",
-  },
-  {
-    src: "/checkin.png",
-    alt: "Visitor check‑in form with host selection, photo capture, and safety acknowledgment",
-    caption: "Visitor check‑in – QR code, host dropdown, photo capture",
-  },
-  {
-    src: "/newsite.png",
-    alt: "New site creation form with name, address, and URL slug fields",
-    caption: "New site setup – create a site in seconds",
-  },
+  { src: "/dashboard.png", alt: "SiteSafe real‑time visitor dashboard with active visitors and quick actions", caption: "Real‑time dashboard – see who's on site, auto‑refreshes" },
+  { src: "/analytics.png", alt: "SiteSafe analytics page with trend chart, date filters, and CSV export", caption: "Analytics – 30‑day trends, custom date ranges, export CSV" },
+  { src: "/activevisitors.png", alt: "Active visitors list with photos, host names, sign‑in times, and sign‑out buttons", caption: "Active visitors – detailed list with photos and quick sign‑out" },
+  { src: "/checkin.png", alt: "Visitor check‑in form with host selection, photo capture, and safety acknowledgment", caption: "Visitor check‑in – QR code, host dropdown, photo capture" },
+  { src: "/lockdown.png", alt: "Lockdown mode toggle on a site card, blocking new check‑ins", caption: "Lockdown mode – one‑click block of all new check‑ins" },
+  { src: "/newsite.png", alt: "New site creation form with name, address, and URL slug fields", caption: "New site setup – create a site in seconds" },
 ];
 
 const industries = [
@@ -128,13 +112,15 @@ export default function LandingPage() {
         <div className="bg-white/[0.05] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
             <span className="text-sky-400">SiteSafe</span>
-            <span className="block mt-2 text-white">Smart visitor management</span>
+            <span className="block mt-2 text-white">Compliance‑ready visitor management</span>
+            <span className="block mt-2 text-lg sm:text-xl text-slate-300 font-medium">
+              for mid‑sized workplaces with multiple locations
+            </span>
           </h1>
-          <p className="mt-4 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            the digital check‑in for any workplace.
-          </p>
           <p className="mt-4 text-base text-slate-400 max-w-2xl mx-auto">
-            QR check‑in. Real‑time dashboard (auto‑refreshes). Audit‑ready exports. No sales calls ever.
+            QR check‑in. Mandatory safety briefings. Watchlist screening.
+            Emergency evacuation lists. Lockdown mode. All included in a flat
+            $49/month plan with up to 20 sites. No per‑site fees. No sales calls.
           </p>
           <p className="mt-3 inline-flex items-center gap-1.5 bg-sky-500/10 border border-sky-400/30 rounded-full px-4 py-1.5 text-sm text-sky-300 font-semibold">
             <ShieldCheck className="w-4 h-4" />
@@ -197,7 +183,7 @@ export default function LandingPage() {
 
       {/* Features grid */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get, for up to 20 sites</h2>
 
         {featureGroups.map((group) => (
           <div key={group.category} className="mb-8">
@@ -239,7 +225,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Screenshot gallery – now uses new files */}
+      {/* Screenshot gallery */}
       <ScreenshotGallery screenshots={screenshots} />
 
       {/* Trusted by */}
