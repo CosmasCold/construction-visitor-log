@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    include: { company: { select: { id: true, _count: { select: { sites: true } } } } },
+    include: { company: { select: { id: true } } },
   });
 
   const company = user?.company;
@@ -19,8 +19,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No company" }, { status: 400 });
   }
 
-  // Enforce 20‑site limit
-  const siteCount = company._count?.sites ?? 0;
+  // Enforce 20‑site limit (safe count)
+  const siteCount = await prisma.site.count({
+    where: { companyId: company.id },
+  });
+
   if (siteCount >= 20) {
     return NextResponse.json(
       {
