@@ -126,13 +126,13 @@ body::after {
   opacity: 0.3;
 }
 
-/* Soft aurora background animation */
+/* Soft aurora background animation – increased opacity */
 .aurora-bg {
   background: linear-gradient(
     135deg,
-    rgba(14, 165, 233, 0.06),
-    rgba(139, 92, 246, 0.06),
-    rgba(14, 165, 233, 0.06)
+    rgba(14, 165, 233, 0.12),
+    rgba(139, 92, 246, 0.12),
+    rgba(14, 165, 233, 0.12)
   );
   background-size: 400% 400%;
   animation: aurora-shift 10s ease infinite;
