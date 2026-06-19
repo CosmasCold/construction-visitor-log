@@ -175,7 +175,7 @@ export default function LandingPage() {
 
       {/* Problem section – multi‑site pain point */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
+        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center accent-glow">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
             A facility manager with 12 locations had no single view of who was on site
             at any given time. Contractors signed in at one location and signed out at
@@ -197,7 +197,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {group.items.map((f, idx) => (
                 <FadeInSection key={idx} delay={idx * 100}>
-                  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300">
+                  <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300 feature-card-hover">
                     <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
                       <f.icon className="w-5 h-5 text-sky-300" />
                     </div>
@@ -214,7 +214,7 @@ export default function LandingPage() {
 
         {/* Pricing callout */}
         <div className="mt-8 flex justify-center">
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start max-w-md w-full hover:bg-white/[0.08] transition-all duration-300">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start max-w-md w-full hover:bg-white/[0.08] transition-all duration-300 accent-glow">
             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
               <pricingFeature.icon className="w-5 h-5 text-emerald-300" />
             </div>
@@ -257,7 +257,7 @@ export default function LandingPage() {
       {/* Testimonial */}
       <FadeInSection>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center relative">
+          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-8 text-center relative accent-glow">
             <span className="absolute -top-4 left-4 text-6xl text-sky-400/20 font-serif leading-none select-none" aria-hidden="true">
               &ldquo;
             </span>
