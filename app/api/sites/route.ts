@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No company" }, { status: 400 });
   }
 
-  // Enforce 20‑site limit (safe count)
+  // Enforce 20‑site limit
   const siteCount = await prisma.site.count({
     where: { companyId: company.id },
   });
@@ -34,7 +34,23 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { name, slug, address } = await req.json();
+  // Accept both JSON and form‑encoded data
+  let name: string, slug: string, address: string | undefined;
+
+  const contentType = req.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
+    const body = await req.json();
+    name = body.name;
+    slug = body.slug;
+    address = body.address;
+  } else {
+    const form = await req.formData();
+    name = form.get("name") as string;
+    slug = form.get("slug") as string;
+    address = form.get("address") as string || undefined;
+    // companyId is sent from the form but we already have the company from the session
+  }
+
   if (!name || !slug) {
     return NextResponse.json({ error: "Name and slug required" }, { status: 400 });
   }
