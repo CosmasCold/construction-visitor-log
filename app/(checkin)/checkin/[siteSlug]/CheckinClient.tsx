@@ -70,8 +70,8 @@ export default function CheckinClient({
   // Error message
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Document signing state
-  const [documentSigningEnabled, setDocumentSigningEnabled] = useState(false);
+  // Document signing state – hardcoded to true for now to always show the section
+  const [documentSigningEnabled, setDocumentSigningEnabled] = useState(true);
   const [documentTemplateData, setDocumentTemplateData] = useState<string | null>(null);
   const [showSignaturePad, setShowSignaturePad] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -102,12 +102,13 @@ export default function CheckinClient({
       .catch(() => setExpectedVisitors([]));
   }, [siteId]);
 
-  // Fetch site settings for document signing and visitor list privacy
+  // Fetch site settings – currently forcing document signing enabled for visibility
   useEffect(() => {
     fetch(`/api/sites/${siteId}`)
       .then((res) => res.json())
       .then((data) => {
-        setDocumentSigningEnabled(data.documentSigningEnabled || false);
+        // setDocumentSigningEnabled(data.documentSigningEnabled || false);
+        setDocumentSigningEnabled(true); // Force on – always show the signature pad
         setDocumentTemplateData(data.documentTemplateData || null);
         setShowVisitorList(data.showVisitorListOnCheckin ?? true);
       })
@@ -517,7 +518,7 @@ export default function CheckinClient({
           </div>
         )}
 
-        {/* Document signing */}
+        {/* Document signing – now always visible */}
         {documentSigningEnabled && (
           <div className="glass-card accent-glow aurora-bg p-6">
             <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
