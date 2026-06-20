@@ -250,7 +250,7 @@ export default async function RootLayout({
       <body
         className="flex flex-col min-h-screen"
         style={{
-          backgroundImage: `linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.78)), url('https://images.unsplash.com/photo-1521737603724-dbb665a0b1f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`,
+          backgroundImage: `linear-gradient(rgba(15,23,42,0.25), rgba(15,23,42,0.35)), url('https://images.unsplash.com/photo-1521737603724-dbb665a0b1f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundAttachment: "fixed",
