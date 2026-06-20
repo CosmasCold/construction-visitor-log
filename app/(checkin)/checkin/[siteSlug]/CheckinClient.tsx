@@ -228,25 +228,28 @@ export default function CheckinClient({
   }
 
   async function uploadSignature(dataUrl: string): Promise<string | null> {
-    setUploading(true);
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        imageBase64: dataUrl,
-        fileName: `sig-${Date.now()}.png`,
-      }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setSignatureUrl(data.url);
-      setUploading(false);
-      setCurrentStep(4);
-      return data.url;
-    }
+  setUploading(true);
+  const fileName = `sig-${Date.now()}.png`;
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      imageBase64: dataUrl,
+      fileName,
+    }),
+  });
+  if (res.ok) {
+    const data = await res.json();
+    setSignatureUrl(data.url);
     setUploading(false);
-    return null;
+    clearSignature();
+    setShowSignaturePad(false);
+    setCurrentStep(4);
+    return data.url;
   }
+  setUploading(false);
+  return null;
+}
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
@@ -301,6 +304,8 @@ export default function CheckinClient({
       setPhotoUrl(null);
       setSignatureUrl(null);
       setSignatureDataUrl(null);
+      clearSignature();            // clear canvas
+      setShowSignaturePad(false);  // collapse pad
       setErrorMessage(null);
       setCurrentStep(0);
       const refresh = await fetch(`/api/checkin/${siteId}/active`);
@@ -346,6 +351,8 @@ export default function CheckinClient({
       setSafetyAcknowledged(false);
       setSignatureUrl(null);
       setSignatureDataUrl(null);
+      clearSignature();            // clear canvas
+      setShowSignaturePad(false);  // collapse pad
       setErrorMessage(null);
       setCurrentStep(0);
     } else {
@@ -524,7 +531,12 @@ export default function CheckinClient({
               </a>
             )}
             <button
-              onClick={() => setShowSignaturePad(!showSignaturePad)}
+              onClick={() => {
+                if (showSignaturePad) {
+                  clearSignature(); // clear when hiding
+                }
+                setShowSignaturePad(!showSignaturePad);
+              }}
               className="text-sky-400 text-xs hover:text-sky-300 mb-2"
             >
               {showSignaturePad ? "Hide signature pad" : "Sign the document"}
