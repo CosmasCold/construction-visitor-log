@@ -248,18 +248,20 @@ export default async function RootLayout({
         />
       </head>
       <body className="relative flex flex-col min-h-screen">
-  <div className="bg-aurora-grid">
-    <div className="aurora-blob-1" />
-    <div className="aurora-blob-2" />
-  </div>
+        {/* ── Premium background (living aurora + grid) ── */}
+        <div className="bg-premium">
+          <div className="aurora-blob aurora-blob--cyan" />
+          <div className="aurora-blob aurora-blob--violet" />
+          <div className="aurora-blob aurora-blob--indigo" />
+        </div>
 
-  <NavWrapper header={header} footer={footer}>
-    <main className="flex-1">{children}</main>
-  </NavWrapper>
-  <Analytics />
-  <Script src="/crisp-init.js" strategy="lazyOnload" />
-  <ExitIntentPopup />
-</body>
+        <NavWrapper header={header} footer={footer}>
+          <main className="flex-1">{children}</main>
+        </NavWrapper>
+        <Analytics />
+        <Script src="/crisp-init.js" strategy="lazyOnload" />
+        <ExitIntentPopup />
+      </body>
     </html>
   );
 }
