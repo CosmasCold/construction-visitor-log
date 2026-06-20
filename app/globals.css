@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Base styles ────────────────────────────────────────── */
 html {
   font-size: 18px;
   scroll-behavior: smooth;
@@ -9,7 +10,29 @@ html {
   background-color: #0f172a;
 }
 
-/* Premium scrollbar */
+body {
+  background-color: #0f172a;
+  position: relative;
+  min-height: 100vh;
+}
+
+/*
+ * 💡 If you can’t see the background image on the landing page or other pages,
+ *    the inline style in layout.tsx uses a very dark gradient overlay:
+ *      linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.78)), url(...)
+ *    That hides the photo almost completely.
+ *    To fix it, lighten the overlay in layout.tsx, e.g.:
+ *      linear-gradient(rgba(15,23,42,0.25), rgba(15,23,42,0.35)), url(...)
+ */
+
+/* ── Focus visible ring ─────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid rgba(14, 165, 233, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Premium scrollbar ──────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -24,47 +47,64 @@ html {
   background: rgba(255, 255, 255, 0.3);
 }
 
-body {
-  background-color: #0f172a;
-  position: relative;
-  min-height: 100vh;
-}
-
-*:focus-visible {
-  outline: 2px solid rgba(14, 165, 233, 0.6);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
 /* ── Entrance animations ────────────────────────────────── */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .animate-fade-in-up {
   animation: fadeInUp 0.7s ease-out forwards;
   opacity: 0;
 }
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-.delay-500 { animation-delay: 0.5s; }
-.delay-600 { animation-delay: 0.6s; }
-.delay-700 { animation-delay: 0.7s; }
-.delay-800 { animation-delay: 0.8s; }
-.delay-900 { animation-delay: 0.9s; }
+.delay-100 {
+  animation-delay: 0.1s;
+}
+.delay-200 {
+  animation-delay: 0.2s;
+}
+.delay-300 {
+  animation-delay: 0.3s;
+}
+.delay-400 {
+  animation-delay: 0.4s;
+}
+.delay-500 {
+  animation-delay: 0.5s;
+}
+.delay-600 {
+  animation-delay: 0.6s;
+}
+.delay-700 {
+  animation-delay: 0.7s;
+}
+.delay-800 {
+  animation-delay: 0.8s;
+}
+.delay-900 {
+  animation-delay: 0.9s;
+}
 
 /* Floating animation */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Scroll‑triggered feature cards */
+/* ── Scroll‑triggered feature cards ───────────────────── */
 .feature-card {
   opacity: 0;
   transform: translateY(24px);
@@ -75,13 +115,27 @@ body {
   transform: translateY(0);
 }
 
+/* ── Card shadows (defined here so they work without Tailwind config) ── */
+.shadow-card-raised {
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
+}
+.shadow-card-dipped {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 /* ── Premium touches ───────────────────────────────────── */
 
 /* Animated gradient border for hero card */
 @keyframes gradient-spin {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 .gradient-border {
   position: relative;
@@ -123,9 +177,15 @@ body {
   animation: aurora-shift 10s ease infinite;
 }
 @keyframes aurora-shift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* CTA pulse */
@@ -134,34 +194,51 @@ body {
   animation: cta-pulse 2s infinite;
 }
 @keyframes cta-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); }
-  70% { box-shadow: 0 0 0 12px rgba(14, 165, 233, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(14, 165, 233, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
+  }
 }
 
 /* Section divider */
 .section-divider {
   height: 1px;
-  background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
 }
 
 /* Toast animation */
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
 }
 
-/* Accordion animation */
+/* Accordion animation (raised max-height to avoid clipping long content) */
 .accordion-content {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
 }
 .accordion-content.open {
-  max-height: 800px;
+  max-height: 2000px; /* was 800px */
 }
 
 /* Floating label */
@@ -206,8 +283,12 @@ body {
 
 /* Photo capture flash */
 @keyframes flash {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 .photo-flash {
   animation: flash 0.3s ease-out;
