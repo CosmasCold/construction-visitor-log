@@ -250,6 +250,19 @@ export default async function RootLayout({
         />
       </head>
       <body className="flex flex-col min-h-screen">
+  {/* Background image – always visible */}
+  <div className="fixed inset-0 z-[-1]">
+    <Image
+      src="https://images.unsplash.com/photo-1521737603724-dbb665a0b1f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      alt=""
+      fill
+      priority
+      className="object-cover"
+      unoptimized
+    />
+    <div className="absolute inset-0 bg-slate-900/70" />
+  </div>
+
   <NavWrapper header={header} footer={footer}>
     <main className="flex-1">{children}</main>
   </NavWrapper>
