@@ -248,14 +248,15 @@ export default async function RootLayout({
         />
       </head>
       <body
-        className="flex flex-col min-h-screen"
-        style={{
-  backgroundImage: `url('https://images.unsplash.com/photo-1521737603724-dbb665a0b1f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')`,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  backgroundColor: "#0f172a",
-}}
-      >
+  className="flex flex-col min-h-screen bg-body"
+  style={{
+    backgroundImage: `url('/hero-bg.webp')`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundAttachment: "scroll",     // more reliable than "fixed"
+    backgroundColor: "#0f172a",
+  }}
+>
         <NavWrapper header={header} footer={footer}>
           <main className="flex-1">{children}</main>
         </NavWrapper>

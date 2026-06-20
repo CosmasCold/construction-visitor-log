@@ -16,14 +16,14 @@ body {
   min-height: 100vh;
 }
 
-/*
- * 💡 If you can’t see the background image on the landing page or other pages,
- *    the inline style in layout.tsx uses a very dark gradient overlay:
- *      linear-gradient(rgba(15,23,42,0.72), rgba(15,23,42,0.78)), url(...)
- *    That hides the photo almost completely.
- *    To fix it, lighten the overlay in layout.tsx, e.g.:
- *      linear-gradient(rgba(15,23,42,0.25), rgba(15,23,42,0.35)), url(...)
- */
+/* ── Background overlay (subtle darkening for readability) ── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35); /* adjust 0.35 to taste: 0.25 lighter, 0.45 darker */
+  z-index: -1;
+}
 
 /* ── Focus visible ring ─────────────────────────────────── */
 *:focus-visible {
