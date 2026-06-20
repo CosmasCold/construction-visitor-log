@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { logEvent } from "@/lib/analytics";
 import {
@@ -207,7 +208,7 @@ export default function AdminClient({
 
   return (
     <div className="min-h-screen py-10 px-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6 animate-fade-in-up">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -220,7 +221,7 @@ export default function AdminClient({
             <button
               onClick={() => router.refresh()}
               title="Refresh"
-              className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              className="glass-card px-5 py-2.5 text-sm font-medium flex items-center gap-1 text-white"
             >
               <RefreshCw className="w-4 h-4" /> Refresh
             </button>
@@ -246,23 +247,23 @@ export default function AdminClient({
               <FileDown className="w-4 h-4" /> PDF
             </button>
             {isSuperAdmin && (
-              <a
+              <Link
                 href="/admin/analytics"
                 className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-1"
               >
                 <BarChart3 className="w-4 h-4" /> Analytics
-              </a>
+              </Link>
             )}
-            <a
+            <Link
               href="/admin/checklist"
               className="bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-1"
             >
               Checklist Requests
-            </a>
+            </Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               title="Logout"
-              className="bg-white/10 hover:bg-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              className="glass-card px-5 py-2.5 text-sm font-medium flex items-center gap-1 text-white"
             >
               <LogOut className="w-4 h-4" /> Logout
             </button>
@@ -270,7 +271,7 @@ export default function AdminClient({
         </div>
 
         {/* Filters */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-4 flex flex-wrap items-end gap-3">
+        <div className="glass-card p-4 flex flex-wrap items-end gap-3">
           <div>
             <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
               From
@@ -326,7 +327,7 @@ export default function AdminClient({
 
         {/* Sites list (super admin only) */}
         {isSuperAdmin && sites.length > 0 && (
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6">
+          <div className="glass-card p-6">
             <h2 className="text-lg font-semibold tracking-tight text-white mb-4 flex items-center gap-2">
               <Building className="w-5 h-5 text-sky-400" /> Sites
             </h2>
@@ -364,7 +365,7 @@ export default function AdminClient({
         )}
 
         {/* Visitors table */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto">
+        <div className="glass-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-white/5">
               <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">

@@ -434,22 +434,22 @@ export default function CheckinClient({
             {showQr ? "Hide QR" : "Scan QR to open on your phone"}
           </button>
           {showQr && (
-  <div className="mt-3 flex justify-center">
-    <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 p-4 accent-glow aurora-bg">
-      <Image
-        src={`/api/sites/${siteId}/qr`}
-        alt="QR code for check‑in"
-        width={192}
-        height={192}
-        unoptimized
-        className="rounded-xl"
-      />
-      <p className="text-xs text-slate-300 text-center mt-2">
-        Scan to check in
-      </p>
-    </div>
-  </div>
-)}
+            <div className="mt-3 flex justify-center">
+              <div className="glass-card accent-glow aurora-bg p-4">
+                <Image
+                  src={`/api/sites/${siteId}/qr`}
+                  alt="QR code for check‑in"
+                  width={192}
+                  height={192}
+                  unoptimized
+                  className="rounded-xl"
+                />
+                <p className="text-xs text-slate-300 text-center mt-2">
+                  Scan to check in
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Progress indicator */}
@@ -463,7 +463,7 @@ export default function CheckinClient({
         </div>
 
         {/* Safety briefing */}
-        <div className="bg-sky-500/10 backdrop-blur-lg rounded-2xl border-l-4 border-sky-400 p-5 shadow-card-dipped flex gap-3 accent-glow">
+        <div className="glass-card border-l-4 border-sky-400 accent-glow aurora-bg p-5 flex gap-3">
           <AlertTriangle className="w-5 h-5 text-sky-400 flex-shrink-0 mt-0.5" />
           <div>
             <h2 className="text-sm font-semibold uppercase tracking-wider text-sky-300 mb-1">
@@ -489,7 +489,7 @@ export default function CheckinClient({
 
         {/* Pre‑screening questions */}
         {questions.length > 0 && (
-          <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
+          <div className="glass-card accent-glow aurora-bg p-6">
             <h3 className="text-sm font-semibold text-white mb-3">Pre‑screening questions</h3>
             {questions.map((q, idx) => (
               <label key={idx} className="flex items-center gap-2 text-sm text-slate-200 mb-2">
@@ -509,7 +509,7 @@ export default function CheckinClient({
 
         {/* Document signing */}
         {documentSigningEnabled && (
-          <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
+          <div className="glass-card accent-glow aurora-bg p-6">
             <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
               <FileText className="w-4 h-4 text-sky-400" /> Document Signing
             </h3>
@@ -572,7 +572,7 @@ export default function CheckinClient({
 
         {/* Expected visitors (quick sign‑in) */}
         {expectedVisitors.length > 0 && (
-          <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
+          <div className="glass-card accent-glow aurora-bg p-6">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 mb-3">
               Expected today
             </h2>
@@ -596,7 +596,7 @@ export default function CheckinClient({
         )}
 
         {/* Sign‑in form */}
-        <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
+        <div className="glass-card accent-glow aurora-bg p-6">
           {errorMessage && (
             <div className="mb-4 bg-rose-500/10 backdrop-blur-md rounded-xl border border-rose-400/30 p-4 flex items-start gap-3">
               <XCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
@@ -757,7 +757,7 @@ export default function CheckinClient({
 
         {/* Active visitors – conditionally shown */}
         {showVisitorList && (
-          <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow aurora-bg">
+          <div className="glass-card accent-glow aurora-bg p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-2">
                 <Users className="w-4 h-4" /> Currently on Site

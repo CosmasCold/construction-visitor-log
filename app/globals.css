@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Base styles ────────────────────────────────────────── */
+/* ── Base ───────────────────────────────────────────────── */
 html {
-  font-size: 18px;
+  font-size: 16px;                       /* was 18px → tighter, more premium */
   scroll-behavior: smooth;
   overflow-y: scroll;
   background-color: #0f172a;
@@ -12,51 +12,38 @@ html {
 
 body {
   background-color: #0f172a;
-  position: relative;
   min-height: 100vh;
+  margin: 0;
 }
 
-/* ── Subtle dark overlay for the background image ──────── */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.35); /* Reduce to 0.25 for a lighter overlay */
-  z-index: -1;
+/* ── Premium glass card (unified) ──────────────────────── */
+@layer components {
+  .glass-card {
+    @apply bg-white/[0.08] backdrop-blur-lg rounded-2xl border border-white/10
+           shadow-card-raised transition-all duration-300;
+  }
+  .glass-card:hover {
+    @apply bg-white/[0.12] border-white/20 -translate-y-1;
+  }
 }
 
-/* ── Focus visible ring ─────────────────────────────────── */
+/* ── Focus ring ──────────────────────────────────────────── */
 *:focus-visible {
   outline: 2px solid rgba(14, 165, 233, 0.6);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* ── Premium scrollbar ──────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
+/* ── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
 
-/* ── Entrance animations ────────────────────────────────── */
+/* ── Entrance animations ─────────────────────────────────── */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in-up {
   animation: fadeInUp 0.7s ease-out forwards;
@@ -72,14 +59,11 @@ body::before {
 .delay-800 { animation-delay: 0.8s; }
 .delay-900 { animation-delay: 0.9s; }
 
-/* Floating animation */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  50%      { transform: translateY(-6px); }
 }
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
+.animate-float { animation: float 3s ease-in-out infinite; }
 
 /* ── Scroll‑triggered feature cards ───────────────────── */
 .feature-card {
@@ -93,19 +77,13 @@ body::before {
 }
 
 /* ── Card shadows ──────────────────────────────────────── */
-.shadow-card-raised {
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
-}
-.shadow-card-dipped {
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-}
+.shadow-card-raised { box-shadow: 0 20px 40px -12px rgba(0,0,0,0.5); }
+.shadow-card-dipped { box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
 
-/* ── Premium touches ───────────────────────────────────── */
-
-/* Animated gradient border for hero card */
+/* ── Gradient border hero card ────────────────────────── */
 @keyframes gradient-spin {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 .gradient-border {
@@ -124,25 +102,21 @@ body::before {
   opacity: 0.3;
 }
 
-/* Static accent glow */
+/* ── Accent glow / aurora ──────────────────────────────── */
 .accent-glow {
-  box-shadow: 0 0 20px -8px rgba(14, 165, 233, 0.15);
-  border-color: rgba(14, 165, 233, 0.15);
+  box-shadow: 0 0 20px -8px rgba(14,165,233,0.15);
+  border-color: rgba(14,165,233,0.15);
 }
-
-/* Hover glow for feature cards */
 .feature-card-hover:hover {
-  box-shadow: 0 0 24px -6px rgba(14, 165, 233, 0.2);
-  border-color: rgba(14, 165, 233, 0.25);
+  box-shadow: 0 0 24px -6px rgba(14,165,233,0.2);
+  border-color: rgba(14,165,233,0.25);
 }
-
-/* Soft aurora background animation */
 .aurora-bg {
   background: linear-gradient(
     135deg,
-    rgba(14, 165, 233, 0.12),
-    rgba(139, 92, 246, 0.12),
-    rgba(14, 165, 233, 0.12)
+    rgba(14,165,233,0.12),
+    rgba(139,92,246,0.12),
+    rgba(14,165,233,0.12)
   );
   background-size: 400% 400%;
   animation: aurora-shift 10s ease infinite;
@@ -153,51 +127,36 @@ body::before {
   100% { background-position: 0% 50%; }
 }
 
-/* CTA pulse */
+/* ── CTA pulse ─────────────────────────────────────────── */
 .cta-pulse {
-  box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
+  box-shadow: 0 0 0 0 rgba(14,165,233,0.4);
   animation: cta-pulse 2s infinite;
 }
 @keyframes cta-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); }
-  70% { box-shadow: 0 0 0 12px rgba(14, 165, 233, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+  0%   { box-shadow: 0 0 0 0 rgba(14,165,233,0.4); }
+  70%  { box-shadow: 0 0 0 12px rgba(14,165,233,0); }
+  100% { box-shadow: 0 0 0 0 rgba(14,165,233,0); }
 }
 
-/* Section divider */
+/* ── Section divider ───────────────────────────────────── */
 .section-divider {
   height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.08),
-    transparent
-  );
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
 }
 
-/* Toast animation */
+/* ── Toast ──────────────────────────────────────────────── */
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.animate-slide-up {
-  animation: slide-up 0.3s ease-out;
-}
+.animate-slide-up { animation: slide-up 0.3s ease-out; }
 
-/* Accordion animation */
-.accordion-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-}
-.accordion-content.open {
-  max-height: 2000px;
-}
+/* ── Accordion ─────────────────────────────────────────── */
+.accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.accordion-content.open { max-height: 2000px; }
 
-/* Floating label */
-.floating-label {
-  position: relative;
-}
+/* ── Floating labels ───────────────────────────────────── */
+.floating-label { position: relative; }
 .floating-label input:focus + label,
 .floating-label input:not(:placeholder-shown) + label {
   transform: translateY(-1.5rem) scale(0.85);
@@ -213,32 +172,25 @@ body::before {
   font-size: 0.875rem;
 }
 
-/* Progress indicator */
-.step-indicator {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
+/* ── Step indicator ────────────────────────────────────── */
+.step-indicator { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1rem; }
 .step-indicator .step {
-  width: 2rem;
-  height: 0.25rem;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.1);
-  transition: background 0.3s ease;
+  width: 2rem; height: 0.25rem; border-radius: 9999px;
+  background: rgba(255,255,255,0.1); transition: background 0.3s ease;
 }
-.step-indicator .step.active {
-  background: #38bdf8;
-}
-.step-indicator .step.completed {
-  background: #10b981;
-}
+.step-indicator .step.active { background: #38bdf8; }
+.step-indicator .step.completed { background: #10b981; }
 
-/* Photo capture flash */
-@keyframes flash {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
-}
-.photo-flash {
-  animation: flash 0.3s ease-out;
+/* ── Photo flash ───────────────────────────────────────── */
+@keyframes flash { 0% { opacity: 1; } 100% { opacity: 0; } }
+.photo-flash { animation: flash 0.3s ease-out; }
+
+/* ── Reduced motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

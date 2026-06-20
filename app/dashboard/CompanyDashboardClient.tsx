@@ -538,7 +538,7 @@ export default function CompanyDashboardClient({
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={() => router.refresh()}
-              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              className="glass-card px-4 py-2 text-sm font-medium flex items-center gap-1 text-white"
             >
               <RefreshCw className="w-4 h-4" /> Refresh
             </button>
@@ -588,7 +588,7 @@ export default function CompanyDashboardClient({
             </button>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-medium border border-white/10 transition-all duration-200 active:scale-[0.98] flex items-center gap-1"
+              className="glass-card px-4 py-2 text-sm font-medium flex items-center gap-1 text-white"
             >
               <LogOut className="w-4 h-4" /> Logout
             </button>
@@ -597,7 +597,7 @@ export default function CompanyDashboardClient({
 
         {/* Onboarding banner */}
         {showOnboarding && (
-          <div className="bg-sky-500/10 backdrop-blur-sm border border-sky-400/30 rounded-2xl p-4 flex justify-between items-start accent-glow">
+          <div className="glass-card border-sky-400/30 p-4 flex justify-between items-start accent-glow">
             <p className="text-sm text-sky-100">
               <ClipboardList className="w-4 h-4 inline-block mr-1" />
               Welcome! Start by renaming your first site or adding a new one
@@ -643,7 +643,7 @@ export default function CompanyDashboardClient({
           ].map((stat, i) => (
             <div
               key={i}
-              className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 p-4 flex items-center gap-3 accent-glow bg-white/[0.10] aurora-bg"
+              className="glass-card accent-glow aurora-bg p-4 flex items-center gap-3"
             >
               <stat.icon className={`w-5 h-5 ${stat.color}`} />
               <div>
@@ -657,7 +657,7 @@ export default function CompanyDashboardClient({
         {/* Two‑column row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Date filter */}
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-4 flex flex-wrap items-end gap-3 accent-glow bg-white/[0.10] aurora-bg">
+          <div className="glass-card accent-glow aurora-bg p-4 flex flex-wrap items-end gap-3">
             <div>
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1">
                 From
@@ -695,7 +695,7 @@ export default function CompanyDashboardClient({
           </div>
 
           {/* New Site */}
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-4 accent-glow bg-white/[0.10] aurora-bg">
+          <div className="glass-card accent-glow aurora-bg p-4">
             <button
               onClick={() => setShowNewSite(!showNewSite)}
               className="text-sky-400 font-medium text-sm mb-3 hover:text-sky-300 transition-colors duration-150 flex items-center gap-1"
@@ -785,9 +785,9 @@ export default function CompanyDashboardClient({
             sites.map((site) => (
               <div
                 key={site.id}
-                className={`relative bg-white/[0.12] backdrop-blur-lg rounded-2xl border ${
-                  site.lockdownEnabled ? "border-red-400/30" : "border-white/10"
-                } shadow-card-raised hover:shadow-card-raised transition-all duration-300 p-4 accent-glow bg-white/[0.10] aurora-bg group`}
+                className={`relative glass-card ${
+                  site.lockdownEnabled ? "border-red-400/30" : ""
+                } p-4 group`}
               >
                 {site.lockdownEnabled && (
                   <div className="absolute top-0 left-0 right-0 bg-red-500/10 text-red-400 text-xs text-center py-0.5 rounded-t-2xl border-b border-red-400/20">
@@ -1319,10 +1319,7 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Blocklist section */}
-        <div
-          id="blocklist-section"
-          className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow bg-white/[0.10] aurora-bg"
-        >
+        <div className="glass-card accent-glow aurora-bg p-6">
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-sky-400" /> Watchlist /
             Blocklist
@@ -1400,10 +1397,7 @@ export default function CompanyDashboardClient({
         </div>
 
         {/* Webhook Settings */}
-        <div
-          id="webhook-section"
-          className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 accent-glow bg-white/[0.10] aurora-bg"
-        >
+        <div className="glass-card accent-glow aurora-bg p-6">
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
             <Zap className="w-5 h-5 text-sky-400" /> Webhooks
           </h3>
@@ -1443,7 +1437,7 @@ export default function CompanyDashboardClient({
         {loading ? (
           <SkeletonTable />
         ) : (
-          <div className="bg-white/[0.12] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto accent-glow bg-white/[0.10] aurora-bg">
+          <div className="glass-card accent-glow aurora-bg overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
                 <tr className="text-xs font-medium uppercase tracking-wider text-slate-400">
