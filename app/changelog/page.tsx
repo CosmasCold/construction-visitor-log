@@ -9,6 +9,17 @@ export const metadata: Metadata = {
 
 const updates = [
   {
+  date: "2026-06-19",
+  changes: [
+    "Updated pricing plan to include up to 20 sites for $49/month (previously unlimited).",
+    "Repositioned landing page and messaging to \"compliance‑ready visitor management for mid‑sized workplaces with multiple locations.\"",
+    "Added change password feature to Settings page.",
+    "Improved dashboard and check‑in page with premium glassmorphism design, floating labels, stats row, skeleton loaders, toast notifications, and accordion edit form.",
+    "Added dedicated security‑features landing page with embedded demo video.",
+    "Published blog post explaining the pricing and positioning changes.",
+  ],
+},
+  {
     date: "2026-06-15",
     changes: [
       "Launched Lockdown Mode – instantly block all new check‑ins and flag active visitors from the dashboard.",

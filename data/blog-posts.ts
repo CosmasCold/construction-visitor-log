@@ -1,5 +1,13 @@
 export const posts = [
   {
+  slug: "capped-plan-20-sites",
+  title: "Why We Capped Our Plan at 20 Sites",
+  date: "2026-06-19",
+  lastModified: "2026-06-19",
+  excerpt:
+    "SiteSafe recently changed from unlimited sites to a 20‑site cap on the $49/month plan. Here’s why we made the change and what it means for our customers.",
+},
+  {
   slug: "visitor-management-for-schools",
   title: "Visitor Management for Schools: What Principals Need to Know",
   date: "2026-06-18",

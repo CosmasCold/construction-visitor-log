@@ -29,6 +29,7 @@ export function GET() {
     "/blog/the-receptionist-alternative",
     "/blog/sine-alternative",
     "/blog/visitor-management-for-schools",
+    "/blog/capped-plan-20-sites",
     "/changelog",
     "/checklist",
     "/compare",
