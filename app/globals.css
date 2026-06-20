@@ -16,12 +16,12 @@ body {
   min-height: 100vh;
 }
 
-/* ── Background overlay (subtle darkening for readability) ── */
+/* ── Subtle dark overlay for the background image ──────── */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.35); /* adjust 0.35 to taste: 0.25 lighter, 0.45 darker */
+  background: rgba(15, 23, 42, 0.35); /* Reduce to 0.25 for a lighter overlay */
   z-index: -1;
 }
 
@@ -62,43 +62,20 @@ body::before {
   animation: fadeInUp 0.7s ease-out forwards;
   opacity: 0;
 }
-.delay-100 {
-  animation-delay: 0.1s;
-}
-.delay-200 {
-  animation-delay: 0.2s;
-}
-.delay-300 {
-  animation-delay: 0.3s;
-}
-.delay-400 {
-  animation-delay: 0.4s;
-}
-.delay-500 {
-  animation-delay: 0.5s;
-}
-.delay-600 {
-  animation-delay: 0.6s;
-}
-.delay-700 {
-  animation-delay: 0.7s;
-}
-.delay-800 {
-  animation-delay: 0.8s;
-}
-.delay-900 {
-  animation-delay: 0.9s;
-}
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
+.delay-900 { animation-delay: 0.9s; }
 
 /* Floating animation */
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 .animate-float {
   animation: float 3s ease-in-out infinite;
@@ -115,7 +92,7 @@ body::before {
   transform: translateY(0);
 }
 
-/* ── Card shadows (defined here so they work without Tailwind config) ── */
+/* ── Card shadows ──────────────────────────────────────── */
 .shadow-card-raised {
   box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
 }
@@ -127,15 +104,9 @@ body::before {
 
 /* Animated gradient border for hero card */
 @keyframes gradient-spin {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 .gradient-border {
   position: relative;
@@ -153,7 +124,7 @@ body::before {
   opacity: 0.3;
 }
 
-/* Static accent glow for secondary cards */
+/* Static accent glow */
 .accent-glow {
   box-shadow: 0 0 20px -8px rgba(14, 165, 233, 0.15);
   border-color: rgba(14, 165, 233, 0.15);
@@ -177,15 +148,9 @@ body::before {
   animation: aurora-shift 10s ease infinite;
 }
 @keyframes aurora-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* CTA pulse */
@@ -194,15 +159,9 @@ body::before {
   animation: cta-pulse 2s infinite;
 }
 @keyframes cta-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 12px rgba(14, 165, 233, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
-  }
+  0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(14, 165, 233, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
 }
 
 /* Section divider */
@@ -218,27 +177,21 @@ body::before {
 
 /* Toast animation */
 @keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
 }
 
-/* Accordion animation (raised max-height to avoid clipping long content) */
+/* Accordion animation */
 .accordion-content {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
 }
 .accordion-content.open {
-  max-height: 2000px; /* was 800px */
+  max-height: 2000px;
 }
 
 /* Floating label */
@@ -283,12 +236,8 @@ body::before {
 
 /* Photo capture flash */
 @keyframes flash {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+  0% { opacity: 1; }
+  100% { opacity: 0; }
 }
 .photo-flash {
   animation: flash 0.3s ease-out;

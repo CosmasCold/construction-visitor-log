@@ -185,7 +185,7 @@ export default async function RootLayout({
           <Link href="/security" className="hover:text-white transition-colors duration-150">Security</Link>
           <Link href="/contact" className="hover:text-white transition-colors duration-150">Contact</Link>
           <a
-            href="mailto:hello@sitesafe.thesift.space"
+            href="mailto:hello@thesift.space"
             className="hover:text-white transition-colors duration-150"
           >
             Email
@@ -248,15 +248,14 @@ export default async function RootLayout({
         />
       </head>
       <body
-  className="flex flex-col min-h-screen bg-body"
-  style={{
-    backgroundImage: `url('/hero-bg.webp')`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundAttachment: "scroll",     // more reliable than "fixed"
-    backgroundColor: "#0f172a",
-  }}
->
+        className="flex flex-col min-h-screen"
+        style={{
+          backgroundImage: `url('/hero-bg.webp')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "#0f172a",
+        }}
+      >
         <NavWrapper header={header} footer={footer}>
           <main className="flex-1">{children}</main>
         </NavWrapper>
