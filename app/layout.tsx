@@ -248,38 +248,18 @@ export default async function RootLayout({
         />
       </head>
       <body className="relative flex flex-col min-h-screen">
-        {/* ── Fixed background layer (photo + brand wash + noise) ── */}
-        <div
-          id="bg-layer"
-          className="fixed inset-0 -z-10"
-          style={{
-            backgroundImage: `
-              url('/hero-bg.webp'),
-              linear-gradient(135deg, rgba(14,165,233,0.3), rgba(139,92,246,0.15))
-            `,
-            backgroundSize: "cover, 100% 100%",
-            backgroundPosition: "center, 0 0",
-            backgroundBlendMode: "overlay, normal",
-            filter: "brightness(0.9) contrast(1.05)",
-          }}
-        />
-        {/* Noise overlay (tactile grain) */}
-        <div
-          className="fixed inset-0 pointer-events-none -z-10 opacity-[0.015]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "repeat",
-            backgroundSize: "64px 64px",
-          }}
-        />
+  <div className="bg-aurora-grid">
+    <div className="aurora-blob-1" />
+    <div className="aurora-blob-2" />
+  </div>
 
-        <NavWrapper header={header} footer={footer}>
-          <main className="flex-1">{children}</main>
-        </NavWrapper>
-        <Analytics />
-        <Script src="/crisp-init.js" strategy="lazyOnload" />
-        <ExitIntentPopup />
-      </body>
+  <NavWrapper header={header} footer={footer}>
+    <main className="flex-1">{children}</main>
+  </NavWrapper>
+  <Analytics />
+  <Script src="/crisp-init.js" strategy="lazyOnload" />
+  <ExitIntentPopup />
+</body>
     </html>
   );
 }
