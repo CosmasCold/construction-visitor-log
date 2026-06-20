@@ -1,4 +1,3 @@
-// app/local/[slug]/page.tsx
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,7 +18,9 @@ export async function generateStaticParams() {
   const paths = [];
   for (const industry of industries) {
     for (const city of cities) {
-      paths.push({ slug: `${industry.slug}-visitor-${city.slug}` });
+      paths.push({
+        slug: [`${industry.slug}-visitor-${city.slug}`],
+      });
     }
   }
   return paths;
@@ -28,16 +29,17 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string[] };
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const parts = slug.split("-visitor-");
+  const fullSlug = params.slug?.[0] || "";
+  const parts = fullSlug.split("-visitor-");
   if (parts.length !== 2) {
     return { title: "Visitor Management Solution | SiteSafe" };
   }
 
   const industrySlug = parts[0];
   const citySlug = parts[1];
+
   const industryData = industries.find((i) => i.slug === industrySlug);
   const cityData = cities.find((c) => c.slug === citySlug);
 
@@ -45,39 +47,35 @@ export async function generateMetadata({
     return { title: "Visitor Management Solution | SiteSafe" };
   }
 
-  const canonical = `https://sitesafe.thesift.space/local/${slug}`;   // ✅ defined first
+  const title = `${industryData.name} Visitor Check‑in in ${cityData.name}, ${cityData.state} – SiteSafe`;
+  const description = `Compliance‑ready visitor management for ${industryData.name.toLowerCase()} workplaces in ${cityData.name}. QR check‑in, mandatory safety acknowledgment, and flat $49/mo for up to 20 sites.`;
 
   return {
-    title: `${industryData.name} Visitor Check‑in in ${cityData.name}, ${cityData.state} – SiteSafe`,
-    description: `Looking for a ${industryData.name.toLowerCase()} visitor check‑in solution in ${cityData.name}? SiteSafe offers QR check‑in, mandatory safety acknowledgment, and flat $49/mo pricing.`,
-    alternates: { canonical },
+    title,
+    description,
+    alternates: {
+      canonical: `https://sitesafe.thesift.space/local/${fullSlug}`,
+    },
     openGraph: {
-      title: `${industryData.name} Visitor Check‑in in ${cityData.name}, ${cityData.state} – SiteSafe`,
-      description: `Looking for a ${industryData.name.toLowerCase()} visitor check‑in solution in ${cityData.name}? SiteSafe offers QR check‑in, mandatory safety acknowledgment, and flat $49/mo pricing.`,
-      type: "website",
-      url: canonical,
-      images: [
-        {
-          url: "https://sitesafe.thesift.space/og-image.png",
-          width: 1200,
-          height: 630,
-        },
-      ],
+      title,
+      description,
+      images: [{ url: "https://sitesafe.thesift.space/og-image.png", width: 1200, height: 630 }],
     },
   };
 }
 
-export default async function CityPage({
+export default function CatchAllCityPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string[] };
 }) {
-  const { slug } = await params;
-  const parts = slug.split("-visitor-");
+  const fullSlug = params.slug?.[0] || "";
+  const parts = fullSlug.split("-visitor-");
   if (parts.length !== 2) notFound();
 
   const industrySlug = parts[0];
   const citySlug = parts[1];
+
   const industryData = industries.find((i) => i.slug === industrySlug);
   const cityData = cities.find((c) => c.slug === citySlug);
 
@@ -90,6 +88,7 @@ export default async function CityPage({
 
   return (
     <div className="min-h-screen text-white">
+      {/* Hero */}
       <div className="max-w-4xl mx-auto px-4 py-16 sm:py-24 text-center">
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
           <span className="text-sky-400">{industryName} Visitor Check‑in</span>
@@ -98,9 +97,9 @@ export default async function CityPage({
           </span>
         </h1>
         <p className="mt-4 text-lg text-slate-300 max-w-xl mx-auto">
-          Smart digital check‑in for {industryDesc} in {cityName}. QR codes,
-          mandatory safety acknowledgment, and audit‑ready exports — for a flat
-          $49/month.
+          Compliance‑ready visitor management for {industryDesc} in {cityName}.
+          QR codes, mandatory safety acknowledgment, and audit‑ready exports —
+          all for a flat $49/month with up to 20 sites.
         </p>
         <div className="mt-8">
           <Link
@@ -115,6 +114,7 @@ export default async function CityPage({
         </div>
       </div>
 
+      {/* Localized features */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <h2 className="text-2xl font-bold text-white text-center mb-8">
           Why {industryName} sites in {cityName} choose SiteSafe
@@ -142,8 +142,8 @@ export default async function CityPage({
           />
           <FeatureCard
             icon={CheckCircle2}
-            title="Flat $49/mo"
-            desc="Unlimited sites, unlimited visitors. No per‑location fees, no hidden costs."
+            title="Flat $49/mo — up to 20 sites"
+            desc="Unlimited visitors. All compliance and security features included. No per‑site fees."
           />
           <FeatureCard
             icon={ArrowRight}
@@ -153,6 +153,7 @@ export default async function CityPage({
         </div>
       </div>
 
+      {/* Trust badges */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <p className="text-sm text-slate-400 text-center mb-4">
           Trusted by workplaces across the country
@@ -186,13 +187,11 @@ export default async function CityPage({
         </div>
       </div>
 
+      {/* CTA */}
       <div className="max-w-2xl mx-auto px-4 pb-16 text-center">
         <p className="text-sm text-slate-400">
           See how SiteSafe compares to Envoy, SwipedOn, and paper logs{" "}
-          <Link
-            href="/compare"
-            className="text-sky-400 hover:underline transition-colors"
-          >
+          <Link href="/compare" className="text-sky-400 hover:underline transition-colors">
             side‑by‑side
           </Link>.
         </p>
