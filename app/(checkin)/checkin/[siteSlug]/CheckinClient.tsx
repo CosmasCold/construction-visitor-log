@@ -156,12 +156,14 @@ export default function CheckinClient({
 
   async function uploadPhoto(dataUrl: string): Promise<string | null> {
     setUploading(true);
+    // eslint-disable-next-line react-hooks/purity
+    const fileName = `visitor-${Date.now()}.jpg`;
     const res = await fetch("/api/upload", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         imageBase64: dataUrl,
-        fileName: `visitor-${Date.now()}.jpg`,
+        fileName,
       }),
     });
     if (res.ok) {
@@ -228,28 +230,29 @@ export default function CheckinClient({
   }
 
   async function uploadSignature(dataUrl: string): Promise<string | null> {
-  setUploading(true);
-  const fileName = `sig-${Date.now()}.png`;
-  const res = await fetch("/api/upload", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      imageBase64: dataUrl,
-      fileName,
-    }),
-  });
-  if (res.ok) {
-    const data = await res.json();
-    setSignatureUrl(data.url);
+    setUploading(true);
+    // eslint-disable-next-line react-hooks/purity
+    const fileName = `sig-${Date.now()}.png`;
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        imageBase64: dataUrl,
+        fileName,
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setSignatureUrl(data.url);
+      setUploading(false);
+      clearSignature();           // clear canvas
+      setShowSignaturePad(false); // collapse pad
+      setCurrentStep(4);
+      return data.url;
+    }
     setUploading(false);
-    clearSignature();
-    setShowSignaturePad(false);
-    setCurrentStep(4);
-    return data.url;
+    return null;
   }
-  setUploading(false);
-  return null;
-}
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
