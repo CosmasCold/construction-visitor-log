@@ -20,7 +20,7 @@ export async function generateStaticParams() {
   for (const industry of industries) {
     for (const city of cities) {
       paths.push({
-        slug: `${industry.slug}-visitor-${city.slug}`,   // ✅ string, not array
+        slug: `${industry.slug}-visitor-${city.slug}`,
       });
     }
   }
@@ -30,9 +30,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };              // ✅ string
+  params: Promise<{ slug: string }>;  // ✅ Promise
 }): Promise<Metadata> {
-  const parts = params.slug.split("-visitor-");
+  const { slug } = await params;
+  const parts = slug.split("-visitor-");
   if (parts.length !== 2) {
     return { title: "Visitor Management Solution | SiteSafe" };
   }
@@ -52,7 +53,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `https://sitesafe.thesift.space/local/${params.slug}` },
+    alternates: { canonical: `https://sitesafe.thesift.space/local/${slug}` },
     openGraph: {
       title,
       description,
@@ -61,12 +62,13 @@ export async function generateMetadata({
   };
 }
 
-export default function CatchAllCityPage({
+export default async function CityPage({
   params,
 }: {
-  params: { slug: string };              // ✅ string
+  params: Promise<{ slug: string }>;  // ✅ Promise
 }) {
-  const parts = params.slug.split("-visitor-");
+  const { slug } = await params;
+  const parts = slug.split("-visitor-");
   if (parts.length !== 2) notFound();
 
   const industrySlug = parts[0];
