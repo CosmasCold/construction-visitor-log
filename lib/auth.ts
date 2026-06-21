@@ -1,3 +1,4 @@
+// lib/auth.ts
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
@@ -20,7 +21,6 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // Rate limiter (unchanged)
         const ip =
           req?.headers?.["x-forwarded-for"]?.split(",")[0]?.trim() ?? "unknown";
         const { success } = await signInLimiter.limit(ip);
@@ -58,60 +58,53 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === "google" && user.email) {
-        // Check if user already exists
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email },
-          select: { id: true, companyId: true },
+      // Only act for Google sign‑ins, and only if we have an email
+      if (account?.provider !== "google" || !user.email) return false;
+
+      const existingUser = await prisma.user.findUnique({
+        where: { email: user.email },
+        select: { id: true, companyId: true },
+      });
+
+      // Helper now receives a guaranteed string for email
+      const createCompany = (name: string) =>
+        prisma.company.create({
+          data: {
+            name,
+            slug: user.email!.split("@")[0],
+            email: user.email!,
+            trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+          },
         });
 
-        if (!existingUser) {
-          // First Google sign‑in: create user + default company
-          const company = await prisma.company.create({
-            data: {
-              name: `${user.name || "My"} Company`,
-              slug: user.email.split("@")[0],
-              email: user.email,
-            },
-          });
-
-          await prisma.user.create({
-            data: {
-              email: user.email,
-              name: user.name,
-              image: user.image,
-              emailVerified: new Date(),
-              passwordHash: null,
-              verified: true,
-              role: "company_owner",
-              companyId: company.id,
-            },
-          });
-        } else if (!existingUser.companyId) {
-          // Existing user without company – create one
-          const company = await prisma.company.create({
-            data: {
-              name: `${user.name || "My"} Company`,
-              slug: user.email.split("@")[0],
-              email: user.email,
-            },
-          });
-
-          await prisma.user.update({
-            where: { id: existingUser.id },
-            data: { companyId: company.id },
-          });
-        }
-        // if user already exists and has a company, just sign in
+      if (!existingUser) {
+        const company = await createCompany(`${user.name || "My"} Company`);
+        await prisma.user.create({
+          data: {
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            emailVerified: new Date(),
+            passwordHash: null,
+            verified: true,
+            role: "company_owner",
+            companyId: company.id,
+          },
+        });
+      } else if (!existingUser.companyId) {
+        const company = await createCompany(`${user.name || "My"} Company`);
+        await prisma.user.update({
+          where: { id: existingUser.id },
+          data: { companyId: company.id },
+        });
       }
       return true;
     },
 
     async jwt({ token, user, account }) {
-      // On first sign‑in, enrich token with DB fields
-      if (user && account) {
+      if (user && account && token.email) {
         const dbUser = await prisma.user.findUnique({
-          where: { email: token.email! },
+          where: { email: token.email },
           select: { role: true, companyId: true },
         });
         if (dbUser) {
