@@ -21,6 +21,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        // Rate limiter
         const ip =
           req?.headers?.["x-forwarded-for"]?.split(",")[0]?.trim() ?? "unknown";
         const { success } = await signInLimiter.limit(ip);
@@ -62,7 +63,7 @@ export const authOptions: NextAuthOptions = {
 
       if (account?.provider !== "google" || !user.email) {
         console.log("Not a Google sign-in or missing email, skipping");
-        return true; // allow credentials / other providers
+        return true;
       }
 
       try {
@@ -79,6 +80,22 @@ export const authOptions: NextAuthOptions = {
             await prisma.company.update({
               where: { id: existingCompany.id },
               data: { trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
+            });
+          }
+
+          // Ensure there is at least one default site (for tutorial)
+          const existingSites = await prisma.site.findMany({
+            where: { companyId: existingCompany.id },
+            take: 1,
+          });
+          if (existingSites.length === 0) {
+            console.log("Creating default site for existing company");
+            await prisma.site.create({
+              data: {
+                name: "Default Site",
+                slug: existingCompany.slug + "-default",
+                companyId: existingCompany.id,
+              },
             });
           }
 
@@ -121,6 +138,15 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
+          // Create default site (triggers tutorial & onboarding)
+          await prisma.site.create({
+            data: {
+              name: "Default Site",
+              slug: slug + "-default",
+              companyId: company.id,
+            },
+          });
+
           await prisma.user.create({
             data: {
               email: user.email,
@@ -134,11 +160,11 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          console.log("New user and company created");
+          console.log("New user, company, and default site created");
         }
       } catch (error) {
         console.error("signIn callback error:", error);
-        return false; // block sign-in
+        return false;
       }
 
       return true;
@@ -148,7 +174,6 @@ export const authOptions: NextAuthOptions = {
       console.log("jwt callback:", { tokenEmail: token.email, userEmail: user?.email, provider: account?.provider });
 
       if (user && account) {
-        // After first sign-in, ensure token has correct companyId
         const email = user.email ?? token.email;
         if (email) {
           const dbUser = await prisma.user.findUnique({
@@ -159,8 +184,6 @@ export const authOptions: NextAuthOptions = {
             token.role = dbUser.role;
             token.companyId = dbUser.companyId ?? undefined;
             console.log("jwt token updated with companyId:", token.companyId);
-          } else {
-            console.log("User not found in DB during jwt callback");
           }
         }
       }
