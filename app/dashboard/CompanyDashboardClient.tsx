@@ -1209,21 +1209,37 @@ export default function CompanyDashboardClient({
                   </div>
                 ) : (
                   <div className="flex justify-between items-start">
-                    <a
-                      href={`/checkin/${encodeURIComponent(site.slug)}`}
-                      target="_blank"
-                      className="flex-1"
+                    {/* Clickable area to open check‑in page — NO <a> wrapper */}
+                    <div
+                      onClick={() =>
+                        window.open(
+                          `/checkin/${encodeURIComponent(site.slug)}`,
+                          "_blank"
+                        )
+                      }
+                      className="flex-1 cursor-pointer"
+                      role="link"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          window.open(
+                            `/checkin/${encodeURIComponent(site.slug)}`,
+                            "_blank"
+                          );
+                        }
+                      }}
                     >
                       <h3 className="font-semibold tracking-tight text-white">
                         {site.name}
                       </h3>
                       <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
                         /{site.slug}
+                        {/* All buttons inside are now independent because there's no <a> */}
                         <button
                           type="button"
                           onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
+                            e.stopPropagation(); // prevent div click
                             copyCheckinUrl(site.slug);
                           }}
                           className="text-sky-400 hover:text-sky-300 inline-flex items-center transition-colors duration-150"
@@ -1234,7 +1250,6 @@ export default function CompanyDashboardClient({
                         <button
                           type="button"
                           onClick={(e) => {
-                            e.preventDefault();
                             e.stopPropagation();
                             setQrSite({ id: site.id, name: site.name });
                           }}
@@ -1246,7 +1261,6 @@ export default function CompanyDashboardClient({
                         <button
                           type="button"
                           onClick={(e) => {
-                            e.preventDefault();
                             e.stopPropagation();
                             window.open(
                               `/api/sites/${site.id}/emergency-list`
@@ -1260,7 +1274,6 @@ export default function CompanyDashboardClient({
                         <button
                           type="button"
                           onClick={async (e) => {
-                            e.preventDefault();
                             e.stopPropagation();
                             const newLockdown = !site.lockdownEnabled;
                             const res = await fetch(
@@ -1306,9 +1319,10 @@ export default function CompanyDashboardClient({
                         {site.visitorsToday} today
                       </p>
                       <p className="text-xs text-slate-500 mt-0.5 italic">
-                        Click Edit to change name, slug, or safety briefing.
+                        Click card to open check‑in page in new tab
                       </p>
-                    </a>
+                    </div>
+                    {/* Edit and Delete buttons outside the clickable area */}
                     <div className="flex gap-1 ml-2">
                       <button
                         type="button"
