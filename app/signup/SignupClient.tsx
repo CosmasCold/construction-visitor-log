@@ -5,7 +5,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { ArrowRight, Rocket, ShieldCheck, CreditCard, PhoneOff, MessageCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Rocket,
+  ShieldCheck,
+  CreditCard,
+  PhoneOff,
+  MessageCircle,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { logEvent } from "@/lib/analytics";
 
 export default function SignupClient() {
@@ -100,7 +109,7 @@ export default function SignupClient() {
               className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
             />
 
-            {/* Password with toggle */}
+            {/* Password with toggle – now using Lucide icons */}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -114,10 +123,14 @@ export default function SignupClient() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-sm"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
               </button>
             </div>
 
@@ -149,7 +162,7 @@ export default function SignupClient() {
               {!loading && <ArrowRight className="w-4 h-4" />}
             </button>
 
-            {/* Trust Signals – now with Lucide icons */}
+            {/* Trust Signals */}
             <div className="flex justify-center gap-4 text-xs text-slate-500">
               <span className="flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-sky-400" /> SSL encrypted
@@ -209,7 +222,7 @@ export default function SignupClient() {
               </li>
             </ul>
 
-            {/* Testimonial – exactly matches landing page */}
+            {/* Testimonial */}
             <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/5">
               <p className="text-sm font-light italic text-slate-300">
                 We have 8 locations and used to rely on paper logs at each site.
