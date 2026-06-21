@@ -1,312 +1,186 @@
 // app/compare/page.tsx
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Check,
-  X,
-  Minus,
-  HelpCircle,
-  ArrowRight,
-  ShieldCheck,
-  Building2,
-  BarChart3,
-  Bell,
-  FileText,
-  Users,
-  Printer,
-  QrCode,
-  Camera,
-  Globe,
-  Wallet,
-  TrendingUp,
-  Zap,
-  AlertTriangle,
-  ShieldAlert,
-} from "lucide-react";
-import SavingsCalculator from "@/components/SavingsCalculator";
+import { ArrowRight, CheckCircle2, XCircle, HelpCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Compare SiteSafe – Smart Visitor Management",
+  title: "SiteSafe vs Envoy vs SwipedOn vs Paper Logs — Comparison (2026)",
   description:
-    "See how SiteSafe compares to Envoy, SwipedOn, and paper visitor logs. QR check‑in, mandatory safety acknowledgment, real‑time dashboard, flat pricing.",
+    "See how SiteSafe compares to Envoy, SwipedOn, and paper logs. Feature-by-feature comparison with transparent pricing — $49/mo for 20 sites.",
+  openGraph: {
+    title: "SiteSafe vs Envoy vs SwipedOn vs Paper Logs — Comparison (2026)",
+    description:
+      "See how SiteSafe compares to Envoy, SwipedOn, and paper logs. Feature-by-feature comparison with transparent pricing — $49/mo for 20 sites.",
+    url: "https://sitesafe.thesift.space/compare",
+  },
 };
 
-type CompareRow = {
-  feature: string;
-  icon: React.ElementType;
-  sitesafe: string | boolean;
-  envoy: string | boolean;
-  swipedon: string | boolean;
-  paper: string | boolean;
-  highlight?: boolean;
-};
+const comparisonData = [
+  { feature: "QR check-in", siteSafe: true, envoy: true, swipedOn: true, paperLog: false },
+  { feature: "Photo capture", siteSafe: true, envoy: true, swipedOn: true, paperLog: false },
+  { feature: "Mandatory safety acknowledgment", siteSafe: "Mandatory", envoy: "Optional", swipedOn: "Not available", paperLog: false, siteSafeNote: "✅ Mandatory", envoyNote: "❌ Optional", swipedOnNote: "❌ Not available" },
+  { feature: "Host email notifications", siteSafe: "Included", envoy: "Paid add-on", swipedOn: "Paid add-on", paperLog: false, siteSafeNote: "✅ Included", envoyNote: "❌ Paid add-on", swipedOnNote: "❌ Paid add-on" },
+  { feature: "Pre-registration", siteSafe: "Included", envoy: "Paid add-on", swipedOn: "Paid add-on", paperLog: false, siteSafeNote: "✅ Included", envoyNote: "❌ Paid add-on", swipedOnNote: "❌ Paid add-on" },
+  { feature: "Visitor badge printing", siteSafe: true, envoy: true, swipedOn: true, paperLog: false },
+  { feature: "Real-time dashboard", siteSafe: "Every 5 sec", envoy: "Standard", swipedOn: "Standard", paperLog: false },
+  { feature: "Remote sign-out", siteSafe: true, envoy: true, swipedOn: true, paperLog: false },
+  { feature: "Audit exports (CSV/Excel/PDF)", siteSafe: "Filterable", envoy: "Paid tier", swipedOn: "Basic", paperLog: false, siteSafeNote: "✅ Filterable", envoyNote: "❌ Paid tier", swipedOnNote: "❌ Basic" },
+  { feature: "Built-in analytics", siteSafe: "30-day, CSV", envoy: "Premium", swipedOn: "Basic", paperLog: false, siteSafeNote: "✅ 30-day, CSV", envoyNote: "❌ Premium", swipedOnNote: "❌ Basic" },
+  { feature: "REST API", siteSafe: "Full docs", envoy: "Enterprise", swipedOn: "Enterprise", paperLog: false, siteSafeNote: "✅ Full docs", envoyNote: "❌ Enterprise", swipedOnNote: "❌ Enterprise" },
+  { feature: "Multi-site management", siteSafe: "Up to 20, free", envoy: "Per-site fee", swipedOn: "Per-site fee", paperLog: false, siteSafeNote: "✅ Up to 20, free", envoyNote: "❌ Per-site fee", swipedOnNote: "❌ Per-site fee" },
+  { feature: "Watchlist / blocklist", siteSafe: "Included", envoy: "Paid add-on", swipedOn: "Not available", paperLog: false, siteSafeNote: "✅ Included", envoyNote: "❌ Paid add-on", swipedOnNote: "❌ Not available" },
+  { feature: "Emergency evacuation list", siteSafe: "Included", envoy: "Not available", swipedOn: "Not available", paperLog: false, siteSafeNote: "✅ Included", envoyNote: "❌ Not available", swipedOnNote: "❌ Not available" },
+  { feature: "Lockdown mode", siteSafe: "Included", envoy: "Not available", swipedOn: "Not available", paperLog: false, siteSafeNote: "✅ Included", envoyNote: "❌ Not available", swipedOnNote: "❌ Not available" },
+  { feature: "Webhooks", siteSafe: "Included", envoy: "Enterprise", swipedOn: "Enterprise", paperLog: false, siteSafeNote: "✅ Included", envoyNote: "❌ Enterprise", swipedOnNote: "❌ Enterprise" },
+  { feature: "Digital document signing", siteSafe: "Included", envoy: "Enterprise", swipedOn: "Not available", paperLog: false, siteSafeNote: "✅ Included", envoyNote: "❌ Enterprise", swipedOnNote: "❌ Not available" },
+  { feature: "Free trial", siteSafe: "14 days, no card", envoy: "N/A", swipedOn: "Limited", paperLog: "N/A", siteSafeNote: "✅ 14 days, no card", envoyNote: "❌ N/A", swipedOnNote: "✅ Limited" },
+  { feature: "Sales calls required", siteSafe: "No", envoy: "Yes", swipedOn: "No", paperLog: "N/A", siteSafeNote: "✅ No", envoyNote: "❌ Yes", swipedOnNote: "✅ No" },
+  { feature: "Pricing model", siteSafe: "$49/mo flat", envoy: "$99+/mo + fees", swipedOn: "$39+/mo + fees", paperLog: "$20/yr clipboards", siteSafeNote: "**$49/mo flat**", envoyNote: "**$99+/mo + fees**", swipedOnNote: "**$39+/mo + fees**", paperLogNote: "**$20/yr clipboards**" },
+  { feature: "Hidden costs", siteSafe: "None", envoy: "Per-visitor fees", swipedOn: "Upsells", paperLog: "Audit risk", siteSafeNote: "✅ None", envoyNote: "❌ Per-visitor fees", swipedOnNote: "❌ Upsells", paperLogNote: "❌ Audit risk" },
+];
 
-const rows: CompareRow[] = [
+const savingsTable = [
+  { sites: 1, envoy: "~$99/mo", swipedOn: "~$39/mo", siteSafe: "$49/mo" },
+  { sites: 5, envoy: "~$600/mo", swipedOn: "~$360/mo", siteSafe: "$49/mo" },
+  { sites: 10, envoy: "~$1,200/mo", swipedOn: "~$720/mo", siteSafe: "$49/mo" },
+  { sites: 20, envoy: "~$2,400/mo", swipedOn: "~$1,440/mo", siteSafe: "$49/mo" },
+];
+
+const whySiteSafe = [
   {
-    feature: "QR check‑in",
-    icon: QrCode,
-    sitesafe: true,
-    envoy: true,
-    swipedon: true,
-    paper: false,
+    title: "1. Flat pricing, no surprises",
+    body: "$49/month for up to 20 sites. No per-location fees. No hidden add-ons.",
   },
   {
-    feature: "Photo capture",
-    icon: Camera,
-    sitesafe: true,
-    envoy: true,
-    swipedon: false,
-    paper: false,
-    highlight: true,
+    title: "2. Compliance built-in",
+    body: "Mandatory safety acknowledgment. Emergency evacuation lists. Lockdown mode. Watchlist screening. All standard.",
   },
   {
-    feature: "Mandatory safety acknowledgment",
-    icon: ShieldCheck,
-    sitesafe: "Mandatory",
-    envoy: "Optional",
-    swipedon: false,
-    paper: false,
-    highlight: true,
+    title: "3. No sales calls",
+    body: "Start your 14-day free trial instantly. No demos. No pressure.",
   },
   {
-    feature: "Host email notifications",
-    icon: Bell,
-    sitesafe: "Included",
-    envoy: "Paid add‑on",
-    swipedon: false,
-    paper: false,
-  },
-  {
-    feature: "Pre‑registration",
-    icon: Users,
-    sitesafe: "Included",
-    envoy: "Paid add‑on",
-    swipedon: "Paid add‑on",
-    paper: false,
-  },
-  {
-    feature: "Visitor badge printing",
-    icon: Printer,
-    sitesafe: true,
-    envoy: true,
-    swipedon: true,
-    paper: false,
-  },
-  {
-    feature: "Real‑time dashboard",
-    icon: BarChart3,
-    sitesafe: "Every 5 sec",
-    envoy: "Standard",
-    swipedon: "Standard",
-    paper: false,
-  },
-  {
-    feature: "Remote sign‑out",
-    icon: Globe,
-    sitesafe: true,
-    envoy: true,
-    swipedon: true,
-    paper: false,
-  },
-  {
-    feature: "Audit exports (CSV/Excel/PDF)",
-    icon: FileText,
-    sitesafe: "Filterable",
-    envoy: "Paid tier",
-    swipedon: "Basic",
-    paper: false,
-  },
-  {
-    feature: "Built‑in analytics",
-    icon: TrendingUp,
-    sitesafe: "30‑day, CSV",
-    envoy: "Premium",
-    swipedon: false,
-    paper: false,
-  },
-  {
-    feature: "REST API",
-    icon: Zap,
-    sitesafe: "Full docs",
-    envoy: "Enterprise",
-    swipedon: false,
-    paper: false,
-  },
-  {
-  feature: "Multi‑site management",
-  icon: Building2,
-  sitesafe: "Up to 20 sites, free",
-  envoy: "Per‑site fee",
-  swipedon: "Per‑site fee",
-  paper: false,
-},
-  {
-    feature: "Watchlist / Blocklist",
-    icon: ShieldCheck,
-    sitesafe: true,
-    envoy: "Paid add‑on",
-    swipedon: false,
-    paper: false,
-    highlight: true,
-  },
-  {
-    feature: "Emergency evacuation list",
-    icon: AlertTriangle,
-    sitesafe: true,
-    envoy: false,
-    swipedon: false,
-    paper: false,
-    highlight: true,
-  },
-  {
-    feature: "Lockdown mode",
-    icon: ShieldAlert,
-    sitesafe: true,
-    envoy: false,
-    swipedon: false,
-    paper: false,
-    highlight: true,
-  },
-  {
-    feature: "Webhooks",
-    icon: Zap,
-    sitesafe: true,
-    envoy: "Enterprise",
-    swipedon: false,
-    paper: false,
-    highlight: true,
-  },
-  {
-    feature: "Digital document signing",
-    icon: FileText,
-    sitesafe: true,
-    envoy: "Enterprise",
-    swipedon: false,
-    paper: false,
-    highlight: true,
-  },
-  {
-    feature: "Free trial",
-    icon: Wallet,
-    sitesafe: "14 days, no card",
-    envoy: false,
-    swipedon: false,
-    paper: "N/A",
-    highlight: true,
-  },
-  {
-    feature: "Sales calls required",
-    icon: HelpCircle,
-    sitesafe: false,
-    envoy: "Demo required",
-    swipedon: "Often required",
-    paper: "N/A",
-    highlight: true,
-  },
-  {
-    feature: "Pricing model",
-    icon: Wallet,
-    sitesafe: "$49/mo flat",
-    envoy: "$99+/mo + fees",
-    swipedon: "$39+/mo + fees",
-    paper: "$20/yr clipboards",
-    highlight: true,
-  },
-  {
-    feature: "Hidden costs",
-    icon: HelpCircle,
-    sitesafe: "None",
-    envoy: "Per‑visitor fees",
-    swipedon: "Upsells",
-    paper: "Audit risk",
+    title: "4. Everything included",
+    body: "No feature-gating. No paid tiers. Every feature works across every site.",
   },
 ];
 
-function renderCell(value: string | boolean) {
-  if (value === true) return <Check className="w-5 h-5 text-emerald-400" />;
-  if (value === false) return <X className="w-5 h-5 text-slate-600" />;
-  return <span className="text-sm font-medium text-slate-200">{value}</span>;
-}
-
 export default function ComparePage() {
   return (
-    <div className="min-h-screen py-12 px-4">
-      <div className="max-w-5xl mx-auto space-y-8">
-        <div className="text-center max-w-2xl mx-auto">
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-            SiteSafe vs the alternatives
+    <div className="min-h-screen py-16 px-4">
+      <div className="max-w-6xl mx-auto space-y-12 text-white">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            SiteSafe vs the Alternatives
           </h1>
-          <p className="text-sm text-slate-400">
-            A side‑by‑side look at how SiteSafe compares to Envoy, SwipedOn, and
-            the classic paper log.
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+            A side-by-side look at how SiteSafe compares to Envoy, SwipedOn, and the classic paper log.
           </p>
         </div>
 
-        <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/10 text-xs uppercase tracking-wider text-slate-400">
-                <th scope="col" className="p-4 text-left font-medium">
-                  Feature
-                </th>
-                <th scope="col" className="p-4 text-center font-medium text-sky-300">
-                  SiteSafe
-                </th>
-                <th scope="col" className="p-4 text-center font-medium">
-                  Envoy
-                </th>
-                <th scope="col" className="p-4 text-center font-medium">
-                  SwipedOn
-                </th>
-                <th scope="col" className="p-4 text-center font-medium">
-                  Paper log
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {rows.map((row, idx) => (
-                <tr
-                  key={idx}
-                  className={`text-slate-300 hover:bg-white/[0.03] transition-colors ${
-                    row.highlight ? "bg-sky-500/5" : ""
-                  }`}
-                >
-                  <td className="p-4 flex items-center gap-2 text-white font-medium">
-                    <row.icon className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                    {row.feature}
-                  </td>
-                  <td className="p-4 text-center">
-                    <span className="inline-flex items-center justify-center text-sky-300 font-semibold">
-                      {renderCell(row.sitesafe)}
-                    </span>
-                  </td>
-                  <td className="p-4 text-center">{renderCell(row.envoy)}</td>
-                  <td className="p-4 text-center">{renderCell(row.swipedon)}</td>
-                  <td className="p-4 text-center text-slate-500">
-                    {renderCell(row.paper)}
-                  </td>
+        {/* Feature Comparison Table */}
+        <section className="space-y-6">
+          <h2 className="text-2xl font-bold">Feature Comparison</h2>
+          <div className="overflow-x-auto rounded-xl border border-white/10">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-white/5">
+                <tr className="text-slate-300">
+                  <th className="p-3 font-medium">Feature</th>
+                  <th className="p-3 font-medium text-sky-400">SiteSafe</th>
+                  <th className="p-3 font-medium">Envoy</th>
+                  <th className="p-3 font-medium">SwipedOn</th>
+                  <th className="p-3 font-medium">Paper Log</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {comparisonData.map((row, idx) => (
+                  <tr key={idx} className="text-slate-400 hover:bg-white/[0.03] transition-colors">
+                    <td className="p-3 font-medium text-slate-200">{row.feature}</td>
+                    <td className="p-3 font-semibold text-white">{row.siteSafeNote || renderBoolean(row.siteSafe)}</td>
+                    <td className="p-3">{row.envoyNote || renderBoolean(row.envoy)}</td>
+                    <td className="p-3">{row.swipedOnNote || renderBoolean(row.swipedOn)}</td>
+                    <td className="p-3">{row.paperLogNote || renderBoolean(row.paperLog)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-        <div className="max-w-2xl mx-auto mb-8">
-  <SavingsCalculator />
-</div>
+        {/* Savings Table */}
+        <section className="space-y-6">
+          <h2 className="text-2xl font-bold">How much would you save?</h2>
+          <p className="text-slate-400 text-sm">
+            Move the slider to match your number of sites.
+          </p>
+          <div className="overflow-x-auto rounded-xl border border-white/10">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-white/5">
+                <tr className="text-slate-300">
+                  <th className="p-3 font-medium">Number of Sites</th>
+                  <th className="p-3 font-medium">Envoy (est.)</th>
+                  <th className="p-3 font-medium">SwipedOn (est.)</th>
+                  <th className="p-3 font-medium text-sky-400">SiteSafe</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {savingsTable.map((row, idx) => (
+                  <tr key={idx} className="text-slate-400 hover:bg-white/[0.03] transition-colors">
+                    <td className="p-3 font-medium text-slate-200">{row.sites} site{row.sites > 1 ? 's' : ''}</td>
+                    <td className="p-3">{row.envoy}</td>
+                    <td className="p-3">{row.swipedOn}</td>
+                    <td className="p-3 font-semibold text-white">{row.siteSafe}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-sm text-slate-300 text-center">
+            The math is simple. SiteSafe saves you thousands of dollars compared to per-site pricing — and gives you more features.
+          </p>
+        </section>
 
-        <div className="text-center space-y-4">
+        {/* Why Choose SiteSafe */}
+        <section className="space-y-6">
+          <h2 className="text-2xl font-bold">Why Choose SiteSafe?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {whySiteSafe.map((point, idx) => (
+              <div key={idx} className="glass-card p-5 space-y-2">
+                <h3 className="font-semibold text-white text-sm">{point.title}</h3>
+                <p className="text-xs text-slate-400">{point.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="text-center space-y-6">
+          <h2 className="text-2xl font-bold">Start Your Free Trial Today</h2>
+          <p className="text-slate-300">14-day free trial. No credit card. No sales call.</p>
           <Link
             href="/signup"
-            className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all duration-200 active:scale-[0.98] shadow-lg"
+            className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-xl px-8 py-3 text-sm transition-all shadow-lg cta-pulse"
           >
-            Start free trial <ArrowRight className="ml-2 w-4 h-4" />
+            Start My Free Trial <ArrowRight className="w-4 h-4" />
           </Link>
-          <p className="text-sm text-slate-400">
-            No credit card • No sales call • 14‑day trial
+          <p className="text-xs text-slate-500">
+            Don’t leave without your free audit checklist.{" "}
+            <Link href="/audit" className="text-sky-400 hover:underline">
+              Download the 10-point checklist →
+            </Link>
           </p>
-        </div>
+        </section>
       </div>
     </div>
+  );
+}
+
+function renderBoolean(value: boolean | string) {
+  if (typeof value === "string") return value;
+  return value ? (
+    <CheckCircle2 className="w-4 h-4 text-emerald-400 inline" />
+  ) : (
+    <XCircle className="w-4 h-4 text-rose-400 inline" />
   );
 }
