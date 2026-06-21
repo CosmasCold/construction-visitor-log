@@ -115,7 +115,10 @@ model ExpectedVisitor {
 model User {
   id           String    @id @default(cuid())
   email        String    @unique
-  passwordHash String
+  passwordHash String?   // optional for OAuth users
+  name         String?   // display name from OAuth
+  emailVerified DateTime? // for OAuth verification
+  image        String?   // profile picture URL
   role         String    @default("company_owner")
   verified     Boolean   @default(false)
   companyId    String?
