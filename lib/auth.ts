@@ -60,23 +60,58 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user, account }) {
       if (account?.provider !== "google" || !user.email) return false;
 
-      const existingUser = await prisma.user.findUnique({
+      // Find an existing company with this email (could be from a previous signup)
+      const existingCompany = await prisma.company.findUnique({
         where: { email: user.email },
-        select: { id: true, companyId: true },
       });
 
-      const createCompany = (name: string) =>
-        prisma.company.create({
+      if (existingCompany) {
+        // Ensure the company's trial is active (reset to 14 days if it expired)
+        if (!existingCompany.trialEndsAt || existingCompany.trialEndsAt < new Date()) {
+          await prisma.company.update({
+            where: { id: existingCompany.id },
+            data: { trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
+          });
+        }
+
+        // Create the user and link to this existing company
+        await prisma.user.upsert({
+          where: { email: user.email },
+          create: {
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            emailVerified: new Date(),
+            passwordHash: null,
+            verified: true,
+            role: "company_owner",
+            companyId: existingCompany.id,
+          },
+          update: {
+            companyId: existingCompany.id,
+            role: "company_owner",
+          },
+        });
+      } else {
+        // No company exists – create a new one with a unique slug
+        const baseSlug = user.email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "-");
+        let slug = baseSlug;
+        let counter = 1;
+
+        // Ensure slug uniqueness
+        while (await prisma.company.findUnique({ where: { slug } })) {
+          slug = `${baseSlug}-${counter++}`;
+        }
+
+        const company = await prisma.company.create({
           data: {
-            name,
-            slug: user.email!.split("@")[0],
-            email: user.email!,
+            name: `${user.name || "My"} Company`,
+            slug,
+            email: user.email,
             trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
           },
         });
 
-      if (!existingUser) {
-        const company = await createCompany(`${user.name || "My"} Company`);
         await prisma.user.create({
           data: {
             email: user.email,
@@ -89,30 +124,21 @@ export const authOptions: NextAuthOptions = {
             companyId: company.id,
           },
         });
-      } else if (!existingUser.companyId) {
-        const company = await createCompany(`${user.name || "My"} Company`);
-        await prisma.user.update({
-          where: { id: existingUser.id },
-          data: { companyId: company.id },
-        });
       }
+
       return true;
     },
 
     async jwt({ token, user, account }) {
-      // On first sign‑in (or token refresh), pull fresh data from DB
       if (user && account) {
-        // Use user.email (always present) instead of token.email (which might be undefined)
-        const email = user.email ?? token.email;
-        if (email) {
-          const dbUser = await prisma.user.findUnique({
-            where: { email },
-            select: { role: true, companyId: true },
-          });
-          if (dbUser) {
-            token.role = dbUser.role;
-            token.companyId = dbUser.companyId ?? undefined;
-          }
+        // After sign in, always fetch the latest companyId from DB
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email ?? token.email! },
+          select: { role: true, companyId: true },
+        });
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.companyId = dbUser.companyId ?? undefined;
         }
       }
       return token;
