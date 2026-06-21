@@ -1,20 +1,28 @@
 export const posts = [
   {
-  slug: "capped-plan-20-sites",
-  title: "Why We Capped Our Plan at 20 Sites",
-  date: "2026-06-19",
-  lastModified: "2026-06-19",
-  excerpt:
-    "SiteSafe recently changed from unlimited sites to a 20‑site cap on the $49/month plan. Here’s why we made the change and what it means for our customers.",
-},
+    slug: "ai-powered-visitor-management",
+    title: "68% of Facility Managers Are Planning AI-Powered Visitor Management — Are You?",
+    date: "2026-06-21",
+    lastModified: "2026-06-21",
+    excerpt:
+      "Facility management is transforming. 68% of facility managers are planning AI-powered visitor management. Discover what’s driving the trend and how to stay ahead.",
+  },
   {
-  slug: "visitor-management-for-schools",
-  title: "Visitor Management for Schools: What Principals Need to Know",
-  date: "2026-06-18",
-  lastModified: "2026-06-18",
-  excerpt:
-    "A practical guide for K‑12 principals on modern visitor management — from photo capture and emergency evacuation lists to watchlist screening and flat pricing.",
-},
+    slug: "capped-plan-20-sites",
+    title: "Why We Capped Our Plan at 20 Sites",
+    date: "2026-06-19",
+    lastModified: "2026-06-19",
+    excerpt:
+      "SiteSafe recently changed from unlimited sites to a 20‑site cap on the $49/month plan. Here’s why we made the change and what it means for our customers.",
+  },
+  {
+    slug: "visitor-management-for-schools",
+    title: "Visitor Management for Schools: What Principals Need to Know",
+    date: "2026-06-18",
+    lastModified: "2026-06-18",
+    excerpt:
+      "A practical guide for K‑12 principals on modern visitor management — from photo capture and emergency evacuation lists to watchlist screening and flat pricing.",
+  },
   {
     slug: "sine-alternative",
     title: "Sine Alternative: Why SiteSafe Is a Better Fit for Compliance‑First Teams",
