@@ -58,93 +58,117 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider !== "google" || !user.email) return false;
+      console.log("signIn callback:", { provider: account?.provider, email: user.email });
 
-      // Find an existing company with this email (could be from a previous signup)
-      const existingCompany = await prisma.company.findUnique({
-        where: { email: user.email },
-      });
+      if (account?.provider !== "google" || !user.email) {
+        console.log("Not a Google sign-in or missing email, skipping");
+        return true; // allow credentials / other providers
+      }
 
-      if (existingCompany) {
-        // Ensure the company's trial is active (reset to 14 days if it expired)
-        if (!existingCompany.trialEndsAt || existingCompany.trialEndsAt < new Date()) {
-          await prisma.company.update({
-            where: { id: existingCompany.id },
-            data: { trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
-          });
-        }
-
-        // Create the user and link to this existing company
-        await prisma.user.upsert({
+      try {
+        const existingCompany = await prisma.company.findUnique({
           where: { email: user.email },
-          create: {
-            email: user.email,
-            name: user.name,
-            image: user.image,
-            emailVerified: new Date(),
-            passwordHash: null,
-            verified: true,
-            role: "company_owner",
-            companyId: existingCompany.id,
-          },
-          update: {
-            companyId: existingCompany.id,
-            role: "company_owner",
-          },
         });
-      } else {
-        // No company exists – create a new one with a unique slug
-        const baseSlug = user.email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "-");
-        let slug = baseSlug;
-        let counter = 1;
 
-        // Ensure slug uniqueness
-        while (await prisma.company.findUnique({ where: { slug } })) {
-          slug = `${baseSlug}-${counter++}`;
+        if (existingCompany) {
+          console.log("Found existing company:", existingCompany.name);
+
+          // Reactivate trial if expired
+          if (!existingCompany.trialEndsAt || existingCompany.trialEndsAt < new Date()) {
+            console.log("Reactivating trial for company");
+            await prisma.company.update({
+              where: { id: existingCompany.id },
+              data: { trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
+            });
+          }
+
+          // Link or create user
+          await prisma.user.upsert({
+            where: { email: user.email },
+            create: {
+              email: user.email,
+              name: user.name,
+              image: user.image,
+              emailVerified: new Date(),
+              passwordHash: null,
+              verified: true,
+              role: "company_owner",
+              companyId: existingCompany.id,
+            },
+            update: {
+              companyId: existingCompany.id,
+              role: "company_owner",
+            },
+          });
+
+          console.log("User linked to existing company");
+        } else {
+          // Create new company with unique slug
+          const baseSlug = user.email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "-");
+          let slug = baseSlug;
+          let counter = 1;
+          while (await prisma.company.findUnique({ where: { slug } })) {
+            slug = `${baseSlug}-${counter++}`;
+          }
+
+          console.log("Creating new company with slug:", slug);
+          const company = await prisma.company.create({
+            data: {
+              name: `${user.name || "My"} Company`,
+              slug,
+              email: user.email,
+              trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+            },
+          });
+
+          await prisma.user.create({
+            data: {
+              email: user.email,
+              name: user.name,
+              image: user.image,
+              emailVerified: new Date(),
+              passwordHash: null,
+              verified: true,
+              role: "company_owner",
+              companyId: company.id,
+            },
+          });
+
+          console.log("New user and company created");
         }
-
-        const company = await prisma.company.create({
-          data: {
-            name: `${user.name || "My"} Company`,
-            slug,
-            email: user.email,
-            trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-          },
-        });
-
-        await prisma.user.create({
-          data: {
-            email: user.email,
-            name: user.name,
-            image: user.image,
-            emailVerified: new Date(),
-            passwordHash: null,
-            verified: true,
-            role: "company_owner",
-            companyId: company.id,
-          },
-        });
+      } catch (error) {
+        console.error("signIn callback error:", error);
+        return false; // block sign-in
       }
 
       return true;
     },
 
     async jwt({ token, user, account }) {
+      console.log("jwt callback:", { tokenEmail: token.email, userEmail: user?.email, provider: account?.provider });
+
       if (user && account) {
-        // After sign in, always fetch the latest companyId from DB
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email ?? token.email! },
-          select: { role: true, companyId: true },
-        });
-        if (dbUser) {
-          token.role = dbUser.role;
-          token.companyId = dbUser.companyId ?? undefined;
+        // After first sign-in, ensure token has correct companyId
+        const email = user.email ?? token.email;
+        if (email) {
+          const dbUser = await prisma.user.findUnique({
+            where: { email },
+            select: { role: true, companyId: true },
+          });
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.companyId = dbUser.companyId ?? undefined;
+            console.log("jwt token updated with companyId:", token.companyId);
+          } else {
+            console.log("User not found in DB during jwt callback");
+          }
         }
       }
       return token;
     },
 
     async session({ session, token }) {
+      console.log("session callback:", { tokenCompanyId: token.companyId });
       if (session.user) {
         session.user.role = token.role;
         session.user.companyId = token.companyId;
