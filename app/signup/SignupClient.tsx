@@ -58,8 +58,8 @@ export default function SignupClient() {
     <div className="min-h-screen flex items-center justify-center py-12 px-4">
       <div className="w-full max-w-md bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-8 text-white">
         <h1 className="text-2xl font-bold tracking-tight text-center mb-2">
-          Start your free trial
-        </h1>
+  Set up your first site in 2 minutes
+</h1>
         <p className="text-sm text-slate-400 text-center mb-6">
           14‑day trial · No credit card · No sales call
         </p>

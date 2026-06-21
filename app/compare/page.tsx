@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   ShieldAlert,
 } from "lucide-react";
+import SavingsCalculator from "@/components/SavingsCalculator";
 
 export const metadata: Metadata = {
   title: "Compare SiteSafe – Smart Visitor Management",
@@ -289,6 +290,10 @@ export default function ComparePage() {
             </tbody>
           </table>
         </div>
+
+        <div className="max-w-2xl mx-auto mb-8">
+  <SavingsCalculator />
+</div>
 
         <div className="text-center space-y-4">
           <Link

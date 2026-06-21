@@ -92,7 +92,7 @@ export default function FeaturesPage() {
               {group.items.map((item, idx) => (
                 <div
                   key={idx}
-                  className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.08] transition-all duration-300"
+                  className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.14] transition-all duration-300 aurora-bg feature-card-hover"
                 >
                   <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
                     <item.icon className="w-5 h-5 text-sky-300" />
