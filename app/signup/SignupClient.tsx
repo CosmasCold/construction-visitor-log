@@ -238,7 +238,7 @@ export default function SignupClient() {
           <div className="mt-6 text-xs text-slate-500 border-t border-white/5 pt-4 flex items-center gap-1.5">
             <MessageCircle className="w-3.5 h-3.5 text-sky-400" /> Questions?{" "}
             <a href="mailto:hello@thesift.space" className="text-sky-400 hover:underline">
-              hello@sitesafe.thesift.space
+              hello@thesift.space
             </a>
           </div>
         </div>
