@@ -194,8 +194,8 @@ export default function SignupClient() {
                   2
                 </span>
                 <span className="text-sm text-slate-300">
-                  <strong className="text-white">Print your QR code</strong>{" "}
-                  <span className="text-slate-500 text-xs">— no hardware needed</span>
+                  <strong className="text-white">Your QR code is live</strong>{" "}
+                  <span className="text-slate-500 text-xs">— visitors scan it with their phone</span>
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -224,7 +224,7 @@ export default function SignupClient() {
 
           <div className="mt-6 text-xs text-slate-500 border-t border-white/5 pt-4 flex items-center gap-1.5">
             <MessageCircle className="w-3.5 h-3.5 text-sky-400" /> Questions?{" "}
-            <a href="mailto:hello@sitesafe.thesift.space" className="text-sky-400 hover:underline">
+            <a href="mailto:hello@thesift.space" className="text-sky-400 hover:underline">
               hello@sitesafe.thesift.space
             </a>
           </div>
