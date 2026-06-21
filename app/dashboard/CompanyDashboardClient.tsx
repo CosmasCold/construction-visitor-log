@@ -31,6 +31,7 @@ import {
   Clock,
   TrendingUp,
   ChevronDown,
+  Lock,
 } from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
@@ -280,24 +281,26 @@ export default function CompanyDashboardClient({
         showVisitorListOnCheckin: showVisitorList,
       }),
     });
+
     if (res.ok) {
-      const updated = await res.json();
+      // Update local sites directly from state so checkbox persists immediately
       setSites((prev) =>
         prev.map((s) =>
           s.id === siteId
             ? {
                 ...s,
-                name: updated.name,
-                slug: updated.slug,
-                address: updated.address,
-                safetyBriefingText: updated.safetyBriefingText,
-                questions: updated.questions,
-                documentSigningEnabled: updated.documentSigningEnabled,
-                showVisitorListOnCheckin: updated.showVisitorListOnCheckin,
+                name: editName,
+                slug: editSlug,
+                address: editAddress,
+                safetyBriefingText: editBriefing,
+                questions: editQuestions,
+                documentSigningEnabled: docSigningEnabled,
+                showVisitorListOnCheckin: showVisitorList,
               }
             : s
         )
       );
+
       setEditingSiteId(null);
       setHostsForEdit([]);
       setExpectedForEdit([]);
@@ -790,10 +793,10 @@ export default function CompanyDashboardClient({
                 } p-4 group`}
               >
                 {site.lockdownEnabled && (
-                  <div className="absolute top-0 left-0 right-0 bg-red-500/10 text-red-400 text-xs text-center py-0.5 rounded-t-2xl border-b border-red-400/20">
-                    🔒 LOCKDOWN
-                  </div>
-                )}
+  <div className="absolute top-0 left-0 right-0 bg-red-500/10 text-red-400 text-xs text-center py-0.5 rounded-t-2xl border-b border-red-400/20">
+    <Lock className="w-3 h-3 inline mr-1" /> LOCKDOWN
+  </div>
+)}
                 {editingSiteId === site.id ? (
                   <div className="space-y-3">
                     {/* Basic Info Accordion */}
