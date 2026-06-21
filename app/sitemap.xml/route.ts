@@ -30,6 +30,7 @@ export function GET() {
     "/blog/sine-alternative",
     "/blog/visitor-management-for-schools",
     "/blog/capped-plan-20-sites",
+    "/blog/ai-powered-visitor-management",
     "/changelog",
     "/checklist",
     "/compare",
