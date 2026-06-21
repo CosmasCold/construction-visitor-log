@@ -58,7 +58,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      // Only act for Google sign‑ins, and only if we have an email
       if (account?.provider !== "google" || !user.email) return false;
 
       const existingUser = await prisma.user.findUnique({
@@ -66,7 +65,6 @@ export const authOptions: NextAuthOptions = {
         select: { id: true, companyId: true },
       });
 
-      // Helper now receives a guaranteed string for email
       const createCompany = (name: string) =>
         prisma.company.create({
           data: {
@@ -102,14 +100,19 @@ export const authOptions: NextAuthOptions = {
     },
 
     async jwt({ token, user, account }) {
-      if (user && account && token.email) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: token.email },
-          select: { role: true, companyId: true },
-        });
-        if (dbUser) {
-          token.role = dbUser.role;
-          token.companyId = dbUser.companyId ?? undefined;
+      // On first sign‑in (or token refresh), pull fresh data from DB
+      if (user && account) {
+        // Use user.email (always present) instead of token.email (which might be undefined)
+        const email = user.email ?? token.email;
+        if (email) {
+          const dbUser = await prisma.user.findUnique({
+            where: { email },
+            select: { role: true, companyId: true },
+          });
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.companyId = dbUser.companyId ?? undefined;
+          }
         }
       }
       return token;
