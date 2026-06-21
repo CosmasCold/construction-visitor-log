@@ -129,10 +129,16 @@ export default async function DashboardPage({
     );
   }
 
+  // Check subscription status AND company-level trial
   const subscription = company.subscription;
-  const isTrialing = subscription?.status === "trialing";
-  const isActive = subscription?.status === "active";
-  if (!isActive && !isTrialing) {
+  const isSubTrialing = subscription?.status === "trialing";
+  const isSubActive = subscription?.status === "active";
+  const isCompanyTrialActive =
+    !subscription &&
+    company.trialEndsAt !== null &&
+    new Date(company.trialEndsAt) > new Date();
+
+  if (!isSubActive && !isSubTrialing && !isCompanyTrialActive) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 max-w-md text-center">
