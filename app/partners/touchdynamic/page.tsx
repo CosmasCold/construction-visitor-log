@@ -60,7 +60,7 @@ export default function TouchDynamicPartnerPage() {
         </div>
 
         {/* CTA */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6 max-w-md mx-auto">
+        <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6 max-w-md mx-auto">
           <p className="text-sm text-slate-300 mb-2">
             <strong>Exclusive Touch Dynamic offer:</strong> start with an
             extended 30‑day free trial.
@@ -98,7 +98,7 @@ function BenefitCard({
   desc: string;
 }) {
   return (
-    <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6 text-left">
+    <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6 text-left">
       <CheckCircle2 className="w-5 h-5 text-sky-400 mb-2" />
       <h3 className="font-semibold text-white text-sm mb-1">{title}</h3>
       <p className="text-xs text-slate-300 leading-relaxed">{desc}</p>

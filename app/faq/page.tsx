@@ -137,7 +137,7 @@ export default function FaqPage() {
           {faqs.map((faq, idx) => (
             <details
               key={idx}
-              className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised group"
+              className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised group"
             >
               <summary className="px-6 py-4 text-white font-medium cursor-pointer list-none flex items-center justify-between">
                 <span>{faq.q}</span>

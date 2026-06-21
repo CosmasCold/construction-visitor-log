@@ -283,7 +283,7 @@ export default function CompanyDashboardClient({
     });
 
     if (res.ok) {
-      // Update local sites directly from state so checkbox persists immediately
+      // Update local sites array directly from state so checkbox persists
       setSites((prev) =>
         prev.map((s) =>
           s.id === siteId
@@ -793,14 +793,15 @@ export default function CompanyDashboardClient({
                 } p-4 group`}
               >
                 {site.lockdownEnabled && (
-  <div className="absolute top-0 left-0 right-0 bg-red-500/10 text-red-400 text-xs text-center py-0.5 rounded-t-2xl border-b border-red-400/20">
-    <Lock className="w-3 h-3 inline mr-1" /> LOCKDOWN
-  </div>
-)}
+                  <div className="absolute top-0 left-0 right-0 bg-red-500/10 text-red-400 text-xs text-center py-0.5 rounded-t-2xl border-b border-red-400/20">
+                    <Lock className="w-3 h-3 inline mr-1" /> LOCKDOWN
+                  </div>
+                )}
                 {editingSiteId === site.id ? (
                   <div className="space-y-3">
                     {/* Basic Info Accordion */}
                     <button
+                      type="button"
                       onClick={() =>
                         setOpenSection(openSection === "basic" ? null : "basic")
                       }
@@ -852,6 +853,7 @@ export default function CompanyDashboardClient({
 
                     {/* Hosts Accordion */}
                     <button
+                      type="button"
                       onClick={() =>
                         setOpenSection(openSection === "hosts" ? null : "hosts")
                       }
@@ -948,6 +950,7 @@ export default function CompanyDashboardClient({
 
                     {/* Pre‑screening Questions Accordion */}
                     <button
+                      type="button"
                       onClick={() =>
                         setOpenSection(openSection === "pre" ? null : "pre")
                       }
@@ -1017,6 +1020,7 @@ export default function CompanyDashboardClient({
 
                     {/* Document Signing Accordion */}
                     <button
+                      type="button"
                       onClick={() =>
                         setOpenSection(openSection === "doc" ? null : "doc")
                       }
@@ -1150,6 +1154,7 @@ export default function CompanyDashboardClient({
 
                     {/* Privacy Accordion */}
                     <button
+                      type="button"
                       onClick={() =>
                         setOpenSection(
                           openSection === "privacy" ? null : "privacy"
@@ -1187,12 +1192,14 @@ export default function CompanyDashboardClient({
 
                     <div className="flex gap-2 pt-2">
                       <button
+                        type="button"
                         onClick={() => saveEdit(site.id)}
                         className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
                       >
                         Save
                       </button>
                       <button
+                        type="button"
                         onClick={cancelEdit}
                         className="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
                       >
@@ -1213,6 +1220,7 @@ export default function CompanyDashboardClient({
                       <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
                         /{site.slug}
                         <button
+                          type="button"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -1224,6 +1232,7 @@ export default function CompanyDashboardClient({
                           <Copy className="w-4 h-4" />
                         </button>
                         <button
+                          type="button"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -1235,6 +1244,7 @@ export default function CompanyDashboardClient({
                           <QrCode className="w-4 h-4" />
                         </button>
                         <button
+                          type="button"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -1248,6 +1258,7 @@ export default function CompanyDashboardClient({
                           <AlertTriangle className="w-4 h-4" />
                         </button>
                         <button
+                          type="button"
                           onClick={async (e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -1300,6 +1311,7 @@ export default function CompanyDashboardClient({
                     </a>
                     <div className="flex gap-1 ml-2">
                       <button
+                        type="button"
                         onClick={() => startEdit(site)}
                         className="text-sky-400 hover:text-sky-300 text-xs transition-colors duration-150 flex items-center gap-0.5"
                         title="Edit site"
@@ -1307,6 +1319,7 @@ export default function CompanyDashboardClient({
                         <Pencil className="w-3.5 h-3.5" /> Edit
                       </button>
                       <button
+                        type="button"
                         onClick={() => setDeleteTarget(site.id)}
                         className="text-rose-400 hover:text-rose-300 text-xs transition-colors duration-150 flex items-center gap-0.5"
                         title="Delete site"
@@ -1357,6 +1370,7 @@ export default function CompanyDashboardClient({
               className="flex-1 bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-400"
             />
             <button
+              type="button"
               onClick={addBlocklistEntry}
               className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-xs font-medium"
             >
@@ -1383,6 +1397,7 @@ export default function CompanyDashboardClient({
                       <td className="p-2">{entry.note || "—"}</td>
                       <td className="p-2 text-right">
                         <button
+                          type="button"
                           onClick={() => removeBlocklistEntry(entry.id)}
                           className="text-rose-400 hover:text-rose-300"
                         >
@@ -1417,6 +1432,7 @@ export default function CompanyDashboardClient({
               className="flex-1 bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-400"
             />
             <button
+              type="button"
               onClick={() => saveWebhookUrl(webhookUrl)}
               className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-xs font-medium"
             >
@@ -1425,6 +1441,7 @@ export default function CompanyDashboardClient({
           </div>
           {webhookUrl && (
             <button
+              type="button"
               onClick={async () => {
                 await fetch("/api/webhook/test", { method: "POST" });
                 addToast("Test event sent", "success");
@@ -1568,6 +1585,7 @@ export default function CompanyDashboardClient({
                       <td className="p-3">
                         {!v.signedOutAt && (
                           <button
+                            type="button"
                             onClick={() => handleSignOutRemote(v.id)}
                             className="inline-flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 transition-colors"
                             title="Sign out remotely"

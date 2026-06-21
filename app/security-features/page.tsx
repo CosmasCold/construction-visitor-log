@@ -72,7 +72,7 @@ export default function SecurityFeaturesPage() {
           {features.map((f, i) => (
             <div
               key={i}
-              className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 text-left"
+              className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 text-left"
             >
               <div className="w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center mb-3">
                 <f.icon className="w-5 h-5 text-sky-300" />
@@ -89,7 +89,7 @@ export default function SecurityFeaturesPage() {
         </div>
 
         {/* Pricing & CTA */}
-        <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6 max-w-md mx-auto">
+        <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6 max-w-md mx-auto">
           <p className="text-sm text-slate-200 mb-2">
             All security features are included in the{" "}
             <strong className="text-white">$49/month</strong> plan.

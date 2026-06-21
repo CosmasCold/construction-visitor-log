@@ -55,7 +55,7 @@ export default function PressPage() {
         </div>
 
                 {/* Boilerplate */}
-        <section className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6">
+        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
           <h2 className="text-lg font-semibold text-white mb-2">Boilerplate</h2>
           <p className="text-sm text-slate-300 leading-relaxed">
             SiteSafe is a smart digital check‑in platform that replaces paper
@@ -73,7 +73,7 @@ export default function PressPage() {
         </section>
 
         {/* Founder */}
-        <section className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6">
+        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
           <h2 className="text-lg font-semibold text-white mb-2">Founder</h2>
           <p className="text-sm text-slate-300 leading-relaxed">
             Gabriel Freitas founded SiteSafe to solve the problem he kept hearing
@@ -85,7 +85,7 @@ export default function PressPage() {
         </section>
 
         {/* Logo */}
-        <section className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6">
+        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
           <h2 className="text-lg font-semibold text-white mb-4">Logo</h2>
           <div className="flex items-center gap-6">
             <div className="bg-slate-900 rounded-xl p-6 flex items-center justify-center w-32 h-32">
@@ -116,7 +116,7 @@ export default function PressPage() {
         </section>
 
         {/* Screenshots */}
-        <section className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6">
+        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
           <h2 className="text-lg font-semibold text-white mb-4">
             Screenshots
           </h2>
@@ -149,7 +149,7 @@ export default function PressPage() {
         </section>
 
         {/* Contact */}
-        <section className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 p-6">
+        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
           <h2 className="text-lg font-semibold text-white mb-2">
             Media Contact
           </h2>

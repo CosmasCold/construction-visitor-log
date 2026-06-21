@@ -53,7 +53,7 @@ export default function RoiCalculatorPage() {
 
         <form
           onSubmit={handleCalculate}
-          className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 space-y-5"
+          className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 space-y-5"
         >
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1">
@@ -134,7 +134,7 @@ export default function RoiCalculatorPage() {
         </form>
 
         {showResults && (
-          <div className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 space-y-6">
+          <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 space-y-6">
             <h2 className="text-xl font-semibold text-white text-center mb-4">
               Your paper log is costing you
             </h2>

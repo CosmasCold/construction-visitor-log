@@ -10,7 +10,7 @@ export default function ErrorPage({
 }) {
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-8 max-w-md text-center">
+      <div className="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8 max-w-md text-center">
         <h2 className="text-xl font-semibold text-slate-800 mb-2">Something went wrong</h2>
         <p className="text-sm text-slate-600 mb-6">
           {error.message || "An unexpected error occurred. Please try again."}

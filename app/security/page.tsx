@@ -61,7 +61,7 @@ export default function SecurityPage() {
           {sections.map((section) => (
             <div
               key={section.title}
-              className="bg-white/[0.06] backdrop-blur-md rounded-2xl border border-white/10 shadow-card-raised p-6"
+              className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6"
             >
               <div className="flex items-center gap-3 mb-3">
                 <section.icon className="w-5 h-5 text-sky-400" />
