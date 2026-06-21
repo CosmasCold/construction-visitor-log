@@ -1,10 +1,11 @@
+// app/signup/SignupClient.tsx
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Rocket, ShieldCheck, CreditCard, PhoneOff, MessageCircle } from "lucide-react";
 import { logEvent } from "@/lib/analytics";
 
 export default function SignupClient() {
@@ -13,6 +14,28 @@ export default function SignupClient() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Password strength helper
+  const getPasswordStrength = (pwd: string) => {
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (pwd.match(/[a-z]/)) score++;
+    if (pwd.match(/[A-Z]/)) score++;
+    if (pwd.match(/[0-9]/)) score++;
+    if (pwd.match(/[^a-zA-Z0-9]/)) score++;
+    return Math.min(score, 4);
+  };
+
+  const passwordStrength = getPasswordStrength(password);
+  const strengthLabels = ["Weak", "Weak", "Okay", "Good", "Strong"];
+  const strengthColors = [
+    "bg-red-400",
+    "bg-red-400",
+    "bg-yellow-400",
+    "bg-blue-400",
+    "bg-green-400",
+  ];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,50 +79,156 @@ export default function SignupClient() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4">
-      <div className="w-full max-w-md bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-8 text-white">
-        <h1 className="text-2xl font-bold tracking-tight text-center mb-2">
-  Set up your first site in 2 minutes
-</h1>
-        <p className="text-sm text-slate-400 text-center mb-6">
-          14‑day trial · No credit card · No sales call
-        </p>
+      <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8">
+        {/* ===== LEFT: Form ===== */}
+        <div className="w-full md:w-1/2 bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-8 text-white accent-glow aurora-bg">
+          <h1 className="text-2xl font-bold tracking-tight text-center mb-2">
+            Set up your first site in 2 minutes
+          </h1>
+          <p className="text-sm text-slate-400 text-center mb-6">
+            14‑day trial · No credit card · No sales call
+          </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-          />
-          <input
-            type="password"
-            placeholder="Password (8+ chars, 1 uppercase, 1 number)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={8}
-            className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-          />
-          {error && (
-            <p className="text-rose-400 text-sm text-center">{error}</p>
-          )}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white font-medium rounded-xl px-6 py-3 text-sm transition-all flex items-center justify-center gap-2"
-          >
-            {loading ? "Creating account…" : "Start free trial"} <ArrowRight className="w-4 h-4" />
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+            />
 
-        <p className="text-xs text-slate-500 text-center mt-4">
-          Already have an account?{" "}
-          <Link href="/admin/login" className="text-sky-400 hover:underline">
-            Sign in
-          </Link>
-        </p>
+            {/* Password with toggle */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password (8+ chars, 1 uppercase, 1 number)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
+                className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/50 pr-12"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-sm"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+
+            {/* Password Strength */}
+            {password.length > 0 && (
+              <div className="flex items-center gap-2">
+                <div className="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-300 ${strengthColors[passwordStrength]}`}
+                    style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                  />
+                </div>
+                <span className="text-xs text-slate-400 whitespace-nowrap">
+                  {strengthLabels[passwordStrength]}
+                </span>
+              </div>
+            )}
+
+            {error && (
+              <p className="text-rose-400 text-sm text-center">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white font-medium rounded-xl px-6 py-3 text-sm transition-all flex items-center justify-center gap-2 cta-pulse"
+            >
+              {loading ? "Creating account…" : "Start My Free Trial"}
+              {!loading && <ArrowRight className="w-4 h-4" />}
+            </button>
+
+            {/* Trust Signals – now with Lucide icons */}
+            <div className="flex justify-center gap-4 text-xs text-slate-500">
+              <span className="flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-sky-400" /> SSL encrypted
+              </span>
+              <span>·</span>
+              <span className="flex items-center gap-1">
+                <CreditCard className="w-3.5 h-3.5 text-sky-400" /> No card required
+              </span>
+              <span>·</span>
+              <span className="flex items-center gap-1">
+                <PhoneOff className="w-3.5 h-3.5 text-sky-400" /> No sales calls
+              </span>
+            </div>
+          </form>
+
+          <p className="text-xs text-slate-500 text-center mt-4">
+            Already have an account?{" "}
+            <Link href="/admin/login" className="text-sky-400 hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </div>
+
+        {/* ===== RIGHT: Value Sidebar ===== */}
+        <div className="hidden md:flex md:w-1/2 bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 p-8 text-white flex-col justify-between accent-glow aurora-bg">
+          <div>
+            <Rocket className="w-10 h-10 text-sky-400 mb-4" />
+            <h2 className="text-xl font-bold mb-2">In 2 minutes, you&apos;ll:</h2>
+
+            <ul className="space-y-4 mt-6">
+              <li className="flex items-start gap-3">
+                <span className="bg-sky-500/20 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 text-sky-400">
+                  1
+                </span>
+                <span className="text-sm text-slate-300">
+                  Create your <strong className="text-white">first location</strong>{" "}
+                  <span className="text-slate-500 text-xs">(e.g., Houston Warehouse)</span>
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="bg-sky-500/20 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 text-sky-400">
+                  2
+                </span>
+                <span className="text-sm text-slate-300">
+                  <strong className="text-white">Print your QR code</strong>{" "}
+                  <span className="text-slate-500 text-xs">— no hardware needed</span>
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="bg-sky-500/20 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5 text-sky-400">
+                  3
+                </span>
+                <span className="text-sm text-slate-300">
+                  <strong className="text-white">Start tracking</strong> visitors instantly{" "}
+                  <span className="text-slate-500 text-xs">from your dashboard</span>
+                </span>
+              </li>
+            </ul>
+
+            {/* Testimonial – exactly matches landing page */}
+            <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/5">
+              <p className="text-sm font-light italic text-slate-300">
+                We have 8 locations and used to rely on paper logs at each site.
+                SiteSafe gives me a single dashboard across all of them. I can see
+                who&apos;s on site at any location in seconds.
+              </p>
+              <p className="text-xs font-medium mt-2 text-slate-400">
+                – Marcus, Director of Facilities – TX
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 text-xs text-slate-500 border-t border-white/5 pt-4 flex items-center gap-1.5">
+            <MessageCircle className="w-3.5 h-3.5 text-sky-400" /> Questions?{" "}
+            <a href="mailto:hello@sitesafe.thesift.space" className="text-sky-400 hover:underline">
+              hello@sitesafe.thesift.space
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
