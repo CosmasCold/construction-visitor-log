@@ -1,177 +1,134 @@
 // app/faq/page.tsx
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, HelpCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Frequently Asked Questions – SiteSafe",
+  title: "Frequently Asked Questions | SiteSafe",
   description:
-    "Answers to common questions about SiteSafe, including setup, trials, billing, security, integrations, and more.",
+    "Common questions about SiteSafe — pricing, features, security, and more. $49/month for up to 20 sites, 14‑day free trial, no credit card.",
 };
 
 const faqs = [
   {
-    q: "What is SiteSafe?",
-    a: "SiteSafe is a smart visitor management platform that replaces paper sign‑in sheets with a simple, tablet‑friendly digital check‑in. Every location gets a unique QR code. Visitors scan it, enter their details, and must acknowledge your safety or conduct policy before they can proceed. A live dashboard shows exactly who is on site right now, updated every few seconds. It's built for construction sites, warehouses, offices, and any workplace that needs to track visitors.",
+    question: "What is SiteSafe?",
+    answer:
+      "SiteSafe is a modern visitor management system designed for mid‑sized workplaces with multiple locations. It replaces paper logs with QR code check‑in, mandatory safety briefings, real‑time dashboards, and audit‑ready exports — all for a flat $49/month.",
   },
   {
-    q: "How do I set up my first site?",
-    a: "After signing up, you land on your company dashboard. Click '+ New Site', give your site a name and a short URL slug (like 'lobby'), and optionally an address. Click 'Create'. Your site is ready immediately, and you can start checking in visitors.",
+    question: "How does the 14‑day free trial work?",
+    answer:
+      "When you sign up, you get full access to all features for 14 days — no credit card required. At the end of the trial, you can choose to subscribe or your account will simply expire. No automatic charges.",
   },
   {
-    q: "Can I have multiple sites under one company?",
-    a: "Yes. You can create as many sites as you need – one for each location, building, or floor. They all share the same company subscription and can be managed from a single dashboard.",
+    question: "What happens when the trial ends?",
+    answer:
+      "You’ll receive a notification that your trial has ended. To continue using SiteSafe, you can add a payment method in your account settings. All your data is retained.",
   },
   {
-    q: "How does the free trial work?",
-    a: "Your 14‑day free trial starts the moment you create your account. No credit card is required. You have full access to all features during the trial. When the trial ends, you'll need to subscribe to continue using SiteSafe.",
+    question: "Is there a limit on the number of visitors?",
+    answer:
+      "No. The $49/month plan includes unlimited visitors across all your sites. The only limit is the number of sites — up to 20 sites per account.",
   },
   {
-    q: "What happens when my trial ends?",
-    a: "A banner at the top of your dashboard shows the remaining days. When the trial ends, you'll need to subscribe. Your data stays safe and will be available again as soon as you subscribe.",
+    question: "Can I use SiteSafe on a single site?",
+    answer:
+      "Absolutely. Many customers use SiteSafe for just one location. The flat pricing still applies — $49/month for up to 20 sites, whether you have 1 or 20.",
   },
   {
-    q: "How does the mandatory safety acknowledgment work?",
-    a: "Your safety or conduct policy appears before the sign‑in form. The visitor must check a box confirming they've read it. The acknowledgment is timestamped and stored permanently. It cannot be skipped. This provides compliance proof during audits.",
+    question: "What features are included?",
+    answer:
+      "Every feature we offer is included: QR check‑in, mandatory safety acknowledgment, photo capture, pre‑screening questions, watchlist/blocklist, real‑time dashboard, host notifications, badge printing, lockdown mode, emergency evacuation list, audit exports (CSV/Excel/PDF), analytics, REST API, webhooks, and document signing. No add‑ons or hidden fees.",
   },
   {
-    q: "What are pre‑screening questions?",
-    a: "You can add custom yes/no questions that visitors must answer before signing in (e.g., 'Completed induction?'). The answers are stored with each visitor record and appear in the dashboard and exports.",
+    question: "Do I need special hardware?",
+    answer:
+      "No. Visitors scan a QR code with their phone to check in. You can also print QR codes for each site if you prefer a physical sign. No iPad or kiosk required.",
   },
   {
-    q: "Can I take visitor photos at check‑in?",
-    a: "Yes. The check‑in page can use the device's camera to capture a photo. The photo is stored securely on Vercel Blob and attached to the visitor record. It appears in the dashboard and on printed badges.",
+    question: "Is SiteSafe secure?",
+    answer:
+      "Yes. All data is encrypted in transit and at rest. We use SSL encryption, and our authentication system is built on industry‑standard practices. SiteSafe is GDPR/LGPD ready. We do not sell or share your data.",
   },
   {
-    q: "How does the real‑time dashboard work?",
-    a: "The dashboard shows who is currently on site and updates automatically every few seconds. You don't need to refresh the page. You can also sign any visitor out remotely from the dashboard.",
+    question: "Can I export my data?",
+    answer:
+      "Yes. You can export visitor logs as CSV, Excel, or PDF at any time. Exports can be filtered by date, host, or company — ideal for audits and compliance.",
   },
   {
-    q: "Can site managers sign visitors out remotely?",
-    a: "Yes. From the dashboard, click 'Sign out' next to any active visitor. They will be signed out immediately, and their record will show the departure time.",
+    question: "What is the emergency evacuation list?",
+    answer:
+      "It’s a one‑click PDF that lists every person currently signed in across all your sites. In an emergency, you know exactly who is on site — without searching through paper logs.",
   },
   {
-    q: "How do hosts get notified when a visitor signs in?",
-    a: "Edit a site, add a host (name + email) in the 'Hosts' section, and save. When a visitor signs in and selects that host from the dropdown, an automatic email notification is sent to the host.",
+    question: "Does SiteSafe offer a REST API?",
+    answer:
+      "Yes. We provide a full REST API and webhooks so you can integrate SiteSafe with your own tools like Slack, HR systems, or custom dashboards. Documentation is available at /docs.",
   },
   {
-    q: "Can I pre‑register expected visitors?",
-    a: "Yes. In the site edit modal, add expected visitors with their name and company. On the check‑in page, they'll appear in a list for one‑tap sign‑in. This saves time at busy entrances.",
+    question: "How do I get support?",
+    answer:
+      "Support is available via email at hello@thesift.space. We typically respond within 24 hours. There’s no sales team — just direct help from the people who build the product.",
   },
   {
-    q: "How does badge printing work?",
-    a: "After a visitor signs in, you can print a badge directly from the active visitors list on the check‑in page. The badge includes the visitor's name, company, host, and photo (if captured). The printed badge is formatted as a compact 4×3‑inch label.",
-  },
-  {
-    q: "What export options are available?",
-    a: "You can export your visitor log as CSV, Excel, or PDF. Exports include all visitor data (name, company, phone, host, sign‑in/sign‑out times, safety acknowledgment, pre‑screening answers, and photo URL if available). You can filter by date range before exporting.",
-  },
-  {
-    q: "Does SiteSafe have analytics?",
-    a: "Yes. The analytics page shows a 30‑day trend chart of visitor counts, plus the total number of visitors in the period. You can also export the analytics data as a CSV file.",
-  },
-  {
-    q: "What integrations does SiteSafe support?",
-    a: "SiteSafe integrates with Slack (notifications when a visitor signs in), Google Sheets (auto‑sync visitor records via Apps Script), and Zapier/Make (connect to 5,000+ apps without coding). There's also a full REST API for custom integrations.",
-  },
-  {
-    q: "How do I set up Slack notifications?",
-    a: "In SiteSafe Settings, scroll to 'Slack Notifications', paste your Slack incoming webhook URL, and click Save. You can send a test message to confirm it works. After that, every check‑in will post a message in your chosen Slack channel.",
-  },
-  {
-    q: "How does the Google Sheets sync work?",
-    a: "We provide a short Google Apps Script that you paste into your Google Sheet. It uses your SiteSafe API key to fetch visitors and append them to the sheet automatically. See the Integrations page for step‑by‑step instructions.",
-  },
-  {
-    q: "How does the REST API work?",
-    a: "Every company can generate an API key from the Settings page. The API lets you list sites, fetch visitors, create check‑ins, and sign visitors out programmatically. Full documentation is available at /docs.",
-  },
-  {
-    q: "Is my visitor data secure?",
-    a: "Yes. All data is encrypted in transit (HTTPS) and at rest. Your visitor logs are stored in a secure, access‑controlled database (Neon). Photographs are stored on Vercel Blob with public access restricted to your account. Payments are processed by Stripe (PCI DSS Level 1). We do not use third‑party tracking cookies.",
-  },
-  {
-    q: "How do I subscribe after the trial?",
-    a: "Go to Settings → click 'Subscribe Now'. You'll be taken to our secure Stripe checkout. Once your payment is confirmed, your subscription becomes active immediately and the trial banner disappears.",
-  },
-  {
-    q: "Can I cancel anytime?",
-    a: "Yes. Your subscription can be cancelled at any time from the Stripe Customer Portal (accessible via Settings → Manage Billing). If you cancel, you'll still have access until the end of your current billing period.",
-  },
-  {
-    q: "What does $49/month include?",
-    a: "Everything. Unlimited sites, unlimited visitors, all features (QR check‑in, mandatory acknowledgment, pre‑screening, photo capture, host notifications, badge printing, audit exports, analytics, integrations, REST API). No per‑site or per‑user fees. Cancel anytime.",
-  },
-  {
-    q: "Do I need a credit card for the free trial?",
-    a: "No. The 14‑day trial is completely free. No credit card required. No sales calls, ever.",
-  },
-  {
-    q: "How do I share the check‑in link with my team?",
-    a: "On the dashboard, each site card shows its unique URL. Click the copy icon to copy the link, or click the QR code icon to display a scannable code. Share the link or print the QR code for your entrance.",
-  },
-  {
-    q: "Can visitors sign themselves out?",
-    a: "Yes. The check‑in page shows a list of all active visitors. Next to each name is a 'Sign out' button – anyone can tap it to sign out. Site managers can also sign visitors out remotely from the dashboard.",
-  },
-  {
-    q: "Where can I see updates and new features?",
-    a: "Check the Changelog page for a complete list of recent updates. We ship frequently and document everything there.",
-  },
-  {
-    q: "How do I get help?",
-    a: "You can chat with us directly using the Crisp chat bubble on the site, or email us at cloudandclipboard@gmail.com. We usually respond within a few hours.",
+    question: "Can I cancel anytime?",
+    answer:
+      "Yes. You can cancel your subscription at any time from your account settings. There are no long‑term contracts or cancellation fees.",
   },
 ];
 
-export default function FaqPage() {
+export default function FAQPage() {
   return (
-    <div className="min-h-screen py-12 px-4">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-          Frequently Asked Questions
-        </h1>
-        <p className="text-sm text-slate-400 mb-8">
-          Quick answers to common questions about SiteSafe.
-        </p>
-
-        <div className="space-y-4">
-          {faqs.map((faq, idx) => (
-            <details
-              key={idx}
-              className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised group"
+    <div className="min-h-screen py-16 px-4">
+      <div className="max-w-4xl mx-auto space-y-12 text-white">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <HelpCircle className="w-12 h-12 text-sky-400 mx-auto" />
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Frequently Asked Questions
+          </h1>
+          <p className="text-slate-400 text-lg max-w-xl mx-auto">
+            Everything you need to know about SiteSafe — from pricing to
+            security. If you don’t find your answer here,{" "}
+            <a
+              href="mailto:hello@thesift.space"
+              className="text-sky-400 hover:underline"
             >
-              <summary className="px-6 py-4 text-white font-medium cursor-pointer list-none flex items-center justify-between">
-                <span>{faq.q}</span>
-                <svg
-                  className="w-4 h-4 text-sky-400 transition-transform duration-200 group-open:rotate-180"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </summary>
-              <div className="px-6 pb-4 text-sm text-slate-300 leading-relaxed">
-                {faq.a}
-              </div>
-            </details>
+              reach out to us
+            </a>
+            .
+          </p>
+        </div>
+
+        {/* FAQ items */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {faqs.map((faq, idx) => (
+            <div key={idx} className="glass-card p-5 space-y-2">
+              <h2 className="font-semibold text-white text-sm">{faq.question}</h2>
+              <p className="text-xs text-slate-400 leading-relaxed">{faq.answer}</p>
+            </div>
           ))}
         </div>
 
-        <p className="text-sm text-slate-500 mt-8 text-center">
-          Still have questions?{" "}
-          <a
-            href="mailto:cloudandclipboard@gmail.com"
-            className="text-sky-400 hover:text-sky-300 transition-colors"
+        {/* CTA */}
+        <div className="text-center space-y-4">
+          <Link
+            href="/signup"
+            className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-xl px-8 py-3 text-sm transition-all shadow-lg cta-pulse"
           >
-            Contact us
-          </a>
-          .
-        </p>
+            Start your free trial <ArrowRight className="w-4 h-4" />
+          </Link>
+          <p className="text-xs text-slate-500">
+            Still have questions?{" "}
+            <a
+              href="mailto:hello@thesift.space"
+              className="text-sky-400 hover:underline"
+            >
+              Email us
+            </a>
+            .
+          </p>
+        </div>
       </div>
     </div>
   );

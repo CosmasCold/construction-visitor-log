@@ -1,7 +1,7 @@
 // app/blog/envoy-alternative/page.tsx
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Top 7 Envoy Alternatives for Multi-Site Visitor Management (2026)",
@@ -269,7 +269,7 @@ export default function EnvoyAlternativePage() {
             {[
               {
                 q: "Is SiteSafe really $49/month for everything?",
-                a: "Yes. Unlimited sites, unlimited visitors, and every feature — including watchlist, emergency evacuation list, lockdown, webhooks, and document signing. No add-ons, no hidden costs.",
+                a: "Yes. Up to 20 sites, unlimited visitors, and every feature — including watchlist, emergency evacuation list, lockdown, webhooks, and document signing. No add-ons, no hidden costs.",
               },
               {
                 q: "Can I switch from Envoy to SiteSafe?",
