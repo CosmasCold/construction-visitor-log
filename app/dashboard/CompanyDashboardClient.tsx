@@ -283,7 +283,6 @@ export default function CompanyDashboardClient({
     });
 
     if (res.ok) {
-      // Update local sites array directly from state so checkbox persists
       setSites((prev) =>
         prev.map((s) =>
           s.id === siteId
@@ -1209,39 +1208,22 @@ export default function CompanyDashboardClient({
                   </div>
                 ) : (
                   <div className="flex justify-between items-start">
-                    {/* Clickable area to open check‑in page — NO <a> wrapper */}
-                    <div
-                      onClick={() =>
-                        window.open(
-                          `/checkin/${encodeURIComponent(site.slug)}`,
-                          "_blank"
-                        )
-                      }
-                      className="flex-1 cursor-pointer"
-                      role="link"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          window.open(
-                            `/checkin/${encodeURIComponent(site.slug)}`,
-                            "_blank"
-                          );
-                        }
-                      }}
-                    >
-                      <h3 className="font-semibold tracking-tight text-white">
+                    {/* Left side: site info + action buttons */}
+                    <div className="flex-1">
+                      {/* Site name is a plain link – opens check‑in */}
+                      <a
+                        href={`/checkin/${encodeURIComponent(site.slug)}`}
+                        target="_blank"
+                        className="font-semibold tracking-tight text-white hover:text-sky-300 transition-colors"
+                      >
                         {site.name}
-                      </h3>
+                      </a>
                       <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
                         /{site.slug}
-                        {/* All buttons inside are now independent because there's no <a> */}
+                        {/* Action buttons – totally independent */}
                         <button
                           type="button"
-                          onClick={(e) => {
-                            e.stopPropagation(); // prevent div click
-                            copyCheckinUrl(site.slug);
-                          }}
+                          onClick={() => copyCheckinUrl(site.slug)}
                           className="text-sky-400 hover:text-sky-300 inline-flex items-center transition-colors duration-150"
                           title="Copy check-in URL"
                         >
@@ -1249,10 +1231,7 @@ export default function CompanyDashboardClient({
                         </button>
                         <button
                           type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setQrSite({ id: site.id, name: site.name });
-                          }}
+                          onClick={() => setQrSite({ id: site.id, name: site.name })}
                           className="text-sky-400 hover:text-sky-300 inline-flex items-center transition-colors duration-150"
                           title="Show QR code"
                         >
@@ -1260,12 +1239,7 @@ export default function CompanyDashboardClient({
                         </button>
                         <button
                           type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(
-                              `/api/sites/${site.id}/emergency-list`
-                            );
-                          }}
+                          onClick={() => window.open(`/api/sites/${site.id}/emergency-list`)}
                           className="text-amber-400 hover:text-amber-300 inline-flex items-center transition-colors duration-150"
                           title="Download emergency list"
                         >
@@ -1273,8 +1247,7 @@ export default function CompanyDashboardClient({
                         </button>
                         <button
                           type="button"
-                          onClick={async (e) => {
-                            e.stopPropagation();
+                          onClick={async () => {
                             const newLockdown = !site.lockdownEnabled;
                             const res = await fetch(
                               `/api/sites/${site.id}/lockdown`,
@@ -1283,19 +1256,14 @@ export default function CompanyDashboardClient({
                                 headers: {
                                   "Content-Type": "application/json",
                                 },
-                                body: JSON.stringify({
-                                  lockdown: newLockdown,
-                                }),
+                                body: JSON.stringify({ lockdown: newLockdown }),
                               }
                             );
                             if (res.ok) {
                               setSites((prev) =>
                                 prev.map((s) =>
                                   s.id === site.id
-                                    ? {
-                                        ...s,
-                                        lockdownEnabled: newLockdown,
-                                      }
+                                    ? { ...s, lockdownEnabled: newLockdown }
                                     : s
                                 )
                               );
@@ -1319,10 +1287,10 @@ export default function CompanyDashboardClient({
                         {site.visitorsToday} today
                       </p>
                       <p className="text-xs text-slate-500 mt-0.5 italic">
-                        Click card to open check‑in page in new tab
+                        Click site name to open check‑in
                       </p>
                     </div>
-                    {/* Edit and Delete buttons outside the clickable area */}
+                    {/* Right side: Edit & Delete */}
                     <div className="flex gap-1 ml-2">
                       <button
                         type="button"
