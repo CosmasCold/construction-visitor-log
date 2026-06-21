@@ -248,12 +248,8 @@ export default async function RootLayout({
         />
       </head>
       <body className="relative flex flex-col min-h-screen">
-        {/* ── Premium background (living aurora + grid) ── */}
-        <div className="bg-premium">
-          <div className="aurora-blob aurora-blob--cyan" />
-          <div className="aurora-blob aurora-blob--violet" />
-          <div className="aurora-blob aurora-blob--indigo" />
-        </div>
+        {/* ── Premium background (GPU‑safe, static) ── */}
+        <div className="bg-premium" />
 
         <NavWrapper header={header} footer={footer}>
           <main className="flex-1">{children}</main>
