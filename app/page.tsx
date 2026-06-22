@@ -172,19 +172,6 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Founding Partner Scarcity Banner – NEW */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 pb-4">
-        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm px-4 py-3 rounded-xl flex items-center justify-center gap-2 flex-wrap backdrop-blur-lg">
-          <span className="text-amber-400 text-lg">🔥</span>
-          <span>
-            <strong>Only 3 of 5</strong> Founding Partner slots remain.
-            <Link href="/signup" className="text-amber-400 underline font-medium ml-1 hover:no-underline">
-              Lock in 20% lifetime discount →
-            </Link>
-          </span>
-        </div>
-      </div>
-
       {/* As Featured In – NEW */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="text-center">
