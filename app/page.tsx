@@ -36,11 +36,38 @@ import {
   FileText,
   Timer,
   Clock,
+  GitBranch,
 } from "lucide-react";
 
 export const metadata: Metadata = {
+  title: "SiteSafe — Visitor Management for 20 Sites, $49/mo",
+  description:
+    "Replace paper logs with a single dashboard across all your locations. 14-day free trial. No sales calls. $49/mo for up to 20 sites.",
   alternates: {
     canonical: "https://sitesafe.thesift.space",
+  },
+  openGraph: {
+    title: "SiteSafe — Visitor Management for 20 Sites, $49/mo",
+    description:
+      "Replace paper logs with a single dashboard across all your locations. 14-day free trial. No sales calls.",
+    url: "https://sitesafe.thesift.space",
+    siteName: "SiteSafe",
+    images: [
+      {
+        url: "https://sitesafe.thesift.space/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SiteSafe — Visitor Management Dashboard",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SiteSafe — Visitor Management for 20 Sites, $49/mo",
+    description:
+      "Replace paper logs with a single dashboard across all your locations. 14-day free trial. No sales calls.",
+    images: ["https://sitesafe.thesift.space/og-image.png"],
   },
 };
 
@@ -52,7 +79,7 @@ const featureGroups = [
       { icon: ShieldCheck, title: "Mandatory safety briefing", desc: "Visitor cannot skip acknowledgment. Compliance proof." },
       { icon: Camera, title: "Photo capture", desc: "Take a visitor photo at check‑in, stored with their log. Improves security." },
       { icon: ListChecks, title: "Pre‑screening questions", desc: "Custom yes/no questions before sign‑in. Answers stored with the record." },
-      { icon: ShieldCheck, title: "Watchlist / Blocklist", desc: "Flag unwanted visitors. Blocked visitors are stopped at check‑in and you’re alerted instantly." },
+      { icon: ShieldAlert, title: "Watchlist / Blocklist", desc: "Flag unwanted visitors. Blocked visitors are stopped at check‑in and you’re alerted instantly." },
     ],
   },
   {
@@ -80,7 +107,7 @@ const featureGroups = [
     items: [
       { icon: Code, title: "REST API", desc: "Connect to Slack, HR tools, or custom dashboards." },
       { icon: Zap, title: "Webhooks", desc: "Real‑time event streaming to your own tools." },
-      { icon: Zap, title: "Integrations", desc: "Slack, Google Sheets, Zapier, and a full REST API for custom tools." },
+      { icon: GitBranch, title: "Integrations", desc: "Slack, Google Sheets, Zapier, and a full REST API for custom tools." },
     ],
   },
 ];
@@ -111,8 +138,8 @@ const industries = [
 export default function LandingPage() {
   return (
     <div className="min-h-screen text-white">
-      {/* Hero – rewritten for sharp positioning */}
-      <div className="max-w-6xl mx-auto px-4 py-24 sm:py-32 sm:px-6 lg:px-8 text-center">
+      {/* Hero – fixed mobile spacing */}
+      <div className="max-w-6xl mx-auto px-4 py-12 sm:py-24 md:py-32 sm:px-6 lg:px-8 text-center">
         <div className="bg-white/[0.10] backdrop-blur-xl rounded-3xl border border-white/10 shadow-card-raised p-10 sm:p-14 gradient-border aurora-bg">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
             <span className="text-sky-400">One dashboard.</span>{" "}
@@ -145,6 +172,33 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* Founding Partner Scarcity Banner – NEW */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 pb-4">
+        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-300 text-sm px-4 py-3 rounded-xl flex items-center justify-center gap-2 flex-wrap backdrop-blur-lg">
+          <span className="text-amber-400 text-lg">🔥</span>
+          <span>
+            <strong>Only 3 of 5</strong> Founding Partner slots remain.
+            <Link href="/signup" className="text-amber-400 underline font-medium ml-1 hover:no-underline">
+              Lock in 20% lifetime discount →
+            </Link>
+          </span>
+        </div>
+      </div>
+
+      {/* As Featured In – NEW */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        <div className="text-center">
+          <p className="text-xs text-slate-500 uppercase tracking-wider mb-4">As featured in</p>
+          <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 opacity-60">
+            <span className="text-sm font-semibold text-slate-400">BLR</span>
+            <span className="text-sm font-semibold text-slate-400">Product Hunt</span>
+            <span className="text-sm font-semibold text-slate-400">G2</span>
+            <span className="text-sm font-semibold text-slate-400">Capterra</span>
+            <span className="text-sm font-semibold text-slate-400">SaaS Hub</span>
+          </div>
+        </div>
+      </div>
+
       {/* Trust badges (unchanged) */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex flex-wrap justify-center gap-6 items-center">
@@ -164,7 +218,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* NEW: "Why we don't force sales calls on you" section */}
+      {/* "Why we don't force sales calls" section (unchanged) */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center accent-glow aurora-bg">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-3">
@@ -187,14 +241,14 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Features grid (unchanged) */}
+      {/* Features grid – fixed grid columns and duplicate icons */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get, for up to 20 sites</h2>
 
         {featureGroups.map((group) => (
           <div key={group.category} className="mb-8">
             <h3 className="text-lg font-semibold text-sky-300 mb-4 text-center sm:text-left">{group.category}</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {group.items.map((f, idx) => (
                 <FadeInSection key={idx} delay={idx * 100}>
                   <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start hover:bg-white/[0.14] transition-all duration-300 feature-card-hover aurora-bg">
@@ -232,8 +286,52 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Screenshot gallery, Trusted by, Testimonial, Free Tools, etc. (unchanged from earlier full version) */}
-      {/* ... */}
+      {/* Industries we serve – NEW */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <h2 className="text-2xl font-bold tracking-tight text-white text-center mb-6">
+          Built for multi-site teams across industries
+        </h2>
+        <div className="flex flex-wrap justify-center gap-4">
+          {industries.map((industry) => (
+            <div key={industry.name} className="bg-white/[0.06] backdrop-blur-lg rounded-xl border border-white/10 px-5 py-3 flex items-center gap-2">
+              <industry.icon className="w-4 h-4 text-sky-400" />
+              <span className="text-sm text-slate-300">{industry.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Testimonial – NEW */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
+          <p className="text-slate-300 text-sm italic max-w-2xl mx-auto">
+            “SiteSafe replaced our messy paper logs across 8 sites with a single dashboard. Setup took 3 minutes.”
+          </p>
+          <p className="text-slate-400 text-xs font-medium mt-3">— Marcus, Facilities Director</p>
+        </div>
+      </div>
+
+      {/* Free Audit Tool CTA – NEW */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">
+            Is your visitor log audit-ready?
+          </h2>
+          <p className="text-sm text-slate-300 max-w-2xl mx-auto">
+            Take our 60-second self-audit and see how your visitor log stacks up
+            against what inspectors actually look for.
+          </p>
+          <Link
+            href="/audit"
+            className="inline-flex items-center justify-center mt-4 px-6 py-2.5 border border-sky-400/30 text-sm font-medium rounded-xl text-sky-300 hover:bg-sky-500/10 transition-all"
+          >
+            Run the audit →
+          </Link>
+        </div>
+      </div>
+
+      {/* Screenshot Gallery (if component exists) */}
+      {/* <ScreenshotGallery /> */}
 
       {/* Footer CTA (unchanged) */}
       <div className="bg-white/[0.08] backdrop-blur-lg py-16 border-t border-white/5 accent-glow aurora-bg">
