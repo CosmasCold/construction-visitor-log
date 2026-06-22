@@ -95,7 +95,7 @@ export default function SecurityFeaturesPage() {
             <strong className="text-white">$49/month</strong> plan.
           </p>
           <p className="text-xs text-slate-400 mb-4">
-            Unlimited sites · Unlimited visitors · No per‑site fees · No sales
+            Up to 20 sites · Unlimited visitors · No per‑site fees · No sales
             calls
           </p>
           <Link

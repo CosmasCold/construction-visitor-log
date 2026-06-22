@@ -21,7 +21,7 @@ export default function SecurityVideo() {
         >
           {!imgError ? (
             <img
-              src="https://img.youtube.com/vi/-C-c22fwMNw/hqdefault.jpg"
+              src="https://img.youtube.com/vi/ntRt1qVkLgo/hqdefault.jpg"
               alt="SiteSafe security features demo"
               onError={() => setImgError(true)}
               className="absolute top-0 left-0 w-full h-full object-cover"
@@ -46,7 +46,7 @@ export default function SecurityVideo() {
     <div className="max-w-xl mx-auto">
       <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
         <iframe
-          src="https://www.youtube.com/embed/-C-c22fwMNw?autoplay=1"
+          src="https://www.youtube.com/embed/ntRt1qVkLgo?autoplay=1"
           title="SiteSafe security features"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
