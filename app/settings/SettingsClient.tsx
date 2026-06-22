@@ -1,7 +1,7 @@
 // app/settings/SettingsClient.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -53,6 +53,7 @@ export default function SettingsClient({
 
   // Billing
   const [loading, setLoading] = useState(false);
+  const loadingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // API key
   const [apiKey, setApiKey] = useState(initialApiKey || "");
@@ -87,24 +88,35 @@ export default function SettingsClient({
 
   async function handleManageBilling() {
     setLoading(true);
+
+    // Safety timeout — reset loading after 10 seconds no matter what
+    loadingTimer.current = setTimeout(() => {
+      setLoading(false);
+      alert("The request timed out. Please try again or contact support.");
+    }, 10000);
+
     try {
       const res = await fetch("/api/stripe/portal", { method: "POST" });
+      clearTimeout(loadingTimer.current!); // got a response, cancel timeout
+
       const contentType = res.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         const text = await res.text();
         throw new Error(text.slice(0, 150));
       }
+
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
         alert(data.error || "Failed to open billing portal.");
+        setLoading(false);
       }
     } catch (err: unknown) {
+      clearTimeout(loadingTimer.current!);
       const message = err instanceof Error ? err.message : "Unknown error";
       console.error(message);
       alert("Something went wrong: " + message);
-    } finally {
       setLoading(false);
     }
   }
