@@ -287,12 +287,13 @@ export default function LandingPage() {
           </p>
           <div className="relative w-full max-w-3xl mx-auto aspect-video rounded-xl overflow-hidden border border-white/10">
             <iframe
-              src="https://youtu.be/ntRt1qVkLgo"
-              title="SiteSafe Demo Video"
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+  src="https://www.youtube-nocookie.com/embed/ntRt1qVkLgo?si=BmRSpzC4Jeea1uij"
+  title="SiteSafe Demo Video"
+  className="w-full h-full"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerPolicy="strict-origin-when-cross-origin"
+  allowFullScreen
+/>
           </div>
           <p className="text-xs text-slate-500 mt-3">3-minute demo • No sales calls • Try it free</p>
         </div>
