@@ -79,7 +79,7 @@ const featureGroups = [
       { icon: ShieldCheck, title: "Mandatory safety briefing", desc: "Visitor cannot skip acknowledgment. Compliance proof." },
       { icon: Camera, title: "Photo capture", desc: "Take a visitor photo at check‑in, stored with their log. Improves security." },
       { icon: ListChecks, title: "Pre‑screening questions", desc: "Custom yes/no questions before sign‑in. Answers stored with the record." },
-      { icon: ShieldAlert, title: "Watchlist / Blocklist", desc: "Flag unwanted visitors. Blocked visitors are stopped at check‑in and you’re alerted instantly." },
+      { icon: ShieldAlert, title: "Watchlist / Blocklist", desc: "Flag unwanted visitors. Blocked visitors are stopped at check‑in and you're alerted instantly." },
     ],
   },
   {
@@ -172,7 +172,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* As Featured In – NEW */}
+      {/* As Featured In */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="text-center">
           <p className="text-xs text-slate-500 uppercase tracking-wider mb-4">As featured in</p>
@@ -186,7 +186,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Trust badges (unchanged) */}
+      {/* Trust badges */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
         <div className="flex flex-wrap justify-center gap-6 items-center">
           <a href="https://saasdb.net" rel="noopener noreferrer" className="inline-flex flex-col items-center gap-1 text-center">
@@ -205,22 +205,22 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* "Why we don't force sales calls" section (unchanged) */}
+      {/* "Why we don't force sales calls" section */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center accent-glow aurora-bg">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-3">
-            Why we don’t force sales calls on you
+            Why we don&apos;t force sales calls on you
           </h2>
           <p className="text-sm text-slate-300 leading-relaxed max-w-2xl mx-auto">
             Most visitor management software makes you sit through a 45‑minute
-            Zoom demo just to see their pricing. We think that’s disrespectful
+            Zoom demo just to see their pricing. We think that&apos;s disrespectful
             of your time.
           </p>
           <p className="text-sm text-slate-300 leading-relaxed max-w-2xl mx-auto mt-4">
             SiteSafe was built to be self‑serve. Set up a site, print a QR code,
             and test it on your front desk in under 3 minutes. If you have a
             question, our live chat gets you a human in under 60 seconds — but
-            we will never call you to “check in” or upsell you.
+            we will never call you to check in or upsell you.
           </p>
           <p className="text-sm text-sky-300 font-semibold mt-4">
             You are in control. Always.
@@ -228,7 +228,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Features grid – fixed grid columns and duplicate icons */}
+      {/* Features grid */}
       <div id="features" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <h2 className="text-3xl font-bold tracking-tight text-white text-center mb-8">Everything you get, for up to 20 sites</h2>
 
@@ -253,7 +253,7 @@ export default function LandingPage() {
           </div>
         ))}
 
-        {/* Pricing callout (unchanged) */}
+        {/* Pricing callout */}
         <div className="mt-8 flex justify-center">
           <div className="bg-white/[0.10] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 flex gap-4 items-start max-w-md w-full hover:bg-white/[0.14] transition-all duration-300 accent-glow aurora-bg">
             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
@@ -273,7 +273,32 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Industries we serve – NEW */}
+      {/* Demo Video Section – NEW */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="text-2xl">🎬</span>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+              See SiteSafe in Action
+            </h2>
+          </div>
+          <p className="text-sm text-slate-300 max-w-2xl mx-auto mb-6">
+            Watch a quick demo of how SiteSafe replaces paper logs with a single, real-time dashboard.
+          </p>
+          <div className="relative w-full max-w-3xl mx-auto aspect-video rounded-xl overflow-hidden border border-white/10">
+            <iframe
+              src="https://youtu.be/ntRt1qVkLgo"
+              title="SiteSafe Demo Video"
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          <p className="text-xs text-slate-500 mt-3">3-minute demo • No sales calls • Try it free</p>
+        </div>
+      </div>
+
+      {/* Industries we serve */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <h2 className="text-2xl font-bold tracking-tight text-white text-center mb-6">
           Built for multi-site teams across industries
@@ -288,17 +313,17 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Testimonial – NEW */}
+      {/* Testimonial */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
           <p className="text-slate-300 text-sm italic max-w-2xl mx-auto">
-            “SiteSafe replaced our messy paper logs across 8 sites with a single dashboard. Setup took 3 minutes.”
+            SiteSafe replaced our messy paper logs across 8 sites with a single dashboard. Setup took 3 minutes.
           </p>
           <p className="text-slate-400 text-xs font-medium mt-3">— Marcus, Facilities Director</p>
         </div>
       </div>
 
-      {/* Free Audit Tool CTA – NEW */}
+      {/* Free Audit Tool CTA */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 shadow-card-raised p-6 sm:p-8 text-center">
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">
@@ -320,7 +345,7 @@ export default function LandingPage() {
       {/* Screenshot Gallery (if component exists) */}
       {/* <ScreenshotGallery /> */}
 
-      {/* Footer CTA (unchanged) */}
+      {/* Footer CTA */}
       <div className="bg-white/[0.08] backdrop-blur-lg py-16 border-t border-white/5 accent-glow aurora-bg">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">Start your 14‑day free trial</h2>
