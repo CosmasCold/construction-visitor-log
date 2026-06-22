@@ -1,5 +1,13 @@
 export const posts = [
   {
+    slug: "why-multi-site-visitor-management-breaks-without-standardization",
+    title: "Why Multi‑Site Visitor Management Breaks Without Standardization",
+    date: "2026-06-22",
+    lastModified: "2026-06-22",
+    excerpt:
+      "Most multi‑site organizations don’t realize their visitor management is broken until an audit. Here’s why fragmentation happens — and how to fix it.",
+  },
+  {
     slug: "ai-powered-visitor-management",
     title: "68% of Facility Managers Are Planning AI-Powered Visitor Management — Are You?",
     date: "2026-06-21",
