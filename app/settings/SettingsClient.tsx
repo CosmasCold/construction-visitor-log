@@ -73,43 +73,69 @@ export default function SettingsClient({
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
-  // Handlers
+  // ── Handlers ───────────────────────────────────────────
+
   async function handleSubscribe() {
     setLoading(true);
-    const res = await fetch("/api/stripe/checkout", { method: "POST" });
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert("Failed to start checkout.");
-      setLoading(false);
-    }
-  }
-
-  async function handleManageBilling() {
-    setLoading(true);
-
-    // Safety timeout — reset loading after 10 seconds no matter what
     loadingTimer.current = setTimeout(() => {
       setLoading(false);
-      alert("The request timed out. Please try again or contact support.");
+      alert("The request timed out. Please try again.");
     }, 10000);
 
     try {
-      const res = await fetch("/api/stripe/portal", { method: "POST" });
-      clearTimeout(loadingTimer.current!); // got a response, cancel timeout
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: companyEmail }),
+      });
+      clearTimeout(loadingTimer.current!);
 
-      const contentType = res.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await res.text();
-        throw new Error(text.slice(0, 150));
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || "Failed to start checkout.");
+        setLoading(false);
+        return;
       }
 
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
+        alert("Failed to start checkout.");
+        setLoading(false);
+      }
+    } catch (err: unknown) {
+      clearTimeout(loadingTimer.current!);
+      const message = err instanceof Error ? err.message : "Unknown error";
+      console.error(message);
+      alert("Something went wrong: " + message);
+      setLoading(false);
+    }
+  }
+
+  async function handleManageBilling() {
+    setLoading(true);
+    loadingTimer.current = setTimeout(() => {
+      setLoading(false);
+      alert("The request timed out. Please try again.");
+    }, 10000);
+
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" });
+      clearTimeout(loadingTimer.current!);
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
         alert(data.error || "Failed to open billing portal.");
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Failed to open billing portal.");
         setLoading(false);
       }
     } catch (err: unknown) {
