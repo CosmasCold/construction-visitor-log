@@ -5,6 +5,8 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { signInLimiter } from "./ratelimit";
+import { sendEmail } from "./email";
+import { welcomeEmailHtml } from "./trialEmails";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -21,7 +23,6 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // Rate limiter
         const ip =
           req?.headers?.["x-forwarded-for"]?.split(",")[0]?.trim() ?? "unknown";
         const { success } = await signInLimiter.limit(ip);
@@ -161,6 +162,18 @@ export const authOptions: NextAuthOptions = {
           });
 
           console.log("New user, company, and default site created");
+
+          // Send welcome email
+          await sendEmail({
+            to: user.email,
+            subject: "Welcome to SiteSafe! Start your 14‑day trial",
+            htmlContent: welcomeEmailHtml(company.name),
+          });
+
+          await prisma.company.update({
+            where: { id: company.id },
+            data: { trialEmailSequence: { push: "welcome" } },
+          });
         }
       } catch (error) {
         console.error("signIn callback error:", error);

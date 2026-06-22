@@ -1,3 +1,4 @@
+// app/settings/page.tsx
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -31,19 +32,38 @@ export default async function SettingsPage() {
 
   const company = user.company;
   const subscription = company.subscription;
-  const plan = subscription?.plan;
+
+  // Determine plan name and status, considering trial via trialEndsAt
+  let planName = "Free";
+  let subscriptionStatus = "inactive";
+
+  const now = new Date();
+
+  if (subscription) {
+    planName = subscription.plan?.name || "SiteSafe Pro";
+    subscriptionStatus = subscription.status;
+  } else if (company.trialEndsAt && new Date(company.trialEndsAt) > now) {
+    planName = "SiteSafe Pro (Trial)";
+    subscriptionStatus = "trialing";
+  } else if (company.trialEndsAt && new Date(company.trialEndsAt) <= now) {
+    planName = "SiteSafe Pro";
+    subscriptionStatus = "trial_ended";
+  }
 
   return (
     <SettingsClient
       companyName={company.name}
       companyEmail={company.email}
       companySlug={company.slug}
-      subscriptionStatus={subscription?.status || "inactive"}
-      planName={plan?.name || "Free"}
-      currentPeriodEnd={subscription?.currentPeriodEnd?.toISOString() ?? null}
+      subscriptionStatus={subscriptionStatus}
+      planName={planName}
+      currentPeriodEnd={
+        subscription?.currentPeriodEnd?.toISOString() ??
+        (company.trialEndsAt?.toISOString() ?? null)
+      }
       hasStripeCustomer={!!company.stripeCustomerId}
       hasSubscription={!!subscription}
-      isTrialing={subscription?.status === "trialing"}
+      isTrialing={subscriptionStatus === "trialing"}
       apiKey={company.apiKeyHash ? "••••••••" : null}
       slackWebhookUrl={company.slackWebhookUrl}
     />

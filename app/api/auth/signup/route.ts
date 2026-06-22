@@ -1,103 +1,79 @@
+// app/api/auth/signup/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { signupLimiter } from "@/lib/ratelimit";
+import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
+import { welcomeEmailHtml } from "@/lib/trialEmails";
 
-export async function POST(req: NextRequest) {
-  // Rate limit
-  const ip =
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const { success } = await signupLimiter.limit(ip);
-  if (!success) {
-    return NextResponse.json(
-      { error: "Too many signup attempts. Please try again later." },
-      { status: 429 }
-    );
-  }
-
+export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const { email, password } = await request.json();
 
-    if (!email || !password || !email.includes("@")) {
-      return NextResponse.json(
-        { error: "Valid email is required." },
-        { status: 400 }
-      );
+    if (!email || !password) {
+      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
     }
 
-    // Password complexity check
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return NextResponse.json(
-        {
-          error:
-            "Password must be at least 8 characters and include one uppercase letter, one lowercase letter, and one number.",
-        },
-        { status: 400 }
-      );
+    // Basic password strength (mirroring client side)
+    if (password.length < 8) {
+      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
     }
 
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
-      return NextResponse.json(
-        { error: "An account with this email already exists." },
-        { status: 409 }
-      );
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return NextResponse.json({ error: "Email already registered" }, { status: 409 });
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    // Find or create a default plan
-    let plan = await prisma.plan.findFirst({ where: { name: "Pro" } });
-    if (!plan) {
-      plan = await prisma.plan.create({
-        data: {
-          name: "Pro",
-          stripePriceId: "free_trial",
-          maxSites: 999,
-          features: ["all"],
-        },
-      });
+    // Generate a unique company slug from email
+    const baseSlug = email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "-");
+    let slug = baseSlug;
+    let counter = 1;
+    while (await prisma.company.findUnique({ where: { slug } })) {
+      slug = `${baseSlug}-${counter++}`;
     }
 
-    const user = await prisma.$transaction(async (tx) => {
+    // Create company + user in a transaction
+    const result = await prisma.$transaction(async (tx) => {
       const company = await tx.company.create({
         data: {
-          name: "My Company",
-          email: email,
-          slug:
-            email.split("@")[0] +
-            "-" +
-            Math.random().toString(36).slice(2, 8),
+          name: email.split("@")[0], // temporary name, user can change later
+          slug,
+          email,
+          trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
         },
       });
 
-      await tx.subscription.create({
-        data: {
-          companyId: company.id,
-          planId: plan!.id,
-          status: "trialing",
-          currentPeriodEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-        },
-      });
-
-      return tx.user.create({
+      const user = await tx.user.create({
         data: {
           email,
           passwordHash,
-          verified: true,
+          name: null,
+          verified: false,   // you may want email verification
           role: "company_owner",
           companyId: company.id,
         },
       });
+
+      return { company, user };
+    });
+
+    // Send welcome email
+    await sendEmail({
+      to: email,
+      subject: "Welcome to SiteSafe! Start your 14‑day trial",
+      htmlContent: welcomeEmailHtml(result.company.name),
+    });
+
+    // Record the welcome email in the sequence
+    await prisma.company.update({
+      where: { id: result.company.id },
+      data: { trialEmailSequence: { push: "welcome" } },
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Signup error:", error);
-    return NextResponse.json(
-      { error: "Failed to create account." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
