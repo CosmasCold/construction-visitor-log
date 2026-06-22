@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/send-trial-emails",
-      "schedule": "0 */4 * * *"
+      "schedule": "0 8 * * *"
     }
   ]
 }
