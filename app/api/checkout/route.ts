@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Company not found" }, { status: 404 });
     }
 
-    // If the company already has a Stripe customer ID, check for existing subscriptions
+    // If the company already has an active subscription, redirect to portal
     if (company.stripeCustomerId) {
       const existingSubs = await stripe.subscriptions.list({
         customer: company.stripeCustomerId,
@@ -52,6 +52,8 @@ export async function POST(request: Request) {
       });
     }
 
+    const isFounder = email === process.env.FOUNDER_EMAIL;
+
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       mode: "subscription",
@@ -69,9 +71,12 @@ export async function POST(request: Request) {
       },
     };
 
-    // Apply test coupon if set
-    if (process.env.STRIPE_TEST_COUPON_ID) {
+    if (isFounder && process.env.STRIPE_TEST_COUPON_ID) {
+      // Apply the forever‑free coupon automatically – no promo code field
       sessionParams.discounts = [{ coupon: process.env.STRIPE_TEST_COUPON_ID }];
+    } else {
+      // Allow any customer‑entered promo code
+      sessionParams.allow_promotion_codes = true;
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
