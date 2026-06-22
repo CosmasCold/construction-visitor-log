@@ -87,12 +87,24 @@ export default function SettingsClient({
 
   async function handleManageBilling() {
     setLoading(true);
-    const res = await fetch("/api/stripe/portal", { method: "POST" });
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    } else {
-      alert("Failed to open billing portal.");
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" });
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        const text = await res.text();
+        throw new Error(text.slice(0, 150));
+      }
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert(data.error || "Failed to open billing portal.");
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      console.error(message);
+      alert("Something went wrong: " + message);
+    } finally {
       setLoading(false);
     }
   }
