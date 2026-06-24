@@ -240,11 +240,17 @@ export default function LandingPage() {
               
               <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <TrackedCtaLink
-                  href="/signup"
+                  href="/demo"
                   className="group inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] active:scale-[0.98]"
                 >
-                  Start my free 14-day trial
-                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  Try Live Demo
+                  <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </TrackedCtaLink>
+                <TrackedCtaLink
+                  href="/signup"
+                  className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-slate-300 border border-white/10 hover:bg-white/5 transition-all"
+                >
+                  Start Free Trial
                 </TrackedCtaLink>
               </div>
               
@@ -648,13 +654,21 @@ export default function LandingPage() {
             Join teams that replaced paper logs across 20 sites in one afternoon. 
             No credit card. No sales call. No catch.
           </p>
-          <TrackedCtaLink
-            href="/signup"
-            className="inline-flex items-center justify-center px-10 py-4 text-lg font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-[0_0_60px_-15px_rgba(255,255,255,0.3)] active:scale-[0.98]"
-          >
-            Start my free trial
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </TrackedCtaLink>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <TrackedCtaLink
+              href="/demo"
+              className="inline-flex items-center justify-center px-10 py-4 text-lg font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-[0_0_60px_-15px_rgba(255,255,255,0.3)] active:scale-[0.98]"
+            >
+              Try Live Demo
+              <ChevronRight className="ml-2 w-5 h-5" />
+            </TrackedCtaLink>
+            <TrackedCtaLink
+              href="/signup"
+              className="inline-flex items-center justify-center px-10 py-4 text-lg font-medium rounded-xl text-slate-300 border border-white/10 hover:bg-white/5 transition-all"
+            >
+              Start Free Trial
+            </TrackedCtaLink>
+          </div>
           <p className="mt-4 text-sm text-slate-500">
             Setup takes 3 minutes. Cancel in 2 clicks.
           </p>
