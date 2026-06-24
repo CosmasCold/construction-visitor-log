@@ -171,7 +171,7 @@ const objections = [
   },
   {
     q: "How long does setup take?",
-    a: "Most teams are live in under 3 minutes. Create a site, print the QR code, place it at reception.",
+    a: "Most teams are live in under 3 minutes. Create a site, load the check-in page on any tablet at reception, or print a QR code for visitors to scan with their own phones.",
   },
   {
     q: "Is our data secure?",
@@ -246,13 +246,6 @@ export default function LandingPage() {
                   Start my free 14-day trial
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </TrackedCtaLink>
-                
-                <button className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/10">
-                    <Play className="w-4 h-4 fill-white text-white" />
-                  </div>
-                  Watch 2-min demo
-                </button>
               </div>
               
               <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-slate-500">

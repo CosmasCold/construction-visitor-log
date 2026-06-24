@@ -14,6 +14,16 @@ import {
   Camera,
   XCircle,
   FileText,
+  ChevronRight,
+  Check,
+  User,
+  Briefcase,
+  Phone,
+  Mail,
+  UserCircle,
+  Shield,
+  PenTool,
+  X,
 } from "lucide-react";
 
 type ActiveVisitor = {
@@ -83,7 +93,7 @@ export default function CheckinClient({
   const [showVisitorList, setShowVisitorList] = useState(true);
 
   // Progress steps
-  const steps = ["Safety", "Info", "Photo", "Sign"];
+  const steps = ["Safety", "Details", "Photo", "Sign"];
   const [currentStep, setCurrentStep] = useState(0);
 
   // Fetch hosts
@@ -429,299 +439,355 @@ export default function CheckinClient({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 px-4">
-      <div className="w-full max-w-md space-y-6 animate-fade-in-up">
-        {/* Header + QR */}
-        <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center justify-center gap-2">
-            <ClipboardCheck className="w-6 h-6 text-sky-400" /> {siteName}
+    <div className="min-h-screen bg-[#0a0f1c] text-slate-200 py-6 px-4 sm:py-10">
+      <div className="w-full max-w-lg mx-auto space-y-6">
+
+        {/* ─── Header ─── */}
+        <div className="text-center space-y-2">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 mb-2">
+            <ClipboardCheck className="w-6 h-6 text-sky-400" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            {siteName}
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Visitor sign‑in</p>
-          <button
-            onClick={() => setShowQr(!showQr)}
-            className="text-sky-400 hover:text-sky-300 text-xs underline underline-offset-2 transition-colors duration-150 mt-2 flex items-center justify-center gap-1 mx-auto"
-          >
-            <QrCode className="w-4 h-4" />
-            {showQr ? "Hide QR" : "Scan QR to open on your phone"}
-          </button>
-          {showQr && (
-            <div className="mt-3 flex justify-center">
-              <div className="glass-card accent-glow aurora-bg p-4">
-                <Image
-                  src={`/api/sites/${siteId}/qr`}
-                  alt="QR code for check‑in"
-                  width={192}
-                  height={192}
-                  unoptimized
-                  className="rounded-xl"
-                />
-                <p className="text-xs text-slate-300 text-center mt-2">
-                  Scan to check in
-                </p>
-              </div>
-            </div>
-          )}
+          <p className="text-sm text-slate-500">Visitor Check-In</p>
         </div>
 
-        {/* Progress indicator */}
-        <div className="step-indicator">
+        {/* ─── Progress Steps ─── */}
+        <div className="flex items-center justify-between px-2">
           {steps.map((step, i) => (
-            <div
-              key={i}
-              className={`step ${i === currentStep ? "active" : i < currentStep ? "completed" : ""}`}
-            />
+            <div key={i} className="flex flex-col items-center gap-1.5 flex-1">
+              <div className={`
+                w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300
+                ${i < currentStep 
+                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" 
+                  : i === currentStep 
+                    ? "bg-sky-500 text-white ring-4 ring-sky-500/20" 
+                    : "bg-white/5 text-slate-600 border border-white/10"
+                }
+              `}>
+                {i < currentStep ? <Check className="w-4 h-4" /> : i + 1}
+              </div>
+              <span className={`
+                text-[10px] font-medium uppercase tracking-wider transition-colors
+                ${i <= currentStep ? "text-slate-300" : "text-slate-600"}
+              `}>
+                {step}
+              </span>
+              {i < steps.length - 1 && (
+                <div className={`
+                  absolute h-px w-full top-4 left-1/2 -z-10
+                  ${i < currentStep ? "bg-emerald-500/30" : "bg-white/5"}
+                `} style={{ width: 'calc(100% - 2rem)', marginLeft: '1rem' }} />
+              )}
+            </div>
           ))}
         </div>
 
-        {/* Safety briefing */}
-        <div className="glass-card border-l-4 border-sky-400 accent-glow aurora-bg p-5 flex gap-3">
-          <AlertTriangle className="w-5 h-5 text-sky-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-sky-300 mb-1">
+        {/* ─── Error Banner ─── */}
+        {errorMessage && (
+          <div className="rounded-xl bg-rose-500/10 border border-rose-500/20 p-4 flex items-start gap-3 animate-fade-in-up">
+            <XCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-rose-200 leading-relaxed">{errorMessage}</p>
+          </div>
+        )}
+
+        {/* ─── Safety Briefing ─── */}
+        <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+          <div className="bg-sky-500/10 border-b border-sky-500/20 px-5 py-3 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-sky-400" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-sky-300">
               Safety Briefing
             </h2>
-            <p className="text-sm text-slate-200 leading-relaxed">{safetyBriefing}</p>
+          </div>
+          <div className="p-5">
+            <p className="text-sm text-slate-300 leading-relaxed">{safetyBriefing}</p>
+            <label className="flex items-start gap-3 mt-5 p-3 rounded-lg bg-white/5 border border-white/5 cursor-pointer hover:bg-white/[0.07] transition-colors">
+              <input
+                type="checkbox"
+                checked={safetyAcknowledged}
+                onChange={(e) => {
+                  setSafetyAcknowledged(e.target.checked);
+                  if (e.target.checked) setCurrentStep(1);
+                }}
+                className="mt-0.5 h-5 w-5 rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
+              />
+              <span className="text-sm text-slate-200 leading-snug">
+                I have read and understand the site safety briefing
+              </span>
+            </label>
           </div>
         </div>
 
-        {/* Safety acknowledgment checkbox */}
-        <label className="flex items-center gap-2 text-sm text-slate-200 justify-center">
-          <input
-            type="checkbox"
-            checked={safetyAcknowledged}
-            onChange={(e) => {
-              setSafetyAcknowledged(e.target.checked);
-              if (e.target.checked) setCurrentStep(1);
-            }}
-            className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
-          />
-          I have read and understand the site safety briefing.
-        </label>
-
-        {/* Pre‑screening questions */}
+        {/* ─── Pre-screening Questions ─── */}
         {questions.length > 0 && (
-          <div className="glass-card accent-glow aurora-bg p-6">
-            <h3 className="text-sm font-semibold text-white mb-3">Pre‑screening questions</h3>
-            {questions.map((q, idx) => (
-              <label key={idx} className="flex items-center gap-2 text-sm text-slate-200 mb-2">
-                <input
-                  type="checkbox"
-                  checked={answers[q] || false}
-                  onChange={(e) =>
-                    setAnswers((prev) => ({ ...prev, [q]: e.target.checked }))
-                  }
-                  className="h-4 w-4 rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
-                />
-                {q}
-              </label>
-            ))}
+          <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+            <div className="bg-amber-500/10 border-b border-amber-500/20 px-5 py-3 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-400" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                Pre-screening
+              </h2>
+            </div>
+            <div className="p-5 space-y-3">
+              {questions.map((q, idx) => (
+                <label key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-white/5 border border-white/5 cursor-pointer hover:bg-white/[0.07] transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={answers[q] || false}
+                    onChange={(e) =>
+                      setAnswers((prev) => ({ ...prev, [q]: e.target.checked }))
+                    }
+                    className="mt-0.5 h-5 w-5 rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
+                  />
+                  <span className="text-sm text-slate-200 leading-snug">{q}</span>
+                </label>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Document signing – now always visible */}
+        {/* ─── Document Signing ─── */}
         {documentSigningEnabled && (
-          <div className="glass-card accent-glow aurora-bg p-6">
-            <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-              <FileText className="w-4 h-4 text-sky-400" /> Document Signing
-            </h3>
-            {documentTemplateData && (
-              <a
-                href={documentTemplateData ?? "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sky-400 hover:text-sky-300 text-xs underline mb-3 block"
-              >
-                View the document
-              </a>
-            )}
-            <button
-              onClick={() => {
-                if (showSignaturePad) {
-                  clearSignature(); // clear when hiding
-                }
-                setShowSignaturePad(!showSignaturePad);
-              }}
-              className="text-sky-400 text-xs hover:text-sky-300 mb-2"
-            >
-              {showSignaturePad ? "Hide signature pad" : "Sign the document"}
-            </button>
-            {showSignaturePad && (
-              <div className="space-y-2">
-                <canvas
-                  ref={canvasRef}
-                  width={300}
-                  height={100}
-                  className="border border-white/10 bg-white rounded"
-                  onMouseDown={startDrawing}
-                  onMouseMove={draw}
-                  onMouseUp={stopDrawing}
-                  onMouseLeave={stopDrawing}
-                  onTouchStart={startDrawing}
-                  onTouchMove={draw}
-                  onTouchEnd={stopDrawing}
-                />
-                <button onClick={clearSignature} className="text-xs text-slate-400 hover:text-white">
-                  Clear
-                </button>
-                {signatureDataUrl && (
-                  <div className="flex gap-2 items-center">
-                    <img src={signatureDataUrl ?? ""} alt="Preview" className="h-8 bg-white rounded" />
-                    <button
-                      onClick={async () => {
-                        const url = await uploadSignature(signatureDataUrl!);
-                        if (url) setSignatureUrl(url);
-                      }}
-                      disabled={uploading}
-                      className="text-xs bg-sky-500 hover:bg-sky-600 text-white px-3 py-1 rounded"
-                    >
-                      {uploading ? "Uploading…" : "Accept signature"}
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-            {signatureUrl && (
-              <p className="text-emerald-400 text-xs mt-2">Signature captured</p>
-            )}
+          <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+            <div className="bg-violet-500/10 border-b border-violet-500/20 px-5 py-3 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-violet-400" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-violet-300">
+                Document Signing
+              </h2>
+            </div>
+            <div className="p-5 space-y-4">
+              {documentTemplateData && (
+                <a
+                  href={documentTemplateData ?? "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 underline underline-offset-2"
+                >
+                  <FileText className="w-3.5 h-3.5" /> View document
+                </a>
+              )}
+              
+              {!signatureUrl ? (
+                <>
+                  <button
+                    onClick={() => {
+                      if (showSignaturePad) {
+                        clearSignature();
+                      }
+                      setShowSignaturePad(!showSignaturePad);
+                    }}
+                    className={`
+                      w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all
+                      ${showSignaturePad 
+                        ? "bg-white/10 text-white border border-white/10" 
+                        : "bg-violet-500/10 text-violet-300 border border-violet-500/20 hover:bg-violet-500/20"
+                      }
+                    `}
+                  >
+                    <PenTool className="w-4 h-4" />
+                    {showSignaturePad ? "Cancel signing" : "Sign document"}
+                  </button>
+
+                  {showSignaturePad && (
+                    <div className="space-y-3 animate-fade-in-up">
+                      <div className="relative rounded-xl border border-white/10 bg-white overflow-hidden">
+                        <canvas
+                          ref={canvasRef}
+                          width={400}
+                          height={120}
+                          className="w-full h-[120px] touch-none cursor-crosshair"
+                          onMouseDown={startDrawing}
+                          onMouseMove={draw}
+                          onMouseUp={stopDrawing}
+                          onMouseLeave={stopDrawing}
+                          onTouchStart={startDrawing}
+                          onTouchMove={draw}
+                          onTouchEnd={stopDrawing}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={clearSignature}
+                          className="text-xs text-slate-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
+                        >
+                          Clear
+                        </button>
+                        {signatureDataUrl && (
+                          <button
+                            onClick={async () => {
+                              const url = await uploadSignature(signatureDataUrl!);
+                              if (url) setSignatureUrl(url);
+                            }}
+                            disabled={uploading}
+                            className="bg-violet-500 hover:bg-violet-600 disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-xs font-medium transition-all"
+                          >
+                            {uploading ? "Saving…" : "Accept signature"}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  <span className="text-sm text-emerald-300">Signature captured</span>
+                  <button
+                    onClick={() => {
+                      setSignatureUrl(null);
+                      setSignatureDataUrl(null);
+                      clearSignature();
+                    }}
+                    className="ml-auto text-xs text-slate-500 hover:text-white transition-colors"
+                  >
+                    Redo
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
-        {/* Expected visitors (quick sign‑in) */}
+        {/* ─── Expected Visitors ─── */}
         {expectedVisitors.length > 0 && (
-          <div className="glass-card accent-glow aurora-bg p-6">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 mb-3">
-              Expected today
-            </h2>
-            <ul className="divide-y divide-white/5">
+          <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+            <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-5 py-3 flex items-center gap-2">
+              <Users className="w-4 h-4 text-emerald-400" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-300">
+                Expected Today
+              </h2>
+            </div>
+            <div className="divide-y divide-white/5">
               {expectedVisitors.map((visitor) => (
-                <li key={visitor.id} className="py-2 flex justify-between items-center">
+                <div key={visitor.id} className="flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors">
                   <div>
                     <p className="text-sm font-medium text-white">{visitor.name}</p>
-                    <p className="text-xs text-slate-400">{visitor.company}</p>
+                    <p className="text-xs text-slate-500">{visitor.company}</p>
                   </div>
                   <button
                     onClick={() => handleQuickSignIn(visitor)}
-                    className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200"
+                    className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 px-4 py-2 rounded-lg text-xs font-medium transition-all active:scale-[0.98]"
                   >
-                    Sign in
+                    Quick Sign In
                   </button>
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
 
-        {/* Sign‑in form */}
-        <div className="glass-card accent-glow aurora-bg p-6">
-          {errorMessage && (
-            <div className="mb-4 bg-rose-500/10 backdrop-blur-md rounded-xl border border-rose-400/30 p-4 flex items-start gap-3">
-              <XCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-rose-200">{errorMessage}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSignIn} className="space-y-4">
-            {/* Floating label inputs */}
-            <div className="floating-label">
+        {/* ─── Sign-In Form ─── */}
+        <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+          <div className="bg-white/5 border-b border-white/5 px-5 py-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Visitor Details
+            </h2>
+          </div>
+          <form onSubmit={handleSignIn} className="p-5 space-y-4">
+            {/* Name */}
+            <div className="relative">
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               <input
                 type="text"
-                id="name"
-                placeholder=" "
+                placeholder="Full name"
                 value={fullName}
                 onChange={(e) => {
                   setFullName(e.target.value);
                   if (e.target.value && company) setCurrentStep(2);
                 }}
                 required
-                className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all"
               />
-              <label htmlFor="name">Full name</label>
             </div>
-            <div className="floating-label">
+
+            {/* Company */}
+            <div className="relative">
+              <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               <input
                 type="text"
-                id="company"
-                placeholder=" "
+                placeholder="Company / Trade"
                 value={company}
                 onChange={(e) => {
                   setCompany(e.target.value);
                   if (fullName && e.target.value) setCurrentStep(2);
                 }}
                 required
-                className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all"
               />
-              <label htmlFor="company">Company / Trade</label>
-            </div>
-            <div className="floating-label">
-              <input
-                type="tel"
-                id="phone"
-                placeholder=" "
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-              />
-              <label htmlFor="phone">Phone (optional)</label>
-            </div>
-            <div className="floating-label">
-              <input
-                type="email"
-                id="email"
-                placeholder=" "
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-              />
-              <label htmlFor="email">Email (optional)</label>
             </div>
 
-            {/* Host selection */}
+            {/* Phone */}
+            <div className="relative">
+              <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+              <input
+                type="tel"
+                placeholder="Phone (optional)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all"
+              />
+            </div>
+
+            {/* Email */}
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+              <input
+                type="email"
+                placeholder="Email (optional)"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all"
+              />
+            </div>
+
+            {/* Host */}
             {hosts.length > 0 ? (
-              <select
-                value={selectedHostId}
-                onChange={(e) => {
-                  setSelectedHostId(e.target.value);
-                  if (e.target.value) {
-                    setHostName(
-                      hosts.find((h) => h.id === e.target.value)?.name || ""
-                    );
-                  } else setHostName("");
-                }}
-                className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white [&_option]:text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
-              >
-                <option value="">Select a host (optional)</option>
-                {hosts.map((host) => (
-                  <option key={host.id} value={host.id}>
-                    {host.name}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <UserCircle className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+                <select
+                  value={selectedHostId}
+                  onChange={(e) => {
+                    setSelectedHostId(e.target.value);
+                    if (e.target.value) {
+                      setHostName(hosts.find((h) => h.id === e.target.value)?.name || "");
+                    } else setHostName("");
+                  }}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all appearance-none"
+                >
+                  <option value="" className="bg-[#0f172a] text-slate-400">Select a host (optional)</option>
+                  {hosts.map((host) => (
+                    <option key={host.id} value={host.id} className="bg-[#0f172a]">
+                      {host.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 rotate-90 pointer-events-none" />
+              </div>
             ) : (
-              <div className="floating-label">
+              <div className="relative">
+                <UserCircle className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                 <input
                   type="text"
-                  id="host"
-                  placeholder=" "
+                  placeholder="Host name (optional)"
                   value={hostName}
                   onChange={(e) => setHostName(e.target.value)}
-                  className="w-full bg-white/10 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all duration-200"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all"
                 />
-                <label htmlFor="host">Host name (optional)</label>
               </div>
             )}
 
-            {/* Photo capture */}
-            <div className="flex flex-col items-center gap-2">
+            {/* Photo Capture */}
+            <div className="pt-2">
               {photoUrl ? (
-                <>
+                <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5">
                   <div className="relative">
-                    <img src={photoUrl ?? ""} alt="Visitor" className="w-24 h-24 rounded-lg object-cover photo-flash" />
+                    <img src={photoUrl ?? ""} alt="Visitor" className="w-28 h-28 rounded-xl object-cover ring-2 ring-white/10" />
                     <button
                       type="button"
                       onClick={() => setPhotoUrl(null)}
-                      className="absolute -top-1 -right-1 bg-rose-500 text-white rounded-full w-5 h-5 text-xs leading-none"
+                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center text-xs hover:bg-rose-600 transition-colors shadow-lg"
                     >
-                      x
+                      <X className="w-3 h-3" />
                     </button>
                   </div>
                   <button
@@ -736,13 +802,16 @@ export default function CheckinClient({
                         photoUrl
                       )
                     }
-                    className="flex items-center gap-2 bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-sm text-white hover:bg-white/20 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-sm text-white hover:bg-white/20 transition-all active:scale-[0.98]"
                   >
-                    <Printer className="w-4 h-4" /> Print badge
+                    <Printer className="w-4 h-4" /> Print Badge
                   </button>
-                </>
+                </div>
               ) : uploading ? (
-                <p className="text-sm text-sky-400">Uploading photo…</p>
+                <div className="flex items-center justify-center gap-2 py-8 rounded-xl bg-white/5 border border-white/5 border-dashed">
+                  <div className="w-5 h-5 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm text-sky-400">Uploading photo…</span>
+                </div>
               ) : (
                 <button
                   type="button"
@@ -753,84 +822,113 @@ export default function CheckinClient({
                     }
                   }}
                   disabled={uploading}
-                  className="flex items-center gap-2 bg-white/10 border border-white/10 rounded-xl px-4 py-2 text-sm text-white hover:bg-white/20 transition-colors disabled:opacity-50"
+                  className="w-full flex flex-col items-center justify-center gap-2 py-8 rounded-xl bg-white/5 border border-white/5 border-dashed hover:bg-white/[0.07] hover:border-white/10 transition-all active:scale-[0.98] group"
                 >
-                  <Camera className="w-4 h-4" /> Take photo
+                  <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-sky-500/10 transition-colors">
+                    <Camera className="w-5 h-5 text-slate-500 group-hover:text-sky-400 transition-colors" />
+                  </div>
+                  <span className="text-sm text-slate-500 group-hover:text-slate-300 transition-colors">Take photo</span>
                 </button>
               )}
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400/50 text-white font-medium tracking-wide rounded-xl px-6 py-3 text-sm transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white font-semibold tracking-wide rounded-xl px-6 py-4 text-base transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 mt-6"
             >
-              <ClipboardCheck className="w-4 h-4" />
+              <ClipboardCheck className="w-5 h-5" />
               {loading ? "Signing in…" : "Sign In"}
             </button>
           </form>
         </div>
 
-        {/* Active visitors – conditionally shown */}
+        {/* ─── Active Visitors ─── */}
         {showVisitorList && (
-          <div className="glass-card accent-glow aurora-bg p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                <Users className="w-4 h-4" /> Currently on Site
+          <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+            <div className="bg-white/5 border-b border-white/5 px-5 py-3 flex items-center justify-between">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                <Users className="w-3.5 h-3.5" /> Currently on Site
               </h2>
-              <span className="inline-flex items-center justify-center min-w-[24px] h-6 rounded-full bg-sky-500/20 text-sky-300 text-xs font-bold px-2">
+              <span className="inline-flex items-center justify-center min-w-[24px] h-6 rounded-full bg-sky-500/10 text-sky-300 text-xs font-bold px-2">
                 {activeVisitors.length}
               </span>
             </div>
             {activeVisitors.length === 0 ? (
-              <p className="text-sm text-slate-400 italic">No active visitors</p>
+              <div className="p-6 text-center">
+                <p className="text-sm text-slate-600">No active visitors</p>
+              </div>
             ) : (
-              <ul className="divide-y divide-white/5">
+              <div className="divide-y divide-white/5">
                 {activeVisitors.map((v) => (
-                  <li
+                  <div
                     key={v.id}
-                    className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 hover:bg-white/[0.03] rounded-lg transition-colors px-2"
+                    className="flex items-center justify-between p-4 hover:bg-white/[0.02] transition-colors"
                   >
-                    <div>
-                      <p className="text-sm font-medium text-white">{v.fullName}</p>
-                      <p className="text-xs text-slate-400">{v.company}</p>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{v.fullName}</p>
+                      <p className="text-xs text-slate-500">{v.company}</p>
                       {v.hostName && (
-                        <p className="text-xs text-sky-300">Host: {v.hostName}</p>
+                        <p className="text-xs text-sky-400 mt-0.5">Host: {v.hostName}</p>
                       )}
-                      <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
-                        <Clock className="w-3 h-3" />{" "}
-                        {new Date(v.signedInAt).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                      <p className="text-[10px] text-slate-600 mt-1 flex items-center gap-1">
+                        <Clock className="w-2.5 h-2.5" />
+                        {new Date(v.signedInAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                       <button
-                        onClick={() =>
-                          printBadgeForVisitor(v.fullName, v.company, v.hostName)
-                        }
-                        className="inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-2 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200"
+                        onClick={() => printBadgeForVisitor(v.fullName, v.company, v.hostName)}
+                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
                         title="Print badge"
                       >
-                        <Printer className="w-3 h-3" />
+                        <Printer className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => handleSignOut(v.id)}
-                        className="inline-flex items-center rounded-xl border border-white/10 bg-white/10 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-white/20 transition-all duration-200 active:scale-[0.98] gap-1"
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 hover:bg-rose-500/10 text-slate-400 hover:text-rose-300 transition-all text-xs font-medium"
                       >
-                        <LogOut className="w-3 h-3" /> Sign out
+                        <LogOut className="w-3.5 h-3.5" /> Sign out
                       </button>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
         )}
 
-        <p className="text-center text-xs text-slate-500">
-          Secure digital log – replaces paper forms
+        {/* ─── QR Code (Staff use) ─── */}
+        <div className="text-center pt-4">
+          <button
+            onClick={() => setShowQr(!showQr)}
+            className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-400 transition-colors"
+          >
+            <QrCode className="w-3.5 h-3.5" />
+            {showQr ? "Hide QR code" : "Show QR code for this site"}
+          </button>
+          {showQr && (
+            <div className="mt-4 flex justify-center">
+              <div className="p-4 rounded-xl bg-white border border-white/10">
+                <Image
+                  src={`/api/sites/${siteId}/qr`}
+                  alt="QR code for check-in"
+                  width={200}
+                  height={200}
+                  unoptimized
+                  className="rounded-lg"
+                />
+                <p className="text-xs text-slate-600 text-center mt-2 font-medium">
+                  Scan to check in
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <p className="text-center text-[10px] text-slate-700 pt-4 pb-2">
+          Secure digital log • SiteSafe by TheSift
         </p>
       </div>
     </div>
