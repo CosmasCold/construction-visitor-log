@@ -247,6 +247,7 @@ export default async function RootLayout({
           }}
         />
       </head>
+      <script src="https://analytics.ahrefs.com/analytics.js" data-key="0KWpb4lQa7ZMwscJ/c+npA" async></script>
       <body className="relative flex flex-col min-h-screen">
         {/* ── Premium background (GPU‑safe, static) ── */}
         <div className="bg-premium" />
