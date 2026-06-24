@@ -31,7 +31,8 @@ export function GET() {
     "/blog/visitor-management-for-schools",
     "/blog/capped-plan-20-sites",
     "/blog/ai-powered-visitor-management",
-    "/why-multi-site-visitor-management-breaks-without-standardization/page.tsx",
+    "/blog/why-multi-site-visitor-management-breaks-without-standardization", // ← fixed
+    "/blog/best-visitor-management-software-2026",   // ← new
     "/changelog",
     "/checklist",
     "/compare",

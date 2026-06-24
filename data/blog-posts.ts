@@ -1,5 +1,13 @@
 export const posts = [
   {
+    slug: "best-visitor-management-software-2026",
+    title: "The 10 Best Visitor Management Software Solutions for 2026: A Buyer’s Guide",
+    date: "2026-06-24",
+    lastModified: "2026-06-24",
+    excerpt:
+      "Compare the 10 best visitor management systems of 2026. Real reviews, pricing, and feature breakdowns to help you choose the right VMS for your organization.",
+  },
+  {
     slug: "why-multi-site-visitor-management-breaks-without-standardization",
     title: "Why Multi‑Site Visitor Management Breaks Without Standardization",
     date: "2026-06-22",
