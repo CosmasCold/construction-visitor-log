@@ -1,3 +1,4 @@
+/* globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -40,7 +41,6 @@ body {
 
 /* ── Components ─────────────────────────────────────────── */
 @layer components {
-  /* Premium glass card — used sparingly now */
   .glass-card {
     @apply bg-white/[0.05] backdrop-blur-xl rounded-2xl border border-white/[0.06]
            shadow-[0_8px_32px_-12px_rgba(0,0,0,0.5)] transition-all duration-300;
@@ -157,12 +157,12 @@ body {
   inset: 0;
   z-index: -10;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(14, 165, 233, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 80% 80%, rgba(6, 182, 212, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(14, 165, 233, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 60%),
     #0a0f1c;
 }
 
-/* Subtle grid — DESKTOP ONLY, no animation */
+/* Subtle grid overlay — DESKTOP ONLY */
 @media (min-width: 1024px) {
   .bg-premium::before {
     content: "";
@@ -175,9 +175,44 @@ body {
   }
 }
 
-/* Mobile: solid dark background, no gradients */
+/* ── MOBILE: Kill scanlines and glassmorphism artifacts ── */
 @media (max-width: 768px) {
   .bg-premium {
     background: #0a0f1c;
+  }
+  
+  .bg-premium::before {
+    display: none;
+  }
+
+  /* Remove backdrop blur on all cards to prevent moiré/scanlines */
+  .glass-card,
+  [class*="backdrop-blur"],
+  [style*="backdrop-blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  /* Remove glow effects that compound the issue */
+  .accent-glow,
+  [class*="accent-glow"] {
+    box-shadow: none !important;
+  }
+
+  /* Ensure aurora backgrounds don't leak */
+  .aurora-bg,
+  [class*="aurora-bg"] {
+    background: rgba(15, 23, 42, 0.95) !important;
+    animation: none !important;
+  }
+
+  /* Gradient borders become solid borders on mobile */
+  .gradient-border::before {
+    display: none !important;
+  }
+  .gradient-border {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
 }
