@@ -1,5 +1,13 @@
 export const posts = [
   {
+    slug: "visitor-log-book-template-free",
+    title: "Free Visitor Log Book Template (PDF) + Why Paper Logs Fail in 2026",
+    date: "2026-06-25",
+    lastModified: "2026-06-25",
+    excerpt:
+      "Download a free printable visitor log template. Plus: why 73% of facilities still use paper logs, the hidden risks, and how to replace them in 10 minutes for $49/mo.",
+  },
+  {
     slug: "best-visitor-management-software-2026",
     title: "The 10 Best Visitor Management Software Solutions for 2026: A Buyer’s Guide",
     date: "2026-06-24",

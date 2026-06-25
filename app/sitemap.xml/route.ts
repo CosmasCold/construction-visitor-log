@@ -31,8 +31,11 @@ export function GET() {
     "/blog/visitor-management-for-schools",
     "/blog/capped-plan-20-sites",
     "/blog/ai-powered-visitor-management",
-    "/blog/why-multi-site-visitor-management-breaks-without-standardization", // ← fixed
-    "/blog/best-visitor-management-software-2026",   // ← new
+    "/blog/why-multi-site-visitor-management-breaks-without-standardization",
+    "/blog/best-visitor-management-software-2026",
+    "/blog/visitor-log-book-template-free",          // ← NEW: High-traffic SEO post
+    "/blog/osha-visitor-log-requirements",            // ← NEW: Related post (future)
+    "/blog/visitor-management-roi-calculator",        // ← NEW: Related post (future)
     "/changelog",
     "/checklist",
     "/compare",
@@ -73,7 +76,7 @@ export function GET() {
   const urlElements = allPaths
     .map(
       (path) =>
-        `<url><loc>${BASE_URL}${path}</loc><changefreq>monthly</changefreq></url>`
+        `<url><loc>${BASE_URL}${path}</loc><changefreq>monthly</changefreq><priority>${path === "" ? "1.0" : path.startsWith("/blog/") ? "0.8" : "0.6"}</priority></url>`
     )
     .join("\n");
 
