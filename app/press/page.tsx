@@ -2,7 +2,17 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Download, ExternalLink, Mail, User, Camera, ShieldCheck, ArrowRight } from "lucide-react";
+import {
+  Download,
+  ExternalLink,
+  Mail,
+  User,
+  Camera,
+  ShieldCheck,
+  ArrowRight,
+  FileText,
+} from "lucide-react";
+import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
   title: "Press Kit — SiteSafe",
@@ -14,6 +24,8 @@ export const metadata: Metadata = {
     images: ["/dash.png"],
   },
 };
+
+const BOILERPLATE_TEXT = `SiteSafe is a smart digital check-in platform that replaces paper visitor logs with QR codes, mandatory safety briefings, and real-time dashboards. It includes advanced security features as standard — watchlist/blocklist with instant alerts, one-click emergency evacuation lists with photos, lockdown mode, digital document signing, and webhooks — all for a flat $49/month with up to 20 sites and unlimited visitors. No per-site fees, no sales calls, and a 14-day free trial with no credit card required. SiteSafe serves construction companies, warehouses, corporate offices, manufacturing plants, logistics hubs, schools, and healthcare facilities across the United States and internationally.`;
 
 const screenshots = [
   {
@@ -64,7 +76,7 @@ export default function PressPage() {
         </div>
 
         {/* ─── Quick Facts ─── */}
-        <section className="grid sm:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-3 gap-4">
           {[
             { label: "Founded", value: "2025", icon: User },
             { label: "Pricing", value: "$49/mo flat", icon: ShieldCheck },
@@ -74,11 +86,11 @@ export default function PressPage() {
               <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center mx-auto mb-3">
                 <fact.icon className="w-4 h-4 text-sky-400" />
               </div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">{fact.label}</p>
+              <p className="text-[10px] text-slate-500 uppercase tracking-wider font-medium mb-1">{fact.label}</p>
               <p className="text-sm font-semibold text-white">{fact.value}</p>
             </div>
           ))}
-        </section>
+        </div>
 
         {/* ─── Boilerplate ─── */}
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
@@ -87,25 +99,10 @@ export default function PressPage() {
           </div>
           <div className="p-6">
             <p className="text-sm text-slate-300 leading-relaxed">
-              SiteSafe is a smart digital check-in platform that replaces paper visitor logs with QR codes, 
-              mandatory safety briefings, and real-time dashboards. It includes advanced security features as 
-              standard — watchlist/blocklist with instant alerts, one-click emergency evacuation lists with 
-              photos, lockdown mode, digital document signing, and webhooks — all for a flat $49/month with 
-              up to 20 sites and unlimited visitors. No per-site fees, no sales calls, and a 14-day free 
-              trial with no credit card required. SiteSafe serves construction companies, warehouses, 
-              corporate offices, manufacturing plants, logistics hubs, schools, and healthcare facilities 
-              across the United States and internationally.
+              {BOILERPLATE_TEXT}
             </p>
-            <div className="mt-4 flex items-center gap-2">
-              <button
-                onClick={() => {
-                  const text = document.querySelector('.boilerplate-text')?.textContent || '';
-                  navigator.clipboard.writeText(text);
-                }}
-                className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition-colors"
-              >
-                <Download className="w-3 h-3" /> Copy to clipboard
-              </button>
+            <div className="mt-4">
+              <CopyButton text={BOILERPLATE_TEXT} />
             </div>
           </div>
         </section>
@@ -149,21 +146,19 @@ export default function PressPage() {
             <div className="flex flex-col sm:flex-row items-center gap-6">
               {/* Dark bg preview */}
               <div className="w-full sm:w-40 h-32 rounded-xl bg-[#0f172a] border border-white/10 flex items-center justify-center">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/favicon.svg"
                   alt="SiteSafe logo on dark background"
-                  width={48}
-                  height={48}
                   className="w-12 h-12"
                 />
               </div>
               {/* Light bg preview */}
               <div className="w-full sm:w-40 h-32 rounded-xl bg-white border border-slate-200 flex items-center justify-center">
-                <Image
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src="/favicon.svg"
                   alt="SiteSafe logo on light background"
-                  width={48}
-                  height={48}
                   className="w-12 h-12"
                 />
               </div>
