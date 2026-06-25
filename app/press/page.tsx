@@ -1,169 +1,293 @@
+// app/press/page.tsx
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
+import { Download, ExternalLink, Mail, User, Camera, ShieldCheck, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Press Kit – SiteSafe",
+  title: "Press Kit — SiteSafe",
   description:
-    "Official logos, screenshots, and brand assets for SiteSafe – the smart visitor management platform.",
+    "Official logos, screenshots, and brand assets for SiteSafe — the smart visitor management platform for multi-site teams.",
+  openGraph: {
+    title: "Press Kit — SiteSafe",
+    description: "Download official brand assets and product screenshots.",
+    images: ["/dash.png"],
+  },
 };
 
 const screenshots = [
   {
-    src: "/checkin.png",
-    alt: "Visitor check‑in form with host selection and photo capture",
-    caption: "Check‑in form",
+    src: "/dash.png",
+    alt: "SiteSafe real-time dashboard showing active visitors across multiple sites with stats, site cards, and visitor log",
+    caption: "Admin Dashboard",
+    desc: "Real-time visitor tracking, site management, and one-click exports across all locations.",
   },
   {
-    src: "/dashboard.png",
-    alt: "Real‑time dashboard with active visitors and quick actions",
-    caption: "Real‑time dashboard",
-  },
-  {
-    src: "/analytics.png",
-    alt: "Analytics page with trend chart, date filters, and CSV export",
-    caption: "Analytics",
-  },
-  {
-    src: "/activevisitors.png",
-    alt: "Active visitors list with photos and sign‑out buttons",
-    caption: "Active visitors",
-  },
-  {
-    src: "/lockdown.png",
-    alt: "Lockdown mode toggle on a site card",
-    caption: "Lockdown mode",
-  },
-  {
-    src: "/newsite.png",
-    alt: "New site creation form",
-    caption: "New site setup",
+    src: "/check.png",
+    alt: "SiteSafe visitor check-in interface with safety briefing, photo capture, and digital signature",
+    caption: "Visitor Check-In",
+    desc: "QR or tablet-based check-in with mandatory safety briefings, photo capture, and document signing.",
   },
 ];
 
 export default function PressPage() {
   return (
-    <div className="min-h-screen py-12 px-4">
-      <div className="max-w-4xl mx-auto space-y-12">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
+    <div className="min-h-screen bg-[#0a0f1c] text-slate-200">
+      {/* ─── Header ─── */}
+      <header className="border-b border-white/5 bg-[#0a0f1c]/90 backdrop-blur-xl">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-md bg-sky-500 flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-bold text-sm text-white">SiteSafe</span>
+          </Link>
+          <Link
+            href="/"
+            className="text-xs text-slate-500 hover:text-white transition-colors flex items-center gap-1"
+          >
+            Back to site <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 space-y-16">
+        
+        {/* ─── Hero ─── */}
+        <div className="text-center max-w-2xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">
             Press Kit
           </h1>
-          <p className="text-sm text-slate-400">
-            Official brand assets and product screenshots. All images can be
-            downloaded directly.
+          <p className="text-sm text-slate-400 leading-relaxed">
+            Official brand assets, product screenshots, and company information for media, partners, and investors. Everything here is free to use with attribution.
           </p>
         </div>
 
-                {/* Boilerplate */}
-        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
-          <h2 className="text-lg font-semibold text-white mb-2">Boilerplate</h2>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            SiteSafe is a smart digital check‑in platform that replaces paper
-            visitor logs with QR codes, mandatory safety briefings, and
-            real‑time dashboards. It includes advanced security features as
-            standard — watchlist/blocklist with instant alerts, one‑click
-            emergency evacuation lists with photos, lockdown mode, digital
-            document signing, and webhooks — all for a flat $49/month with
-            unlimited sites and visitors. No per‑site fees, no sales calls,
-            and a 14‑day free trial with no credit card required. SiteSafe
-            serves construction companies, warehouses, corporate offices,
-            manufacturing plants, logistics hubs, schools, and healthcare
-            facilities across the United States and internationally.
-          </p>
-        </section>
-
-        {/* Founder */}
-        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
-          <h2 className="text-lg font-semibold text-white mb-2">Founder</h2>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Gabriel Freitas founded SiteSafe to solve the problem he kept hearing
-            from facility managers: paper visitor logs fail audits, and existing
-            software is too expensive or complicated. He built the entire
-            platform with a focus on simplicity, compliance, and transparent
-            pricing.
-          </p>
-        </section>
-
-        {/* Logo */}
-        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Logo</h2>
-          <div className="flex items-center gap-6">
-            <div className="bg-slate-900 rounded-xl p-6 flex items-center justify-center w-32 h-32">
-              <Image
-                src="/favicon.svg"
-                alt="SiteSafe logo"
-                width={64}
-                height={64}
-              />
+        {/* ─── Quick Facts ─── */}
+        <section className="grid sm:grid-cols-3 gap-4">
+          {[
+            { label: "Founded", value: "2025", icon: User },
+            { label: "Pricing", value: "$49/mo flat", icon: ShieldCheck },
+            { label: "Sites", value: "Up to 20 per account", icon: Camera },
+          ].map((fact, i) => (
+            <div key={i} className="rounded-xl border border-white/5 bg-white/[0.03] p-5 text-center">
+              <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center mx-auto mb-3">
+                <fact.icon className="w-4 h-4 text-sky-400" />
+              </div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-medium mb-1">{fact.label}</p>
+              <p className="text-sm font-semibold text-white">{fact.value}</p>
             </div>
-            <div>
-              <p className="text-sm text-slate-300 mb-2">
-                Download the SVG version:
-              </p>
-              <a
-                href="/favicon.svg"
-                download
-                className="inline-block bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg px-4 py-2 text-sm transition-colors"
+          ))}
+        </section>
+
+        {/* ─── Boilerplate ─── */}
+        <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+          <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">About SiteSafe</h2>
+          </div>
+          <div className="p-6">
+            <p className="text-sm text-slate-300 leading-relaxed">
+              SiteSafe is a smart digital check-in platform that replaces paper visitor logs with QR codes, 
+              mandatory safety briefings, and real-time dashboards. It includes advanced security features as 
+              standard — watchlist/blocklist with instant alerts, one-click emergency evacuation lists with 
+              photos, lockdown mode, digital document signing, and webhooks — all for a flat $49/month with 
+              up to 20 sites and unlimited visitors. No per-site fees, no sales calls, and a 14-day free 
+              trial with no credit card required. SiteSafe serves construction companies, warehouses, 
+              corporate offices, manufacturing plants, logistics hubs, schools, and healthcare facilities 
+              across the United States and internationally.
+            </p>
+            <div className="mt-4 flex items-center gap-2">
+              <button
+                onClick={() => {
+                  const text = document.querySelector('.boilerplate-text')?.textContent || '';
+                  navigator.clipboard.writeText(text);
+                }}
+                className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition-colors"
               >
-                Download SVG
-              </a>
-              <p className="text-xs text-slate-500 mt-2">
-                The logo appears on a dark background above. For light
-                backgrounds, use the same SVG — it remains fully readable.
-              </p>
+                <Download className="w-3 h-3" /> Copy to clipboard
+              </button>
             </div>
           </div>
         </section>
 
-        {/* Screenshots */}
-        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">
-            Screenshots
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {screenshots.map((shot, idx) => (
-              <a
-                key={idx}
-                href={shot.src}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block bg-slate-800 rounded-xl overflow-hidden border border-white/10 hover:border-white/20 transition-colors"
-              >
-                <Image
-                  src={shot.src}
-                  alt={shot.alt}
-                  width={400}
-                  height={300}
-                  className="w-full h-auto object-cover"
-                />
-                <p className="px-3 py-2 text-xs text-slate-400">
-                  {shot.caption}
+        {/* ─── Founder ─── */}
+        <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+          <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Founder</h2>
+          </div>
+          <div className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-sky-400" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white mb-1">Gabriel Freitas</h3>
+                <p className="text-xs text-slate-500 mb-3">Founder & CEO</p>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  Gabriel founded SiteSafe to solve the problem he kept hearing from facility managers: 
+                  paper visitor logs fail audits, and existing software is too expensive or complicated. 
+                  He built the entire platform with a focus on simplicity, compliance, and transparent pricing.
                 </p>
-              </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── Logo ─── */}
+        <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+          <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center justify-between">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Logo</h2>
+            <a
+              href="/favicon.svg"
+              download
+              className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition-colors"
+            >
+              <Download className="w-3 h-3" /> SVG
+            </a>
+          </div>
+          <div className="p-6">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              {/* Dark bg preview */}
+              <div className="w-full sm:w-40 h-32 rounded-xl bg-[#0f172a] border border-white/10 flex items-center justify-center">
+                <Image
+                  src="/favicon.svg"
+                  alt="SiteSafe logo on dark background"
+                  width={48}
+                  height={48}
+                  className="w-12 h-12"
+                />
+              </div>
+              {/* Light bg preview */}
+              <div className="w-full sm:w-40 h-32 rounded-xl bg-white border border-slate-200 flex items-center justify-center">
+                <Image
+                  src="/favicon.svg"
+                  alt="SiteSafe logo on light background"
+                  width={48}
+                  height={48}
+                  className="w-12 h-12"
+                />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-slate-300 mb-2">
+                  The SiteSafe logo is a shield checkmark icon representing security and verification.
+                </p>
+                <p className="text-xs text-slate-500 mb-4">
+                  Use the SVG for both dark and light backgrounds. The icon scales cleanly from 16px to 512px.
+                </p>
+                <a
+                  href="/favicon.svg"
+                  download
+                  className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98]"
+                >
+                  <Download className="w-4 h-4" /> Download Logo (SVG)
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ─── Screenshots ─── */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Product Screenshots</h2>
+            <span className="text-xs text-slate-600">{screenshots.length} images</span>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            {screenshots.map((shot, idx) => (
+              <div
+                key={idx}
+                className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden hover:border-white/10 transition-colors"
+              >
+                <a
+                  href={shot.src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block relative group"
+                >
+                  <Image
+                    src={shot.src}
+                    alt={shot.alt}
+                    width={800}
+                    height={500}
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <span className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-medium">
+                      <ExternalLink className="w-3 h-3" /> Open full size
+                    </span>
+                  </div>
+                </a>
+                <div className="p-5">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-semibold text-white">{shot.caption}</h3>
+                    <a
+                      href={shot.src}
+                      download
+                      className="text-xs text-sky-400 hover:text-sky-300 transition-colors flex items-center gap-1"
+                    >
+                      <Download className="w-3 h-3" /> PNG
+                    </a>
+                  </div>
+                  <p className="text-xs text-slate-500 leading-relaxed">{shot.desc}</p>
+                </div>
+              </div>
             ))}
           </div>
-          <p className="text-xs text-slate-500 mt-3">
-            Click any screenshot to open the full‑size version. Right‑click →
-            Save image as to download.
+          
+          <p className="text-xs text-slate-600 mt-4 text-center">
+            Click any image to view full size. Use the download link to save the PNG.
           </p>
         </section>
 
-        {/* Contact */}
-        <section className="bg-white/[0.06] backdrop-blur-lg rounded-2xl border border-white/10 p-6">
-          <h2 className="text-lg font-semibold text-white mb-2">
-            Media Contact
-          </h2>
-          <p className="text-sm text-slate-300">
-            Email:{" "}
-            <a
-              href="mailto:hello@thesift.space"
-              className="text-sky-400 hover:underline"
-            >
-              hello@thesift.space
-            </a>
-          </p>
+        {/* ─── Brand Colors ─── */}
+        <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+          <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Brand Colors</h2>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { name: "Sky", hex: "#0ea5e9", class: "bg-sky-500" },
+                { name: "Dark", hex: "#0a0f1c", class: "bg-[#0a0f1c] border border-white/10" },
+                { name: "Slate", hex: "#94a3b8", class: "bg-slate-400" },
+                { name: "Emerald", hex: "#10b981", class: "bg-emerald-500" },
+              ].map((color, i) => (
+                <div key={i} className="rounded-lg overflow-hidden">
+                  <div className={`h-16 ${color.class}`} />
+                  <div className="bg-white/[0.03] p-2.5">
+                    <p className="text-xs font-medium text-white">{color.name}</p>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5">{color.hex}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
-      </div>
+
+        {/* ─── Contact ─── */}
+        <section className="rounded-xl border border-white/5 bg-sky-500/5 p-8 text-center">
+          <h2 className="text-sm font-semibold text-white mb-2">Media Contact</h2>
+          <p className="text-xs text-slate-400 mb-4 max-w-md mx-auto">
+            For press inquiries, partnership opportunities, or interview requests, reach out directly.
+          </p>
+          <a
+            href="mailto:hello@thesift.space"
+            className="inline-flex items-center gap-2 text-sm text-sky-400 hover:text-sky-300 transition-colors"
+          >
+            <Mail className="w-4 h-4" /> hello@thesift.space
+          </a>
+        </section>
+      </main>
+
+      {/* ─── Footer ─── */}
+      <footer className="border-t border-white/5 py-8 bg-[#070b14]">
+        <div className="max-w-5xl mx-auto px-4 text-center">
+          <p className="text-xs text-slate-600">
+            © 2026 SiteSafe by TheSift. All brand assets are free to use with attribution.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
