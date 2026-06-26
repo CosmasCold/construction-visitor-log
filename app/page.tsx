@@ -211,7 +211,7 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ─── Hero ─── */}
+            {/* ─── Hero ─── */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden">
         {/* Background glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-sky-500/10 rounded-full blur-[120px] pointer-events-none" />
@@ -272,9 +272,10 @@ export default function LandingPage() {
             
             {/* Right: Product Visual */}
             <div className="relative">
-              <div className="relative rounded-2xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl shadow-2xl overflow-hidden">
+              {/* Solid background container — no backdrop-blur to prevent mobile scanlines */}
+              <div className="relative rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl overflow-hidden">
                 <Image
-                  src="/dashboard.png"
+                  src="/dash.png"
                   alt="SiteSafe real-time visitor dashboard showing active visitors across multiple sites"
                   width={800}
                   height={500}
@@ -282,7 +283,7 @@ export default function LandingPage() {
                   priority
                 />
                 {/* Floating stat card */}
-                <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-48 p-3 rounded-xl bg-[#1e293b]/90 border border-white/10 backdrop-blur-md">
+                <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-48 p-3 rounded-xl bg-[#1e293b] border border-white/10">
                   <div className="flex items-center gap-2 mb-1">
                     <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                     <span className="text-xs font-medium text-emerald-400">Live</span>
@@ -291,10 +292,11 @@ export default function LandingPage() {
                   <p className="text-xs text-slate-400">across 8 sites right now</p>
                 </div>
               </div>
-              {/* Decorative elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-sky-500/20 rounded-full blur-2xl" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl" />
+              {/* Decorative glows */}
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-sky-500/20 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
             </div>
+            
           </div>
         </div>
       </section>
