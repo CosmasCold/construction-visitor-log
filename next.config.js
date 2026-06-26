@@ -9,10 +9,10 @@ const nextConfig = {
 
     const cspValue = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://client.crisp.chat https://*.sf-syn.com https://www.youtube.com https://www.youtube-nocookie.com https://www.youtube.com/iframe_api https://s.ytimg.com https://analytics.ahrefs.com`,
+      `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval' " : ""}https://client.crisp.chat https://*.sf-syn.com https://www.youtube.com https://www.youtube-nocookie.com https://www.youtube.com/iframe_api https://s.ytimg.com https://analytics.ahrefs.com`,
       "style-src 'self' 'unsafe-inline' https://client.crisp.chat",
       "img-src 'self' https://sitesafe.thesift.space https://images.unsplash.com data: https://saasdb.net https://fazier.com *.crisp.chat https://*.sf-syn.com https://sourceforge.net https://slashdot.org https://topbusinesssoftware.com https://a.fsdn.com *.public.blob.vercel-storage.com https://cdn-b.saashub.com https://img.youtube.com https://i.ytimg.com",
-      `connect-src 'self' https://api.brevo.com https://api.stripe.com https://client.crisp.chat wss://client.relay.crisp.chat https://www.youtube-nocookie.com https://www.youtube.com`,
+      `connect-src 'self' https://api.brevo.com https://api.stripe.com https://client.crisp.chat wss://client.relay.crisp.chat https://www.youtube-nocookie.com https://www.youtube.com https://analytics.ahrefs.com`,
       `frame-src https://checkout.stripe.com https://js.stripe.com https://www.youtube.com https://www.youtube-nocookie.com https://www.youtube.com/embed/`,
       "font-src 'self' https://client.crisp.chat data:",
       "object-src 'none'",

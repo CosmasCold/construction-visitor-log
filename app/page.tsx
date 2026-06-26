@@ -271,31 +271,29 @@ export default function LandingPage() {
             </div>
             
             {/* Right: Product Visual */}
-            <div className="relative">
-              {/* Solid background container — no backdrop-blur to prevent mobile scanlines */}
-              <div className="relative rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl overflow-hidden">
-                <Image
-                  src="/dash.png"
-                  alt="SiteSafe real-time visitor dashboard showing active visitors across multiple sites"
-                  width={800}
-                  height={500}
-                  className="w-full h-auto"
-                  priority
-                />
-                {/* Floating stat card */}
-                <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-48 p-3 rounded-xl bg-[#1e293b] border border-white/10">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-xs font-medium text-emerald-400">Live</span>
-                  </div>
-                  <p className="text-lg font-bold text-white">24 visitors</p>
-                  <p className="text-xs text-slate-400">across 8 sites right now</p>
-                </div>
-              </div>
-              {/* Decorative glows */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-sky-500/20 rounded-full blur-2xl pointer-events-none" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
-            </div>
+<div className="relative">
+  <div className="relative rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl overflow-hidden aspect-[16/10]">
+    <Image
+      src="/dash.png"
+      alt="SiteSafe real-time visitor dashboard showing active visitors across multiple sites"
+      fill
+      className="object-cover"
+      priority
+      sizes="(max-width: 1024px) 100vw, 50vw"
+    />
+    {/* Floating stat card */}
+    <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-48 p-3 rounded-xl bg-[#1e293b] border border-white/10 z-10">
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+        <span className="text-xs font-medium text-emerald-400">Live</span>
+      </div>
+      <p className="text-lg font-bold text-white">24 visitors</p>
+      <p className="text-xs text-slate-400">across 8 sites right now</p>
+    </div>
+  </div>
+  <div className="absolute -top-4 -right-4 w-24 h-24 bg-sky-500/20 rounded-full blur-2xl pointer-events-none" />
+  <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+</div>
             
           </div>
         </div>
