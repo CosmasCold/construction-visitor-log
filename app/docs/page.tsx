@@ -17,6 +17,7 @@ import {
   Lock,
   ChevronRight,
 } from "lucide-react";
+import CodeBlock from "./CodeBlock";
 
 export const metadata: Metadata = {
   title: "API Documentation — SiteSafe REST API",
@@ -340,24 +341,6 @@ export default function DocsPage() {
           </p>
         </div>
       </footer>
-    </div>
-  );
-}
-
-// ─── Code Block Component ───
-function CodeBlock({ code }: { code: string }) {
-  return (
-    <div className="relative group rounded-xl bg-[#0d1117] border border-white/10 overflow-hidden">
-      <button
-        onClick={() => navigator.clipboard.writeText(code)}
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white"
-        title="Copy to clipboard"
-      >
-        <Copy className="w-3.5 h-3.5" />
-      </button>
-      <pre className="p-4 text-xs text-slate-300 font-mono leading-relaxed overflow-x-auto">
-        <code>{code}</code>
-      </pre>
     </div>
   );
 }
