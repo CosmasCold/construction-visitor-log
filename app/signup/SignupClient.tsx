@@ -85,6 +85,10 @@ export default function SignupClient() {
       return;
     }
 
+    if (typeof window !== "undefined" && (window as any).lintrk) {
+  (window as any).lintrk("track", { conversion_id: 18230868 });
+}
+
     router.push("/dashboard");
   }
 
