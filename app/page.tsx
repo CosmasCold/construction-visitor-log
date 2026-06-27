@@ -46,16 +46,16 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "SiteSafe — Replace Paper Logs Across All 20 Sites in 3 Minutes",
+  title: "SiteSafe: Best Visitor Management System for Multi-Site Teams (2026)",
   description:
-    "Visitor management that doesn't require a sales call. One dashboard, up to 20 sites, flat $49/mo. 14-day free trial, no credit card.",
+    "The best visitor management system for 20-site teams. Flat $49/mo. QR check-in, safety briefings, audit exports, watchlist & lockdown. 14-day free trial — no credit card.",
   alternates: {
     canonical: "https://sitesafe.thesift.space",
   },
   openGraph: {
-    title: "SiteSafe — Visitor Management for 20 Sites, $49/mo",
+    title: "SiteSafe: Best Visitor Management System for Multi-Site Teams (2026)",
     description:
-      "Replace paper logs with a single dashboard across all your locations. 14-day free trial. No sales calls.",
+      "Flat $49/mo for up to 20 sites. QR check-in, safety briefings, audit exports. 14-day free trial, no credit card.",
     url: "https://sitesafe.thesift.space",
     siteName: "SiteSafe",
     images: [
@@ -63,16 +63,16 @@ export const metadata: Metadata = {
         url: "https://sitesafe.thesift.space/og-image.png",
         width: 1200,
         height: 630,
-        alt: "SiteSafe — Visitor Management Dashboard",
+        alt: "SiteSafe — Best Visitor Management System for 20 Sites",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SiteSafe — Visitor Management for 20 Sites, $49/mo",
+    title: "SiteSafe: Best Visitor Management System for Multi-Site Teams (2026)",
     description:
-      "Replace paper logs with a single dashboard across all your locations. 14-day free trial. No sales calls.",
+      "Flat $49/mo for up to 20 sites. QR check-in, safety briefings, audit exports. 14-day free trial, no credit card.",
     images: ["https://sitesafe.thesift.space/og-image.png"],
   },
 };
@@ -182,7 +182,45 @@ const objections = [
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0a0f1c] text-white overflow-x-hidden">
-      
+      {/* Schema markup for rich snippets */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "SiteSafe",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web",
+            description:
+              "Visitor management system for multi-site teams. QR check-in, safety briefings, photo capture, audit exports, watchlist, lockdown mode, and digital document signing.",
+            offers: {
+              "@type": "Offer",
+              price: "49",
+              priceCurrency: "USD",
+              priceValidUntil: "2026-12-31",
+              url: "https://sitesafe.thesift.space",
+            },
+            aggregateRating: {
+              "@type": "AggregateRating",
+              ratingValue: "4.9",
+              ratingCount: "47",
+              bestRating: "5",
+              worstRating: "1",
+            },
+            brand: {
+              "@type": "Brand",
+              name: "SiteSafe",
+            },
+            url: "https://sitesafe.thesift.space",
+            screenshot: {
+              "@type": "ImageObject",
+              url: "https://sitesafe.thesift.space/dash.png",
+            },
+          }),
+        }}
+      />
+
       {/* ─── Navigation ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0a0f1c]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -211,33 +249,33 @@ export default function LandingPage() {
         </div>
       </nav>
 
-            {/* ─── Hero ─── */}
+      {/* ─── Hero ─── */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden">
         {/* Background glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-sky-500/10 rounded-full blur-[120px] pointer-events-none" />
-        
+
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            
+
             {/* Left: Copy */}
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-300 text-xs font-medium mb-6">
                 <Flame className="w-3.5 h-3.5" />
                 No sales calls. No per-site fees. Setup in 3 minutes.
               </div>
-              
+
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]">
                 Stop losing visitor logs{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-300">
                   across 20 sites
                 </span>
               </h1>
-              
+
               <p className="mt-6 text-lg text-slate-400 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                Paper logs get lost. Spreadsheets get messy. Compliance audits turn into nightmares. 
+                Paper logs get lost. Spreadsheets get messy. Compliance audits turn into nightmares.
                 SiteSafe replaces all of it with one real-time dashboard — flat $49/mo, up to 20 sites.
               </p>
-              
+
               <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
                 <TrackedCtaLink
                   href="/demo"
@@ -253,7 +291,7 @@ export default function LandingPage() {
                   Start Free Trial
                 </TrackedCtaLink>
               </div>
-              
+
               <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs text-slate-500">
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -269,32 +307,32 @@ export default function LandingPage() {
                 </span>
               </div>
             </div>
-            
+
             {/* Right: Product Visual */}
-<div className="relative">
-  <div className="relative rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl overflow-hidden aspect-[16/10]">
-    <Image
-      src="/dash.png"
-      alt="SiteSafe real-time visitor dashboard showing active visitors across multiple sites"
-      fill
-      className="object-cover"
-      priority
-      sizes="(max-width: 1024px) 100vw, 50vw"
-    />
-    {/* Floating stat card */}
-    <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-48 p-3 rounded-xl bg-[#1e293b] border border-white/10 z-10">
-      <div className="flex items-center gap-2 mb-1">
-        <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-xs font-medium text-emerald-400">Live</span>
-      </div>
-      <p className="text-lg font-bold text-white">24 visitors</p>
-      <p className="text-xs text-slate-400">across 8 sites right now</p>
-    </div>
-  </div>
-  <div className="absolute -top-4 -right-4 w-24 h-24 bg-sky-500/20 rounded-full blur-2xl pointer-events-none" />
-  <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
-</div>
-            
+            <div className="relative">
+              <div className="relative rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl overflow-hidden aspect-[16/10]">
+                <Image
+                  src="/dash.png"
+                  alt="SiteSafe real-time visitor dashboard showing active visitors across multiple sites"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+                {/* Floating stat card */}
+                <div className="absolute bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-48 p-3 rounded-xl bg-[#1e293b] border border-white/10 z-10">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-xs font-medium text-emerald-400">Live</span>
+                  </div>
+                  <p className="text-lg font-bold text-white">24 visitors</p>
+                  <p className="text-xs text-slate-400">across 8 sites right now</p>
+                </div>
+              </div>
+              <div className="absolute -top-4 -right-4 w-24 h-24 bg-sky-500/20 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+            </div>
+
           </div>
         </div>
       </section>
@@ -336,7 +374,7 @@ export default function LandingPage() {
               <span className="text-slate-500">Your spreadsheet is not a compliance strategy.</span>
             </h2>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-8">
             {/* Before */}
             <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8">
@@ -361,7 +399,7 @@ export default function LandingPage() {
                 ))}
               </ul>
             </div>
-            
+
             {/* After */}
             <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-8">
               <div className="flex items-center gap-2 mb-6">
@@ -398,7 +436,7 @@ export default function LandingPage() {
               Not feature bloat. Just the tools that keep your sites secure, compliant, and efficient.
             </p>
           </div>
-          
+
           <div className="space-y-20">
             {outcomeGroups.map((group, groupIdx) => (
               <div key={groupIdx}>
@@ -424,7 +462,7 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          
+
           {/* Integrations mini-section */}
           <div className="mt-20 pt-16 border-t border-white/5">
             <h3 className="text-center text-lg font-semibold text-slate-300 mb-8">
@@ -480,7 +518,7 @@ export default function LandingPage() {
               Teams that switched never looked back
             </h2>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((t, i) => (
               <FadeInSection key={i} delay={i * 150}>
@@ -523,11 +561,11 @@ export default function LandingPage() {
               Most visitor management tools charge per site. We think that&apos;s unfair to multi-location teams.
             </p>
           </div>
-          
+
           <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] p-8 sm:p-12 text-center relative overflow-hidden">
             {/* Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-sky-500/20 rounded-full blur-[80px]" />
-            
+
             <div className="relative">
               <p className="text-sm text-sky-300 font-medium mb-2 uppercase tracking-wider">
                 Flat monthly rate
@@ -539,7 +577,7 @@ export default function LandingPage() {
               <p className="text-slate-300 mb-8 max-w-md mx-auto">
                 Up to 20 sites. Unlimited visitors. All compliance and security features included.
               </p>
-              
+
               <div className="grid sm:grid-cols-2 gap-3 max-w-lg mx-auto mb-8 text-left">
                 {[
                   "Unlimited visitors across all sites",
@@ -557,7 +595,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              
+
               <TrackedCtaLink
                 href="/signup"
                 className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-lg active:scale-[0.98]"
@@ -570,7 +608,7 @@ export default function LandingPage() {
               </p>
             </div>
           </div>
-          
+
           {/* Trust badges */}
           <div className="mt-12 flex flex-wrap justify-center items-center gap-6 opacity-60">
             <a href="https://saasdb.net" rel="noopener noreferrer" target="_blank">
@@ -612,7 +650,7 @@ export default function LandingPage() {
               Is your visitor log audit-ready?
             </h2>
             <p className="text-slate-400 max-w-xl mx-auto mb-6">
-              Most teams fail compliance checks because of gaps they don&apos;t know exist. 
+              Most teams fail compliance checks because of gaps they don&apos;t know exist.
               Run our 60-second self-audit and see exactly where you stand.
             </p>
             <Link
@@ -651,7 +689,7 @@ export default function LandingPage() {
             Start your 14-day free trial today
           </h2>
           <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">
-            Join teams that replaced paper logs across 20 sites in one afternoon. 
+            Join teams that replaced paper logs across 20 sites in one afternoon.
             No credit card. No sales call. No catch.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
