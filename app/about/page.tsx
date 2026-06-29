@@ -178,7 +178,7 @@ export default function AboutPage() {
               that makes sense.
             </p>
             <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-              <span className="font-medium text-slate-400">— Cosmas</span>
+              <span className="font-medium text-slate-400">— Gabriel</span>
               <span>·</span>
               <span>Founder, SiteSafe</span>
             </div>
