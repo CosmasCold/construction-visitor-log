@@ -36,6 +36,7 @@ export function GET() {
     "/blog/visitor-log-book-template-free",          // ← NEW: High-traffic SEO post
     "/blog/osha-visitor-log-requirements",            // ← NEW: Related post (future)
     "/blog/visitor-management-roi-calculator",        // ← NEW: Related post (future)
+    "/br",
     "/changelog",
     "/checklist",
     "/compare",

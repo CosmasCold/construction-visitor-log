@@ -43,6 +43,7 @@ model Subscription {
   company          Company   @relation(fields: [companyId], references: [id])
   planId           String
   plan             Plan      @relation(fields: [planId], references: [id])
+  region           String    @default("usd")
   stripeSubId      String?
   status           String    @default("incomplete")
   currentPeriodEnd DateTime?

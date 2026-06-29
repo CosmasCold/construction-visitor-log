@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: Request) {
   try {
-    const { email } = await request.json();
+    const { email, region } = await request.json(); // ← Add region from body
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
@@ -18,6 +18,16 @@ export async function POST(request: Request) {
     if (!company) {
       return NextResponse.json({ error: "Company not found" }, { status: 404 });
     }
+
+    // Detect Brazil if region not explicitly passed
+    const isBrazil = region === "br" || 
+                     request.headers.get("cf-ipcountry") === "BR" ||
+                     request.headers.get("x-vercel-ip-country") === "BR";
+
+    // Select correct price ID
+    const priceId = isBrazil 
+      ? process.env.STRIPE_PRICE_ID_BRL! 
+      : process.env.STRIPE_PRICE_ID!;
 
     // If the company already has an active subscription, redirect to portal
     if (company.stripeCustomerId) {
@@ -57,10 +67,12 @@ export async function POST(request: Request) {
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       mode: "subscription",
-      payment_method_types: ["card"],
+      payment_method_types: isBrazil 
+        ? ["card", "boleto"]  // ← Add Boleto for Brazil
+        : ["card"],
       line_items: [
         {
-          price: process.env.STRIPE_PRICE_ID!,
+          price: priceId, // ← Use dynamic price ID
           quantity: 1,
         },
       ],
@@ -68,14 +80,13 @@ export async function POST(request: Request) {
       cancel_url: `${request.headers.get("origin")}/settings`,
       metadata: {
         companyId: company.id,
+        region: isBrazil ? "brl" : "usd", // ← Store region
       },
     };
 
     if (isFounder && process.env.STRIPE_TEST_COUPON_ID) {
-      // Apply the forever‑free coupon automatically – no promo code field
       sessionParams.discounts = [{ coupon: process.env.STRIPE_TEST_COUPON_ID }];
     } else {
-      // Allow any customer‑entered promo code
       sessionParams.allow_promotion_codes = true;
     }
 

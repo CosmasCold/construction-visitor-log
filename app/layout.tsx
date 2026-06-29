@@ -247,6 +247,9 @@ export default async function RootLayout({
             __html: JSON.stringify(structuredData),
           }}
         />
+        <link rel="alternate" hrefLang="en" href="https://sitesafe.thesift.space/" />
+  <link rel="alternate" hrefLang="pt-BR" href="https://sitesafe.thesift.space/br" />
+  <link rel="alternate" hrefLang="x-default" href="https://sitesafe.thesift.space/" />
       </head>
       <script src="https://analytics.ahrefs.com/analytics.js" data-key="0KWpb4lQa7ZMwscJ/c+npA" async></script>
       <body className="relative flex flex-col min-h-screen">

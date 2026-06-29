@@ -124,6 +124,7 @@ export async function POST(req: NextRequest) {
           stripeSubId: subscription.id,
           status: subscription.status,
           currentPeriodEnd,
+          region: session.metadata?.region || "usd",
         },
         create: {
           companyId: company.id,
@@ -131,6 +132,7 @@ export async function POST(req: NextRequest) {
           stripeSubId: subscription.id,
           status: subscription.status,
           currentPeriodEnd,
+          region: session.metadata?.region || "usd",
         },
       });
     }

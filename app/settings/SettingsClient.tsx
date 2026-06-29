@@ -94,7 +94,7 @@ export default function SettingsClient({
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: companyEmail }),
+        body: JSON.stringify({ email: companyEmail, region: "usd" }),
       });
       clearTimeout(loadingTimer.current!);
 

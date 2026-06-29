@@ -9,6 +9,7 @@ import TrackedCtaLink from "@/components/TrackedCtaLink";
 import HeroVideo from "@/components/HeroVideo";
 import FadeInSection from "@/components/FadeInSection";
 import StickyCTA from "@/components/StickyCTA";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
   QrCode,
   ShieldCheck,
@@ -234,6 +235,7 @@ export default function LandingPage() {
             <Link href="#features" className="hover:text-white transition-colors">Features</Link>
             <Link href="#pricing" className="hover:text-white transition-colors">Pricing</Link>
             <Link href="#faq" className="hover:text-white transition-colors">FAQ</Link>
+            <LanguageSwitcher />
           </div>
           <div className="flex items-center gap-3">
             <Link href="/admin/login" className="hidden sm:block text-sm text-slate-400 hover:text-white transition-colors">
