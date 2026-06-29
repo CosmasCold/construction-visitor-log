@@ -78,6 +78,7 @@ type Site = {
   documentTemplateData?: string | null;
   lockdownEnabled?: boolean;
   showVisitorListOnCheckin?: boolean;
+  locale?: string;
 };
 
 type Host = {
@@ -118,6 +119,8 @@ export default function CompanyDashboardClient({
 }) {
   const router = useRouter();
   const { addToast } = useToast();
+
+  const [editLocale, setEditLocale] = useState<string>("en");
 
   const [dateFrom, setDateFrom] = useState(currentDateFrom || "");
   const [dateTo, setDateTo] = useState(currentDateTo || "");
@@ -252,6 +255,7 @@ export default function CompanyDashboardClient({
     setEditQuestions(site.questions || []);
     setDocSigningEnabled(site.documentSigningEnabled || false);
     setShowVisitorList(site.showVisitorListOnCheckin ?? true);
+    setEditLocale(site.locale || "en");
     setOpenSection("basic");
 
     fetch(`/api/sites/${site.id}/hosts`)
@@ -290,6 +294,7 @@ export default function CompanyDashboardClient({
         questions: editQuestions,
         documentSigningEnabled: docSigningEnabled,
         showVisitorListOnCheckin: showVisitorList,
+        locale: editLocale,
       }),
     });
 
@@ -306,6 +311,7 @@ export default function CompanyDashboardClient({
                 questions: editQuestions,
                 documentSigningEnabled: docSigningEnabled,
                 showVisitorListOnCheckin: showVisitorList,
+                locale: editLocale,
               }
             : s
         )
@@ -769,7 +775,7 @@ export default function CompanyDashboardClient({
                   const newSite = await res.json();
                   setSites((prev) => [
                     ...prev,
-                    {
+                                        {
                       id: newSite.id,
                       name: newSite.name,
                       slug: newSite.slug,
@@ -781,6 +787,7 @@ export default function CompanyDashboardClient({
                       documentTemplateData: null,
                       lockdownEnabled: false,
                       showVisitorListOnCheckin: true,
+                      locale: "en",
                     },
                   ]);
                   setShowNewSite(false);
@@ -887,6 +894,18 @@ export default function CompanyDashboardClient({
                               <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">Safety Briefing</label>
                               <textarea value={editBriefing} onChange={(e) => setEditBriefing(e.target.value)} rows={2} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50" />
                             </div>
+                            <div>
+  <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">Check-in Language</label>
+  <select
+    value={editLocale}
+    onChange={(e) => setEditLocale(e.target.value)}
+    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+  >
+    <option value="en" className="bg-[#0f172a]">English</option>
+    <option value="pt" className="bg-[#0f172a]">Português (Brazil)</option>
+  </select>
+  <p className="text-[10px] text-slate-600 mt-1">Language shown to visitors during check-in</p>
+</div>
                           </div>
                         )},
                         { id: "hosts", label: `Hosts (${hostsForEdit.length})`, content: (
@@ -1099,10 +1118,15 @@ export default function CompanyDashboardClient({
                             </a>
                             <ExternalLink className="w-3 h-3 text-slate-600 flex-shrink-0" />
                           </div>
-                          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
                             <span className="font-mono">/{site.slug}</span>
                             <span className="text-slate-700">•</span>
                             <span>{site.visitorsToday} today</span>
+                            {site.locale === "pt" && (
+                              <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400">
+                                🇧🇷 PT
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-1 flex-shrink-0">

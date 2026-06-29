@@ -11,7 +11,7 @@ export default async function CheckinPage({
   searchParams: Promise<{ locale?: string }>;
 }) {
   const { siteSlug } = await params;
-  const { locale } = await searchParams;
+  const { locale: queryLocale } = await searchParams;
 
   const site = await prisma.site.findUnique({
     where: { slug: siteSlug },
@@ -20,10 +20,13 @@ export default async function CheckinPage({
       name: true,
       safetyBriefingText: true,
       questions: true,
+      locale: true,
     },
   });
 
   if (!site) notFound();
+
+  const locale: "en" | "pt" = queryLocale === "pt" ? "pt" : site.locale === "pt" ? "pt" : "en";
 
   return (
     <CheckinClient
@@ -31,7 +34,7 @@ export default async function CheckinPage({
       siteName={site.name}
       safetyBriefing={site.safetyBriefingText}
       questions={site.questions || []}
-      locale={locale === "pt" ? "pt" : "en"}
+      locale={locale}
     />
   );
 }

@@ -61,6 +61,7 @@ export async function PUT(
     questions,
     documentSigningEnabled,
     showVisitorListOnCheckin,
+    locale, // ← ADD THIS
   } = await req.json();
 
   const updated = await prisma.site.update({
@@ -73,6 +74,7 @@ export async function PUT(
       questions,
       documentSigningEnabled,
       showVisitorListOnCheckin,
+      locale, // ← ADD THIS
     },
   });
 
