@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -52,6 +52,8 @@ export default function SettingsClient({
   slackWebhookUrl: initialSlackWebhook,
 }: SettingsClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const region = searchParams.get("region") || "usd";
 
   // Company name editing
   const [companyName, setCompanyName] = useState(initialCompanyName);
@@ -94,7 +96,7 @@ export default function SettingsClient({
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: companyEmail, region: "usd" }),
+        body: JSON.stringify({ email: companyEmail, region }),
       });
       clearTimeout(loadingTimer.current!);
 

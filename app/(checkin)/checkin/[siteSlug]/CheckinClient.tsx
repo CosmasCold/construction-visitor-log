@@ -46,17 +46,133 @@ type ExpectedVisitor = {
   company: string;
 };
 
+type Locale = "en" | "pt";
+
+const dict: Record<Locale, Record<string, string>> = {
+  en: {
+    checkIn: "Visitor Check-In",
+    stepSafety: "Safety",
+    stepDetails: "Details",
+    stepPhoto: "Photo",
+    stepSign: "Sign",
+    safetyBriefing: "Safety Briefing",
+    safetyAck: "I have read and understand the site safety briefing",
+    preScreening: "Pre-screening",
+    docSigning: "Document Signing",
+    viewDoc: "View document",
+    cancelSign: "Cancel signing",
+    signDoc: "Sign document",
+    clear: "Clear",
+    acceptSig: "Accept signature",
+    saving: "Saving…",
+    sigCaptured: "Signature captured",
+    redo: "Redo",
+    expectedToday: "Expected Today",
+    quickSignIn: "Quick Sign In",
+    visitorDetails: "Visitor Details",
+    fullName: "Full name",
+    company: "Company / Trade",
+    phone: "Phone (optional)",
+    email: "Email (optional)",
+    selectHost: "Select a host (optional)",
+    hostName: "Host name (optional)",
+    uploadingPhoto: "Uploading photo…",
+    takePhoto: "Take photo",
+    printBadge: "Print Badge",
+    signingIn: "Signing in…",
+    signIn: "Sign In",
+    currentlyOnSite: "Currently on Site",
+    noActiveVisitors: "No active visitors",
+    hostPrefix: "Host:",
+    signOut: "Sign out",
+    hideQr: "Hide QR code",
+    showQr: "Show QR code for this site",
+    scanQr: "Scan to check in",
+    footer: "Secure digital log • SiteSafe by TheSift",
+    errNameCompany: "Full name and company are required.",
+    errSafety: "You must acknowledge the safety briefing before signing in.",
+    errDocSign: "You must sign the document before signing in.",
+    errCamera: "Could not access camera: ",
+    errUploadPhoto: "Failed to upload photo. Try again.",
+    errBlocked: "Your entry has been flagged. Please contact security.",
+    errSignIn: "Sign‑in failed.",
+    errSignOut: "Sign‑out failed",
+    errSafetyFirst: "You must acknowledge the safety briefing first.",
+    successSignIn: "Signed in successfully.",
+    badgeTitle: "Visitor Badge",
+    badgeFooter: "SiteSafe visitor log",
+  },
+  pt: {
+    checkIn: "Check-in de Visitantes",
+    stepSafety: "Segurança",
+    stepDetails: "Dados",
+    stepPhoto: "Foto",
+    stepSign: "Assinatura",
+    safetyBriefing: "Briefing de Segurança",
+    safetyAck: "Li e compreendo o briefing de segurança do local",
+    preScreening: "Pré-triagem",
+    docSigning: "Assinatura de Documento",
+    viewDoc: "Ver documento",
+    cancelSign: "Cancelar assinatura",
+    signDoc: "Assinar documento",
+    clear: "Limpar",
+    acceptSig: "Aceitar assinatura",
+    saving: "Salvando…",
+    sigCaptured: "Assinatura registrada",
+    redo: "Refazer",
+    expectedToday: "Esperados Hoje",
+    quickSignIn: "Check-in Rápido",
+    visitorDetails: "Dados do Visitante",
+    fullName: "Nome completo",
+    company: "Empresa / Ofício",
+    phone: "Telefone (opcional)",
+    email: "E-mail (opcional)",
+    selectHost: "Selecionar anfitrião (opcional)",
+    hostName: "Nome do anfitrião (opcional)",
+    uploadingPhoto: "Enviando foto…",
+    takePhoto: "Tirar foto",
+    printBadge: "Imprimir Crachá",
+    signingIn: "Registrando entrada…",
+    signIn: "Registrar Entrada",
+    currentlyOnSite: "No Local Agora",
+    noActiveVisitors: "Nenhum visitante ativo",
+    hostPrefix: "Anfitrião:",
+    signOut: "Registrar Saída",
+    hideQr: "Ocultar QR code",
+    showQr: "Mostrar QR code deste local",
+    scanQr: "Escaneie para fazer check-in",
+    footer: "Registro digital seguro • SiteSafe by TheSift",
+    errNameCompany: "Nome completo e empresa são obrigatórios.",
+    errSafety: "Você deve confirmar o briefing de segurança antes de registrar a entrada.",
+    errDocSign: "Você deve assinar o documento antes de registrar a entrada.",
+    errCamera: "Não foi possível acessar a câmera: ",
+    errUploadPhoto: "Falha ao enviar foto. Tente novamente.",
+    errBlocked: "Seu acesso foi sinalizado. Entre em contato com a segurança.",
+    errSignIn: "Falha no registro de entrada.",
+    errSignOut: "Falha no registro de saída",
+    errSafetyFirst: "Você deve confirmar o briefing de segurança primeiro.",
+    successSignIn: "Entrada registrada com sucesso.",
+    badgeTitle: "Crachá de Visitante",
+    badgeFooter: "Registro de visitantes SiteSafe",
+  },
+};
+
 export default function CheckinClient({
   siteId,
   siteName,
   safetyBriefing,
   questions = [],
+  locale = "en",
 }: {
   siteId: string;
   siteName: string;
   safetyBriefing: string;
   questions?: string[];
+  locale?: Locale;
 }) {
+  const t = dict[locale];
+  const isPT = locale === "pt";
+
   const [fullName, setFullName] = useState("");
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
@@ -80,7 +196,7 @@ export default function CheckinClient({
   // Error message
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Document signing state – hardcoded to true for now to always show the section
+  // Document signing state
   const [documentSigningEnabled, setDocumentSigningEnabled] = useState(true);
   const [documentTemplateData, setDocumentTemplateData] = useState<string | null>(null);
   const [showSignaturePad, setShowSignaturePad] = useState(false);
@@ -93,7 +209,7 @@ export default function CheckinClient({
   const [showVisitorList, setShowVisitorList] = useState(true);
 
   // Progress steps
-  const steps = ["Safety", "Details", "Photo", "Sign"];
+  const steps = [t.stepSafety, t.stepDetails, t.stepPhoto, t.stepSign];
   const [currentStep, setCurrentStep] = useState(0);
 
   // Fetch hosts
@@ -112,13 +228,12 @@ export default function CheckinClient({
       .catch(() => setExpectedVisitors([]));
   }, [siteId]);
 
-  // Fetch site settings – currently forcing document signing enabled for visibility
+  // Fetch site settings
   useEffect(() => {
     fetch(`/api/sites/${siteId}`)
       .then((res) => res.json())
       .then((data) => {
-        // setDocumentSigningEnabled(data.documentSigningEnabled || false);
-        setDocumentSigningEnabled(true); // Force on – always show the signature pad
+        setDocumentSigningEnabled(true);
         setDocumentTemplateData(data.documentTemplateData || null);
         setShowVisitorList(data.showVisitorListOnCheckin ?? true);
       })
@@ -160,14 +275,13 @@ export default function CheckinClient({
       video.remove();
       return dataUrl;
     } catch (err) {
-      alert("Could not access camera: " + (err as Error).message);
+      alert(t.errCamera + (err as Error).message);
       return null;
     }
   }
 
   async function uploadPhoto(dataUrl: string): Promise<string | null> {
     setUploading(true);
-    // eslint-disable-next-line react-hooks/purity
     const fileName = `visitor-${Date.now()}.jpg`;
     const res = await fetch("/api/upload", {
       method: "POST",
@@ -185,7 +299,7 @@ export default function CheckinClient({
       return data.url;
     }
     setUploading(false);
-    alert("Failed to upload photo. Try again.");
+    alert(t.errUploadPhoto);
     return null;
   }
 
@@ -240,7 +354,7 @@ export default function CheckinClient({
     }
   }
 
-  async function uploadSignature(dataUrl: string): Promise<string | null> {
+    async function uploadSignature(dataUrl: string): Promise<string | null> {
     setUploading(true);
     // eslint-disable-next-line react-hooks/purity
     const fileName = `sig-${Date.now()}.png`;
@@ -256,8 +370,8 @@ export default function CheckinClient({
       const data = await res.json();
       setSignatureUrl(data.url);
       setUploading(false);
-      clearSignature();           // clear canvas
-      setShowSignaturePad(false); // collapse pad
+      clearSignature();
+      setShowSignaturePad(false);
       setCurrentStep(4);
       return data.url;
     }
@@ -270,15 +384,15 @@ export default function CheckinClient({
     setErrorMessage(null);
 
     if (!fullName || !company) {
-      setErrorMessage("Full name and company are required.");
+      setErrorMessage(t.errNameCompany);
       return;
     }
     if (!safetyAcknowledged) {
-      setErrorMessage("You must acknowledge the safety briefing before signing in.");
+      setErrorMessage(t.errSafety);
       return;
     }
     if (documentSigningEnabled && !signatureUrl) {
-      setErrorMessage("You must sign the document before signing in.");
+      setErrorMessage(t.errDocSign);
       return;
     }
     setLoading(true);
@@ -306,7 +420,7 @@ export default function CheckinClient({
     const data = await res.json();
 
     if (res.ok) {
-      alert("Signed in successfully.");
+      alert(t.successSignIn);
       setFullName("");
       setCompany("");
       setPhone("");
@@ -318,8 +432,8 @@ export default function CheckinClient({
       setPhotoUrl(null);
       setSignatureUrl(null);
       setSignatureDataUrl(null);
-      clearSignature();            // clear canvas
-      setShowSignaturePad(false);  // collapse pad
+      clearSignature();
+      setShowSignaturePad(false);
       setErrorMessage(null);
       setCurrentStep(0);
       const refresh = await fetch(`/api/checkin/${siteId}/active`);
@@ -328,9 +442,9 @@ export default function CheckinClient({
       if (refreshExpected.ok) setExpectedVisitors(await refreshExpected.json());
     } else {
       if (res.status === 403 && data.blocked) {
-        setErrorMessage(data.message || "Your entry has been flagged. Please contact security.");
+        setErrorMessage(data.message || t.errBlocked);
       } else {
-        setErrorMessage(data.error || "Sign‑in failed.");
+        setErrorMessage(data.error || t.errSignIn);
       }
     }
     setLoading(false);
@@ -338,11 +452,11 @@ export default function CheckinClient({
 
   async function handleQuickSignIn(visitor: ExpectedVisitor) {
     if (!safetyAcknowledged) {
-      setErrorMessage("You must acknowledge the safety briefing first.");
+      setErrorMessage(t.errSafetyFirst);
       return;
     }
     if (documentSigningEnabled && !signatureUrl) {
-      setErrorMessage("You must sign the document before signing in.");
+      setErrorMessage(t.errDocSign);
       return;
     }
     setErrorMessage(null);
@@ -357,7 +471,7 @@ export default function CheckinClient({
       }),
     });
     if (res.ok) {
-      alert(`${visitor.name} signed in.`);
+      alert(`${visitor.name} ${isPT ? "registrado" : "signed in"}.`);
       const refreshExpected = await fetch(`/api/sites/${siteId}/expected-visitors`);
       if (refreshExpected.ok) setExpectedVisitors(await refreshExpected.json());
       const refreshActive = await fetch(`/api/checkin/${siteId}/active`);
@@ -365,8 +479,8 @@ export default function CheckinClient({
       setSafetyAcknowledged(false);
       setSignatureUrl(null);
       setSignatureDataUrl(null);
-      clearSignature();            // clear canvas
-      setShowSignaturePad(false);  // collapse pad
+      clearSignature();
+      setShowSignaturePad(false);
       setErrorMessage(null);
       setCurrentStep(0);
     } else {
@@ -374,7 +488,7 @@ export default function CheckinClient({
       if (data.blocked) {
         setErrorMessage(data.message);
       } else {
-        setErrorMessage("Sign‑in failed.");
+        setErrorMessage(t.errSignIn);
       }
     }
   }
@@ -390,7 +504,7 @@ export default function CheckinClient({
       win.document.write(`
         <html>
           <head>
-            <title>Visitor Badge</title>
+            <title>${t.badgeTitle}</title>
             <style>
               @page { size: 4in 3in; margin: 0; }
               body {
@@ -412,9 +526,9 @@ export default function CheckinClient({
               ${photoUrl ? `<img src="${photoUrl}" alt="${visitorName}" />` : ""}
               <p><strong>${visitorName}</strong></p>
               <p>${visitorCompany}</p>
-              ${visitorHost ? `<p>Host: ${visitorHost}</p>` : ""}
-              <p>${new Date().toLocaleString()}</p>
-              <small>SiteSafe visitor log</small>
+              ${visitorHost ? `<p>${t.hostPrefix} ${visitorHost}</p>` : ""}
+              <p>${new Date().toLocaleString(isPT ? "pt-BR" : "en-US")}</p>
+              <small>${t.badgeFooter}</small>
             </div>
           </body>
         </html>
@@ -434,7 +548,7 @@ export default function CheckinClient({
       const refresh = await fetch(`/api/checkin/${siteId}/active`);
       if (refresh.ok) setActiveVisitors(await refresh.json());
     } else {
-      setErrorMessage("Sign‑out failed");
+      setErrorMessage(t.errSignOut);
     }
   }
 
@@ -450,7 +564,7 @@ export default function CheckinClient({
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
             {siteName}
           </h1>
-          <p className="text-sm text-slate-500">Visitor Check-In</p>
+          <p className="text-sm text-slate-500">{t.checkIn}</p>
         </div>
 
         {/* ─── Progress Steps ─── */}
@@ -497,7 +611,7 @@ export default function CheckinClient({
           <div className="bg-sky-500/10 border-b border-sky-500/20 px-5 py-3 flex items-center gap-2">
             <Shield className="w-4 h-4 text-sky-400" />
             <h2 className="text-xs font-bold uppercase tracking-wider text-sky-300">
-              Safety Briefing
+              {t.safetyBriefing}
             </h2>
           </div>
           <div className="p-5">
@@ -513,7 +627,7 @@ export default function CheckinClient({
                 className="mt-0.5 h-5 w-5 rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
               />
               <span className="text-sm text-slate-200 leading-snug">
-                I have read and understand the site safety briefing
+                {t.safetyAck}
               </span>
             </label>
           </div>
@@ -525,7 +639,7 @@ export default function CheckinClient({
             <div className="bg-amber-500/10 border-b border-amber-500/20 px-5 py-3 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400" />
               <h2 className="text-xs font-bold uppercase tracking-wider text-amber-300">
-                Pre-screening
+                {t.preScreening}
               </h2>
             </div>
             <div className="p-5 space-y-3">
@@ -552,7 +666,7 @@ export default function CheckinClient({
             <div className="bg-violet-500/10 border-b border-violet-500/20 px-5 py-3 flex items-center gap-2">
               <FileText className="w-4 h-4 text-violet-400" />
               <h2 className="text-xs font-bold uppercase tracking-wider text-violet-300">
-                Document Signing
+                {t.docSigning}
               </h2>
             </div>
             <div className="p-5 space-y-4">
@@ -563,7 +677,7 @@ export default function CheckinClient({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 underline underline-offset-2"
                 >
-                  <FileText className="w-3.5 h-3.5" /> View document
+                  <FileText className="w-3.5 h-3.5" /> {t.viewDoc}
                 </a>
               )}
               
@@ -585,7 +699,7 @@ export default function CheckinClient({
                     `}
                   >
                     <PenTool className="w-4 h-4" />
-                    {showSignaturePad ? "Cancel signing" : "Sign document"}
+                    {showSignaturePad ? t.cancelSign : t.signDoc}
                   </button>
 
                   {showSignaturePad && (
@@ -610,7 +724,7 @@ export default function CheckinClient({
                           onClick={clearSignature}
                           className="text-xs text-slate-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
                         >
-                          Clear
+                          {t.clear}
                         </button>
                         {signatureDataUrl && (
                           <button
@@ -621,7 +735,7 @@ export default function CheckinClient({
                             disabled={uploading}
                             className="bg-violet-500 hover:bg-violet-600 disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-xs font-medium transition-all"
                           >
-                            {uploading ? "Saving…" : "Accept signature"}
+                            {uploading ? t.saving : t.acceptSig}
                           </button>
                         )}
                       </div>
@@ -631,7 +745,7 @@ export default function CheckinClient({
               ) : (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                   <Check className="w-4 h-4 text-emerald-400" />
-                  <span className="text-sm text-emerald-300">Signature captured</span>
+                  <span className="text-sm text-emerald-300">{t.sigCaptured}</span>
                   <button
                     onClick={() => {
                       setSignatureUrl(null);
@@ -640,7 +754,7 @@ export default function CheckinClient({
                     }}
                     className="ml-auto text-xs text-slate-500 hover:text-white transition-colors"
                   >
-                    Redo
+                    {t.redo}
                   </button>
                 </div>
               )}
@@ -654,7 +768,7 @@ export default function CheckinClient({
             <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-5 py-3 flex items-center gap-2">
               <Users className="w-4 h-4 text-emerald-400" />
               <h2 className="text-xs font-bold uppercase tracking-wider text-emerald-300">
-                Expected Today
+                {t.expectedToday}
               </h2>
             </div>
             <div className="divide-y divide-white/5">
@@ -668,7 +782,7 @@ export default function CheckinClient({
                     onClick={() => handleQuickSignIn(visitor)}
                     className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 px-4 py-2 rounded-lg text-xs font-medium transition-all active:scale-[0.98]"
                   >
-                    Quick Sign In
+                    {t.quickSignIn}
                   </button>
                 </div>
               ))}
@@ -680,7 +794,7 @@ export default function CheckinClient({
         <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/5 border-b border-white/5 px-5 py-3">
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Visitor Details
+              {t.visitorDetails}
             </h2>
           </div>
           <form onSubmit={handleSignIn} className="p-5 space-y-4">
@@ -689,7 +803,7 @@ export default function CheckinClient({
               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Full name"
+                placeholder={t.fullName}
                 value={fullName}
                 onChange={(e) => {
                   setFullName(e.target.value);
@@ -705,7 +819,7 @@ export default function CheckinClient({
               <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Company / Trade"
+                placeholder={t.company}
                 value={company}
                 onChange={(e) => {
                   setCompany(e.target.value);
@@ -721,7 +835,7 @@ export default function CheckinClient({
               <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               <input
                 type="tel"
-                placeholder="Phone (optional)"
+                placeholder={t.phone}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all"
@@ -733,7 +847,7 @@ export default function CheckinClient({
               <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               <input
                 type="email"
-                placeholder="Email (optional)"
+                placeholder={t.email}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all"
@@ -754,7 +868,7 @@ export default function CheckinClient({
                   }}
                   className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all appearance-none"
                 >
-                  <option value="" className="bg-[#0f172a] text-slate-400">Select a host (optional)</option>
+                  <option value="" className="bg-[#0f172a] text-slate-400">{t.selectHost}</option>
                   {hosts.map((host) => (
                     <option key={host.id} value={host.id} className="bg-[#0f172a]">
                       {host.name}
@@ -768,7 +882,7 @@ export default function CheckinClient({
                 <UserCircle className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Host name (optional)"
+                  placeholder={t.hostName}
                   value={hostName}
                   onChange={(e) => setHostName(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-base text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500/30 transition-all"
@@ -804,13 +918,13 @@ export default function CheckinClient({
                     }
                     className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 border border-white/10 text-sm text-white hover:bg-white/20 transition-all active:scale-[0.98]"
                   >
-                    <Printer className="w-4 h-4" /> Print Badge
+                    <Printer className="w-4 h-4" /> {t.printBadge}
                   </button>
                 </div>
               ) : uploading ? (
                 <div className="flex items-center justify-center gap-2 py-8 rounded-xl bg-white/5 border border-white/5 border-dashed">
                   <div className="w-5 h-5 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-sm text-sky-400">Uploading photo…</span>
+                  <span className="text-sm text-sky-400">{t.uploadingPhoto}</span>
                 </div>
               ) : (
                 <button
@@ -827,7 +941,7 @@ export default function CheckinClient({
                   <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-sky-500/10 transition-colors">
                     <Camera className="w-5 h-5 text-slate-500 group-hover:text-sky-400 transition-colors" />
                   </div>
-                  <span className="text-sm text-slate-500 group-hover:text-slate-300 transition-colors">Take photo</span>
+                  <span className="text-sm text-slate-500 group-hover:text-slate-300 transition-colors">{t.takePhoto}</span>
                 </button>
               )}
             </div>
@@ -839,7 +953,7 @@ export default function CheckinClient({
               className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white font-semibold tracking-wide rounded-xl px-6 py-4 text-base transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 mt-6"
             >
               <ClipboardCheck className="w-5 h-5" />
-              {loading ? "Signing in…" : "Sign In"}
+              {loading ? t.signingIn : t.signIn}
             </button>
           </form>
         </div>
@@ -849,7 +963,7 @@ export default function CheckinClient({
           <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
             <div className="bg-white/5 border-b border-white/5 px-5 py-3 flex items-center justify-between">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                <Users className="w-3.5 h-3.5" /> Currently on Site
+                <Users className="w-3.5 h-3.5" /> {t.currentlyOnSite}
               </h2>
               <span className="inline-flex items-center justify-center min-w-[24px] h-6 rounded-full bg-sky-500/10 text-sky-300 text-xs font-bold px-2">
                 {activeVisitors.length}
@@ -857,7 +971,7 @@ export default function CheckinClient({
             </div>
             {activeVisitors.length === 0 ? (
               <div className="p-6 text-center">
-                <p className="text-sm text-slate-600">No active visitors</p>
+                <p className="text-sm text-slate-600">{t.noActiveVisitors}</p>
               </div>
             ) : (
               <div className="divide-y divide-white/5">
@@ -870,11 +984,11 @@ export default function CheckinClient({
                       <p className="text-sm font-medium text-white truncate">{v.fullName}</p>
                       <p className="text-xs text-slate-500">{v.company}</p>
                       {v.hostName && (
-                        <p className="text-xs text-sky-400 mt-0.5">Host: {v.hostName}</p>
+                        <p className="text-xs text-sky-400 mt-0.5">{t.hostPrefix} {v.hostName}</p>
                       )}
                       <p className="text-[10px] text-slate-600 mt-1 flex items-center gap-1">
                         <Clock className="w-2.5 h-2.5" />
-                        {new Date(v.signedInAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        {new Date(v.signedInAt).toLocaleTimeString(isPT ? "pt-BR" : "en-US", { hour: "2-digit", minute: "2-digit" })}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0 ml-3">
@@ -889,7 +1003,7 @@ export default function CheckinClient({
                         onClick={() => handleSignOut(v.id)}
                         className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 hover:bg-rose-500/10 text-slate-400 hover:text-rose-300 transition-all text-xs font-medium"
                       >
-                        <LogOut className="w-3.5 h-3.5" /> Sign out
+                        <LogOut className="w-3.5 h-3.5" /> {t.signOut}
                       </button>
                     </div>
                   </div>
@@ -906,7 +1020,7 @@ export default function CheckinClient({
             className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-400 transition-colors"
           >
             <QrCode className="w-3.5 h-3.5" />
-            {showQr ? "Hide QR code" : "Show QR code for this site"}
+            {showQr ? t.hideQr : t.showQr}
           </button>
           {showQr && (
             <div className="mt-4 flex justify-center">
@@ -920,7 +1034,7 @@ export default function CheckinClient({
                   className="rounded-lg"
                 />
                 <p className="text-xs text-slate-600 text-center mt-2 font-medium">
-                  Scan to check in
+                  {t.scanQr}
                 </p>
               </div>
             </div>
@@ -928,7 +1042,7 @@ export default function CheckinClient({
         </div>
 
         <p className="text-center text-[10px] text-slate-700 pt-4 pb-2">
-          Secure digital log • SiteSafe by TheSift
+          {t.footer}
         </p>
       </div>
     </div>

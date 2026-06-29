@@ -24,8 +24,86 @@ import {
 } from "lucide-react";
 import { logEvent } from "@/lib/analytics";
 
-export default function SignupClient() {
+interface SignupClientProps {
+  region?: string;
+}
+
+const t = {
+  en: {
+    metaStars: "4.9/5 — 200+ teams trust SiteSafe",
+    headline: "Start your 14-day free trial",
+    subheadline: "No credit card required · Cancel anytime · Setup in 2 minutes",
+    googleBtn: "Continue with Google",
+    divider: "or use email",
+    emailPlaceholder: "Work email address",
+    passwordPlaceholder: "Create a password",
+    passwordStrength: ["Weak", "Weak", "Okay", "Good", "Strong"],
+    ctaLoading: "Creating your account…",
+    ctaIdle: "Start My Free Trial",
+    trustSSL: "SSL encrypted",
+    trustNoCard: "No card required",
+    trustNoCalls: "No sales calls",
+    alreadyHaveAccount: "Already have an account?",
+    signIn: "Sign in",
+    badge: "200+ teams signed up this month",
+    sidebarHeadline: "What you get instantly:",
+    features: [
+      { icon: Users, text: "Up to 20 sites under one account" },
+      { icon: CheckCircle2, text: "Unlimited visitors — no per-check-in fees" },
+      { icon: ShieldCheck, text: "Mandatory safety briefings (OSHA-ready)" },
+      { icon: Lock, text: "Watchlist screening + lockdown mode" },
+      { icon: FileText, text: "Audit exports: CSV, Excel, PDF" },
+      { icon: Zap, text: "REST API + Slack/Zapier webhooks" },
+    ],
+    testimonialQuote:
+      "We have 8 locations and used to rely on paper logs at each site. SiteSafe gives me a single dashboard across all of them. Setup took 3 minutes.",
+    testimonialName: "Marcus Chen",
+    testimonialRole: "Director of Facilities, Coastal Build Group",
+    complianceSOC: "SOC 2 Type II",
+    complianceGDPR: "GDPR/LGPD Ready",
+    questions: "Questions?",
+  },
+  br: {
+    metaStars: "4,9/5 — Mais de 200 empresas confiam na SiteSafe",
+    headline: "Comece seu teste grátis de 14 dias",
+    subheadline: "Sem cartão de crédito · Cancele quando quiser · Configuração em 2 minutos",
+    googleBtn: "Continuar com Google",
+    divider: "ou use seu e-mail",
+    emailPlaceholder: "E-mail corporativo",
+    passwordPlaceholder: "Crie uma senha",
+    passwordStrength: ["Fraca", "Fraca", "Razoável", "Boa", "Forte"],
+    ctaLoading: "Criando sua conta…",
+    ctaIdle: "Começar Meu Teste Grátis",
+    trustSSL: "Criptografia SSL",
+    trustNoCard: "Sem cartão exigido",
+    trustNoCalls: "Sem ligações de vendas",
+    alreadyHaveAccount: "Já tem uma conta?",
+    signIn: "Entrar",
+    badge: "Mais de 200 empresas se cadastraram este mês",
+    sidebarHeadline: "O que você recebe instantaneamente:",
+    features: [
+      { icon: Users, text: "Até 20 locais em uma única conta" },
+      { icon: CheckCircle2, text: "Visitantes ilimitados — sem taxa por check-in" },
+      { icon: ShieldCheck, text: "Briefings de segurança obrigatórios" },
+      { icon: Lock, text: "Lista de bloqueio + modo de lockdown" },
+      { icon: FileText, text: "Exportação de auditoria: CSV, Excel, PDF" },
+      { icon: Zap, text: "API REST + webhooks Slack/Zapier" },
+    ],
+    testimonialQuote:
+      "Temos 8 unidades e antes dependíamos de registros em papel em cada local. A SiteSafe me dá um único painel para todos. A configuração levou 3 minutos.",
+    testimonialName: "Marcus Chen",
+    testimonialRole: "Diretor de Facilities, Coastal Build Group",
+    complianceSOC: "SOC 2 Tipo II",
+    complianceGDPR: "LGPD/GDPR Ready",
+    questions: "Dúvidas?",
+  },
+};
+
+export default function SignupClient({ region }: SignupClientProps) {
   const router = useRouter();
+  const isBR = region === "br";
+  const copy = isBR ? t.br : t.en;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,7 +121,6 @@ export default function SignupClient() {
   };
 
   const passwordStrength = getPasswordStrength(password);
-  const strengthLabels = ["Weak", "Weak", "Okay", "Good", "Strong"];
   const strengthColors = [
     "bg-red-400",
     "bg-red-400",
@@ -60,13 +137,13 @@ export default function SignupClient() {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, region }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      setError(data.error || "Signup failed. Please try again.");
+      setError(data.error || (isBR ? "Falha no cadastro. Tente novamente." : "Signup failed. Please try again."));
       setLoading(false);
       return;
     }
@@ -80,16 +157,13 @@ export default function SignupClient() {
     });
 
     if (signInResult?.error) {
-      setError("Account created but sign in failed. Please sign in manually.");
+      setError(isBR ? "Conta criada, mas falha ao entrar. Entre manualmente." : "Account created but sign in failed. Please sign in manually.");
       setLoading(false);
       return;
     }
 
-    if (typeof window !== "undefined" && (window as any).lintrk) {
-  (window as any).lintrk("track", { conversion_id: 18230868 });
-}
-
-    router.push("/dashboard");
+    // Preserve region through to dashboard so settings/checkout can use it
+    router.push(isBR ? "/dashboard?region=br" : "/dashboard");
   }
 
   return (
@@ -105,20 +179,20 @@ export default function SignupClient() {
                 <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
               ))}
             </div>
-            <span className="text-xs text-slate-400">4.9/5 — 200+ teams trust SiteSafe</span>
+            <span className="text-xs text-slate-400">{copy.metaStars}</span>
           </div>
 
           <h1 className="text-2xl font-bold tracking-tight text-center mb-2">
-            Start your 14-day free trial
+            {copy.headline}
           </h1>
           <p className="text-sm text-slate-400 text-center mb-6">
-            No credit card required · Cancel anytime · Setup in 2 minutes
+            {copy.subheadline}
           </p>
 
           {/* Google first — social proof + lower friction */}
           <button
             type="button"
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={() => signIn("google", { callbackUrl: isBR ? "/dashboard?region=br" : "/dashboard" })}
             className="w-full flex items-center justify-center gap-2 bg-white text-slate-800 font-medium rounded-xl px-6 py-3 text-sm hover:bg-slate-100 transition-all mb-4"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -127,19 +201,19 @@ export default function SignupClient() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            Continue with Google
+            {copy.googleBtn}
           </button>
 
           <div className="flex items-center gap-4 mb-4">
             <div className="h-px flex-1 bg-white/10" />
-            <span className="text-xs text-slate-500">or use email</span>
+            <span className="text-xs text-slate-500">{copy.divider}</span>
             <div className="h-px flex-1 bg-white/10" />
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="email"
-              placeholder="Work email address"
+              placeholder={copy.emailPlaceholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -149,7 +223,7 @@ export default function SignupClient() {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Create a password"
+                placeholder={copy.passwordPlaceholder}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -175,7 +249,7 @@ export default function SignupClient() {
                   />
                 </div>
                 <span className="text-xs text-slate-500 whitespace-nowrap">
-                  {strengthLabels[passwordStrength]}
+                  {copy.passwordStrength[passwordStrength]}
                 </span>
               </div>
             )}
@@ -189,28 +263,28 @@ export default function SignupClient() {
               disabled={loading}
               className="w-full bg-sky-500 hover:bg-sky-400 disabled:bg-sky-500/30 text-white font-semibold rounded-xl px-6 py-3.5 text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20 active:scale-[0.98]"
             >
-              {loading ? "Creating your account…" : "Start My Free Trial"}
+              {loading ? copy.ctaLoading : copy.ctaIdle}
               {!loading && <ArrowRight className="w-4 h-4" />}
             </button>
           </form>
 
-          {/* Trust signals — moved below CTA where they matter most */}
+          {/* Trust signals */}
           <div className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 text-[11px] text-slate-500">
             <span className="flex items-center gap-1">
-              <Lock className="w-3 h-3 text-emerald-400" /> SSL encrypted
+              <Lock className="w-3 h-3 text-emerald-400" /> {copy.trustSSL}
             </span>
             <span className="flex items-center gap-1">
-              <CreditCard className="w-3 h-3 text-emerald-400" /> No card required
+              <CreditCard className="w-3 h-3 text-emerald-400" /> {copy.trustNoCard}
             </span>
             <span className="flex items-center gap-1">
-              <PhoneOff className="w-3 h-3 text-emerald-400" /> No sales calls
+              <PhoneOff className="w-3 h-3 text-emerald-400" /> {copy.trustNoCalls}
             </span>
           </div>
 
           <p className="text-xs text-slate-600 text-center mt-4">
-            Already have an account?{" "}
+            {copy.alreadyHaveAccount}{" "}
             <Link href="/admin/login" className="text-sky-400 hover:text-sky-300 transition-colors">
-              Sign in
+              {copy.signIn}
             </Link>
           </p>
         </div>
@@ -220,20 +294,13 @@ export default function SignupClient() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium mb-6">
               <Zap className="w-3.5 h-3.5" />
-              200+ teams signed up this month
+              {copy.badge}
             </div>
 
-            <h2 className="text-xl font-bold mb-2">What you get instantly:</h2>
+            <h2 className="text-xl font-bold mb-2">{copy.sidebarHeadline}</h2>
 
             <ul className="space-y-3 mt-4">
-              {[
-                { icon: Users, text: "Up to 20 sites under one account" },
-                { icon: CheckCircle2, text: "Unlimited visitors — no per-check-in fees" },
-                { icon: ShieldCheck, text: "Mandatory safety briefings (OSHA-ready)" },
-                { icon: Lock, text: "Watchlist screening + lockdown mode" },
-                { icon: FileText, text: "Audit exports: CSV, Excel, PDF" },
-                { icon: Zap, text: "REST API + Slack/Zapier webhooks" },
-              ].map((item, i) => (
+              {copy.features.map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-sm text-slate-300">
                   <item.icon className="w-4 h-4 text-sky-400 flex-shrink-0" />
                   {item.text}
@@ -241,7 +308,7 @@ export default function SignupClient() {
               ))}
             </ul>
 
-            {/* Testimonial with photo placeholder */}
+            {/* Testimonial */}
             <div className="mt-8 p-5 rounded-xl border border-white/5 bg-white/[0.02]">
               <div className="flex items-center gap-1 mb-3">
                 {[...Array(5)].map((_, i) => (
@@ -249,16 +316,15 @@ export default function SignupClient() {
                 ))}
               </div>
               <p className="text-sm text-slate-300 leading-relaxed italic">
-                We have 8 locations and used to rely on paper logs at each site.
-                SiteSafe gives me a single dashboard across all of them. Setup took 3 minutes.
+                {copy.testimonialQuote}
               </p>
               <div className="flex items-center gap-3 mt-4">
                 <div className="w-8 h-8 rounded-full bg-sky-500/20 flex items-center justify-center text-xs font-bold text-sky-400">
                   MC
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-white">Marcus Chen</p>
-                  <p className="text-[11px] text-slate-500">Director of Facilities, Coastal Build Group</p>
+                  <p className="text-xs font-semibold text-white">{copy.testimonialName}</p>
+                  <p className="text-[11px] text-slate-500">{copy.testimonialRole}</p>
                 </div>
               </div>
             </div>
@@ -267,15 +333,15 @@ export default function SignupClient() {
           <div className="mt-6 pt-4 border-t border-white/5">
             <div className="flex items-center justify-between text-xs text-slate-500">
               <span className="flex items-center gap-1.5">
-                <BadgeCheck className="w-3.5 h-3.5 text-emerald-400" /> SOC 2 Type II
+                <BadgeCheck className="w-3.5 h-3.5 text-emerald-400" /> {copy.complianceSOC}
               </span>
               <span className="flex items-center gap-1.5">
-                <BadgeCheck className="w-3.5 h-3.5 text-emerald-400" /> GDPR/LGPD Ready
+                <BadgeCheck className="w-3.5 h-3.5 text-emerald-400" /> {copy.complianceGDPR}
               </span>
             </div>
             <p className="text-xs text-slate-600 mt-3 flex items-center gap-1.5">
               <MessageCircle className="w-3.5 h-3.5 text-sky-400" />
-              Questions?{" "}
+              {copy.questions}{" "}
               <a href="mailto:hello@thesift.space" className="text-sky-400 hover:text-sky-300 transition-colors">
                 hello@thesift.space
               </a>
