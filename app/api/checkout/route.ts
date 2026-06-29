@@ -67,9 +67,7 @@ export async function POST(request: Request) {
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
       mode: "subscription",
-      payment_method_types: isBrazil 
-        ? ["card", "boleto"]  // ← Add Boleto for Brazil
-        : ["card"],
+     payment_method_types: ["card"],
       line_items: [
         {
           price: priceId, // ← Use dynamic price ID
