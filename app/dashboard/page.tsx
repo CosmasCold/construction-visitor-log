@@ -222,7 +222,12 @@ export default async function DashboardPage({
   }));
 
   // Detect locale: URL param overrides subscription region
-  const locale = queryLocale === "pt" || subscription?.region === "brl" ? "pt" : "en";
+  // Detect PT from browser headers
+const headersList = await headers(); // Next.js 14: remove `await`
+const acceptLang = headersList.get("accept-language") || "";
+const isPortugueseBrowser = acceptLang.toLowerCase().includes("pt");
+
+const locale = queryLocale === "pt" || subscription?.region === "brl" || isPortugueseBrowser ? "pt" : "en";
 
   return (
     <ToastProvider>

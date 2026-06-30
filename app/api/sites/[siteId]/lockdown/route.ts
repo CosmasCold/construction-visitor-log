@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function PUT(
+async function handler(
   req: NextRequest,
   { params }: { params: Promise<{ siteId: string }> }
 ) {
@@ -28,7 +28,7 @@ export async function PUT(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const { lockdownEnabled } = await req.json(); // ← FIXED: was `lockdown`
+  const { lockdownEnabled } = await req.json();
 
   const updated = await prisma.site.update({
     where: { id: siteId },
@@ -37,3 +37,5 @@ export async function PUT(
 
   return NextResponse.json({ lockdownEnabled: updated.lockdownEnabled });
 }
+
+export { handler as PUT, handler as POST };
