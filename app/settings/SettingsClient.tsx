@@ -16,18 +16,19 @@ import {
   RefreshCw,
   MessageSquare,
   ShieldCheck,
-  ChevronRight,
   Eye,
   EyeOff,
   AlertTriangle,
   CheckCircle2,
   Lock,
+  Globe,
 } from "lucide-react";
 
 interface SettingsClientProps {
   companyName: string;
   companyEmail: string;
   companySlug: string;
+  locale: "en" | "pt";
   subscriptionStatus: string;
   planName: string;
   currentPeriodEnd: string | null;
@@ -42,6 +43,7 @@ export default function SettingsClient({
   companyName: initialCompanyName,
   companyEmail,
   companySlug,
+  locale: initialLocale,
   subscriptionStatus,
   planName,
   currentPeriodEnd,
@@ -59,6 +61,11 @@ export default function SettingsClient({
   const [companyName, setCompanyName] = useState(initialCompanyName);
   const [nameLoading, setNameLoading] = useState(false);
   const [nameSaved, setNameSaved] = useState(false);
+
+  // Locale
+  const [locale, setLocale] = useState<"en" | "pt">(initialLocale);
+  const [localeSaving, setLocaleSaving] = useState(false);
+  const [localeSaved, setLocaleSaved] = useState(false);
 
   // Billing
   const [loading, setLoading] = useState(false);
@@ -84,6 +91,24 @@ export default function SettingsClient({
   const [passwordError, setPasswordError] = useState("");
 
   // ── Handlers ───────────────────────────────────────────
+
+  async function handleSaveLocale() {
+    if (locale === initialLocale) return;
+    setLocaleSaving(true);
+    const res = await fetch("/api/company/locale", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ locale }),
+    });
+    if (res.ok) {
+      setLocaleSaved(true);
+      setTimeout(() => setLocaleSaved(false), 2000);
+      window.location.reload();
+    } else {
+      alert("Failed to save language preference.");
+    }
+    setLocaleSaving(false);
+  }
 
   async function handleSubscribe() {
     setLoading(true);
@@ -248,7 +273,6 @@ export default function SettingsClient({
 
   const showManageBilling = hasStripeCustomer && hasSubscription;
 
-  // Status badge color
   const statusColor = isTrialing 
     ? "bg-amber-500/10 text-amber-400 border-amber-500/20" 
     : hasSubscription 
@@ -257,7 +281,6 @@ export default function SettingsClient({
 
   return (
     <div className="min-h-screen bg-[#0a0f1c] text-slate-200">
-      {/* ─── Header ─── */}
       <header className="border-b border-white/5 bg-[#0a0f1c]/90 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
@@ -276,21 +299,54 @@ export default function SettingsClient({
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
-        
-        {/* ─── Page Header ─── */}
+
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Settings</h1>
           <p className="text-xs text-slate-500">Manage your company, billing, and integrations</p>
         </div>
 
-        {/* ─── Company Card ─── */}
+        {/* Language Card */}
+        <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+          <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
+            <Globe className="w-4 h-4 text-sky-400" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Language</h2>
+          </div>
+          <div className="p-6 space-y-4">
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Choose your preferred dashboard language.
+            </p>
+            <div>
+              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Dashboard Language</label>
+              <select
+                value={locale}
+                onChange={(e) => setLocale(e.target.value as "en" | "pt")}
+                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
+              >
+                <option value="en" className="bg-[#0f172a]">English</option>
+                <option value="pt" className="bg-[#0f172a]">Português (Brasil)</option>
+              </select>
+            </div>
+            <button
+              onClick={handleSaveLocale}
+              disabled={localeSaving || locale === initialLocale}
+              className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.98] ${
+                localeSaved 
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
+                  : "bg-sky-500 hover:bg-sky-600 text-white disabled:bg-white/5 disabled:text-slate-600"
+              }`}
+            >
+              {localeSaved ? "Saved" : localeSaving ? "Saving…" : "Save Language"}
+            </button>
+          </div>
+        </section>
+
+        {/* Company Card */}
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <Building className="w-4 h-4 text-sky-400" />
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Company</h2>
           </div>
           <div className="p-6 space-y-5">
-            {/* Name */}
             <div>
               <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Company Name</label>
               <div className="flex gap-2">
@@ -314,7 +370,6 @@ export default function SettingsClient({
               </div>
             </div>
 
-            {/* Email */}
             <div>
               <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Email</label>
               <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/5 border border-white/10">
@@ -323,7 +378,6 @@ export default function SettingsClient({
               </div>
             </div>
 
-            {/* Plan & Status */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Plan</label>
@@ -341,7 +395,6 @@ export default function SettingsClient({
               </div>
             </div>
 
-            {/* Trial end */}
             {currentPeriodEnd && (
               <div>
                 <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">
@@ -363,7 +416,7 @@ export default function SettingsClient({
           </div>
         </section>
 
-        {/* ─── Billing Card ─── */}
+        {/* Billing Card */}
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-sky-400" />
@@ -411,7 +464,7 @@ export default function SettingsClient({
           </div>
         </section>
 
-        {/* ─── Slack Card ─── */}
+        {/* Slack Card */}
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-sky-400" />
@@ -457,7 +510,7 @@ export default function SettingsClient({
           </div>
         </section>
 
-        {/* ─── API Key Card ─── */}
+        {/* API Key Card */}
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <Key className="w-4 h-4 text-sky-400" />
@@ -465,9 +518,9 @@ export default function SettingsClient({
           </div>
           <div className="p-6 space-y-4">
             <p className="text-xs text-slate-500 leading-relaxed">
-              Use this key to connect SiteSafe to your own tools. Keep it secret — anyone with this key can access your data.
+              Use this key to connect SiteSafe to your own tools. Keep it secret.
             </p>
-            
+
             {apiKey ? (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
@@ -522,7 +575,7 @@ export default function SettingsClient({
           </div>
         </section>
 
-        {/* ─── Password Card ─── */}
+        {/* Password Card */}
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <Lock className="w-4 h-4 text-sky-400" />
@@ -563,14 +616,14 @@ export default function SettingsClient({
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
                 />
               </div>
-              
+
               {passwordError && (
                 <div className="rounded-lg bg-rose-500/10 border border-rose-500/20 p-3 flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-rose-300">{passwordError}</p>
                 </div>
               )}
-              
+
               <button
                 type="submit"
                 disabled={passwordSaving}

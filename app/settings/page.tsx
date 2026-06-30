@@ -33,7 +33,6 @@ export default async function SettingsPage() {
   const company = user.company;
   const subscription = company.subscription;
 
-  // Determine plan name and status, considering trial via trialEndsAt
   let planName = "Free";
   let subscriptionStatus = "inactive";
 
@@ -55,6 +54,7 @@ export default async function SettingsPage() {
       companyName={company.name}
       companyEmail={company.email}
       companySlug={company.slug}
+      locale={((company as { locale?: string }).locale as "en" | "pt") || "en"}
       subscriptionStatus={subscriptionStatus}
       planName={planName}
       currentPeriodEnd={

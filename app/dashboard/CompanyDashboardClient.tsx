@@ -1130,7 +1130,7 @@ export default function CompanyDashboardClient({
       const res = await fetch(`/api/sites/${siteId}/lockdown`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enabled: !current }),
+        body: JSON.stringify({ lockdownEnabled: !current }),
       });
       if (res.ok) {
         setSites((prev) =>
