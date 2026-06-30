@@ -17,6 +17,7 @@ export async function GET(
       documentSigningEnabled: true,
       documentTemplateData: true,
       showVisitorListOnCheckin: true,
+      locale: true,
     },
   });
 
@@ -74,7 +75,7 @@ export async function PUT(
       questions,
       documentSigningEnabled,
       showVisitorListOnCheckin,
-      locale, // ← ADD THIS
+      locale, 
     },
   });
 

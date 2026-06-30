@@ -14,7 +14,6 @@ export async function PUT(
 
   const { siteId } = await params;
 
-  // Verify ownership
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     include: { company: { select: { id: true } } },
@@ -29,11 +28,11 @@ export async function PUT(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const { lockdown } = await req.json();
+  const { lockdownEnabled } = await req.json(); // ← FIXED: was `lockdown`
 
   const updated = await prisma.site.update({
     where: { id: siteId },
-    data: { lockdownEnabled: lockdown ?? false },
+    data: { lockdownEnabled },
   });
 
   return NextResponse.json({ lockdownEnabled: updated.lockdownEnabled });

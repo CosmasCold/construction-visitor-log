@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import CompanyDashboardClient from "./CompanyDashboardClient";
 import { ToastProvider } from "@/components/Toast";
+import { headers } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,7 @@ interface SelectedSite {
   safetyBriefingText: string;
   questions: string[];
   visitors: SelectedVisitor[];
+  locale?: string;
   lockdownEnabled: boolean;
 }
 
@@ -59,6 +61,7 @@ export interface DashboardSite {
   visitorsToday: number;
   questions: string[];
   lockdownEnabled?: boolean;
+  locale?: string;
 }
 
 export default async function DashboardPage({
@@ -215,6 +218,7 @@ export default async function DashboardPage({
     ).length,
     questions: site.questions,
     lockdownEnabled: site.lockdownEnabled,
+    locale: site.locale,
   }));
 
   // Detect locale: URL param overrides subscription region

@@ -1126,18 +1126,25 @@ export default function CompanyDashboardClient({
   async function handleToggleLockdown(siteId: string, current: boolean) {
     setLockdownSiteId(siteId);
     setTogglingLockdown(true);
-    const res = await fetch(`/api/sites/${siteId}/lockdown`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ enabled: !current }),
-    });
-    if (res.ok) {
-      setSites((prev) =>
-        prev.map((s) =>
-          s.id === siteId ? { ...s, lockdownEnabled: !current } : s
-        )
-      );
-      addToast(!current ? copy.lockdownActivated : copy.lockdownEnded, "success");
+    try {
+      const res = await fetch(`/api/sites/${siteId}/lockdown`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled: !current }),
+      });
+      if (res.ok) {
+        setSites((prev) =>
+          prev.map((s) =>
+            s.id === siteId ? { ...s, lockdownEnabled: !current } : s
+          )
+        );
+        addToast(!current ? copy.lockdownActivated : copy.lockdownEnded, "success");
+      } else {
+        const err = await res.json().catch(() => ({ error: "Unknown error" }));
+        addToast(err.error || copy.error, "error");
+      }
+    } catch {
+      addToast(copy.error, "error");
     }
     setTogglingLockdown(false);
     setLockdownSiteId(null);

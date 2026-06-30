@@ -26,6 +26,7 @@ model Company {
   slackWebhookUrl   String?          // ✅ Slack incoming webhook URL
   blocklistEntries BlocklistEntry[]
   webhookUrl             String?
+  locale           String?        @default("en")
 }
 
 model Plan {
@@ -67,7 +68,7 @@ model Site {
   expectedVisitors   ExpectedVisitor[]
   createdAt          DateTime          @default(now())
   documentSigningEnabled Boolean  @default(false)
-  locale String @default("en") // "en" or "pt"
+  locale                String?  @default("en")
 documentTemplateData   String?   // store the PDF as a base64 data URL
 lockdownEnabled       Boolean  @default(false)
 showVisitorListOnCheckin  Boolean  @default(true)
