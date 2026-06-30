@@ -24,6 +24,133 @@ import {
   Globe,
 } from "lucide-react";
 
+type Locale = "en" | "pt";
+
+const dict: Record<Locale, Record<string, string>> = {
+  en: {
+    backToDashboard: "Back to Dashboard",
+    settings: "Settings",
+    subtitle: "Manage your company, billing, and integrations",
+    language: "Language",
+    dashboardLanguage: "Dashboard Language",
+    languageDesc: "Choose your preferred dashboard language.",
+    saveLanguage: "Save Language",
+    saving: "Saving…",
+    saved: "Saved",
+    company: "Company",
+    companyName: "Company Name",
+    save: "Save",
+    email: "Email",
+    plan: "Plan",
+    status: "Status",
+    trialEnds: "Trial ends",
+    nextBilling: "Next billing",
+    billing: "Billing",
+    manageBilling: "Manage Billing",
+    manageBillingDesc: "Manage payment methods, invoices, or cancel your plan.",
+    stripeRedirect: "You will be redirected to Stripe's secure portal.",
+    redirecting: "Redirecting…",
+    subscribeNow: "Subscribe Now",
+    trialActive: "Your trial is active. Subscribe to keep using SiteSafe after it ends.",
+    noSubscription: "No active subscription. Subscribe to continue using SiteSafe.",
+    slackNotifications: "Slack Notifications",
+    slackDesc: "Get a Slack message every time a visitor checks in. Paste your incoming webhook URL below.",
+    webhookPlaceholder: "https://hooks.slack.com/services/...",
+    sendTest: "Send test message",
+    sendingTest: "Sending test…",
+    apiAccess: "API Access",
+    apiDesc: "Use this key to connect SiteSafe to your own tools. Keep it secret.",
+    regenerateKey: "Regenerate key (invalidates the old one)",
+    generateKey: "Generate API Key",
+    generating: "Generating…",
+    copied: "Copied to clipboard",
+    changePassword: "Change Password",
+    currentPassword: "Current Password",
+    newPassword: "New Password",
+    confirmPassword: "Confirm New Password",
+    passwordHint: "8+ chars, 1 uppercase, 1 number",
+    updatePassword: "Update Password",
+    updating: "Updating…",
+    trialEnded: "Trial ended",
+    trialEndedDesc: "Your free trial has expired. To continue using SiteSafe, please set up a payment method.",
+    manageSubscription: "Manage subscription",
+    passwordMismatch: "New passwords don't match.",
+    passwordSuccess: "Password changed successfully.",
+    passwordFail: "Failed to change password.",
+    keyFail: "Failed to generate API key.",
+    slackFail: "Failed to save Slack webhook.",
+    testFail: "Failed to send test message. Check the webhook URL.",
+    testSuccess: "Test message sent to Slack!",
+    nameFail: "Failed to update company name.",
+    localeFail: "Failed to save language preference.",
+    checkoutFail: "Failed to start checkout.",
+    portalFail: "Failed to open billing portal.",
+    timeout: "The request timed out. Please try again.",
+    error: "Something went wrong: ",
+  },
+  pt: {
+    backToDashboard: "Voltar ao Painel",
+    settings: "Configurações",
+    subtitle: "Gerencie sua empresa, faturamento e integrações",
+    language: "Idioma",
+    dashboardLanguage: "Idioma do Painel",
+    languageDesc: "Escolha o idioma preferido do seu painel.",
+    saveLanguage: "Salvar Idioma",
+    saving: "Salvando…",
+    saved: "Salvo",
+    company: "Empresa",
+    companyName: "Nome da Empresa",
+    save: "Salvar",
+    email: "E-mail",
+    plan: "Plano",
+    status: "Status",
+    trialEnds: "Fim do trial",
+    nextBilling: "Próxima cobrança",
+    billing: "Faturamento",
+    manageBilling: "Gerenciar Faturamento",
+    manageBillingDesc: "Gerencie métodos de pagamento, faturas ou cancele seu plano.",
+    stripeRedirect: "Você será redirecionado para o portal seguro da Stripe.",
+    redirecting: "Redirecionando…",
+    subscribeNow: "Assinar Agora",
+    trialActive: "Seu trial está ativo. Assine para continuar usando o SiteSafe após o término.",
+    noSubscription: "Nenhuma assinatura ativa. Assine para continuar usando o SiteSafe.",
+    slackNotifications: "Notificações Slack",
+    slackDesc: "Receba uma mensagem no Slack toda vez que um visitante fizer check-in. Cole sua URL de webhook abaixo.",
+    webhookPlaceholder: "https://hooks.slack.com/services/...",
+    sendTest: "Enviar mensagem de teste",
+    sendingTest: "Enviando teste…",
+    apiAccess: "Acesso à API",
+    apiDesc: "Use esta chave para conectar o SiteSafe às suas próprias ferramentas. Mantenha em segredo.",
+    regenerateKey: "Regenerar chave (invalida a antiga)",
+    generateKey: "Gerar Chave de API",
+    generating: "Gerando…",
+    copied: "Copiado para a área de transferência",
+    changePassword: "Alterar Senha",
+    currentPassword: "Senha Atual",
+    newPassword: "Nova Senha",
+    confirmPassword: "Confirmar Nova Senha",
+    passwordHint: "8+ caracteres, 1 maiúscula, 1 número",
+    updatePassword: "Atualizar Senha",
+    updating: "Atualizando…",
+    trialEnded: "Trial encerrado",
+    trialEndedDesc: "Seu período de teste gratuito expirou. Para continuar usando o SiteSafe, configure um método de pagamento.",
+    manageSubscription: "Gerenciar assinatura",
+    passwordMismatch: "As novas senhas não coincidem.",
+    passwordSuccess: "Senha alterada com sucesso.",
+    passwordFail: "Falha ao alterar a senha.",
+    keyFail: "Falha ao gerar chave de API.",
+    slackFail: "Falha ao salvar webhook do Slack.",
+    testFail: "Falha ao enviar mensagem de teste. Verifique a URL do webhook.",
+    testSuccess: "Mensagem de teste enviada ao Slack!",
+    nameFail: "Falha ao atualizar nome da empresa.",
+    localeFail: "Falha ao salvar preferência de idioma.",
+    checkoutFail: "Falha ao iniciar checkout.",
+    portalFail: "Falha ao abrir portal de faturamento.",
+    timeout: "A solicitação expirou. Tente novamente.",
+    error: "Algo deu errado: ",
+  },
+};
+
 interface SettingsClientProps {
   companyName: string;
   companyEmail: string;
@@ -56,6 +183,8 @@ export default function SettingsClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const region = searchParams.get("region") || "usd";
+
+  const t = dict[initialLocale];
 
   // Company name editing
   const [companyName, setCompanyName] = useState(initialCompanyName);
@@ -105,7 +234,7 @@ export default function SettingsClient({
       setTimeout(() => setLocaleSaved(false), 2000);
       window.location.reload();
     } else {
-      alert("Failed to save language preference.");
+      alert(t.localeFail);
     }
     setLocaleSaving(false);
   }
@@ -114,7 +243,7 @@ export default function SettingsClient({
     setLoading(true);
     loadingTimer.current = setTimeout(() => {
       setLoading(false);
-      alert("The request timed out. Please try again.");
+      alert(t.timeout);
     }, 10000);
 
     try {
@@ -127,7 +256,7 @@ export default function SettingsClient({
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Failed to start checkout.");
+        alert(data.error || t.checkoutFail);
         setLoading(false);
         return;
       }
@@ -136,14 +265,14 @@ export default function SettingsClient({
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Failed to start checkout.");
+        alert(t.checkoutFail);
         setLoading(false);
       }
     } catch (err: unknown) {
       clearTimeout(loadingTimer.current!);
       const message = err instanceof Error ? err.message : "Unknown error";
       console.error(message);
-      alert("Something went wrong: " + message);
+      alert(t.error + message);
       setLoading(false);
     }
   }
@@ -152,7 +281,7 @@ export default function SettingsClient({
     setLoading(true);
     loadingTimer.current = setTimeout(() => {
       setLoading(false);
-      alert("The request timed out. Please try again.");
+      alert(t.timeout);
     }, 10000);
 
     try {
@@ -161,7 +290,7 @@ export default function SettingsClient({
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        alert(data.error || "Failed to open billing portal.");
+        alert(data.error || t.portalFail);
         setLoading(false);
         return;
       }
@@ -170,14 +299,14 @@ export default function SettingsClient({
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Failed to open billing portal.");
+        alert(t.portalFail);
         setLoading(false);
       }
     } catch (err: unknown) {
       clearTimeout(loadingTimer.current!);
       const message = err instanceof Error ? err.message : "Unknown error";
       console.error(message);
-      alert("Something went wrong: " + message);
+      alert(t.error + message);
       setLoading(false);
     }
   }
@@ -189,7 +318,7 @@ export default function SettingsClient({
       const data = await res.json();
       setApiKey(data.key);
     } else {
-      alert("Failed to generate API key.");
+      alert(t.keyFail);
     }
     setKeyLoading(false);
   }
@@ -211,7 +340,7 @@ export default function SettingsClient({
       setSlackSaved(true);
       setTimeout(() => setSlackSaved(false), 2000);
     } else {
-      alert("Failed to save Slack webhook.");
+      alert(t.slackFail);
     }
     setSlackSaving(false);
   }
@@ -220,9 +349,9 @@ export default function SettingsClient({
     setSlackTesting(true);
     const res = await fetch("/api/settings/test-slack", { method: "POST" });
     if (res.ok) {
-      alert("Test message sent to Slack!");
+      alert(t.testSuccess);
     } else {
-      alert("Failed to send test message. Check the webhook URL.");
+      alert(t.testFail);
     }
     setSlackTesting(false);
   }
@@ -240,7 +369,7 @@ export default function SettingsClient({
       setTimeout(() => setNameSaved(false), 2000);
       router.refresh();
     } else {
-      alert("Failed to update company name.");
+      alert(t.nameFail);
     }
     setNameLoading(false);
   }
@@ -249,7 +378,7 @@ export default function SettingsClient({
     e.preventDefault();
     setPasswordError("");
     if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords don't match.");
+      setPasswordError(t.passwordMismatch);
       return;
     }
     setPasswordSaving(true);
@@ -264,9 +393,9 @@ export default function SettingsClient({
       setNewPassword("");
       setConfirmPassword("");
       setPasswordError("");
-      alert("Password changed successfully.");
+      alert(t.passwordSuccess);
     } else {
-      setPasswordError(data.error || "Failed to change password.");
+      setPasswordError(data.error || t.passwordFail);
     }
     setPasswordSaving(false);
   }
@@ -293,7 +422,7 @@ export default function SettingsClient({
             href={`/dashboard?slug=${companySlug}`}
             className="text-xs text-slate-500 hover:text-white transition-colors flex items-center gap-1"
           >
-            <ArrowLeft className="w-3 h-3" /> Back to Dashboard
+            <ArrowLeft className="w-3 h-3" /> {t.backToDashboard}
           </Link>
         </div>
       </header>
@@ -301,22 +430,22 @@ export default function SettingsClient({
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
 
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Settings</h1>
-          <p className="text-xs text-slate-500">Manage your company, billing, and integrations</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white mb-1">{t.settings}</h1>
+          <p className="text-xs text-slate-500">{t.subtitle}</p>
         </div>
 
         {/* Language Card */}
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <Globe className="w-4 h-4 text-sky-400" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Language</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">{t.language}</h2>
           </div>
           <div className="p-6 space-y-4">
             <p className="text-xs text-slate-500 leading-relaxed">
-              Choose your preferred dashboard language.
+              {t.languageDesc}
             </p>
             <div>
-              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Dashboard Language</label>
+              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{t.dashboardLanguage}</label>
               <select
                 value={locale}
                 onChange={(e) => setLocale(e.target.value as "en" | "pt")}
@@ -335,7 +464,7 @@ export default function SettingsClient({
                   : "bg-sky-500 hover:bg-sky-600 text-white disabled:bg-white/5 disabled:text-slate-600"
               }`}
             >
-              {localeSaved ? "Saved" : localeSaving ? "Saving…" : "Save Language"}
+              {localeSaved ? t.saved : localeSaving ? t.saving : t.saveLanguage}
             </button>
           </div>
         </section>
@@ -344,11 +473,11 @@ export default function SettingsClient({
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <Building className="w-4 h-4 text-sky-400" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Company</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">{t.company}</h2>
           </div>
           <div className="p-6 space-y-5">
             <div>
-              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Company Name</label>
+              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{t.companyName}</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -365,13 +494,13 @@ export default function SettingsClient({
                       : "bg-sky-500 hover:bg-sky-600 text-white disabled:bg-white/5 disabled:text-slate-600"
                   }`}
                 >
-                  {nameSaved ? "Saved" : nameLoading ? "Saving…" : "Save"}
+                  {nameSaved ? t.saved : nameLoading ? t.saving : t.save}
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Email</label>
+              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{t.email}</label>
               <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/5 border border-white/10">
                 <Mail className="w-4 h-4 text-slate-600" />
                 <span className="text-sm text-white">{companyEmail}</span>
@@ -380,14 +509,14 @@ export default function SettingsClient({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Plan</label>
+                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{t.plan}</label>
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/5 border border-white/10">
                   <CreditCard className="w-4 h-4 text-slate-600" />
                   <span className="text-sm text-white">{planName}</span>
                 </div>
               </div>
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Status</label>
+                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{t.status}</label>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border ${statusColor}`}>
                   <BadgeCheck className="w-3.5 h-3.5" />
                   {subscriptionStatus}
@@ -398,7 +527,7 @@ export default function SettingsClient({
             {currentPeriodEnd && (
               <div>
                 <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">
-                  {isTrialing ? "Trial ends" : "Next billing"}
+                  {isTrialing ? t.trialEnds : t.nextBilling}
                 </label>
                 <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/5 border border-white/10">
                   <Calendar className="w-4 h-4 text-slate-600" />
@@ -420,35 +549,33 @@ export default function SettingsClient({
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <CreditCard className="w-4 h-4 text-sky-400" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Billing</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">{t.billing}</h2>
           </div>
           <div className="p-6">
             {showManageBilling ? (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm text-slate-300">Manage payment methods, invoices, or cancel your plan.</p>
-                  <p className="text-xs text-slate-500 mt-1">You will be redirected to Stripe&apos;s secure portal.</p>
+                  <p className="text-sm text-slate-300">{t.manageBillingDesc}</p>
+                  <p className="text-xs text-slate-500 mt-1">{t.stripeRedirect}</p>
                 </div>
                 <button
                   onClick={handleManageBilling}
                   disabled={loading}
                   className="bg-white/5 hover:bg-white/10 border border-white/10 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex-shrink-0"
                 >
-                  {loading ? "Redirecting…" : "Manage Billing"}
+                  {loading ? t.redirecting : t.manageBilling}
                 </button>
               </div>
             ) : (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <p className="text-sm text-slate-300">
-                    {isTrialing 
-                      ? "Your trial is active. Subscribe to keep using SiteSafe after it ends." 
-                      : "No active subscription. Subscribe to continue using SiteSafe."}
+                    {isTrialing ? t.trialActive : t.noSubscription}
                   </p>
                   {isTrialing && currentPeriodEnd && (
                     <p className="text-xs text-amber-400 mt-1 flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" /> 
-                      Trial ends {new Date(currentPeriodEnd).toLocaleDateString()}
+                      {t.trialEnds} {new Date(currentPeriodEnd).toLocaleDateString()}
                     </p>
                   )}
                 </div>
@@ -457,7 +584,7 @@ export default function SettingsClient({
                   disabled={loading}
                   className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex-shrink-0"
                 >
-                  {loading ? "Redirecting…" : "Subscribe Now"}
+                  {loading ? t.redirecting : t.subscribeNow}
                 </button>
               </div>
             )}
@@ -468,16 +595,16 @@ export default function SettingsClient({
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-sky-400" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Slack Notifications</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">{t.slackNotifications}</h2>
           </div>
           <div className="p-6 space-y-4">
             <p className="text-xs text-slate-500 leading-relaxed">
-              Get a Slack message every time a visitor checks in. Paste your incoming webhook URL below.
+              {t.slackDesc}
             </p>
             <div className="flex gap-2">
               <input
                 type="url"
-                placeholder="https://hooks.slack.com/services/..."
+                placeholder={t.webhookPlaceholder}
                 value={slackWebhook}
                 onChange={(e) => setSlackWebhook(e.target.value)}
                 className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
@@ -491,7 +618,7 @@ export default function SettingsClient({
                     : "bg-sky-500 hover:bg-sky-600 text-white disabled:bg-white/5 disabled:text-slate-600"
                 }`}
               >
-                {slackSaved ? "Saved" : slackSaving ? "Saving…" : "Save"}
+                {slackSaved ? t.saved : slackSaving ? t.saving : t.save}
               </button>
             </div>
             {slackWebhook && (
@@ -501,9 +628,9 @@ export default function SettingsClient({
                 className="text-xs text-slate-500 hover:text-sky-400 transition-colors flex items-center gap-1.5"
               >
                 {slackTesting ? (
-                  <>Sending test…</>
+                  <>{t.sendingTest}</>
                 ) : (
-                  <><MessageSquare className="w-3 h-3" /> Send test message</>
+                  <><MessageSquare className="w-3 h-3" /> {t.sendTest}</>
                 )}
               </button>
             )}
@@ -514,11 +641,11 @@ export default function SettingsClient({
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <Key className="w-4 h-4 text-sky-400" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">API Access</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">{t.apiAccess}</h2>
           </div>
           <div className="p-6 space-y-4">
             <p className="text-xs text-slate-500 leading-relaxed">
-              Use this key to connect SiteSafe to your own tools. Keep it secret.
+              {t.apiDesc}
             </p>
 
             {apiKey ? (
@@ -550,7 +677,7 @@ export default function SettingsClient({
                 </div>
                 {keyCopied && (
                   <p className="text-xs text-emerald-400 flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" /> Copied to clipboard
+                    <CheckCircle2 className="w-3 h-3" /> {t.copied}
                   </p>
                 )}
                 <button
@@ -559,7 +686,7 @@ export default function SettingsClient({
                   className="text-xs text-slate-500 hover:text-rose-400 transition-colors flex items-center gap-1.5"
                 >
                   <RefreshCw className={`w-3 h-3 ${keyLoading ? "animate-spin" : ""}`} />
-                  {keyLoading ? "Generating…" : "Regenerate key (invalidates the old one)"}
+                  {keyLoading ? t.generating : t.regenerateKey}
                 </button>
               </div>
             ) : (
@@ -569,7 +696,7 @@ export default function SettingsClient({
                 className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.98] inline-flex items-center gap-2"
               >
                 <Key className="w-4 h-4" />
-                {keyLoading ? "Generating…" : "Generate API Key"}
+                {keyLoading ? t.generating : t.generateKey}
               </button>
             )}
           </div>
@@ -579,12 +706,12 @@ export default function SettingsClient({
         <section className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
           <div className="bg-white/[0.02] border-b border-white/5 px-6 py-3 flex items-center gap-2">
             <Lock className="w-4 h-4 text-sky-400" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">Change Password</h2>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400">{t.changePassword}</h2>
           </div>
           <div className="p-6">
             <form onSubmit={handleChangePassword} className="space-y-3">
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Current Password</label>
+                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{t.currentPassword}</label>
                 <input
                   type="password"
                   value={currentPassword}
@@ -594,19 +721,19 @@ export default function SettingsClient({
                 />
               </div>
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">New Password</label>
+                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{t.newPassword}</label>
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                   minLength={8}
-                  placeholder="8+ chars, 1 uppercase, 1 number"
+                  placeholder={t.passwordHint}
                   className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
                 />
               </div>
               <div>
-                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Confirm New Password</label>
+                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{t.confirmPassword}</label>
                 <input
                   type="password"
                   value={confirmPassword}
@@ -629,7 +756,7 @@ export default function SettingsClient({
                 disabled={passwordSaving}
                 className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-lg px-4 py-2.5 text-sm transition-all active:scale-[0.98]"
               >
-                {passwordSaving ? "Updating…" : "Update Password"}
+                {passwordSaving ? t.updating : t.updatePassword}
               </button>
             </form>
           </div>
