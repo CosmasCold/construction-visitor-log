@@ -6,6 +6,7 @@ interface ConfirmModalProps {
   title: string;
   message: string;
   confirmLabel?: string;
+  cancelLabel?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -15,6 +16,7 @@ export default function ConfirmModal({
   title,
   message,
   confirmLabel = "Delete",
+  cancelLabel = "Cancel",
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
@@ -26,6 +28,12 @@ export default function ConfirmModal({
         <h2 className="text-lg font-semibold text-white mb-2">{title}</h2>
         <p className="text-sm text-slate-300 mb-6">{message}</p>
         <div className="flex justify-end gap-3">
+                    <button
+            onClick={onCancel}
+            className="px-4 py-2 rounded-xl text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors"
+          >
+            {cancelLabel}
+          </button>
           <button
             onClick={onCancel}
             className="px-4 py-2 rounded-xl text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition-colors"

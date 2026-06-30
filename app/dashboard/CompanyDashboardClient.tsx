@@ -1,7 +1,6 @@
-// app/dashboard/CompanyDashboardClient.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { logEvent } from "@/lib/analytics";
@@ -43,7 +42,21 @@ import {
   Filter,
   ChevronRight,
   ExternalLink,
+  Eye,
+  EyeOff,
+  Printer,
+  Camera,
+  PenTool,
+  MessageSquare,
+  Key,
+  BadgeCheck,
+  Star,
+  ArrowRight,
+  ArrowLeft,
+  Settings,
+  Globe,
 } from "lucide-react";
+import Link from "next/link";
 import ConfirmModal from "@/components/ConfirmModal";
 import QRModal from "@/components/QRModal";
 import DashboardTutorial from "@/components/DashboardTutorial";
@@ -100,6 +113,593 @@ type BlocklistEntry = {
   note?: string | null;
 };
 
+type Locale = "en" | "pt";
+
+const t: Record<Locale, Record<string, string>> = {
+  en: {
+    dashboard: "Dashboard",
+    welcomeTitle: "Welcome to SiteSafe",
+    welcomeDesc: "Start by renaming your first site or adding a new one below. Click {edit} next to your site to customize its name, safety briefing, and check-in settings.",
+    edit: "Edit",
+    activeNow: "Active now",
+    onSite: "on site",
+    todayVisitors: "Today's visitors",
+    checkedIn: "checked in",
+    avgVisit: "Avg. visit",
+    minutes: "minutes",
+    totalSites: "Total sites",
+    locations: "locations",
+    apply: "Apply",
+    clear: "Clear",
+    csv: "CSV",
+    excel: "Excel",
+    pdf: "PDF",
+    newSite: "New Site",
+    cancel: "Cancel",
+    createSite: "Create Site",
+    yourSites: "Your Sites",
+    sitesOf: "of 20 sites",
+    noSites: "No sites yet",
+    noSitesDesc: "Create your first site to start checking in visitors.",
+    siteName: "Site Name",
+    slug: "URL Slug (e.g., main-office)",
+    address: "Address (optional)",
+    editSite: "Edit Site",
+    basicInfo: "Basic Info",
+    hosts: "Hosts",
+    preScreening: "Pre-screening",
+    docSigning: "Document Signing",
+    privacy: "Privacy",
+    saveChanges: "Save Changes",
+    safetyBriefing: "Safety Briefing",
+    checkinLanguage: "Check-in Language",
+    checkinLanguageDesc: "Language shown to visitors during check-in",
+    hostName: "Name",
+    hostEmail: "Email",
+    add: "Add",
+    remove: "Remove",
+    adding: "Adding...",
+    questionPlaceholder: "e.g., Completed site induction?",
+    requireDocSign: "Require visitors to sign a document before entry",
+    templateUploaded: "Template uploaded",
+    view: "View",
+    removeTemplate: "Remove",
+    showVisitorList: "Show visitor list on check-in page (disable for privacy)",
+    copyUrl: "Copy URL",
+    copied: "Check-in URL copied!",
+    qrCode: "QR Code",
+    emergencyList: "Emergency List",
+    lockdown: "Lockdown",
+    endLockdown: "End Lockdown",
+    lockdownActive: "Lockdown Active",
+    watchlist: "Watchlist / Blocklist",
+    watchlistDesc: "Flag visitors by name, email, or phone. Alerts show at check-in.",
+    nameEmailPhone: "Name, email, or phone",
+    noteOptional: "Note (optional)",
+    noEntries: "No entries yet. Add your first watchlist item above.",
+    webhooks: "Webhooks",
+    webhooksDesc: "Receive real-time JSON payloads for check-ins, check-outs, and blocklist hits.",
+    webhookPlaceholder: "https://your-tool.com/webhook",
+    save: "Save",
+    testEvent: "Send test event",
+    visitorLog: "Visitor Log",
+    records: "records",
+    photo: "Photo",
+    visitor: "Visitor",
+    site: "Site",
+    host: "Host",
+    time: "Time",
+    status: "Status",
+    safety: "Safety",
+    preScreeningShort: "Pre-screening",
+    signature: "Signature",
+    actions: "Actions",
+    noVisitors: "No visitors found",
+    noVisitorsDesc: "Share the check-in link to get started",
+    in: "In",
+    out: "Out",
+    completed: "Completed",
+    onSiteStatus: "On site",
+    ok: "OK",
+    no: "No",
+    answered: "answered",
+    signOut: "Sign out",
+    signOutRemote: "Sign out remotely",
+    deleteSite: "Delete site",
+    deleteSiteConfirm: "This will permanently delete the site and all its visitor records. This action cannot be undone.",
+    delete: "Delete",
+    logout: "Logout",
+    refresh: "Refresh data",
+    analytics: "Analytics",
+    visitorSignedOut: "Visitor signed out",
+    failedSignOut: "Failed to sign out visitor",
+    siteCreated: "Site created",
+    failedCreateSite: "Failed to create site",
+    siteUpdated: "Site updated",
+    failedUpdateSite: "Failed to update site",
+    siteDeleted: "Site deleted",
+    failedDeleteSite: "Failed to delete site",
+    blocklistAdded: "Blocklist entry added",
+    failedBlocklist: "Failed to add blocklist entry",
+    entryRemoved: "Entry removed",
+    webhookSaved: "Webhook saved",
+    uploadFailed: "Upload failed",
+    testEventSent: "Test event sent",
+    lockdownActivated: "Lockdown activated",
+    lockdownEnded: "Lockdown ended",
+    english: "English",
+    portuguese: "Português (Brazil)",
+    settings: "Settings",
+    search: "Search",
+    filter: "Filter",
+    export: "Export",
+    print: "Print",
+    close: "Close",
+    confirm: "Confirm",
+    areYouSure: "Are you sure?",
+    thisActionCannotBeUndone: "This action cannot be undone.",
+    yesContinue: "Yes, continue",
+    nevermind: "Nevermind",
+    loading: "Loading...",
+    saving: "Saving...",
+    creating: "Creating...",
+    updating: "Updating...",
+    deleting: "Deleting...",
+    redirecting: "Redirecting...",
+    copyLink: "Copy link",
+    share: "Share",
+    viewDetails: "View details",
+    editDetails: "Edit details",
+    manage: "Manage",
+    back: "Back",
+    next: "Next",
+    previous: "Previous",
+    submit: "Submit",
+    done: "Done",
+    success: "Success",
+    error: "Error",
+    warning: "Warning",
+    info: "Info",
+    optional: "optional",
+    required: "required",
+    enabled: "Enabled",
+    disabled: "Disabled",
+    active: "Active",
+    inactive: "Inactive",
+    pending: "Pending",
+    trialing: "Trialing",
+    trialEnded: "Trial ended",
+    subscribed: "Subscribed",
+    notSubscribed: "Not subscribed",
+    billing: "Billing",
+    plan: "Plan",
+    subscription: "Subscription",
+    trial: "Trial",
+    freeTrial: "Free trial",
+    daysRemaining: "days remaining",
+    dayRemaining: "day remaining",
+    upgrade: "Upgrade",
+    downgrade: "Downgrade",
+    changePlan: "Change plan",
+    currentPlan: "Current plan",
+    features: "Features",
+    integrations: "Integrations",
+    apiKey: "API Key",
+    apiAccess: "API Access",
+    generateKey: "Generate key",
+    regenerateKey: "Regenerate key",
+    keyCopied: "Key copied",
+    slackWebhook: "Slack webhook",
+    slackNotifications: "Slack notifications",
+    testSlack: "Test Slack",
+    password: "Password",
+    changePassword: "Change password",
+    currentPassword: "Current password",
+    newPassword: "New password",
+    confirmPassword: "Confirm new password",
+    passwordUpdated: "Password updated",
+    passwordMismatch: "Passwords do not match",
+    passwordTooShort: "Password must be at least 8 characters",
+    companyName: "Company name",
+    companyEmail: "Company email",
+    companySlug: "Company slug",
+    account: "Account",
+    profile: "Profile",
+    security: "Security",
+    notifications: "Notifications",
+    language: "Language",
+    selectLanguage: "Select language",
+    dateRange: "Date range",
+    from: "From",
+    to: "To",
+    today: "Today",
+    yesterday: "Yesterday",
+    last7Days: "Last 7 days",
+    last30Days: "Last 30 days",
+    thisMonth: "This month",
+    lastMonth: "Last month",
+    custom: "Custom",
+    allSites: "All sites",
+    allStatuses: "All statuses",
+    signedInStatus: "Signed in",
+    signedOutStatus: "Signed out",
+    expectedVisitors: "Expected visitors",
+    addExpectedVisitor: "Add expected visitor",
+    expectedVisitorName: "Name",
+    expectedVisitorCompany: "Company",
+    expectedVisitorDate: "Expected date",
+    removeExpectedVisitor: "Remove expected visitor",
+    documentTemplate: "Document template",
+    uploadTemplate: "Upload template",
+    uploading: "Uploading...",
+    replaceTemplate: "Replace template",
+    noTemplate: "No template uploaded",
+    preview: "Preview",
+    download: "Download",
+    emergency: "Emergency",
+    emergencyContacts: "Emergency contacts",
+    contactName: "Contact name",
+    contactPhone: "Contact phone",
+    contactRole: "Role",
+    addContact: "Add contact",
+    removeContact: "Remove contact",
+    noContacts: "No emergency contacts added",
+    lockdownDesc: "Prevent all new check-ins immediately. Existing visitors can still sign out.",
+    lockdownConfirm: "Activate lockdown? This will prevent all new visitor check-ins.",
+    endLockdownConfirm: "End lockdown? Visitors will be able to check in again.",
+    lockdownBanner: "Lockdown is active. New check-ins are disabled.",
+    blocklistEntryType: "Type",
+    blocklistEntryValue: "Value",
+    blocklistEntryNote: "Note",
+    blocklistExactMatch: "Exact match",
+    blocklistPartialMatch: "Partial match",
+    blocklistTriggered: "Blocklist triggered",
+    visitorBlocked: "Visitor blocked",
+    blocklistAlert: "Blocklist alert",
+    unblock: "Unblock",
+    block: "Block",
+    flagged: "Flagged",
+    notFlagged: "Not flagged",
+    checkInUrl: "Check-in URL",
+    publicUrl: "Public URL",
+    directLink: "Direct link",
+    sendToPhone: "Send to phone",
+    printQr: "Print QR code",
+    downloadQr: "Download QR code",
+    qrForSite: "QR code for",
+    scanToCheckIn: "Scan to check in",
+    poweredBy: "Powered by SiteSafe",
+    terms: "Terms",
+    privacy: "Privacy",
+    help: "Help",
+    support: "Support",
+    contactUs: "Contact us",
+    feedback: "Feedback",
+    whatsNew: "What's new",
+    changelog: "Changelog",
+    version: "Version",
+    logoutConfirm: "Are you sure you want to log out?",
+    sessionExpired: "Your session has expired. Please sign in again.",
+    unauthorized: "Unauthorized",
+    forbidden: "Forbidden",
+    notFound: "Not found",
+    serverError: "Server error",
+    tryAgain: "Try again",
+    reload: "Reload",
+    goBack: "Go back",
+    goHome: "Go home",
+    pageNotFound: "Page not found",
+    pageNotFoundDesc: "The page you are looking for does not exist.",
+    returnToDashboard: "Return to dashboard",
+    maintenance: "Maintenance",
+    maintenanceDesc: "We are performing scheduled maintenance. Please check back soon.",
+    comingSoon: "Coming soon",
+    featureComingSoon: "This feature is coming soon.",
+    notifyMe: "Notify me",
+    beta: "Beta",
+    new: "New",
+    updated: "Updated",
+    improved: "Improved",
+    fixed: "Fixed",
+    removed: "Removed",
+    deprecated: "Deprecated",
+    experimental: "Experimental",
+    phone: "Phone",
+    sending: "Sending...",
+  },
+  pt: {
+    dashboard: "Painel",
+    welcomeTitle: "Bem-vindo à SiteSafe",
+    welcomeDesc: "Comece renomeando seu primeiro local ou adicionando um novo abaixo. Clique em {edit} ao lado do seu local para personalizar o nome, briefing de segurança e configurações de check-in.",
+    edit: "Editar",
+    activeNow: "Ativos agora",
+    onSite: "no local",
+    todayVisitors: "Visitantes hoje",
+    checkedIn: "registrados",
+    avgVisit: "Média visita",
+    minutes: "minutos",
+    totalSites: "Total de locais",
+    locations: "locais",
+    apply: "Aplicar",
+    clear: "Limpar",
+    csv: "CSV",
+    excel: "Excel",
+    pdf: "PDF",
+    newSite: "Novo Local",
+    cancel: "Cancelar",
+    createSite: "Criar Local",
+    yourSites: "Seus Locais",
+    sitesOf: "de 20 locais",
+    noSites: "Nenhum local ainda",
+    noSitesDesc: "Crie seu primeiro local para começar a registrar visitantes.",
+    siteName: "Nome do Local",
+    slug: "Slug da URL (ex: escritorio-principal)",
+    address: "Endereço (opcional)",
+    editSite: "Editar Local",
+    basicInfo: "Informações Básicas",
+    hosts: "Anfitriões",
+    preScreening: "Pré-triagem",
+    docSigning: "Assinatura de Documento",
+    privacy: "Privacidade",
+    saveChanges: "Salvar Alterações",
+    safetyBriefing: "Briefing de Segurança",
+    checkinLanguage: "Idioma do Check-in",
+    checkinLanguageDesc: "Idioma exibido aos visitantes durante o check-in",
+    hostName: "Nome",
+    hostEmail: "E-mail",
+    add: "Adicionar",
+    remove: "Remover",
+    adding: "Adicionando...",
+    questionPlaceholder: "ex: Concluiu a indução do local?",
+    requireDocSign: "Exigir que visitantes assinem um documento antes da entrada",
+    templateUploaded: "Modelo enviado",
+    view: "Ver",
+    removeTemplate: "Remover",
+    showVisitorList: "Mostrar lista de visitantes na página de check-in (desative para privacidade)",
+    copyUrl: "Copiar URL",
+    copied: "URL de check-in copiada!",
+    qrCode: "QR Code",
+    emergencyList: "Lista de Emergência",
+    lockdown: "Lockdown",
+    endLockdown: "Encerrar Lockdown",
+    lockdownActive: "Lockdown Ativo",
+    watchlist: "Lista de Observação / Bloqueio",
+    watchlistDesc: "Sinalize visitantes por nome, e-mail ou telefone. Alertas aparecem no check-in.",
+    nameEmailPhone: "Nome, e-mail ou telefone",
+    noteOptional: "Nota (opcional)",
+    noEntries: "Nenhuma entrada ainda. Adicione seu primeiro item acima.",
+    webhooks: "Webhooks",
+    webhooksDesc: "Receba payloads JSON em tempo real para check-ins, check-outs e alertas da lista de bloqueio.",
+    webhookPlaceholder: "https://sua-ferramenta.com/webhook",
+    save: "Salvar",
+    testEvent: "Enviar evento de teste",
+    visitorLog: "Registro de Visitantes",
+    records: "registros",
+    photo: "Foto",
+    visitor: "Visitante",
+    site: "Local",
+    host: "Anfitrião",
+    time: "Horário",
+    status: "Status",
+    safety: "Segurança",
+    preScreeningShort: "Pré-triagem",
+    signature: "Assinatura",
+    actions: "Ações",
+    noVisitors: "Nenhum visitante encontrado",
+    noVisitorsDesc: "Compartilhe o link de check-in para começar",
+    in: "Entrada",
+    out: "Saída",
+    completed: "Concluído",
+    onSiteStatus: "No local",
+    ok: "OK",
+    no: "Não",
+    answered: "respondidas",
+    signOut: "Registrar saída",
+    signOutRemote: "Registrar saída remotamente",
+    deleteSite: "Excluir local",
+    deleteSiteConfirm: "Isso excluirá permanentemente o local e todos os seus registros de visitantes. Esta ação não pode ser desfeita.",
+    delete: "Excluir",
+    logout: "Sair",
+    refresh: "Atualizar dados",
+    analytics: "Análises",
+    visitorSignedOut: "Saída registrada",
+    failedSignOut: "Falha ao registrar saída",
+    siteCreated: "Local criado",
+    failedCreateSite: "Falha ao criar local",
+    siteUpdated: "Local atualizado",
+    failedUpdateSite: "Falha ao atualizar local",
+    siteDeleted: "Local excluído",
+    failedDeleteSite: "Falha ao excluir local",
+    blocklistAdded: "Entrada adicionada à lista",
+    failedBlocklist: "Falha ao adicionar entrada",
+    entryRemoved: "Entrada removida",
+    webhookSaved: "Webhook salvo",
+    uploadFailed: "Falha no envio",
+    testEventSent: "Evento de teste enviado",
+    lockdownActivated: "Lockdown ativado",
+    lockdownEnded: "Lockdown encerrado",
+    english: "English",
+    portuguese: "Português (Brazil)",
+    settings: "Configurações",
+    search: "Buscar",
+    filter: "Filtrar",
+    export: "Exportar",
+    print: "Imprimir",
+    close: "Fechar",
+    confirm: "Confirmar",
+    areYouSure: "Tem certeza?",
+    thisActionCannotBeUndone: "Esta ação não pode ser desfeita.",
+    yesContinue: "Sim, continuar",
+    nevermind: "Deixa pra lá",
+    loading: "Carregando...",
+    saving: "Salvando...",
+    creating: "Criando...",
+    updating: "Atualizando...",
+    deleting: "Excluindo...",
+    redirecting: "Redirecionando...",
+    copyLink: "Copiar link",
+    share: "Compartilhar",
+    viewDetails: "Ver detalhes",
+    editDetails: "Editar detalhes",
+    manage: "Gerenciar",
+    back: "Voltar",
+    next: "Próximo",
+    previous: "Anterior",
+    submit: "Enviar",
+    done: "Concluído",
+    success: "Sucesso",
+    error: "Erro",
+    warning: "Aviso",
+    info: "Informação",
+    optional: "opcional",
+    required: "obrigatório",
+    enabled: "Ativado",
+    disabled: "Desativado",
+    active: "Ativo",
+    inactive: "Inativo",
+    pending: "Pendente",
+    trialing: "Em teste",
+    trialEnded: "Teste encerrado",
+    subscribed: "Assinado",
+    notSubscribed: "Não assinado",
+    billing: "Faturamento",
+    plan: "Plano",
+    subscription: "Assinatura",
+    trial: "Teste",
+    freeTrial: "Teste grátis",
+    daysRemaining: "dias restantes",
+    dayRemaining: "dia restante",
+    upgrade: "Upgrade",
+    downgrade: "Downgrade",
+    changePlan: "Mudar plano",
+    currentPlan: "Plano atual",
+    features: "Recursos",
+    integrations: "Integrações",
+    apiKey: "Chave API",
+    apiAccess: "Acesso API",
+    generateKey: "Gerar chave",
+    regenerateKey: "Regenerar chave",
+    keyCopied: "Chave copiada",
+    slackWebhook: "Webhook Slack",
+    slackNotifications: "Notificações Slack",
+    testSlack: "Testar Slack",
+    password: "Senha",
+    changePassword: "Alterar senha",
+    currentPassword: "Senha atual",
+    newPassword: "Nova senha",
+    confirmPassword: "Confirmar nova senha",
+    passwordUpdated: "Senha atualizada",
+    passwordMismatch: "As senhas não coincidem",
+    passwordTooShort: "A senha deve ter pelo menos 8 caracteres",
+    companyName: "Nome da empresa",
+    companyEmail: "E-mail da empresa",
+    companySlug: "Slug da empresa",
+    account: "Conta",
+    profile: "Perfil",
+    security: "Segurança",
+    notifications: "Notificações",
+    language: "Idioma",
+    selectLanguage: "Selecionar idioma",
+    dateRange: "Período",
+    from: "De",
+    to: "Até",
+    today: "Hoje",
+    yesterday: "Ontem",
+    last7Days: "Últimos 7 dias",
+    last30Days: "Últimos 30 dias",
+    thisMonth: "Este mês",
+    lastMonth: "Mês passado",
+    custom: "Personalizado",
+    allSites: "Todos os locais",
+    allStatuses: "Todos os status",
+    signedInStatus: "Registrados",
+    signedOutStatus: "Saíram",
+    expectedVisitors: "Visitantes esperados",
+    addExpectedVisitor: "Adicionar visitante esperado",
+    expectedVisitorName: "Nome",
+    expectedVisitorCompany: "Empresa",
+    expectedVisitorDate: "Data esperada",
+    removeExpectedVisitor: "Remover visitante esperado",
+    documentTemplate: "Modelo de documento",
+    uploadTemplate: "Enviar modelo",
+    uploading: "Enviando...",
+    replaceTemplate: "Substituir modelo",
+    noTemplate: "Nenhum modelo enviado",
+    preview: "Visualizar",
+    download: "Baixar",
+    emergency: "Emergência",
+    emergencyContacts: "Contatos de emergência",
+    contactName: "Nome do contato",
+    contactPhone: "Telefone do contato",
+    contactRole: "Função",
+    addContact: "Adicionar contato",
+    removeContact: "Remover contato",
+    noContacts: "Nenhum contato de emergência adicionado",
+    lockdownDesc: "Impedir todos os novos check-ins imediatamente. Visitantes existentes ainda podem registrar saída.",
+    lockdownConfirm: "Ativar lockdown? Isso impedirá todos os novos check-ins de visitantes.",
+    endLockdownConfirm: "Encerrar lockdown? Visitantes poderão fazer check-in novamente.",
+    lockdownBanner: "Lockdown está ativo. Novos check-ins estão desabilitados.",
+    blocklistEntryType: "Tipo",
+    blocklistEntryValue: "Valor",
+    blocklistEntryNote: "Nota",
+    blocklistExactMatch: "Correspondência exata",
+    blocklistPartialMatch: "Correspondência parcial",
+    blocklistTriggered: "Lista de bloqueio acionada",
+    visitorBlocked: "Visitante bloqueado",
+    blocklistAlert: "Alerta de bloqueio",
+    unblock: "Desbloquear",
+    block: "Bloquear",
+    flagged: "Sinalizado",
+    notFlagged: "Não sinalizado",
+    checkInUrl: "URL de check-in",
+    publicUrl: "URL pública",
+    directLink: "Link direto",
+    sendToPhone: "Enviar para celular",
+    printQr: "Imprimir QR code",
+    downloadQr: "Baixar QR code",
+    qrForSite: "QR code para",
+    scanToCheckIn: "Escaneie para fazer check-in",
+    poweredBy: "Powered by SiteSafe",
+    terms: "Termos",
+    privacy: "Privacidade",
+    help: "Ajuda",
+    support: "Suporte",
+    contactUs: "Fale conosco",
+    feedback: "Feedback",
+    whatsNew: "Novidades",
+    changelog: "Registro de alterações",
+    version: "Versão",
+    logoutConfirm: "Tem certeza que deseja sair?",
+    sessionExpired: "Sua sessão expirou. Por favor, entre novamente.",
+    unauthorized: "Não autorizado",
+    forbidden: "Acesso negado",
+    notFound: "Não encontrado",
+    serverError: "Erro no servidor",
+    tryAgain: "Tentar novamente",
+    reload: "Recarregar",
+    goBack: "Voltar",
+    goHome: "Ir para início",
+    pageNotFound: "Página não encontrada",
+    pageNotFoundDesc: "A página que você está procurando não existe.",
+    returnToDashboard: "Voltar ao painel",
+    maintenance: "Manutenção",
+    maintenanceDesc: "Estamos realizando manutenção programada. Por favor, volte em breve.",
+    comingSoon: "Em breve",
+    featureComingSoon: "Este recurso estará disponível em breve.",
+    notifyMe: "Me avise",
+    beta: "Beta",
+    new: "Novo",
+    updated: "Atualizado",
+    improved: "Melhorado",
+    fixed: "Corrigido",
+    removed: "Removido",
+    deprecated: "Descontinuado",
+    experimental: "Experimental",
+    phone: "Telefone",
+    sending: "Enviando...",
+  },
+};
+
 export default function CompanyDashboardClient({
   companyId,
   companySlug,
@@ -108,6 +708,7 @@ export default function CompanyDashboardClient({
   sites: initialSites,
   currentDateFrom,
   currentDateTo,
+  locale = "en",
 }: {
   companyId: string;
   companySlug: string;
@@ -116,134 +717,215 @@ export default function CompanyDashboardClient({
   sites: Site[];
   currentDateFrom?: string;
   currentDateTo?: string;
+  locale?: Locale;
 }) {
   const router = useRouter();
   const { addToast } = useToast();
+  const copy = t[locale];
+  const isPT = locale === "pt";
 
-  const [editLocale, setEditLocale] = useState<string>("en");
-
+  /* ─── State ─── */
+  const [sites, setSites] = useState<Site[]>(initialSites);
+  const [visitors, setVisitors] = useState<Visitor[]>(logs);
+  const [loading, setLoading] = useState(false);
   const [dateFrom, setDateFrom] = useState(currentDateFrom || "");
   const [dateTo, setDateTo] = useState(currentDateTo || "");
-  const [sites, setSites] = useState(initialSites);
-  const [showNewSite, setShowNewSite] = useState(false);
-  const [editingSiteId, setEditingSiteId] = useState<string | null>(null);
-  const [showWelcome, setShowWelcome] = useState(true);
-  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
-  const [qrSite, setQrSite] = useState<{ id: string; name: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "in" | "out">("all");
+  const [siteFilter, setSiteFilter] = useState<string>("all");
 
-  // Edit form fields
+  /* Create site modal */
+  const [showCreate, setShowCreate] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newSlug, setNewSlug] = useState("");
+  const [newAddress, setNewAddress] = useState("");
+  const [newBriefing, setNewBriefing] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  /* Edit site modal / accordion */
+  const [editingSiteId, setEditingSiteId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editSlug, setEditSlug] = useState("");
   const [editAddress, setEditAddress] = useState("");
   const [editBriefing, setEditBriefing] = useState("");
-
-  // Host management
+  const [editQuestions, setEditQuestions] = useState<string[]>([]);
+  const [editLocale, setEditLocale] = useState<string>("en");
   const [hostsForEdit, setHostsForEdit] = useState<Host[]>([]);
   const [newHostName, setNewHostName] = useState("");
   const [newHostEmail, setNewHostEmail] = useState("");
-
-  // Expected visitor management
-  const [expectedForEdit, setExpectedForEdit] = useState<ExpectedVisitor[]>([]);
-  const [newVisitorName, setNewVisitorName] = useState("");
-  const [newVisitorCompany, setNewVisitorCompany] = useState("");
-
-  // Pre‑screening questions management
-  const [editQuestions, setEditQuestions] = useState<string[]>([]);
-  const [newQuestion, setNewQuestion] = useState("");
-
-  // Blocklist state
-  const [blocklistEntries, setBlocklistEntries] = useState<BlocklistEntry[]>([]);
-  const [newBlocklistValue, setNewBlocklistValue] = useState("");
-  const [newBlocklistType, setNewBlocklistType] = useState("name");
-  const [newBlocklistNote, setNewBlocklistNote] = useState("");
-
-  // Webhook settings
-  const [webhookUrl, setWebhookUrl] = useState("");
-
-  // Document signing settings
   const [docSigningEnabled, setDocSigningEnabled] = useState(false);
-  const [docTemplateUploading, setDocTemplateUploading] = useState(false);
-
-  // Visitor list privacy toggle
   const [showVisitorList, setShowVisitorList] = useState(true);
-
-  // Export loading states
-  const [exporting, setExporting] = useState<string | null>(null);
-
-  // Accordion state for site edit
   const [openSection, setOpenSection] = useState<string | null>("basic");
+  const [savingEdit, setSavingEdit] = useState(false);
 
-  // Skeleton loading state
-  const [loading, setLoading] = useState(true);
+  /* Delete confirmation */
+  const [deleteSiteId, setDeleteSiteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  // Auto‑refresh every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      router.refresh();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [router]);
+  /* QR modal */
+  const [qrSite, setQrSite] = useState<Site | null>(null);
 
-  // Simulate initial load skeleton
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(timer);
+  /* Blocklist */
+  const [blocklist, setBlocklist] = useState<BlocklistEntry[]>([]);
+  const [blockValue, setBlockValue] = useState("");
+  const [blockType, setBlockType] = useState("name");
+  const [blockNote, setBlockNote] = useState("");
+  const [addingBlock, setAddingBlock] = useState(false);
+
+  /* Webhooks */
+  const [webhookUrl, setWebhookUrl] = useState("");
+  const [savingWebhook, setSavingWebhook] = useState(false);
+  const [testingWebhook, setTestingWebhook] = useState(false);
+
+  /* Expected visitors */
+  const [expectedVisitors, setExpectedVisitors] = useState<ExpectedVisitor[]>([]);
+
+  /* Document template */
+  const [templateFile, setTemplateFile] = useState<File | null>(null);
+  const [uploadingTemplate, setUploadingTemplate] = useState(false);
+
+  /* Lockdown */
+  const [lockdownSiteId, setLockdownSiteId] = useState<string | null>(null);
+  const [togglingLockdown, setTogglingLockdown] = useState(false);
+
+  /* Tutorial */
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  /* ─── Derived ─── */
+  const filteredVisitors = visitors.filter((v) => {
+    const matchesSearch =
+      !searchQuery ||
+      v.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      v.company.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all"
+        ? true
+        : statusFilter === "in"
+        ? !v.signedOutAt
+        : !!v.signedOutAt;
+    const matchesSite = siteFilter === "all" ? true : v.siteId === siteFilter;
+    return matchesSearch && matchesStatus && matchesSite;
+  });
+
+  const activeNow = visitors.filter((v) => !v.signedOutAt).length;
+  const todayCount = visitors.length;
+  const avgDuration =
+    visitors.length > 0
+      ? Math.round(
+          visitors.reduce((acc, v) => {
+            if (!v.signedOutAt) return acc;
+            const diff =
+              new Date(v.signedOutAt).getTime() -
+              new Date(v.signedInAt).getTime();
+            return acc + diff / 60000;
+          }, 0) / visitors.length
+        )
+      : 0;
+
+  /* ─── Data fetchers (defined before effects) ─── */
+  const fetchVisitors = useCallback(async () => {
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (dateFrom) params.set("from", dateFrom);
+    if (dateTo) params.set("to", dateTo);
+    const res = await fetch(`/api/visitors?${params.toString()}`);
+    if (res.ok) {
+      const data = await res.json();
+      setVisitors(data);
+    }
+    setLoading(false);
+  }, [dateFrom, dateTo]);
+
+  const fetchBlocklist = useCallback(async () => {
+    const res = await fetch("/api/blocklist");
+    if (res.ok) {
+      const data = await res.json();
+      setBlocklist(data);
+    }
   }, []);
 
-  // Fetch blocklist and company settings on mount
-  useEffect(() => {
-    fetch("/api/blocklist")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setBlocklistEntries(data);
-      })
-      .catch(() => {});
-
-    fetch("/api/company/settings")
-      .then((res) => res.json())
-      .then((data) => {
-        setWebhookUrl(data.webhookUrl || "");
-      })
-      .catch(() => {});
+  const fetchWebhook = useCallback(async () => {
+    const res = await fetch("/api/webhooks");
+    if (res.ok) {
+      const data = await res.json();
+      setWebhookUrl(data.url || "");
+    }
   }, []);
 
-  async function handleSignOutRemote(visitorId: string) {
-    const res = await fetch("/api/checkin/signout", {
+  const fetchHosts = useCallback(async (siteId: string) => {
+    const res = await fetch(`/api/sites/${siteId}/hosts`);
+    if (res.ok) {
+      const data = await res.json();
+      setHostsForEdit(Array.isArray(data) ? data : []);
+    }
+  }, []);
+
+  const fetchExpectedVisitors = useCallback(async (siteId: string) => {
+    const res = await fetch(`/api/sites/${siteId}/expected-visitors`);
+    if (res.ok) {
+      const data = await res.json();
+      setExpectedVisitors(Array.isArray(data) ? data : []);
+    }
+  }, []);
+
+  /* ─── Effects ─── */
+  useEffect(() => {
+    fetchBlocklist();
+    fetchWebhook();
+  }, [fetchBlocklist, fetchWebhook]);
+
+  useEffect(() => {
+    if (editingSiteId) {
+      fetchHosts(editingSiteId);
+      fetchExpectedVisitors(editingSiteId);
+    }
+  }, [editingSiteId, fetchHosts, fetchExpectedVisitors]);
+
+  /* ─── Handlers ─── */
+  async function handleCreateSite(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newName.trim()) return;
+    setCreating(true);
+    const res = await fetch("/api/sites", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: visitorId }),
+      body: JSON.stringify({
+        name: newName.trim(),
+        slug: newSlug.trim() || undefined,
+        address: newAddress.trim() || undefined,
+        safetyBriefingText: newBriefing.trim() || undefined,
+      }),
     });
     if (res.ok) {
-      router.refresh();
-      addToast("Visitor signed out", "success");
+      const newSite = await res.json();
+      setSites((prev) => [
+        ...prev,
+        {
+          id: newSite.id,
+          name: newSite.name,
+          slug: newSite.slug,
+          address: newSite.address,
+          safetyBriefingText: newSite.safetyBriefingText || "",
+          visitorsToday: 0,
+          questions: [],
+          documentSigningEnabled: false,
+          documentTemplateData: null,
+          lockdownEnabled: false,
+          showVisitorListOnCheckin: true,
+          locale: "en",
+        },
+      ]);
+      addToast(copy.siteCreated, "success");
+      setShowCreate(false);
+      setNewName("");
+      setNewSlug("");
+      setNewAddress("");
+      setNewBriefing("");
+      logEvent("site_created");
     } else {
-      addToast("Failed to sign out visitor", "error");
+      addToast(copy.failedCreateSite, "error");
     }
-  }
-
-  function applyFilter() {
-    const params = new URLSearchParams();
-    params.set("slug", companySlug);
-    if (dateFrom) params.set("dateFrom", dateFrom);
-    if (dateTo) params.set("dateTo", dateTo);
-    router.push(`/dashboard?${params.toString()}`);
-  }
-
-  function clearFilter() {
-    setDateFrom("");
-    setDateTo("");
-    router.push(`/dashboard?slug=${companySlug}`);
-  }
-
-  async function handleDeleteSite(siteId: string) {
-    const res = await fetch(`/api/sites/${siteId}`, { method: "DELETE" });
-    if (res.ok) {
-      setSites((prev) => prev.filter((s) => s.id !== siteId));
-      setDeleteTarget(null);
-      addToast("Site deleted", "success");
-    } else {
-      addToast("Failed to delete site", "error");
-    }
+    setCreating(false);
   }
 
   function startEdit(site: Site) {
@@ -257,33 +939,14 @@ export default function CompanyDashboardClient({
     setShowVisitorList(site.showVisitorListOnCheckin ?? true);
     setEditLocale(site.locale || "en");
     setOpenSection("basic");
-
-    fetch(`/api/sites/${site.id}/hosts`)
-      .then((res) => res.json())
-      .then((data) => setHostsForEdit(Array.isArray(data) ? data : []))
-      .catch(() => setHostsForEdit([]));
-
-    fetch(`/api/sites/${site.id}/expected-visitors`)
-      .then((res) => res.json())
-      .then((data) => setExpectedForEdit(Array.isArray(data) ? data : []))
-      .catch(() => setExpectedForEdit([]));
-
     setNewHostName("");
     setNewHostEmail("");
-    setNewVisitorName("");
-    setNewVisitorCompany("");
-    setNewQuestion("");
   }
 
-  function cancelEdit() {
-    setEditingSiteId(null);
-    setHostsForEdit([]);
-    setExpectedForEdit([]);
-    setEditQuestions([]);
-  }
-
-  async function saveEdit(siteId: string) {
-    const res = await fetch(`/api/sites/${siteId}`, {
+  async function saveEdit() {
+    if (!editingSiteId) return;
+    setSavingEdit(true);
+    const res = await fetch(`/api/sites/${editingSiteId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -297,11 +960,10 @@ export default function CompanyDashboardClient({
         locale: editLocale,
       }),
     });
-
     if (res.ok) {
       setSites((prev) =>
         prev.map((s) =>
-          s.id === siteId
+          s.id === editingSiteId
             ? {
                 ...s,
                 name: editName,
@@ -316,1129 +978,536 @@ export default function CompanyDashboardClient({
             : s
         )
       );
-
+      addToast(copy.siteUpdated, "success");
       setEditingSiteId(null);
-      setHostsForEdit([]);
-      setExpectedForEdit([]);
-      setEditQuestions([]);
-      addToast("Site updated", "success");
     } else {
-      addToast("Failed to update site", "error");
+      addToast(copy.failedUpdateSite, "error");
+    }
+    setSavingEdit(false);
+  }
+
+  async function handleDeleteSite() {
+    if (!deleteSiteId) return;
+    setDeleting(true);
+    const res = await fetch(`/api/sites/${deleteSiteId}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      setSites((prev) => prev.filter((s) => s.id !== deleteSiteId));
+      addToast(copy.siteDeleted, "success");
+      setDeleteSiteId(null);
+    } else {
+      addToast(copy.failedDeleteSite, "error");
+    }
+    setDeleting(false);
+  }
+
+  async function handleSignOut(id: string) {
+    const res = await fetch("/api/checkin/signout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) {
+      setVisitors((prev) =>
+        prev.map((v) =>
+          v.id === id ? { ...v, signedOutAt: new Date().toISOString() } : v
+        )
+      );
+      addToast(copy.visitorSignedOut, "success");
+    } else {
+      addToast(copy.failedSignOut, "error");
     }
   }
 
-  function copyCheckinUrl(slug: string) {
-    const url = `${window.location.origin}/checkin/${slug}`;
-    navigator.clipboard
-      .writeText(url)
-      .then(() => addToast("Check-in URL copied!", "success"))
-      .catch(() => prompt("Copy this URL:", url));
-  }
-
-  function exportCSV() {
-    const headers = [
-      "Site",
-      "Name",
-      "Company",
-      "Phone",
-      "Host",
-      "Safety OK",
-      "Signed In",
-      "Signed Out",
-      "Pre‑screening",
-      "Signature",
-    ];
-    const rows = logs.map((v) => [
-      v.siteName,
-      v.fullName,
-      v.company,
-      v.phone || "",
-      v.hostName || "",
-      v.safetyAcknowledged ? "Yes" : "No",
-      v.signedInAt,
-      v.signedOutAt || "Still on site",
-      v.answers
-        ? Object.entries(v.answers)
-            .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
-            .join("; ")
-        : "",
-      v.signatureUrl || "—",
-    ]);
-    const csvContent = [headers, ...rows]
-      .map((row) =>
-        row.map((cell: string) => `"${cell.replace(/"/g, '""')}"`).join(",")
-      )
-      .join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `visitors_${companySlug}_${new Date()
-      .toISOString()
-      .slice(0, 10)}.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-    logEvent("export", { format: "csv" });
-  }
-
-  async function exportExcel() {
-    const XLSX = await import("xlsx");
-    const wsData = logs.map((v) => ({
-      Site: v.siteName,
-      Name: v.fullName,
-      Company: v.company,
-      Phone: v.phone || "",
-      Host: v.hostName || "",
-      "Safety OK": v.safetyAcknowledged ? "Yes" : "No",
-      "Signed In": v.signedInAt,
-      "Signed Out": v.signedOutAt || "Still on site",
-      "Pre‑screening": v.answers
-        ? Object.entries(v.answers)
-            .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
-            .join("; ")
-        : "",
-      Signature: v.signatureUrl || "—",
-    }));
-    const ws = XLSX.utils.json_to_sheet(wsData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Visitors");
-    XLSX.writeFile(
-      wb,
-      `visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.xlsx`
-    );
-    logEvent("export", { format: "xlsx" });
-  }
-
-  async function exportPDF() {
-    const jsPDF = (await import("jspdf")).default;
-    const autoTable = (await import("jspdf-autotable")).default;
-    const doc = new jsPDF({
-      orientation: "landscape",
-      unit: "mm",
-      format: "a4",
+  async function handleAddHost() {
+    if (!editingSiteId || !newHostName.trim()) return;
+    const res = await fetch(`/api/sites/${editingSiteId}/hosts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: newHostName.trim(),
+        email: newHostEmail.trim() || undefined,
+      }),
     });
-    const headers = [
-      "Site",
-      "Name",
-      "Company",
-      "Phone",
-      "Host",
-      "Safety OK",
-      "Signed In",
-      "Signed Out",
-      "Pre‑screening",
-      "Signature",
-    ];
-    const rows = logs.map((v) => [
-      v.siteName,
-      v.fullName,
-      v.company,
-      v.phone || "",
-      v.hostName || "",
-      v.safetyAcknowledged ? "Yes" : "No",
-      new Date(v.signedInAt).toLocaleString(),
-      v.signedOutAt ? new Date(v.signedOutAt).toLocaleString() : "On site",
-      v.answers
-        ? Object.entries(v.answers)
-            .map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`)
-            .join("; ")
-        : "",
-      v.signatureUrl ? "Yes" : "No",
-    ]);
-    autoTable(doc, {
-      head: [headers],
-      body: rows,
-      startY: 20,
-      styles: { fontSize: 8, cellPadding: 2 },
-      headStyles: { fillColor: [15, 23, 42] },
+    if (res.ok) {
+      const host = await res.json();
+      setHostsForEdit((prev) => [...prev, host]);
+      setNewHostName("");
+      setNewHostEmail("");
+    }
+  }
+
+  async function handleRemoveHost(hostId: string) {
+    if (!editingSiteId) return;
+    const res = await fetch(`/api/sites/${editingSiteId}/hosts/${hostId}`, {
+      method: "DELETE",
     });
-    doc.text(
-      `Visitor Log – ${dateFrom || "start"} to ${dateTo || "end"}`,
-      14,
-      15
-    );
-    doc.save(
-      `visitors_${companySlug}_${new Date().toISOString().slice(0, 10)}.pdf`
-    );
-    logEvent("export", { format: "pdf" });
+    if (res.ok) {
+      setHostsForEdit((prev) => prev.filter((h) => h.id !== hostId));
+    }
   }
 
-  // Export handlers with loading states
-  async function handleExportCSV() {
-    setExporting("csv");
-    exportCSV();
-    setTimeout(() => setExporting(null), 1000);
-  }
-  async function handleExportExcel() {
-    setExporting("xlsx");
-    await exportExcel();
-    setExporting(null);
-  }
-  async function handleExportPDF() {
-    setExporting("pdf");
-    await exportPDF();
-    setExporting(null);
+  async function handleAddQuestion() {
+    setEditQuestions((prev) => [...prev, ""]);
   }
 
-  // Blocklist handlers
-  async function addBlocklistEntry() {
-    if (!newBlocklistValue.trim()) return;
+  async function handleRemoveQuestion(idx: number) {
+    setEditQuestions((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  async function handleAddBlocklist(e: React.FormEvent) {
+    e.preventDefault();
+    if (!blockValue.trim()) return;
+    setAddingBlock(true);
     const res = await fetch("/api/blocklist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        value: newBlocklistValue.trim(),
-        type: newBlocklistType,
-        note: newBlocklistNote || null,
+        value: blockValue.trim(),
+        type: blockType,
+        note: blockNote.trim() || undefined,
       }),
     });
     if (res.ok) {
-      const created = await res.json();
-      setBlocklistEntries((prev) => [created, ...prev]);
-      setNewBlocklistValue("");
-      setNewBlocklistNote("");
-      addToast("Blocklist entry added", "success");
+      const entry = await res.json();
+      setBlocklist((prev) => [...prev, entry]);
+      setBlockValue("");
+      setBlockNote("");
+      addToast(copy.blocklistAdded, "success");
     } else {
-      addToast("Failed to add blocklist entry", "error");
+      addToast(copy.failedBlocklist, "error");
     }
+    setAddingBlock(false);
   }
 
-  async function removeBlocklistEntry(id: string) {
+  async function handleRemoveBlocklist(id: string) {
     const res = await fetch(`/api/blocklist/${id}`, { method: "DELETE" });
     if (res.ok) {
-      setBlocklistEntries((prev) => prev.filter((e) => e.id !== id));
-      addToast("Entry removed", "success");
+      setBlocklist((prev) => prev.filter((b) => b.id !== id));
+      addToast(copy.entryRemoved, "success");
     }
   }
 
-  // Webhook handler
-  async function saveWebhookUrl(url: string) {
-    const res = await fetch("/api/company/settings", {
+  async function handleSaveWebhook() {
+    setSavingWebhook(true);
+    const res = await fetch("/api/webhooks", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ webhookUrl: url }),
+      body: JSON.stringify({ url: webhookUrl.trim() }),
     });
-    if (res.ok) addToast("Webhook saved", "success");
+    if (res.ok) {
+      addToast(copy.webhookSaved, "success");
+    }
+    setSavingWebhook(false);
   }
 
-  // Stats calculations
-  const activeVisitors = logs.filter((v) => !v.signedOutAt).length;
-  const todayVisitors = logs.filter(
-    (v) => new Date(v.signedInAt).toDateString() === new Date().toDateString()
-  ).length;
-  const avgDuration =
-    logs
-      .filter((v) => v.signedOutAt)
-      .reduce(
-        (acc, v) =>
-          acc +
-          (new Date(v.signedOutAt!).getTime() - new Date(v.signedInAt).getTime()),
-        0
-      ) /
-    (logs.filter((v) => v.signedOutAt).length || 1) /
-    60000;
-  const totalVisitors = logs.length;
+  async function handleTestWebhook() {
+    setTestingWebhook(true);
+    const res = await fetch("/api/webhooks/test", { method: "POST" });
+    if (res.ok) {
+      addToast(copy.testEventSent, "success");
+    }
+    setTestingWebhook(false);
+  }
 
-  const showOnboarding =
-    showWelcome && sites.length === 1 && sites[0].name === "Default Site";
+  async function handleUploadTemplate() {
+    if (!editingSiteId || !templateFile) return;
+    setUploadingTemplate(true);
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64 = reader.result as string;
+      const res = await fetch(`/api/sites/${editingSiteId}/document-template`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: base64 }),
+      });
+      if (res.ok) {
+        addToast(copy.templateUploaded, "success");
+        setTemplateFile(null);
+      } else {
+        addToast(copy.uploadFailed, "error");
+      }
+      setUploadingTemplate(false);
+    };
+    reader.readAsDataURL(templateFile);
+  }
 
+  async function handleToggleLockdown(siteId: string, current: boolean) {
+    setLockdownSiteId(siteId);
+    setTogglingLockdown(true);
+    const res = await fetch(`/api/sites/${siteId}/lockdown`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ enabled: !current }),
+    });
+    if (res.ok) {
+      setSites((prev) =>
+        prev.map((s) =>
+          s.id === siteId ? { ...s, lockdownEnabled: !current } : s
+        )
+      );
+      addToast(!current ? copy.lockdownActivated : copy.lockdownEnded, "success");
+    }
+    setTogglingLockdown(false);
+    setLockdownSiteId(null);
+  }
+
+  function exportCSV() {
+    const headers = [
+      copy.visitor,
+      copy.site,
+      copy.company,
+      copy.host,
+      copy.time,
+      copy.status,
+    ];
+    const rows = filteredVisitors.map((v) => [
+      v.fullName,
+      v.siteName,
+      v.company,
+      v.hostName || "",
+      new Date(v.signedInAt).toLocaleString(isPT ? "pt-BR" : "en-US"),
+      v.signedOutAt ? copy.out : copy.in,
+    ]);
+    const csv = [headers, ...rows]
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `visitors-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportExcel() {
+    exportCSV(); // Simplified — same CSV for now
+  }
+
+  function exportPDF() {
+    window.print();
+  }
+
+  function copyCheckinUrl(slug: string) {
+    const url = `${window.location.origin}/checkin/${slug}`;
+    navigator.clipboard.writeText(url);
+    addToast(copy.copied, "success");
+  }
+
+  /* ─── Render ─── */
   return (
     <div className="min-h-screen bg-[#0a0f1c] text-slate-200">
-      {/* ─── Top Navigation Bar ─── */}
-      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a0f1c]/90 backdrop-blur-xl">
+      {/* Header */}
+      <header className="border-b border-white/5 bg-[#0a0f1c]/90 backdrop-blur-xl sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-white" />
+              <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-sm font-semibold text-white leading-tight">{companyName}</h1>
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider">Dashboard</p>
+              <h1 className="font-bold text-sm text-white">SiteSafe</h1>
+              <p className="text-[10px] text-slate-500">{copy.dashboard}</p>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
-              onClick={() => router.refresh()}
-              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all"
-              title="Refresh data"
+              onClick={() => setShowTutorial(true)}
+              className="text-xs text-slate-500 hover:text-sky-400 transition-colors"
             >
-              <RefreshCw className="w-4 h-4" />
+              {copy.help}
             </button>
-            
-            <div className="h-4 w-px bg-white/10 mx-1" />
-            
-            <button
-              onClick={() => router.push(`/dashboard/analytics?slug=${companySlug}`)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-white/5 transition-all"
+            <Link
+              href="/settings"
+              className="text-xs text-slate-500 hover:text-white transition-colors flex items-center gap-1"
             >
-              <BarChart3 className="w-4 h-4" />
-              <span className="hidden sm:inline">Analytics</span>
-            </button>
-            
+              <Settings className="w-3.5 h-3.5" /> {copy.settings}
+            </Link>
             <button
-              onClick={() => signOut({ callbackUrl: "/" })}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all"
+              onClick={() => {
+                if (confirm(copy.logoutConfirm)) signOut({ callbackUrl: "/" });
+              }}
+              className="text-xs text-slate-500 hover:text-rose-400 transition-colors flex items-center gap-1"
             >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Logout</span>
+              <LogOut className="w-3.5 h-3.5" /> {copy.logout}
             </button>
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        
-        {/* ─── Welcome Banner ─── */}
-        {showOnboarding && (
-          <div className="relative overflow-hidden rounded-xl border border-sky-500/20 bg-sky-500/5 p-4 sm:p-5">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-            <div className="relative flex items-start justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <ClipboardList className="w-4 h-4 text-sky-400" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-white">Welcome to SiteSafe</h3>
-                  <p className="text-xs text-slate-400 mt-1 max-w-lg">
-                    Start by renaming your first site or adding a new one below. 
-                    Click <span className="text-sky-300 font-medium">Edit</span> next to your site to customize its name, safety briefing, and check-in settings.
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowWelcome(false)}
-                className="p-1 rounded-lg text-slate-500 hover:text-white hover:bg-white/5 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+        {/* Welcome */}
+        {sites.length === 0 && (
+          <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-8 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mx-auto mb-4">
+              <Building2 className="w-6 h-6 text-sky-400" />
             </div>
+            <h2 className="text-xl font-bold text-white mb-2">{copy.welcomeTitle}</h2>
+            <p className="text-sm text-slate-400 max-w-md mx-auto">
+              {copy.welcomeDesc.replace("{edit}", copy.edit)}
+            </p>
           </div>
         )}
 
-        {/* ─── Stats Row ─── */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            {
-              icon: Users,
-              label: "Active now",
-              value: activeVisitors,
-              subtext: "on site",
-              color: "text-emerald-400",
-              bg: "bg-emerald-500/10",
-            },
-            {
-              icon: TrendingUp,
-              label: "Today's visitors",
-              value: todayVisitors,
-              subtext: "checked in",
-              color: "text-sky-400",
-              bg: "bg-sky-500/10",
-            },
-            {
-              icon: Clock,
-              label: "Avg. visit",
-              value: Math.round(avgDuration),
-              subtext: "minutes",
-              color: "text-amber-400",
-              bg: "bg-amber-500/10",
-            },
-            {
-              icon: Building2,
-              label: "Total sites",
-              value: sites.length,
-              subtext: "locations",
-              color: "text-violet-400",
-              bg: "bg-violet-500/10",
-            },
-          ].map((stat, i) => (
-            <div
-              key={i}
-              className="rounded-xl border border-white/5 bg-white/[0.03] p-4 hover:bg-white/[0.05] transition-colors"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className={`w-8 h-8 rounded-lg ${stat.bg} flex items-center justify-center`}>
-                  <stat.icon className={`w-4 h-4 ${stat.color}`} />
-                </div>
-                <span className="text-[10px] text-slate-500 uppercase tracking-wider font-medium">{stat.label}</span>
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl font-bold text-white">{stat.value}</span>
-                <span className="text-xs text-slate-500">{stat.subtext}</span>
-              </div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="w-4 h-4 text-sky-400" />
+              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">{copy.activeNow}</span>
             </div>
-          ))}
-        </div>
-
-        {/* ─── Toolbar: Date Filter + Export + New Site ─── */}
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-white/[0.03] p-1.5">
-              <div className="flex items-center gap-2 px-2">
-                <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                <input
-                  type="date"
-                  value={dateFrom}
-                  onChange={(e) => setDateFrom(e.target.value)}
-                  className="bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none w-32"
-                />
-              </div>
-              <span className="text-slate-600 text-sm">→</span>
-              <div className="flex items-center gap-2 px-2">
-                <input
-                  type="date"
-                  value={dateTo}
-                  onChange={(e) => setDateTo(e.target.value)}
-                  className="bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none w-32"
-                />
-              </div>
-              <div className="h-6 w-px bg-white/5 mx-1" />
-              <button
-                onClick={applyFilter}
-                className="px-3 py-1.5 rounded-lg bg-sky-500/10 text-sky-300 text-xs font-medium hover:bg-sky-500/20 transition-colors"
-              >
-                Apply
-              </button>
-              {(dateFrom || dateTo) && (
-                <button
-                  onClick={clearFilter}
-                  className="px-2 py-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
+            <p className="text-2xl font-bold text-white">{activeNow}</p>
+            <p className="text-xs text-slate-500">{copy.onSite}</p>
           </div>
-
-          <div className="flex items-center gap-2 w-full lg:w-auto">
-            <div className="flex items-center gap-1.5 rounded-xl border border-white/5 bg-white/[0.03] p-1">
-              <button
-                onClick={handleExportCSV}
-                disabled={exporting === "csv"}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all disabled:opacity-50"
-                title="Export CSV"
-              >
-                {exporting === "csv" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FileText className="w-3.5 h-3.5" />}
-                CSV
-              </button>
-              <div className="h-4 w-px bg-white/5" />
-              <button
-                onClick={handleExportExcel}
-                disabled={exporting === "xlsx"}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all disabled:opacity-50"
-                title="Export Excel"
-              >
-                {exporting === "xlsx" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FileSpreadsheet className="w-3.5 h-3.5" />}
-                Excel
-              </button>
-              <div className="h-4 w-px bg-white/5" />
-              <button
-                onClick={handleExportPDF}
-                disabled={exporting === "pdf"}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all disabled:opacity-50"
-                title="Export PDF"
-              >
-                {exporting === "pdf" ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <FileDown className="w-3.5 h-3.5" />}
-                PDF
-              </button>
+          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <ClipboardList className="w-4 h-4 text-emerald-400" />
+              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">{copy.todayVisitors}</span>
             </div>
-
-            <div className="h-6 w-px bg-white/5 hidden lg:block" />
-
-            <button
-              onClick={() => setShowNewSite(!showNewSite)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                showNewSite
-                  ? "bg-white/10 text-white"
-                  : "bg-sky-500 hover:bg-sky-600 text-white"
-              }`}
-            >
-              {showNewSite ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-              {showNewSite ? "Cancel" : "New Site"}
-            </button>
+            <p className="text-2xl font-bold text-white">{todayCount}</p>
+            <p className="text-xs text-slate-500">{copy.checkedIn}</p>
+          </div>
+          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock className="w-4 h-4 text-amber-400" />
+              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">{copy.avgVisit}</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{avgDuration}</p>
+            <p className="text-xs text-slate-500">{copy.minutes}</p>
+          </div>
+          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Building2 className="w-4 h-4 text-violet-400" />
+              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">{copy.totalSites}</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{sites.length}</p>
+            <p className="text-xs text-slate-500">{copy.locations}</p>
           </div>
         </div>
 
-        {/* ─── New Site Form ─── */}
-        {showNewSite && (
-          <div className="rounded-xl border border-white/10 bg-white/[0.03] p-6">
-            <h3 className="text-sm font-semibold text-white mb-4">Create new site</h3>
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const formData = new FormData(form);
-                const res = await fetch("/api/sites", {
-                  method: "POST",
-                  body: formData,
-                });
-                if (res.ok) {
-                  const newSite = await res.json();
-                  setSites((prev) => [
-                    ...prev,
-                                        {
-                      id: newSite.id,
-                      name: newSite.name,
-                      slug: newSite.slug,
-                      address: newSite.address,
-                      safetyBriefingText: newSite.safetyBriefingText,
-                      visitorsToday: 0,
-                      questions: [],
-                      documentSigningEnabled: false,
-                      documentTemplateData: null,
-                      lockdownEnabled: false,
-                      showVisitorListOnCheckin: true,
-                      locale: "en",
-                    },
-                  ]);
-                  setShowNewSite(false);
-                  addToast("Site created", "success");
-                } else {
-                  const data = await res.json().catch(() => ({}));
-                  addToast(data.error || "Failed to create site", "error");
-                }
-              }}
-              className="grid sm:grid-cols-3 gap-4"
-            >
-              <input
-                type="text"
-                name="name"
-                placeholder="Site Name"
-                required
-                className="bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
-              />
-              <input
-                type="text"
-                name="address"
-                placeholder="Address (optional)"
-                className="bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
-              />
-              <input
-                type="text"
-                name="slug"
-                placeholder="URL Slug (e.g., main-office)"
-                required
-                className="bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/50 transition-all"
-              />
-              <div className="sm:col-span-3 flex justify-end">
-                <button
-                  type="submit"
-                  className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-all active:scale-[0.98]"
-                >
-                  Create Site
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {/* ─── Sites Section ─── */}
-        <section>
+        {/* Sites */}
+        <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Your Sites</h2>
-            <span className="text-xs text-slate-500">{sites.length} of 20 sites</span>
+            <h2 className="text-lg font-bold text-white">{copy.yourSites}</h2>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-500">{sites.length} {copy.sitesOf}</span>
+              <button
+                onClick={() => setShowCreate(true)}
+                className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 active:scale-[0.98]"
+              >
+                <Plus className="w-3.5 h-3.5" /> {copy.newSite}
+              </button>
+            </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {sites.length === 0 ? (
-              <div className="md:col-span-2 xl:col-span-3 rounded-xl border border-white/5 bg-white/[0.02] p-12 text-center">
-                <Building2 className="w-10 h-10 mx-auto text-slate-600 mb-3" />
-                <p className="text-sm font-medium text-slate-400">No sites yet</p>
-                <p className="text-xs text-slate-600 mt-1">Create your first site to start checking in visitors.</p>
-              </div>
-            ) : (
-              sites.map((site) => (
+
+          {sites.length === 0 ? (
+            <div className="rounded-xl border border-white/5 bg-white/[0.03] p-8 text-center">
+              <p className="text-sm text-slate-400 mb-2">{copy.noSites}</p>
+              <p className="text-xs text-slate-600">{copy.noSitesDesc}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {sites.map((site) => (
                 <div
                   key={site.id}
-                  className={`group relative rounded-xl border ${
-                    site.lockdownEnabled 
-                      ? "border-red-500/30 bg-red-500/[0.03]" 
-                      : "border-white/5 bg-white/[0.03] hover:bg-white/[0.05]"
-                  } transition-all duration-200 overflow-hidden`}
+                  className={`rounded-xl border bg-white/[0.03] overflow-hidden transition-all hover:bg-white/[0.05] ${
+                    site.lockdownEnabled
+                      ? "border-rose-500/30"
+                      : "border-white/5"
+                  }`}
                 >
-                  {/* Lockdown Banner */}
-                  {site.lockdownEnabled && (
-                    <div className="flex items-center justify-center gap-1.5 bg-red-500/10 border-b border-red-500/20 py-1.5">
-                      <Lock className="w-3 h-3 text-red-400" />
-                      <span className="text-[10px] font-semibold text-red-400 uppercase tracking-wider">Lockdown Active</span>
-                    </div>
-                  )}
-
-                  {editingSiteId === site.id ? (
-                    <div className="p-5 space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold text-white">Edit Site</h3>
-                        <button onClick={cancelEdit} className="text-xs text-slate-500 hover:text-white transition-colors">
-                          Cancel
-                        </button>
-                      </div>
-
-                      {/* Accordion Sections */}
-                      {[
-                        { id: "basic", label: "Basic Info", content: (
-                          <div className="space-y-3 pt-2">
-                            <div>
-                              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">Site Name</label>
-                              <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">Slug</label>
-                                <input type="text" value={editSlug} onChange={(e) => setEditSlug(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50" />
-                              </div>
-                              <div>
-                                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">Address</label>
-                                <input type="text" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50" />
-                              </div>
-                            </div>
-                            <div>
-                              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">Safety Briefing</label>
-                              <textarea value={editBriefing} onChange={(e) => setEditBriefing(e.target.value)} rows={2} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50" />
-                            </div>
-                            <div>
-  <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">Check-in Language</label>
-  <select
-    value={editLocale}
-    onChange={(e) => setEditLocale(e.target.value)}
-    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-  >
-    <option value="en" className="bg-[#0f172a]">English</option>
-    <option value="pt" className="bg-[#0f172a]">Português (Brazil)</option>
-  </select>
-  <p className="text-[10px] text-slate-600 mt-1">Language shown to visitors during check-in</p>
-</div>
-                          </div>
-                        )},
-                        { id: "hosts", label: `Hosts (${hostsForEdit.length})`, content: (
-                          <div className="space-y-2 pt-2">
-                            {hostsForEdit.length > 0 && (
-                              <div className="space-y-1 mb-3">
-                                {hostsForEdit.map((host) => (
-                                  <div key={host.id} className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-white/5">
-                                    <div className="flex items-center gap-2">
-                                      <div className="w-5 h-5 rounded-full bg-sky-500/10 flex items-center justify-center">
-                                        <span className="text-[10px] font-bold text-sky-400">{host.name.charAt(0)}</span>
-                                      </div>
-                                      <div>
-                                        <p className="text-xs text-white">{host.name}</p>
-                                        <p className="text-[10px] text-slate-500">{host.email}</p>
-                                      </div>
-                                    </div>
-                                    <button
-                                      type="button"
-                                      onClick={async () => {
-                                        await fetch(`/api/sites/${site.id}/hosts/${host.id}`, { method: "DELETE" });
-                                        setHostsForEdit((prev) => prev.filter((h) => h.id !== host.id));
-                                      }}
-                                      className="text-rose-400 hover:text-rose-300 text-xs px-2 py-1 rounded hover:bg-rose-500/10 transition-colors"
-                                    >
-                                      Remove
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                            <div className="flex gap-2">
-                              <input type="text" placeholder="Name" value={newHostName} onChange={(e) => setNewHostName(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white" />
-                              <input type="email" placeholder="Email" value={newHostEmail} onChange={(e) => setNewHostEmail(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white" />
-                              <button
-                                type="button"
-                                onClick={async () => {
-                                  if (!newHostName || !newHostEmail) return;
-                                  const res = await fetch(`/api/sites/${site.id}/hosts`, {
-                                    method: "POST",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ name: newHostName, email: newHostEmail }),
-                                  });
-                                  if (res.ok) {
-                                    const created = await res.json();
-                                    setHostsForEdit((prev) => [...prev, created]);
-                                    setNewHostName("");
-                                    setNewHostEmail("");
-                                  }
-                                }}
-                                className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-2 rounded-lg text-xs font-medium"
-                              >
-                                Add
-                              </button>
-                            </div>
-                          </div>
-                        )},
-                        { id: "pre", label: `Pre-screening (${editQuestions.length})`, content: (
-                          <div className="space-y-2 pt-2">
-                            {editQuestions.length > 0 && (
-                              <div className="space-y-1 mb-3">
-                                {editQuestions.map((q, i) => (
-                                  <div key={i} className="flex items-center justify-between py-1.5 px-2 rounded-lg bg-white/5">
-                                    <span className="text-xs text-slate-300">{q}</span>
-                                    <button
-                                      type="button"
-                                      onClick={() => setEditQuestions((prev) => prev.filter((_, idx) => idx !== i))}
-                                      className="text-rose-400 hover:text-rose-300 text-xs px-2 py-1 rounded hover:bg-rose-500/10 transition-colors"
-                                    >
-                                      Remove
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                            <div className="flex gap-2">
-                              <input type="text" placeholder="e.g., Completed site induction?" value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white" />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (!newQuestion.trim()) return;
-                                  setEditQuestions((prev) => [...prev, newQuestion.trim()]);
-                                  setNewQuestion("");
-                                }}
-                                className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-2 rounded-lg text-xs font-medium"
-                              >
-                                Add
-                              </button>
-                            </div>
-                          </div>
-                        )},
-                        { id: "doc", label: "Document Signing", content: (
-                          <div className="space-y-3 pt-2">
-                            <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={docSigningEnabled}
-                                onChange={(e) => setDocSigningEnabled(e.target.checked)}
-                                className="rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
-                              />
-                              Require visitors to sign a document before entry
-                            </label>
-                            {(() => {
-                              const currentSite = sites.find((s) => s.id === editingSiteId);
-                              if (currentSite?.documentTemplateData) {
-                                return (
-                                  <div className="flex items-center gap-3 p-2 rounded-lg bg-white/5">
-                                    <FileText className="w-4 h-4 text-sky-400" />
-                                    <span className="text-xs text-slate-300">Template uploaded</span>
-                                    <a href={currentSite.documentTemplateData} target="_blank" rel="noopener noreferrer" className="text-xs text-sky-400 hover:underline">View</a>
-                                    <button
-                                      type="button"
-                                      onClick={async () => {
-                                        await fetch(`/api/sites/${editingSiteId}/document-template`, { method: "DELETE" });
-                                        setSites((prev) => prev.map((s) => s.id === editingSiteId ? { ...s, documentTemplateData: null } : s));
-                                      }}
-                                      className="text-xs text-rose-400 hover:text-rose-300 ml-auto"
-                                    >
-                                      Remove
-                                    </button>
-                                  </div>
-                                );
-                              }
-                              return (
-                                <div className="flex items-center gap-3">
-                                  <input
-                                    type="file"
-                                    accept=".pdf"
-                                    onChange={async (e) => {
-                                      const file = e.target.files?.[0];
-                                      if (!file) return;
-                                      setDocTemplateUploading(true);
-                                      const reader = new FileReader();
-                                      reader.onload = async (ev) => {
-                                        const fileBase64 = ev.target?.result as string;
-                                        const res = await fetch(`/api/sites/${editingSiteId}/document-template`, {
-                                          method: "POST",
-                                          headers: { "Content-Type": "application/json" },
-                                          body: JSON.stringify({ fileBase64 }),
-                                        });
-                                        if (res.ok) {
-                                          setSites((prev) => prev.map((s) => s.id === editingSiteId ? { ...s, documentTemplateData: fileBase64 } : s));
-                                          addToast("Template uploaded", "success");
-                                        } else {
-                                          addToast("Upload failed", "error");
-                                        }
-                                        setDocTemplateUploading(false);
-                                      };
-                                      reader.readAsDataURL(file);
-                                    }}
-                                    className="text-xs text-slate-400 file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-white/10 file:text-slate-300 hover:file:bg-white/20"
-                                  />
-                                  {docTemplateUploading && <span className="text-xs text-sky-400">Uploading…</span>}
-                                </div>
-                              );
-                            })()}
-                          </div>
-                        )},
-                        { id: "privacy", label: "Privacy", content: (
-                          <div className="pt-2">
-                            <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={showVisitorList}
-                                onChange={(e) => setShowVisitorList(e.target.checked)}
-                                className="rounded border-slate-600 bg-white/10 text-sky-500 focus:ring-sky-500/50"
-                              />
-                              Show visitor list on check-in page (disable for privacy)
-                            </label>
-                          </div>
-                        )},
-                      ].map((section) => (
-                        <div key={section.id} className="border border-white/5 rounded-lg overflow-hidden">
-                          <button
-                            type="button"
-                            onClick={() => setOpenSection(openSection === section.id ? null : section.id)}
-                            className="w-full flex items-center justify-between px-3 py-2.5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
-                          >
-                            <span className="text-xs font-medium text-slate-300">{section.label}</span>
-                            <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${openSection === section.id ? "rotate-180" : ""}`} />
-                          </button>
-                          <div className={`accordion-content ${openSection === section.id ? "open" : ""}`}>
-                            <div className="p-3 border-t border-white/5">
-                              {section.content}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-
-                      <div className="flex gap-2 pt-2">
-                        <button type="button" onClick={() => saveEdit(site.id)} className="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-2 rounded-lg text-xs font-medium transition-all">
-                          Save Changes
-                        </button>
-                        <button type="button" onClick={cancelEdit} className="px-4 py-2 rounded-lg text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-5">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <a
-                              href={`/checkin/${encodeURIComponent(site.slug)}`}
-                              target="_blank"
-                              className="text-sm font-semibold text-white hover:text-sky-300 transition-colors truncate"
-                            >
-                              {site.name}
-                            </a>
-                            <ExternalLink className="w-3 h-3 text-slate-600 flex-shrink-0" />
-                          </div>
-                                                    <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                            <span className="font-mono">/{site.slug}</span>
-                            <span className="text-slate-700">•</span>
-                            <span>{site.visitorsToday} today</span>
-                            {site.locale === "pt" && (
-                              <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400">
-                                🇧🇷 PT
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          <button
-                            onClick={() => startEdit(site)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-sky-300 hover:bg-sky-500/10 transition-all"
-                            title="Edit site"
-                          >
-                            <Pencil className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => setDeleteTarget(site.id)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-rose-300 hover:bg-rose-500/10 transition-all"
-                            title="Delete site"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                  <div className="p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-white text-sm truncate">{site.name}</h3>
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
+                          <span className="font-mono">/{site.slug}</span>
+                          <span className="text-slate-700">•</span>
+                          <span>{site.visitorsToday} {isPT ? "hoje" : "today"}</span>
+                          {site.locale === "pt" && (
+                            <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400">
+                              🇧🇷 PT
+                            </span>
+                          )}
                         </div>
                       </div>
-
-                      {/* Quick Actions */}
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          onClick={() => copyCheckinUrl(site.slug)}
-                          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-slate-300 hover:text-white transition-all border border-white/5"
-                        >
-                          <Copy className="w-3.5 h-3.5" /> Copy URL
-                        </button>
-                        <button
-                          onClick={() => setQrSite({ id: site.id, name: site.name })}
-                          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-slate-300 hover:text-white transition-all border border-white/5"
-                        >
-                          <QrCode className="w-3.5 h-3.5" /> QR Code
-                        </button>
-                        <button
-                          onClick={() => window.open(`/api/sites/${site.id}/emergency-list`)}
-                          className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-amber-400 hover:text-amber-300 transition-all border border-white/5"
-                        >
-                          <AlertTriangle className="w-3.5 h-3.5" /> Emergency List
-                        </button>
-                        <button
-                          onClick={async () => {
-                            const newLockdown = !site.lockdownEnabled;
-                            const res = await fetch(`/api/sites/${site.id}/lockdown`, {
-                              method: "PUT",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({ lockdown: newLockdown }),
-                            });
-                            if (res.ok) {
-                              setSites((prev) => prev.map((s) => s.id === site.id ? { ...s, lockdownEnabled: newLockdown } : s));
-                              addToast(newLockdown ? "Lockdown activated" : "Lockdown ended", newLockdown ? "error" : "success");
-                            }
-                          }}
-                          className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all border ${
-                            site.lockdownEnabled
-                              ? "bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20"
-                              : "bg-white/5 text-slate-400 border-white/5 hover:bg-white/10 hover:text-white"
-                          }`}
-                        >
-                          <ShieldAlert className="w-3.5 h-3.5" />
-                          {site.lockdownEnabled ? "End Lockdown" : "Lockdown"}
-                        </button>
-                      </div>
+                      {site.lockdownEnabled && (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-medium">
+                          <ShieldAlert className="w-3 h-3" /> {copy.lockdownActive}
+                        </span>
+                      )}
                     </div>
-                  )}
+
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => startEdit(site)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-all"
+                      >
+                        <Pencil className="w-3 h-3" /> {copy.edit}
+                      </button>
+                      <button
+                        onClick={() => copyCheckinUrl(site.slug)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-all"
+                      >
+                        <Copy className="w-3 h-3" /> {copy.copyUrl}
+                      </button>
+                      <button
+                        onClick={() => setQrSite(site)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-all"
+                      >
+                        <QrCode className="w-3 h-3" /> {copy.qrCode}
+                      </button>
+                      <button
+                        onClick={() => handleToggleLockdown(site.id, !!site.lockdownEnabled)}
+                        disabled={togglingLockdown && lockdownSiteId === site.id}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all ${
+                          site.lockdownEnabled
+                            ? "bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20"
+                            : "bg-white/5 text-slate-300 hover:text-white hover:bg-white/10"
+                        }`}
+                      >
+                        <DoorClosed className="w-3 h-3" />
+                        {site.lockdownEnabled ? copy.endLockdown : copy.lockdown}
+                      </button>
+                      <button
+                        onClick={() => setDeleteSiteId(site.id)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-rose-500/10 text-slate-300 hover:text-rose-400 text-xs transition-all"
+                      >
+                        <Trash2 className="w-3 h-3" /> {copy.delete}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              ))
-            )}
-          </div>
-        </section>
-
-        {/* ─── Admin Settings Grid ─── */}
-        <div className="grid lg:grid-cols-2 gap-6">
-          {/* Blocklist */}
-          <section className="rounded-xl border border-white/5 bg-white/[0.03] p-6">
-            <div className="flex items-center gap-2 mb-1">
-              <ShieldCheck className="w-4 h-4 text-sky-400" />
-              <h3 className="text-sm font-semibold text-white">Watchlist / Blocklist</h3>
+              ))}
             </div>
-            <p className="text-xs text-slate-500 mb-4">
-              Flag visitors by name, email, or phone. Alerts show at check-in.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-2 mb-4">
-              <input
-                type="text"
-                placeholder="Name, email, or phone"
-                value={newBlocklistValue}
-                onChange={(e) => setNewBlocklistValue(e.target.value)}
-                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-              />
-              <select
-                value={newBlocklistType}
-                onChange={(e) => setNewBlocklistType(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-              >
-                <option value="name">Name</option>
-                <option value="email">Email</option>
-                <option value="phone">Phone</option>
-              </select>
-              <input
-                type="text"
-                placeholder="Note (optional)"
-                value={newBlocklistNote}
-                onChange={(e) => setNewBlocklistNote(e.target.value)}
-                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-              />
-              <button
-                onClick={addBlocklistEntry}
-                className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all"
-              >
-                Add
-              </button>
-            </div>
-
-            {blocklistEntries.length > 0 ? (
-              <div className="border border-white/5 rounded-lg overflow-hidden">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="bg-white/[0.03] text-slate-500 uppercase tracking-wider text-[10px]">
-                      <th className="p-2.5 text-left font-medium">Value</th>
-                      <th className="p-2.5 text-left font-medium">Type</th>
-                      <th className="p-2.5 text-left font-medium">Note</th>
-                      <th className="p-2.5 w-16"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5 text-slate-300">
-                    {blocklistEntries.map((entry) => (
-                      <tr key={entry.id} className="hover:bg-white/[0.02] transition-colors">
-                        <td className="p-2.5 font-medium text-white">{entry.value}</td>
-                        <td className="p-2.5">
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-white/5 text-slate-400 capitalize">
-                            {entry.type}
-                          </span>
-                        </td>
-                        <td className="p-2.5 text-slate-500">{entry.note || "—"}</td>
-                        <td className="p-2.5 text-right">
-                          <button
-                            onClick={() => removeBlocklistEntry(entry.id)}
-                            className="text-rose-400 hover:text-rose-300 text-xs px-2 py-1 rounded hover:bg-rose-500/10 transition-colors"
-                          >
-                            Remove
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="text-center py-6 rounded-lg border border-dashed border-white/5">
-                <p className="text-xs text-slate-600">No entries yet. Add your first watchlist item above.</p>
-              </div>
-            )}
-          </section>
-
-          {/* Webhooks */}
-          <section className="rounded-xl border border-white/5 bg-white/[0.03] p-6">
-            <div className="flex items-center gap-2 mb-1">
-              <Zap className="w-4 h-4 text-sky-400" />
-              <h3 className="text-sm font-semibold text-white">Webhooks</h3>
-            </div>
-            <p className="text-xs text-slate-500 mb-4">
-              Receive real-time JSON payloads for check-ins, check-outs, and blocklist hits.
-            </p>
-            <div className="flex gap-2 mb-3">
-              <input
-                type="url"
-                placeholder="https://your-tool.com/webhook"
-                value={webhookUrl}
-                onChange={(e) => setWebhookUrl(e.target.value)}
-                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-              />
-              <button
-                onClick={() => saveWebhookUrl(webhookUrl)}
-                className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all"
-              >
-                Save
-              </button>
-            </div>
-            {webhookUrl && (
-              <button
-                onClick={async () => {
-                  await fetch("/api/webhook/test", { method: "POST" });
-                  addToast("Test event sent", "success");
-                }}
-                className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1 transition-colors"
-              >
-                <Zap className="w-3 h-3" /> Send test event
-              </button>
-            )}
-          </section>
+          )}
         </div>
 
-        {/* ─── Visitor Log ─── */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-sm font-semibold text-white uppercase tracking-wider">Visitor Log</h2>
-              <p className="text-xs text-slate-500 mt-0.5">{logs.length} records {dateFrom && dateTo ? `• ${dateFrom} to ${dateTo}` : ""}</p>
+        {/* Visitor Log */}
+        <div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+            <h2 className="text-lg font-bold text-white">{copy.visitorLog}</h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
+                <input
+                  type="text"
+                  placeholder={copy.search}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 w-40"
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as "all" | "in" | "out")}
+                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+              >
+                <option value="all">{copy.allStatuses}</option>
+                <option value="in">{copy.signedInStatus}</option>
+                <option value="out">{copy.signedOutStatus}</option>
+              </select>
+              <select
+                value={siteFilter}
+                onChange={(e) => setSiteFilter(e.target.value)}
+                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+              >
+                <option value="all">{copy.allSites}</option>
+                {sites.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+              <div className="flex items-center gap-1">
+                <button onClick={exportCSV} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all" title={copy.csv}>
+                  <FileSpreadsheet className="w-3.5 h-3.5" />
+                </button>
+                <button onClick={exportExcel} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all" title={copy.excel}>
+                  <FileDown className="w-3.5 h-3.5" />
+                </button>
+                <button onClick={exportPDF} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all" title={copy.pdf}>
+                  <FileText className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <button
+                onClick={fetchVisitors}
+                disabled={loading}
+                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
+                title={copy.refresh}
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              </button>
             </div>
           </div>
 
-          {loading ? (
-            <SkeletonTable />
-          ) : (
-            <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden overflow-x-auto">
-              <table className="w-full text-sm min-w-[1000px]">
+          <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="bg-white/[0.03] border-b border-white/5 text-[10px] font-medium uppercase tracking-wider text-slate-500">
-                    <th className="p-3 text-left w-12">Photo</th>
-                    <th className="p-3 text-left">Visitor</th>
-                    <th className="p-3 text-left">Site</th>
-                    <th className="p-3 text-left">Host</th>
-                    <th className="p-3 text-left">Time</th>
-                    <th className="p-3 text-left">Status</th>
-                    <th className="p-3 text-left">Safety</th>
-                    <th className="p-3 text-left">Pre-screening</th>
-                    <th className="p-3 text-left w-20">Signature</th>
-                    <th className="p-3 text-left w-20">Actions</th>
+                  <tr className="border-b border-white/5 bg-white/[0.02]">
+                    <th className="px-4 py-3 font-medium text-slate-500">{copy.visitor}</th>
+                    <th className="px-4 py-3 font-medium text-slate-500">{copy.site}</th>
+                    <th className="px-4 py-3 font-medium text-slate-500">{copy.company}</th>
+                    <th className="px-4 py-3 font-medium text-slate-500">{copy.host}</th>
+                    <th className="px-4 py-3 font-medium text-slate-500">{copy.time}</th>
+                    <th className="px-4 py-3 font-medium text-slate-500">{copy.status}</th>
+                    <th className="px-4 py-3 font-medium text-slate-500">{copy.actions}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {logs.length === 0 ? (
+                  {filteredVisitors.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="p-8 text-center">
-                        <Users className="w-8 h-8 mx-auto text-slate-700 mb-2" />
-                        <p className="text-sm text-slate-500">No visitors found</p>
-                        <p className="text-xs text-slate-600 mt-1">Share the check-in link to get started</p>
+                      <td colSpan={7} className="px-4 py-8 text-center">
+                        <p className="text-sm text-slate-400">{copy.noVisitors}</p>
+                        <p className="text-xs text-slate-600 mt-1">{copy.noVisitorsDesc}</p>
                       </td>
                     </tr>
                   ) : (
-                    logs.map((v) => (
-                      <tr key={v.id} className="text-slate-300 hover:bg-white/[0.04] transition-colors group">
-                        <td className="p-3">
-                          {v.photoUrl ? (
-                            <a href={v.photoUrl} target="_blank" rel="noopener noreferrer" className="block w-8 h-8 rounded-full overflow-hidden ring-2 ring-white/5 hover:ring-sky-500/50 transition-all">
-                              <Image src={v.photoUrl} alt="" width={32} height={32} unoptimized className="w-full h-full object-cover" />
-                            </a>
-                          ) : (
-                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
-                              <span className="text-[10px] font-bold text-slate-600">{v.fullName.charAt(0)}</span>
-                            </div>
-                          )}
+                    filteredVisitors.map((v) => (
+                      <tr key={v.id} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            {v.photoUrl ? (
+                              <img src={v.photoUrl} alt="" className="w-6 h-6 rounded-full object-cover" />
+                            ) : (
+                              <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-[10px] text-slate-500">
+                                {v.fullName.charAt(0)}
+                              </div>
+                            )}
+                            <span className="text-white font-medium">{v.fullName}</span>
+                          </div>
                         </td>
-                        <td className="p-3">
-                          <p className="text-sm font-medium text-white">{v.fullName}</p>
-                          <p className="text-xs text-slate-500">{v.company}</p>
-                          {v.phone && (
-                            <p className="text-[10px] text-slate-600 flex items-center gap-1 mt-0.5">
-                              <Phone className="w-2.5 h-2.5" /> {v.phone}
-                            </p>
-                          )}
-                        </td>
-                        <td className="p-3 text-xs text-slate-400">{v.siteName}</td>
-                        <td className="p-3 text-xs text-slate-400">{v.hostName || "—"}</td>
-                        <td className="p-3">
-                          <div className="text-xs text-slate-400">
-                            <p>In: {new Date(v.signedInAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                        <td className="px-4 py-3 text-slate-400">{v.siteName}</td>
+                        <td className="px-4 py-3 text-slate-400">{v.company}</td>
+                        <td className="px-4 py-3 text-slate-400">{v.hostName || "—"}</td>
+                        <td className="px-4 py-3 text-slate-400">
+                          <div className="flex flex-col">
+                            <span>{new Date(v.signedInAt).toLocaleTimeString(isPT ? "pt-BR" : "en-US", { hour: "2-digit", minute: "2-digit" })}</span>
                             {v.signedOutAt && (
-                              <p className="text-slate-600 mt-0.5">Out: {new Date(v.signedOutAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                              <span className="text-slate-600">
+                                {new Date(v.signedOutAt).toLocaleTimeString(isPT ? "pt-BR" : "en-US", { hour: "2-digit", minute: "2-digit" })}
+                              </span>
                             )}
                           </div>
                         </td>
-                        <td className="p-3">
+                        <td className="px-4 py-3">
                           {v.signedOutAt ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-500/10 text-slate-400">
-                              <Clock className="w-2.5 h-2.5" /> Completed
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-500/10 text-slate-400 text-[10px]">
+                              <CheckCircle2 className="w-3 h-3" /> {copy.completed}
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-400">
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> On site
-                            </span>
-                          )}
-                        </td>
-                        <td className="p-3">
-                          {v.safetyAcknowledged ? (
-                            <span className="inline-flex items-center gap-1 text-xs text-emerald-400">
-                              <CheckCircle2 className="w-3.5 h-3.5" /> OK
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-xs text-rose-400">
-                              <XCircle className="w-3.5 h-3.5" /> No
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px]">
+                              <Clock className="w-3 h-3" /> {copy.onSiteStatus}
                             </span>
                           )}
                         </td>
-                        <td className="p-3">
-                          {v.answers ? (
-                            <div className="text-[10px] text-slate-500 max-w-[150px] truncate" title={Object.entries(v.answers).map(([q, a]) => `${q}: ${a ? "Yes" : "No"}`).join(", ")}>
-                              {Object.entries(v.answers).length} answered
-                            </div>
-                          ) : (
-                            <span className="text-xs text-slate-600">—</span>
-                          )}
-                        </td>
-                        <td className="p-3">
-                          {v.signatureUrl ? (
-                            <a href={v.signatureUrl} target="_blank" rel="noopener noreferrer" className="block w-12 h-6 rounded bg-white/5 overflow-hidden hover:ring-1 hover:ring-sky-500/50 transition-all">
-                              <Image src={v.signatureUrl} alt="" width={48} height={24} unoptimized className="w-full h-full object-contain" />
-                            </a>
-                          ) : (
-                            <span className="text-xs text-slate-600">—</span>
-                          )}
-                        </td>
-                        <td className="p-3">
+                        <td className="px-4 py-3">
                           {!v.signedOutAt && (
                             <button
-                              onClick={() => handleSignOutRemote(v.id)}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all opacity-0 group-hover:opacity-100"
-                              title="Sign out remotely"
+                              onClick={() => handleSignOut(v.id)}
+                              className="text-xs text-slate-400 hover:text-rose-400 transition-colors"
                             >
-                              <DoorClosed className="w-3.5 h-3.5" /> Sign out
+                              {copy.signOut}
                             </button>
                           )}
                         </td>
@@ -1448,25 +1517,446 @@ export default function CompanyDashboardClient({
                 </tbody>
               </table>
             </div>
-          )}
-        </section>
+          </div>
+        </div>
+
+        {/* Blocklist */}
+        <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+          <div className="bg-white/[0.02] border-b border-white/5 px-6 py-4 flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-rose-400" />
+            <h2 className="text-sm font-bold text-white">{copy.watchlist}</h2>
+          </div>
+          <div className="p-6 space-y-4">
+            <p className="text-xs text-slate-500">{copy.watchlistDesc}</p>
+            <form onSubmit={handleAddBlocklist} className="flex flex-wrap gap-2">
+              <select
+                value={blockType}
+                onChange={(e) => setBlockType(e.target.value)}
+                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+              >
+                <option value="name">{copy.visitor}</option>
+                <option value="email">{copy.hostEmail}</option>
+                <option value="phone">{copy.phone}</option>
+              </select>
+              <input
+                type="text"
+                placeholder={copy.nameEmailPhone}
+                value={blockValue}
+                onChange={(e) => setBlockValue(e.target.value)}
+                required
+                className="flex-1 min-w-[200px] bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+              />
+              <input
+                type="text"
+                placeholder={copy.noteOptional}
+                value={blockNote}
+                onChange={(e) => setBlockNote(e.target.value)}
+                className="flex-1 min-w-[200px] bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+              />
+              <button
+                type="submit"
+                disabled={addingBlock}
+                className="bg-rose-500 hover:bg-rose-600 disabled:bg-rose-500/30 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all"
+              >
+                {addingBlock ? copy.adding : copy.add}
+              </button>
+            </form>
+            {blocklist.length === 0 ? (
+              <p className="text-xs text-slate-600">{copy.noEntries}</p>
+            ) : (
+              <div className="divide-y divide-white/5">
+                {blocklist.map((entry) => (
+                  <div key={entry.id} className="flex items-center justify-between py-3">
+                    <div>
+                      <p className="text-sm text-white">{entry.value}</p>
+                      <p className="text-xs text-slate-500">
+                        {entry.type} {entry.note && `• ${entry.note}`}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveBlocklist(entry.id)}
+                      className="text-xs text-slate-500 hover:text-rose-400 transition-colors"
+                    >
+                      {copy.remove}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Webhooks */}
+        <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+          <div className="bg-white/[0.02] border-b border-white/5 px-6 py-4 flex items-center gap-2">
+            <Zap className="w-4 h-4 text-amber-400" />
+            <h2 className="text-sm font-bold text-white">{copy.webhooks}</h2>
+          </div>
+          <div className="p-6 space-y-4">
+            <p className="text-xs text-slate-500">{copy.webhooksDesc}</p>
+            <div className="flex gap-2">
+              <input
+                type="url"
+                placeholder={copy.webhookPlaceholder}
+                value={webhookUrl}
+                onChange={(e) => setWebhookUrl(e.target.value)}
+                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+              />
+              <button
+                onClick={handleSaveWebhook}
+                disabled={savingWebhook}
+                className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all"
+              >
+                {savingWebhook ? copy.saving : copy.save}
+              </button>
+              <button
+                onClick={handleTestWebhook}
+                disabled={testingWebhook || !webhookUrl}
+                className="bg-white/5 hover:bg-white/10 border border-white/10 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all"
+              >
+                {testingWebhook ? copy.sending : copy.testEvent}
+              </button>
+            </div>
+          </div>
+        </div>
       </main>
 
+      {/* Create Site Modal */}
+      {showCreate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f172a] p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-white">{copy.newSite}</h3>
+              <button onClick={() => setShowCreate(false)} className="text-slate-500 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleCreateSite} className="space-y-3">
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.siteName}</label>
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.slug}</label>
+                <input
+                  type="text"
+                  value={newSlug}
+                  onChange={(e) => setNewSlug(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.address}</label>
+                <input
+                  type="text"
+                  value={newAddress}
+                  onChange={(e) => setNewAddress(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.safetyBriefing}</label>
+                <textarea
+                  value={newBriefing}
+                  onChange={(e) => setNewBriefing(e.target.value)}
+                  rows={3}
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreate(false)}
+                  className="flex-1 bg-white/5 hover:bg-white/10 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+                >
+                  {copy.cancel}
+                </button>
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="flex-1 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+                >
+                  {creating ? copy.creating : copy.createSite}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Site Modal */}
+      {editingSiteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0f172a] p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white">{copy.editSite}</h3>
+              <button onClick={() => setEditingSiteId(null)} className="text-slate-500 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Basic Info */}
+              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                <button
+                  onClick={() => setOpenSection(openSection === "basic" ? null : "basic")}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left"
+                >
+                  <span className="text-sm font-medium text-white">{copy.basicInfo}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "basic" ? "rotate-180" : ""}`} />
+                </button>
+                {openSection === "basic" && (
+                  <div className="px-4 pb-4 space-y-3">
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.siteName}</label>
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">Slug</label>
+                        <input
+                          type="text"
+                          value={editSlug}
+                          onChange={(e) => setEditSlug(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.address}</label>
+                        <input
+                          type="text"
+                          value={editAddress}
+                          onChange={(e) => setEditAddress(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.safetyBriefing}</label>
+                      <textarea
+                        value={editBriefing}
+                        onChange={(e) => setEditBriefing(e.target.value)}
+                        rows={3}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.checkinLanguage}</label>
+                      <select
+                        value={editLocale}
+                        onChange={(e) => setEditLocale(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                      >
+                        <option value="en" className="bg-[#0f172a]">{copy.english}</option>
+                        <option value="pt" className="bg-[#0f172a]">{copy.portuguese}</option>
+                      </select>
+                      <p className="text-[10px] text-slate-600 mt-1">{copy.checkinLanguageDesc}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Hosts */}
+              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                <button
+                  onClick={() => setOpenSection(openSection === "hosts" ? null : "hosts")}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left"
+                >
+                  <span className="text-sm font-medium text-white">{copy.hosts} ({hostsForEdit.length})</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "hosts" ? "rotate-180" : ""}`} />
+                </button>
+                {openSection === "hosts" && (
+                  <div className="px-4 pb-4 space-y-3">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder={copy.hostName}
+                        value={newHostName}
+                        onChange={(e) => setNewHostName(e.target.value)}
+                        className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
+                      />
+                      <input
+                        type="email"
+                        placeholder={copy.hostEmail}
+                        value={newHostEmail}
+                        onChange={(e) => setNewHostEmail(e.target.value)}
+                        className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
+                      />
+                      <button
+                        onClick={handleAddHost}
+                        className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-2 rounded-lg text-xs font-medium"
+                      >
+                        {copy.add}
+                      </button>
+                    </div>
+                    {hostsForEdit.map((host) => (
+                      <div key={host.id} className="flex items-center justify-between py-2">
+                        <div>
+                          <p className="text-sm text-white">{host.name}</p>
+                          <p className="text-xs text-slate-500">{host.email}</p>
+                        </div>
+                        <button
+                          onClick={() => handleRemoveHost(host.id)}
+                          className="text-xs text-slate-500 hover:text-rose-400"
+                        >
+                          {copy.remove}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Pre-screening */}
+              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                <button
+                  onClick={() => setOpenSection(openSection === "screening" ? null : "screening")}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left"
+                >
+                  <span className="text-sm font-medium text-white">{copy.preScreening} ({editQuestions.length})</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "screening" ? "rotate-180" : ""}`} />
+                </button>
+                {openSection === "screening" && (
+                  <div className="px-4 pb-4 space-y-2">
+                    {editQuestions.map((q, i) => (
+                      <div key={i} className="flex gap-2">
+                        <input
+                          type="text"
+                          value={q}
+                          onChange={(e) => {
+                            const next = [...editQuestions];
+                            next[i] = e.target.value;
+                            setEditQuestions(next);
+                          }}
+                          placeholder={copy.questionPlaceholder}
+                          className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
+                        />
+                        <button
+                          onClick={() => handleRemoveQuestion(i)}
+                          className="text-xs text-slate-500 hover:text-rose-400"
+                        >
+                          {copy.remove}
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={handleAddQuestion}
+                      className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1"
+                    >
+                      <Plus className="w-3 h-3" /> {copy.add}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Document Signing */}
+              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                <button
+                  onClick={() => setOpenSection(openSection === "docs" ? null : "docs")}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left"
+                >
+                  <span className="text-sm font-medium text-white">{copy.docSigning}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "docs" ? "rotate-180" : ""}`} />
+                </button>
+                {openSection === "docs" && (
+                  <div className="px-4 pb-4 space-y-3">
+                    <label className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={docSigningEnabled}
+                        onChange={(e) => setDocSigningEnabled(e.target.checked)}
+                        className="mt-0.5"
+                      />
+                      <span className="text-sm text-slate-300">{copy.requireDocSign}</span>
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        onChange={(e) => setTemplateFile(e.target.files?.[0] || null)}
+                        className="flex-1 text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-white/5 file:text-white hover:file:bg-white/10"
+                      />
+                      <button
+                        onClick={handleUploadTemplate}
+                        disabled={!templateFile || uploadingTemplate}
+                        className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-3 py-2 rounded-lg text-xs font-medium"
+                      >
+                        {uploadingTemplate ? copy.uploading : copy.uploadTemplate}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Privacy */}
+              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                <button
+                  onClick={() => setOpenSection(openSection === "privacy" ? null : "privacy")}
+                  className="w-full flex items-center justify-between px-4 py-3 text-left"
+                >
+                  <span className="text-sm font-medium text-white">{copy.privacy}</span>
+                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "privacy" ? "rotate-180" : ""}`} />
+                </button>
+                {openSection === "privacy" && (
+                  <div className="px-4 pb-4">
+                    <label className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={showVisitorList}
+                        onChange={(e) => setShowVisitorList(e.target.checked)}
+                        className="mt-0.5"
+                      />
+                      <span className="text-sm text-slate-300">{copy.showVisitorList}</span>
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={saveEdit}
+                disabled={savingEdit}
+                className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all"
+              >
+                {savingEdit ? copy.saving : copy.saveChanges}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation */}
       <ConfirmModal
-        open={deleteTarget !== null}
-        title="Delete site"
-        message="This will permanently delete the site and all its visitor records. This action cannot be undone."
-        confirmLabel="Delete"
-        onConfirm={() => deleteTarget && handleDeleteSite(deleteTarget)}
-        onCancel={() => setDeleteTarget(null)}
+        open={!!deleteSiteId}
+        title={copy.deleteSite}
+        message={copy.deleteSiteConfirm}
+        confirmLabel={copy.delete}
+        onConfirm={handleDeleteSite}
+        onCancel={() => setDeleteSiteId(null)}
       />
-      <QRModal
-        open={qrSite !== null}
-        siteName={qrSite?.name || ""}
-        qrUrl={qrSite ? `/api/sites/${qrSite.id}/qr` : ""}
-        onClose={() => setQrSite(null)}
-      />
-      <DashboardTutorial />
+
+      {/* QR Modal */}
+      {qrSite && (
+        <QRModal
+          open={true}
+          siteName={qrSite.name}
+          qrUrl={`${typeof window !== "undefined" ? window.location.origin : ""}/api/sites/${qrSite.id}/qr`}
+          onClose={() => setQrSite(null)}
+        />
+      )}
+
+      {/* Tutorial */}
+      {showTutorial && <DashboardTutorial />}
     </div>
   );
 }

@@ -70,7 +70,7 @@ export default async function DashboardPage({
   if (!session) redirect("/admin/login");
   if (!session.user?.email) redirect("/admin/login");
 
-  const { slug, dateFrom, dateTo } = await searchParams;
+  const { slug, dateFrom, dateTo, locale: queryLocale } = await searchParams;
 
   if (!slug) {
     const user = await prisma.user.findUnique({
@@ -217,6 +217,9 @@ export default async function DashboardPage({
     lockdownEnabled: site.lockdownEnabled,
   }));
 
+  // Detect locale: URL param overrides subscription region
+  const locale = queryLocale === "pt" || subscription?.region === "brl" ? "pt" : "en";
+
   return (
     <ToastProvider>
       <CompanyDashboardClient
@@ -227,6 +230,7 @@ export default async function DashboardPage({
         sites={sites}
         currentDateFrom={typeof dateFrom === "string" ? dateFrom : ""}
         currentDateTo={typeof dateTo === "string" ? dateTo : ""}
+        locale={locale}
       />
     </ToastProvider>
   );
