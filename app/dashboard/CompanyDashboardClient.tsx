@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { logEvent } from "@/lib/analytics";
@@ -370,7 +370,6 @@ const t: Record<Locale, Record<string, string>> = {
     scanToCheckIn: "Scan to check in",
     poweredBy: "Powered by SiteSafe",
     terms: "Terms",
-    privacy: "Privacy",
     help: "Help",
     support: "Support",
     contactUs: "Contact us",
@@ -661,7 +660,6 @@ const t: Record<Locale, Record<string, string>> = {
     scanToCheckIn: "Escaneie para fazer check-in",
     poweredBy: "Powered by SiteSafe",
     terms: "Termos",
-    privacy: "Privacidade",
     help: "Ajuda",
     support: "Suporte",
     contactUs: "Fale conosco",
@@ -823,7 +821,7 @@ export default function CompanyDashboardClient({
       : 0;
 
   /* ─── Data fetchers (defined before effects) ─── */
-  const fetchVisitors = useCallback(async () => {
+  async function fetchVisitors() {
     setLoading(true);
     const params = new URLSearchParams();
     if (dateFrom) params.set("from", dateFrom);
@@ -834,52 +832,44 @@ export default function CompanyDashboardClient({
       setVisitors(data);
     }
     setLoading(false);
-  }, [dateFrom, dateTo]);
-
-  const fetchBlocklist = useCallback(async () => {
-    const res = await fetch("/api/blocklist");
-    if (res.ok) {
-      const data = await res.json();
-      setBlocklist(data);
-    }
-  }, []);
-
-  const fetchWebhook = useCallback(async () => {
-    const res = await fetch("/api/webhooks");
-    if (res.ok) {
-      const data = await res.json();
-      setWebhookUrl(data.url || "");
-    }
-  }, []);
-
-  const fetchHosts = useCallback(async (siteId: string) => {
-    const res = await fetch(`/api/sites/${siteId}/hosts`);
-    if (res.ok) {
-      const data = await res.json();
-      setHostsForEdit(Array.isArray(data) ? data : []);
-    }
-  }, []);
-
-  const fetchExpectedVisitors = useCallback(async (siteId: string) => {
-    const res = await fetch(`/api/sites/${siteId}/expected-visitors`);
-    if (res.ok) {
-      const data = await res.json();
-      setExpectedVisitors(Array.isArray(data) ? data : []);
-    }
-  }, []);
+  }
 
   /* ─── Effects ─── */
   useEffect(() => {
-    fetchBlocklist();
-    fetchWebhook();
-  }, [fetchBlocklist, fetchWebhook]);
+    (async () => {
+      const res = await fetch("/api/blocklist");
+      if (res.ok) {
+        const data = await res.json();
+        setBlocklist(data);
+      }
+    })();
+    (async () => {
+      const res = await fetch("/api/webhooks");
+      if (res.ok) {
+        const data = await res.json();
+        setWebhookUrl(data.url || "");
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     if (editingSiteId) {
-      fetchHosts(editingSiteId);
-      fetchExpectedVisitors(editingSiteId);
+      (async () => {
+        const res = await fetch(`/api/sites/${editingSiteId}/hosts`);
+        if (res.ok) {
+          const data = await res.json();
+          setHostsForEdit(Array.isArray(data) ? data : []);
+        }
+      })();
+      (async () => {
+        const res = await fetch(`/api/sites/${editingSiteId}/expected-visitors`);
+        if (res.ok) {
+          const data = await res.json();
+          setExpectedVisitors(Array.isArray(data) ? data : []);
+        }
+      })();
     }
-  }, [editingSiteId, fetchHosts, fetchExpectedVisitors]);
+  }, [editingSiteId]);
 
   /* ─── Handlers ─── */
   async function handleCreateSite(e: React.FormEvent) {
