@@ -37,26 +37,31 @@ export async function POST(request: Request) {
       );
     }
 
-    // Lockdown check
-const siteLockdown = await prisma.site.findUnique({
-  where: { id: siteId },
-  select: { lockdownEnabled: true },
-});
-
-if (siteLockdown?.lockdownEnabled) {
-  return NextResponse.json(
-    { error: "This site is currently in lockdown. Please contact security." },
-    { status: 403 }
-  );
-}
-
-    // ── Blocklist check ────────────────────────────────────────────
+    // ── Single site query: lockdown + ownership data ───────────────
     const site = await prisma.site.findUnique({
       where: { id: siteId },
-      select: { name: true, companyId: true },
+      select: {
+        id: true,
+        name: true,
+        companyId: true,
+        lockdownEnabled: true,
+      },
     });
 
-    if (site?.companyId) {
+    if (!site) {
+      return NextResponse.json({ error: "Site not found" }, { status: 404 });
+    }
+
+    // Lockdown check
+    if (site.lockdownEnabled) {
+      return NextResponse.json(
+        { error: "This site is currently in lockdown. Please contact security." },
+        { status: 403 }
+      );
+    }
+
+    // ── Blocklist check ────────────────────────────────────────────
+    if (site.companyId) {
       const blocklistMatch = await prisma.blocklistEntry.findFirst({
         where: {
           companyId: site.companyId,

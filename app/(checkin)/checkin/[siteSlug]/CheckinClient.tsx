@@ -487,9 +487,9 @@ export default function CheckinClient({
       const data = await res.json().catch(() => ({}));
       if (data.blocked) {
         setErrorMessage(data.message);
-      } else {
-        setErrorMessage(t.errSignIn);
-      }
+        } else {
+    setErrorMessage(data.error || t.errSignIn);  // ← ADD: shows lockdown message
+  }
     }
   }
 
