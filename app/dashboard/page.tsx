@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import CompanyDashboardClient from "./CompanyDashboardClient";
 import { ToastProvider } from "@/components/Toast";
+import { cookies } from "next/headers";
 
 export const dynamic = "force-dynamic";
 
@@ -73,6 +74,10 @@ export default async function DashboardPage({
   if (!session.user?.email) redirect("/admin/login");
 
   const { slug, dateFrom, dateTo, locale: queryLocale } = await searchParams;
+
+  // Read locale from cookie (same pattern as public pages)
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get("sitesafe-locale")?.value as "en" | "pt" | undefined;
 
   if (!slug) {
     const user = await prisma.user.findUnique({
@@ -220,9 +225,9 @@ export default async function DashboardPage({
     locale: site.locale,
   }));
 
-  // Use company locale, with URL param override
+  // Priority: URL param > cookie > company locale > default "en"
   const userLocale = (company as { locale?: string }).locale || "en";
-  const locale = queryLocale === "pt" ? "pt" : userLocale as "en" | "pt";
+  const locale = (queryLocale === "pt" ? "pt" : cookieLocale) || userLocale as "en" | "pt";
 
   return (
     <ToastProvider>
