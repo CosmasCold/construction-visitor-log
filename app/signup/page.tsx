@@ -1,5 +1,6 @@
 // app/signup/page.tsx
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import SignupClient from "./SignupClient";
 
 export const metadata: Metadata = {
@@ -8,10 +9,9 @@ export const metadata: Metadata = {
     "Start your 14‑day free trial of SiteSafe. No credit card required, no sales calls.",
 };
 
-export default function SignupPage({
-  searchParams,
-}: {
-  searchParams: { region?: string };
-}) {
-  return <SignupClient region={searchParams.region} />;
+export default async function SignupPage() {
+  const cookieStore = await cookies();
+  const locale = (cookieStore.get("sitesafe-locale")?.value as "en" | "pt") || "en";
+
+  return <SignupClient locale={locale} />;
 }

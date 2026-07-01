@@ -1,16 +1,15 @@
-// app/audit/page.tsx
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { logEvent } from "@/lib/analytics";
+import PublicHeader from "@/components/PublicHeader";
 import {
   ArrowRight,
   CheckCircle2,
   XCircle,
   ShieldAlert,
   Copy,
-  Award,
   ShieldCheck,
   Mail,
   Zap,
@@ -24,70 +23,183 @@ import {
   Camera,
 } from "lucide-react";
 
-const questions = [
-  {
-    id: 1,
-    question: "Do you have a digital visitor log (not just paper)?",
-    hint: "Paper sheets can be lost, damaged, or altered. Digital logs are searchable and exportable.",
-    icon: FileText,
-  },
-  {
-    id: 2,
-    question: "Can you prove every visitor acknowledged your safety rules?",
-    hint: "Inspectors want to see that visitors were informed — not just that they signed their name.",
-    icon: ShieldCheck,
-  },
-  {
-    id: 3,
-    question: "Is your visitor check-in process completely contactless?",
-    hint: "QR codes or self-service kiosks reduce shared surfaces and speed up entry.",
-    icon: Zap,
-  },
-  {
-    id: 4,
-    question: "Does every entry have an accurate, automatic timestamp?",
-    hint: "Hand-written times are easy to forge. Digital timestamps can't be changed after the fact.",
-    icon: Clock,
-  },
-  {
-    id: 5,
-    question: "Can you filter and export your visitor records by date, site, or host?",
-    hint: "During an audit you'll need to produce a filtered report in minutes, not hours.",
-    icon: Eye,
-  },
-  {
-    id: 6,
-    question: "Are host notifications sent automatically when a visitor arrives?",
-    hint: "The person being visited should know immediately — without you having to call or text.",
-    icon: Mail,
-  },
-  {
-    id: 7,
-    question: "Can you pre-register expected visitors so they can sign in with one tap?",
-    hint: "Pre-registration saves time at the front desk and reduces typing errors.",
-    icon: Users,
-  },
-  {
-    id: 8,
-    question: "Do you capture a photo of each visitor at check-in?",
-    hint: "A photo adds a layer of security and helps with badge printing and identification.",
-    icon: Camera,
-  },
-  {
-    id: 9,
-    question: "Is your check-in system available on any device without installing an app?",
-    hint: "Visitors should be able to sign in on their own phone or a shared tablet — no app store required.",
-    icon: Zap,
-  },
-  {
-    id: 10,
-    question: "Do you have a clear retention policy for visitor data?",
-    hint: "You need to know how long records are kept and be able to delete them if required.",
-    icon: Lock,
-  },
+interface AuditClientProps {
+  locale: "en" | "pt";
+}
+
+const questionIcons = [
+  FileText, ShieldCheck, Zap, Clock, Eye, Mail, Users, Camera, Zap, Lock,
 ];
 
-export default function AuditPage() {
+const t = {
+  en: {
+    title: "Free Visitor Log Self-Audit",
+    subtitle:
+      "Take this 10-question audit to see if your current sign-in process would survive a safety inspection. Takes 60 seconds. No sign-up required.",
+    progress: "Progress",
+    yes: "Yes",
+    no: "No",
+    reportTitle: "Want the full report?",
+    reportDesc:
+      "Enter your email and we'll send you a detailed breakdown of your score, plus the exact steps to fix each gap. No spam, no sales call.",
+    emailPlaceholder: "your@email.com",
+    sendReport: "Send report",
+    sending: "Sending…",
+    reportSent: "Report sent! Check your inbox.",
+    reportError: "Something went wrong. Please try again.",
+    skipEmail: "No thanks, just show my score →",
+    seeScore: "See my score →",
+    answerRemaining: (n: number) =>
+      `Answer ${n} more question${n > 1 ? "s" : ""}`,
+    scoreHighRisk: "High risk",
+    scoreHighRiskMsg:
+      "Your current visitor log would likely fail a safety audit. You're missing the majority of the essentials.",
+    scoreModerateRisk: "Moderate risk",
+    scoreModerateRiskMsg:
+      "You're doing some things right, but there are important gaps an inspector would notice.",
+    scoreAlmostThere: "Almost there",
+    scoreAlmostThereMsg:
+      "You've covered most of the basics. A few improvements would make your log audit-proof.",
+    scoreFullyCovered: "Fully covered",
+    scoreFullyCoveredMsg:
+      "You're doing everything right — a digital system with mandatory safety acknowledgment, automated records, and exports. Keep it up!",
+    copyEmbed: "Copy embed",
+    copied: "Copied!",
+    badgeDesc:
+      "Embed this badge on your website to show you take visitor safety seriously.",
+    fixWithSiteSafe: "Fix this with SiteSafe",
+    retakeAudit: "Retake audit",
+    footerNote:
+      "SiteSafe fixes all 10 of these automatically — flat $49/mo, no credit card, no sales call.",
+    questions: [
+      {
+        q: "Do you have a digital visitor log (not just paper)?",
+        hint: "Paper sheets can be lost, damaged, or altered. Digital logs are searchable and exportable.",
+      },
+      {
+        q: "Can you prove every visitor acknowledged your safety rules?",
+        hint: "Inspectors want to see that visitors were informed — not just that they signed their name.",
+      },
+      {
+        q: "Is your visitor check-in process completely contactless?",
+        hint: "QR codes or self-service kiosks reduce shared surfaces and speed up entry.",
+      },
+      {
+        q: "Does every entry have an accurate, automatic timestamp?",
+        hint: "Hand-written times are easy to forge. Digital timestamps can't be changed after the fact.",
+      },
+      {
+        q: "Can you filter and export your visitor records by date, site, or host?",
+        hint: "During an audit you'll need to produce a filtered report in minutes, not hours.",
+      },
+      {
+        q: "Are host notifications sent automatically when a visitor arrives?",
+        hint: "The person being visited should know immediately — without you having to call or text.",
+      },
+      {
+        q: "Can you pre-register expected visitors so they can sign in with one tap?",
+        hint: "Pre-registration saves time at the front desk and reduces typing errors.",
+      },
+      {
+        q: "Do you capture a photo of each visitor at check-in?",
+        hint: "A photo adds a layer of security and helps with badge printing and identification.",
+      },
+      {
+        q: "Is your check-in system available on any device without installing an app?",
+        hint: "Visitors should be able to sign in on their own phone or a shared tablet — no app store required.",
+      },
+      {
+        q: "Do you have a clear retention policy for visitor data?",
+        hint: "You need to know how long records are kept and be able to delete them if required.",
+      },
+    ],
+  },
+  pt: {
+    title: "Auto-Auditoria Gratuita de Registro de Visitantes",
+    subtitle:
+      "Responda estas 10 perguntas para ver se seu processo de registro atual sobreviveria a uma inspeção de segurança. Leva 60 segundos. Não precisa de cadastro.",
+    progress: "Progresso",
+    yes: "Sim",
+    no: "Não",
+    reportTitle: "Quer o relatório completo?",
+    reportDesc:
+      "Digite seu e-mail e enviaremos uma análise detalhada da sua pontuação, mais os passos exatos para corrigir cada lacuna. Sem spam, sem ligação de vendas.",
+    emailPlaceholder: "seu@email.com",
+    sendReport: "Enviar relatório",
+    sending: "Enviando…",
+    reportSent: "Relatório enviado! Verifique sua caixa de entrada.",
+    reportError: "Algo deu errado. Tente novamente.",
+    skipEmail: "Não, obrigado, só mostrar minha pontuação →",
+    seeScore: "Ver minha pontuação →",
+    answerRemaining: (n: number) =>
+      `Responda mais ${n} pergunta${n > 1 ? "s" : ""}`,
+    scoreHighRisk: "Alto risco",
+    scoreHighRiskMsg:
+      "Seu registro de visitantes atual provavelmente falharia em uma auditoria de segurança. Você está sem a maioria dos itens essenciais.",
+    scoreModerateRisk: "Risco moderado",
+    scoreModerateRiskMsg:
+      "Você está fazendo algumas coisas certas, mas há lacunas importantes que um inspetor notaria.",
+    scoreAlmostThere: "Quase lá",
+    scoreAlmostThereMsg:
+      "Você cobriu a maioria dos fundamentos. Algumas melhorias tornariam seu registro à prova de auditoria.",
+    scoreFullyCovered: "Totalmente coberto",
+    scoreFullyCoveredMsg:
+      "Você está fazendo tudo certo — um sistema digital com reconhecimento obrigatório de segurança, registros automatizados e exportações. Continue assim!",
+    copyEmbed: "Copiar embed",
+    copied: "Copiado!",
+    badgeDesc:
+      "Incorpore este selo no seu site para mostrar que leva a segurança de visitantes a sério.",
+    fixWithSiteSafe: "Corrigir isso com a SiteSafe",
+    retakeAudit: "Refazer auditoria",
+    footerNote:
+      "A SiteSafe corrige todos esses 10 itens automaticamente — R$249/mês, sem cartão de crédito, sem ligação de vendas.",
+    questions: [
+      {
+        q: "Você tem um registro digital de visitantes (não apenas papel)?",
+        hint: "Papel pode ser perdido, danificado ou alterado. Registros digitais são pesquisáveis e exportáveis.",
+      },
+      {
+        q: "Você pode provar que cada visitante reconheceu suas regras de segurança?",
+        hint: "Inspetores querem ver que os visitantes foram informados — não apenas que assinaram o nome.",
+      },
+      {
+        q: "O processo de check-in é completamente sem contato?",
+        hint: "QR codes ou quiosques de autoatendimento reduzem superfícies compartilhadas e aceleram a entrada.",
+      },
+      {
+        q: "Cada entrada tem um timestamp automático e preciso?",
+        hint: "Horários escritos à mão são fáceis de falsificar. Timestamps digitais não podem ser alterados.",
+      },
+      {
+        q: "Você pode filtrar e exportar seus registros por data, local ou anfitrião?",
+        hint: "Durante uma auditoria você precisará produzir um relatório filtrado em minutos, não horas.",
+      },
+      {
+        q: "As notificações aos anfitriões são enviadas automaticamente quando um visitante chega?",
+        hint: "A pessoa sendo visitada deve saber imediatamente — sem você precisar ligar ou mandar mensagem.",
+      },
+      {
+        q: "Você pode pré-cadastrar visitantes esperados para que eles façam check-in com um toque?",
+        hint: "Pré-cadastro economiza tempo na recepção e reduz erros de digitação.",
+      },
+      {
+        q: "Você captura uma foto de cada visitante no check-in?",
+        hint: "Uma foto adiciona uma camada de segurança e ajuda na impressão de crachás e identificação.",
+      },
+      {
+        q: "Seu sistema de check-in está disponível em qualquer dispositivo sem instalar um app?",
+        hint: "Visitantes devem poder fazer check-in no próprio celular ou em um tablet compartilhado — sem precisar da loja de apps.",
+      },
+      {
+        q: "Você tem uma política clara de retenção de dados de visitantes?",
+        hint: "Você precisa saber por quanto tempo os registros são mantidos e poder excluí-los se necessário.",
+      },
+    ],
+  },
+};
+
+export default function AuditClient({ locale }: AuditClientProps) {
+  const copy = t[locale];
   const [answers, setAnswers] = useState<Record<number, boolean | null>>({});
   const [submitted, setSubmitted] = useState(false);
   const [showEmailCapture, setShowEmailCapture] = useState(false);
@@ -101,37 +213,40 @@ export default function AuditPage() {
     : 0;
 
   function getScoreCategory(score: number) {
-    if (score <= 3) return {
-      label: "High risk",
-      color: "text-rose-400",
-      bgColor: "bg-rose-500/5",
-      borderColor: "border-rose-500/20",
-      icon: ShieldAlert,
-      message: "Your current visitor log would likely fail a safety audit. You're missing the majority of the essentials.",
-    };
-    if (score <= 6) return {
-      label: "Moderate risk",
-      color: "text-amber-400",
-      bgColor: "bg-amber-500/5",
-      borderColor: "border-amber-500/20",
-      icon: AlertTriangle,
-      message: "You're doing some things right, but there are important gaps an inspector would notice.",
-    };
-    if (score <= 9) return {
-      label: "Almost there",
-      color: "text-sky-400",
-      bgColor: "bg-sky-500/5",
-      borderColor: "border-sky-500/20",
-      icon: TrendingUp,
-      message: "You've covered most of the basics. A few improvements would make your log audit-proof.",
-    };
+    if (score <= 3)
+      return {
+        label: copy.scoreHighRisk,
+        color: "text-rose-400",
+        bgColor: "bg-rose-500/5",
+        borderColor: "border-rose-500/20",
+        icon: ShieldAlert,
+        message: copy.scoreHighRiskMsg,
+      };
+    if (score <= 6)
+      return {
+        label: copy.scoreModerateRisk,
+        color: "text-amber-400",
+        bgColor: "bg-amber-500/5",
+        borderColor: "border-amber-500/20",
+        icon: AlertTriangle,
+        message: copy.scoreModerateRiskMsg,
+      };
+    if (score <= 9)
+      return {
+        label: copy.scoreAlmostThere,
+        color: "text-sky-400",
+        bgColor: "bg-sky-500/5",
+        borderColor: "border-sky-500/20",
+        icon: TrendingUp,
+        message: copy.scoreAlmostThereMsg,
+      };
     return {
-      label: "Fully covered",
+      label: copy.scoreFullyCovered,
       color: "text-emerald-400",
       bgColor: "bg-emerald-500/5",
       borderColor: "border-emerald-500/20",
       icon: CheckCircle2,
-      message: "You're doing everything right — a digital system with mandatory safety acknowledgment, automated records, and exports. Keep it up!",
+      message: copy.scoreFullyCoveredMsg,
     };
   }
 
@@ -142,7 +257,7 @@ export default function AuditPage() {
   }
 
   function handleSeeMyScore() {
-    if (Object.keys(answers).length < questions.length) return;
+    if (Object.keys(answers).length < copy.questions.length) return;
     setShowEmailCapture(true);
     setSubmitted(true);
   }
@@ -199,24 +314,12 @@ export default function AuditPage() {
 
   const ScoreIcon = scoreRevealed ? getScoreCategory(score).icon : CheckCircle2;
   const answeredCount = Object.keys(answers).length;
-  const progress = (answeredCount / questions.length) * 100;
+  const progress = (answeredCount / copy.questions.length) * 100;
+  const remaining = copy.questions.length - answeredCount;
 
   return (
     <div className="min-h-screen bg-[#0a0f1c] text-slate-200">
-      {/* ─── Header ─── */}
-      <header className="border-b border-white/5 bg-[#0a0f1c]/90 backdrop-blur-xl">
-        <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-sky-500 flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-sm text-white">SiteSafe</span>
-          </Link>
-          <Link href="/" className="text-xs text-slate-500 hover:text-white transition-colors flex items-center gap-1">
-            Back to site <ArrowRight className="w-3 h-3" />
-          </Link>
-        </div>
-      </header>
+      <PublicHeader locale={locale} narrow />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-8">
         {/* ─── Hero ─── */}
@@ -225,11 +328,10 @@ export default function AuditPage() {
             <ShieldAlert className="w-6 h-6 text-sky-400" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">
-            Free Visitor Log Self-Audit
+            {copy.title}
           </h1>
           <p className="text-base text-slate-400 max-w-md mx-auto leading-relaxed">
-            Take this 10-question audit to see if your current sign-in process would survive a safety inspection. 
-            Takes 60 seconds. No sign-up required.
+            {copy.subtitle}
           </p>
         </div>
 
@@ -237,8 +339,8 @@ export default function AuditPage() {
         {!submitted && (
           <div className="rounded-xl border border-white/5 bg-white/[0.03] p-4">
             <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-              <span>Progress</span>
-              <span>{answeredCount} of {questions.length}</span>
+              <span>{copy.progress}</span>
+              <span>{answeredCount} of {copy.questions.length}</span>
             </div>
             <div className="h-2 rounded-full bg-white/5 overflow-hidden">
               <div
@@ -251,13 +353,13 @@ export default function AuditPage() {
 
         {/* ─── Questions ─── */}
         <div className="space-y-4">
-          {questions.map((q) => {
-            const answer = answers[q.id];
+          {copy.questions.map((q, idx) => {
+            const answer = answers[idx + 1];
             const disabled = submitted || showEmailCapture;
-            const category = scoreRevealed ? getScoreCategory(score) : null;
+            const Icon = questionIcons[idx];
             return (
               <div
-                key={q.id}
+                key={idx + 1}
                 className={`rounded-2xl border p-5 transition-all ${
                   scoreRevealed
                     ? answer === true
@@ -268,18 +370,18 @@ export default function AuditPage() {
               >
                 <div className="flex items-start gap-3 mb-3">
                   <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0">
-                    <q.icon className="w-4 h-4 text-slate-400" />
+                    <Icon className="w-4 h-4 text-slate-400" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-white">
-                      {q.id}. {q.question}
+                      {idx + 1}. {q.q}
                     </p>
                     <p className="text-xs text-slate-500 mt-1 leading-relaxed">{q.hint}</p>
                   </div>
                 </div>
                 <div className="flex gap-2 ml-11">
                   <button
-                    onClick={() => handleAnswer(q.id, true)}
+                    onClick={() => handleAnswer(idx + 1, true)}
                     disabled={disabled}
                     className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all ${
                       answer === true
@@ -287,10 +389,10 @@ export default function AuditPage() {
                         : "bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10 hover:text-white"
                     }`}
                   >
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Yes
+                    <CheckCircle2 className="w-3.5 h-3.5" /> {copy.yes}
                   </button>
                   <button
-                    onClick={() => handleAnswer(q.id, false)}
+                    onClick={() => handleAnswer(idx + 1, false)}
                     disabled={disabled}
                     className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-medium transition-all ${
                       answer === false
@@ -298,7 +400,7 @@ export default function AuditPage() {
                         : "bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10 hover:text-white"
                     }`}
                   >
-                    <XCircle className="w-3.5 h-3.5" /> No
+                    <XCircle className="w-3.5 h-3.5" /> {copy.no}
                   </button>
                 </div>
               </div>
@@ -313,17 +415,16 @@ export default function AuditPage() {
               <Mail className="w-6 h-6 text-sky-400" />
             </div>
             <h3 className="text-lg font-bold text-white mb-2">
-              Want the full report?
+              {copy.reportTitle}
             </h3>
             <p className="text-sm text-slate-400 mb-6 max-w-sm mx-auto">
-              Enter your email and we&apos;ll send you a detailed breakdown of your score, 
-              plus the exact steps to fix each gap. No spam, no sales call.
+              {copy.reportDesc}
             </p>
             {emailStatus !== "sent" ? (
               <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-4">
                 <input
                   type="email"
-                  placeholder="your@email.com"
+                  placeholder={copy.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -334,20 +435,20 @@ export default function AuditPage() {
                   disabled={emailStatus === "loading"}
                   className="bg-sky-500 hover:bg-sky-400 disabled:bg-sky-500/30 text-white font-semibold rounded-xl px-6 py-3 text-sm transition-all active:scale-[0.98]"
                 >
-                  {emailStatus === "loading" ? "Sending…" : "Send report"}
+                  {emailStatus === "loading" ? copy.sending : copy.sendReport}
                 </button>
               </form>
             ) : (
-              <p className="text-emerald-400 text-sm font-medium mb-4">Report sent! Check your inbox.</p>
+              <p className="text-emerald-400 text-sm font-medium mb-4">{copy.reportSent}</p>
             )}
             {emailStatus === "error" && (
-              <p className="text-rose-400 text-xs mb-4">Something went wrong. Please try again.</p>
+              <p className="text-rose-400 text-xs mb-4">{copy.reportError}</p>
             )}
             <button
               onClick={skipEmail}
               className="text-slate-500 hover:text-white text-sm transition-colors"
             >
-              No thanks, just show my score →
+              {copy.skipEmail}
             </button>
           </div>
         )}
@@ -356,12 +457,10 @@ export default function AuditPage() {
         {!submitted && !showEmailCapture && (
           <button
             onClick={handleSeeMyScore}
-            disabled={Object.keys(answers).length < questions.length}
+            disabled={Object.keys(answers).length < copy.questions.length}
             className="w-full bg-sky-500 hover:bg-sky-400 disabled:bg-sky-500/20 disabled:text-sky-200/30 text-white font-semibold rounded-xl px-6 py-4 text-base transition-all active:scale-[0.98] shadow-lg shadow-sky-500/20"
           >
-            {Object.keys(answers).length < questions.length
-              ? `Answer ${questions.length - Object.keys(answers).length} more question${questions.length - Object.keys(answers).length > 1 ? 's' : ''}`
-              : "See my score →"}
+            {remaining > 0 ? copy.answerRemaining(remaining) : copy.seeScore}
           </button>
         )}
 
@@ -398,11 +497,11 @@ export default function AuditPage() {
                     className="text-sky-400 hover:text-sky-300 text-sm flex items-center gap-1.5 transition-colors"
                   >
                     <Copy className="w-3.5 h-3.5" />
-                    {badgeCopied ? "Copied!" : "Copy embed"}
+                    {badgeCopied ? copy.copied : copy.copyEmbed}
                   </button>
                 </div>
                 <p className="text-xs text-slate-500 mt-3">
-                  Embed this badge on your website to show you take visitor safety seriously.
+                  {copy.badgeDesc}
                 </p>
               </div>
 
@@ -413,18 +512,18 @@ export default function AuditPage() {
                   className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-lg active:scale-[0.98]"
                   onClick={() => logEvent("audit_cta_click")}
                 >
-                  Fix this with SiteSafe <ArrowRight className="ml-2 w-4 h-4" />
+                  {copy.fixWithSiteSafe} <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
                 <button
                   onClick={reset}
                   className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-slate-300 border border-white/10 hover:bg-white/5 transition-all"
                 >
-                  Retake audit
+                  {copy.retakeAudit}
                 </button>
               </div>
               
               <p className="text-xs text-slate-500">
-                SiteSafe fixes all 10 of these automatically — flat $49/mo, no credit card, no sales call.
+                {copy.footerNote}
               </p>
             </div>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { logEvent } from "@/lib/analytics";
@@ -735,6 +735,8 @@ export default function CompanyDashboardClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "in" | "out">("all");
   const [siteFilter, setSiteFilter] = useState<string>("all");
+  const [showLangMenu, setShowLangMenu] = useState(false);
+  const langMenuRef = useRef<HTMLDivElement>(null);
 
   /* Create site modal */
   const [showCreate, setShowCreate] = useState(false);
@@ -897,6 +899,19 @@ export default function CompanyDashboardClient({
     }, 5000);
     return () => clearInterval(interval);
   }, [companyId]);
+
+  /* ─── Close language menu on click outside ─── */
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
+        setShowLangMenu(false);
+      }
+    }
+    if (showLangMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showLangMenu]);
 
   /* ─── Handlers ─── */
   async function handleCreateSite(e: React.FormEvent) {
@@ -1243,6 +1258,46 @@ export default function CompanyDashboardClient({
             >
               {copy.help}
             </button>
+            
+            {/* Language Switcher */}
+            <div className="relative" ref={langMenuRef}>
+              <button
+                onClick={() => setShowLangMenu(!showLangMenu)}
+                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-white/5"
+              >
+                <Globe className="w-3.5 h-3.5" />
+                {locale === "pt" ? "PT" : "EN"}
+              </button>
+              {showLangMenu && (
+                <div className="absolute right-0 mt-1 w-32 rounded-lg border border-white/10 bg-[#1a1f2e] shadow-xl py-1 z-50">
+                  <button
+                    onClick={() => {
+                      document.cookie = "sitesafe-locale=en; path=/; max-age=31536000; SameSite=Lax";
+                      router.refresh();
+                      setShowLangMenu(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                      locale === "en" ? "text-sky-400 bg-sky-500/10" : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => {
+                      document.cookie = "sitesafe-locale=pt; path=/; max-age=31536000; SameSite=Lax";
+                      router.refresh();
+                      setShowLangMenu(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                      locale === "pt" ? "text-sky-400 bg-sky-500/10" : "text-slate-400 hover:text-white hover:bg-white/5"
+                    }`}
+                  >
+                    Português
+                  </button>
+                </div>
+              )}
+            </div>
+
             <Link
               href="/settings"
               className="text-xs text-slate-500 hover:text-white transition-colors flex items-center gap-1"
@@ -1985,7 +2040,7 @@ export default function CompanyDashboardClient({
       )}
 
       {/* Tutorial */}
-      {showTutorial && <DashboardTutorial />}
+      {showTutorial && <DashboardTutorial locale={locale} />}
     </div>
   );
 }
