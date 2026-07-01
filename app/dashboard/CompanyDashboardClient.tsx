@@ -1329,7 +1329,11 @@ export default function CompanyDashboardClient({
               {sites.map((site) => (
                 <div
                   key={site.id}
-                  className={`rounded-xl border bg-white/[0.03] overflow-hidden transition-all hover:bg-white/[0.05] ${
+                  onClick={(e) => {
+                    if ((e.target as HTMLElement).closest("button")) return;
+                    window.open(`/checkin/${site.slug}`, "_blank");
+                  }}
+                  className={`rounded-xl border bg-white/[0.03] overflow-hidden transition-all hover:bg-white/[0.05] cursor-pointer ${
                     site.lockdownEnabled
                       ? "border-rose-500/30"
                       : "border-white/5"
@@ -1420,7 +1424,7 @@ export default function CompanyDashboardClient({
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as "all" | "in" | "out")}
-                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                className="bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
               >
                 <option value="all">{copy.allStatuses}</option>
                 <option value="in">{copy.signedInStatus}</option>
@@ -1429,7 +1433,7 @@ export default function CompanyDashboardClient({
               <select
                 value={siteFilter}
                 onChange={(e) => setSiteFilter(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                className="bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
               >
                 <option value="all">{copy.allSites}</option>
                 {sites.map((s) => (
@@ -1550,7 +1554,7 @@ export default function CompanyDashboardClient({
               <select
                 value={blockType}
                 onChange={(e) => setBlockType(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
+                className="bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
               >
                 <option value="name">{copy.visitor}</option>
                 <option value="email">{copy.hostEmail}</option>
@@ -1737,7 +1741,7 @@ export default function CompanyDashboardClient({
                         type="text"
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                        className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -1747,7 +1751,7 @@ export default function CompanyDashboardClient({
                           type="text"
                           value={editSlug}
                           onChange={(e) => setEditSlug(e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                          className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                         />
                       </div>
                       <div>
@@ -1756,7 +1760,7 @@ export default function CompanyDashboardClient({
                           type="text"
                           value={editAddress}
                           onChange={(e) => setEditAddress(e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                          className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                         />
                       </div>
                     </div>
@@ -1766,7 +1770,7 @@ export default function CompanyDashboardClient({
                         value={editBriefing}
                         onChange={(e) => setEditBriefing(e.target.value)}
                         rows={3}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                        className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                       />
                     </div>
                     <div>
@@ -1774,7 +1778,7 @@ export default function CompanyDashboardClient({
                       <select
                         value={editLocale}
                         onChange={(e) => setEditLocale(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
+                        className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
                       >
                         <option value="en" className="bg-[#0f172a]">{copy.english}</option>
                         <option value="pt" className="bg-[#0f172a]">{copy.portuguese}</option>
