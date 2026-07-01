@@ -18,6 +18,7 @@ export async function GET(
       documentTemplateData: true,
       showVisitorListOnCheckin: true,
       locale: true,
+      lockdownEnabled: true,  // ← ADD THIS
     },
   });
 
@@ -62,7 +63,7 @@ export async function PUT(
     questions,
     documentSigningEnabled,
     showVisitorListOnCheckin,
-    locale, // ← ADD THIS
+    locale,
   } = await req.json();
 
   const updated = await prisma.site.update({

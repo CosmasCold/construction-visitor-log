@@ -228,17 +228,44 @@ export default function CheckinClient({
       .catch(() => setExpectedVisitors([]));
   }, [siteId]);
 
-  // Fetch site settings
+  // Fetch site settings + lockdown polling
   useEffect(() => {
-    fetch(`/api/sites/${siteId}`)
-      .then((res) => res.json())
-      .then((data) => {
+    let interval: ReturnType<typeof setInterval> | null = null;
+
+    async function fetchSiteSettings() {
+      try {
+        const res = await fetch(`/api/sites/${siteId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+
         setDocumentSigningEnabled(true);
         setDocumentTemplateData(data.documentTemplateData || null);
         setShowVisitorList(data.showVisitorListOnCheckin ?? true);
-      })
-      .catch(() => {});
-  }, [siteId]);
+
+        // Lockdown overlay — show/hide dynamically
+        if (data.lockdownEnabled) {
+          setErrorMessage(
+            locale === "pt"
+              ? "Este local está em lockdown. Entrada de visitantes está suspensa."
+              : "This site is in lockdown. Visitor check-in is temporarily suspended."
+          );
+        } else if (
+          errorMessage === "Este local está em lockdown. Entrada de visitantes está suspensa." ||
+          errorMessage === "This site is in lockdown. Visitor check-in is temporarily suspended."
+        ) {
+          // Only clear if it was a lockdown message
+          setErrorMessage(null);
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    fetchSiteSettings(); // initial fetch
+    interval = setInterval(fetchSiteSettings, 5000); // poll every 5s
+
+    return () => { if (interval) clearInterval(interval); };
+  }, [siteId, locale, errorMessage]);
 
   // Fetch active visitors + auto‑refresh
   useEffect(() => {
@@ -251,7 +278,7 @@ export default function CheckinClient({
     }
     fetchActiveVisitors();
     const interval = setInterval(fetchActiveVisitors, 5000);
-    return () => clearInterval(interval);
+    return () => { if (interval) clearInterval(interval); };
   }, [siteId]);
 
   async function capturePhoto(): Promise<string | null> {
