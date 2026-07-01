@@ -14,16 +14,22 @@ export async function POST(request: Request) {
     // ── Lockdown check ─────────────────────────────────────────────
     const site = await prisma.site.findUnique({
       where: { id: siteId },
-      select: { id: true, name: true, companyId: true, lockdownEnabled: true },
+      select: { id: true, name: true, companyId: true, lockdownEnabled: true, locale: true },
     });
 
     if (!site) {
       return NextResponse.json({ error: "Site not found" }, { status: 404 });
     }
 
+    const isPt = site?.locale === "pt";
+
     if (site.lockdownEnabled) {
       return NextResponse.json(
-        { error: "This site is currently in lockdown. Please contact security." },
+        {
+          error: isPt
+            ? "Este local está em lockdown. Entre em contato com a segurança."
+            : "This site is currently in lockdown. Please contact security.",
+        },
         { status: 403 }
       );
     }
@@ -47,7 +53,9 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             blocked: true,
-            message: "Your entry has been flagged. Please contact security.",
+            message: isPt
+              ? "Sua entrada foi sinalizada. Entre em contato com a segurança."
+              : "Your entry has been flagged. Please contact security.",
           },
           { status: 403 }
         );
@@ -81,7 +89,7 @@ export async function POST(request: Request) {
 
     if (companyRecord?.slackWebhookUrl) {
       const slackPayload = {
-        text: ` Quick sign-in: *${visitor.fullName}* from *${visitor.company || "unknown"}* just signed in at *${site.name}*.`,
+        text: `🚪 Quick sign-in: *${visitor.fullName}* from *${visitor.company || "unknown"}* just signed in at *${site.name}*.`,
         username: "SiteSafe",
         icon_emoji: ":clipboard:",
       };

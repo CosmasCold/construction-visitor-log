@@ -722,8 +722,12 @@ export default function CompanyDashboardClient({
   const copy = t[locale];
   const isPT = locale === "pt";
 
-  /* ─── State ─── */
-  const [sites, setSites] = useState<Site[]>(initialSites);
+  
+
+    /* ─── State ─── */
+  const [sites, setSites] = useState(initialSites);
+  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [visitors, setVisitors] = useState<Visitor[]>(logs);
   const [loading, setLoading] = useState(false);
   const [dateFrom, setDateFrom] = useState(currentDateFrom || "");
@@ -870,6 +874,22 @@ export default function CompanyDashboardClient({
       })();
     }
   }, [editingSiteId]);
+
+  /* ─── Auto-refresh dashboard data every 5 seconds ───────────── */
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/dashboard/data?companyId=${companyId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setSites(data.sites);
+        setVisitors(data.logs);
+      } catch (err) {
+        console.error("Auto-refresh failed:", err);
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [companyId]);
 
   /* ─── Handlers ─── */
   async function handleCreateSite(e: React.FormEvent) {
@@ -1133,12 +1153,13 @@ export default function CompanyDashboardClient({
         body: JSON.stringify({ lockdownEnabled: !current }),
       });
       if (res.ok) {
+        const data = await res.json();
         setSites((prev) =>
           prev.map((s) =>
-            s.id === siteId ? { ...s, lockdownEnabled: !current } : s
+            s.id === siteId ? { ...s, lockdownEnabled: data.lockdownEnabled } : s
           )
         );
-        addToast(!current ? copy.lockdownActivated : copy.lockdownEnded, "success");
+        addToast(data.lockdownEnabled ? copy.lockdownActivated : copy.lockdownEnded, "success");
       } else {
         const err = await res.json().catch(() => ({ error: "Unknown error" }));
         addToast(err.error || copy.error, "error");

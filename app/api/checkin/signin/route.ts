@@ -45,6 +45,7 @@ export async function POST(request: Request) {
         name: true,
         companyId: true,
         lockdownEnabled: true,
+        locale: true,        // ← ADDED for PT messages
       },
     });
 
@@ -52,10 +53,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Site not found" }, { status: 404 });
     }
 
+    const isPt = site?.locale === "pt";
+
     // Lockdown check
     if (site.lockdownEnabled) {
       return NextResponse.json(
-        { error: "This site is currently in lockdown. Please contact security." },
+        {
+          error: isPt
+            ? "Este local está em lockdown. Entre em contato com a segurança."
+            : "This site is currently in lockdown. Please contact security.",
+        },
         { status: 403 }
       );
     }
@@ -175,7 +182,9 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             blocked: true,
-            message: "Your entry has been flagged. Please contact security.",
+            message: isPt
+              ? "Sua entrada foi sinalizada. Entre em contato com a segurança."
+              : "Your entry has been flagged. Please contact security.",
           },
           { status: 403 }
         );
