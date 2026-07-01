@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { logEvent } from "@/lib/analytics";
@@ -810,19 +810,26 @@ export default function CompanyDashboardClient({
   });
 
   const activeNow = visitors.filter((v) => !v.signedOutAt).length;
-  const todayCount = visitors.length;
-  const avgDuration =
-    visitors.length > 0
-      ? Math.round(
-          visitors.reduce((acc, v) => {
-            if (!v.signedOutAt) return acc;
-            const diff =
-              new Date(v.signedOutAt).getTime() -
-              new Date(v.signedInAt).getTime();
-            return acc + diff / 60000;
-          }, 0) / visitors.length
-        )
-      : 0;
+
+  // todayCount from sites state (auto-refreshed, resets daily)
+  const todayCount = sites.reduce((sum, site) => sum + (site.visitorsToday || 0), 0);
+
+  // avgDuration from today's completed visits only
+  const avgDuration = useMemo(() => {
+    const today = new Date().toDateString();
+    const todayVisitors = visitors.filter((v) => {
+      const signedIn = new Date(v.signedInAt).toDateString();
+      return signedIn === today && v.signedOutAt;
+    });
+    if (todayVisitors.length === 0) return 0;
+    const totalMinutes = todayVisitors.reduce((acc, v) => {
+      const diff =
+        new Date(v.signedOutAt!).getTime() -
+        new Date(v.signedInAt).getTime();
+      return acc + diff / 60000;
+    }, 0);
+    return Math.round(totalMinutes / todayVisitors.length);
+  }, [visitors]);
 
   /* ─── Data fetchers (defined before effects) ─── */
   async function fetchVisitors() {
