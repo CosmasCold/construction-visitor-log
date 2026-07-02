@@ -1,16 +1,15 @@
 // app/auth/signout/page.tsx
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { ArrowLeft } from "lucide-react";
 
 export default function SignOutPage() {
   const router = useRouter();
-
-  // Read callbackUrl from the query string; if missing, go to landing page
-  const params = new URLSearchParams(window.location.search);
-  const callbackUrl = params.get("callbackUrl") || "/";
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
