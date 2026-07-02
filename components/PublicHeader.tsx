@@ -15,11 +15,13 @@ const t = {
     home: "Home",
     features: "Features",
     startTrial: "Start free trial",
+    signIn: "Sign in",
   },
   pt: {
     home: "Início",
     features: "Funcionalidades",
     startTrial: "Começar teste grátis",
+    signIn: "Entrar",
   },
 };
 
@@ -48,6 +50,12 @@ export default function PublicHeader({ locale, narrow = false }: PublicHeaderPro
             {copy.features}
           </Link>
           <LanguageSwitcher />
+          <Link
+            href="/admin/login"
+            className="text-xs text-slate-500 hover:text-white transition-colors"
+          >
+            {copy.signIn}
+          </Link>
           <Link
             href="/signup"
             className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-lg text-slate-900 bg-white hover:bg-slate-100 transition-all active:scale-95"
@@ -87,6 +95,13 @@ export default function PublicHeader({ locale, narrow = false }: PublicHeaderPro
             <div className="py-2">
               <LanguageSwitcher showLabel />
             </div>
+            <Link
+              href="/admin/login"
+              onClick={() => setMobileOpen(false)}
+              className="block text-sm text-slate-300 hover:text-white transition-colors py-2"
+            >
+              {copy.signIn}
+            </Link>
             <Link
               href="/signup"
               onClick={() => setMobileOpen(false)}
