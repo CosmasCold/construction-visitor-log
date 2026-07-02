@@ -14,6 +14,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 
 interface AboutClientProps {
   locale: "en" | "pt";
@@ -270,13 +271,7 @@ export default function AboutClient({ locale }: AboutClientProps) {
       </main>
 
       {/* ─── Footer ─── */}
-      <footer className="border-t border-white/5 py-12 bg-[#070b14]">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-xs text-slate-600">
-            {copy.footer}
-          </p>
-        </div>
-      </footer>
+      <PublicFooter locale={locale} />
     </div>
   );
 }

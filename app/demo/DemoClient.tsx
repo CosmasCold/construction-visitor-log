@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 import {
   Users,
   Building2,

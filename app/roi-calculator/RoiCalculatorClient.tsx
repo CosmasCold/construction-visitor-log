@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 import { ArrowRight, DollarSign, Clock, FileText } from "lucide-react";
 import { logEvent } from "@/lib/analytics";
 

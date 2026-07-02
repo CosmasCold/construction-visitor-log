@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 import DownloadPDFButton from "@/components/DownloadPDFButton";
 
 interface ChecklistClientProps {

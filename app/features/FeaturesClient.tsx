@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 import {
   QrCode,
   Users,
@@ -522,13 +523,7 @@ export default function FeaturesClient({ locale }: FeaturesClientProps) {
       </main>
 
       {/* ─── Footer ─── */}
-      <footer className="border-t border-white/5 py-12 bg-[#070b14]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-xs text-slate-600">
-            {copy.footer}
-          </p>
-        </div>
-      </footer>
+      <PublicFooter locale={locale} />
     </div>
   );
 }

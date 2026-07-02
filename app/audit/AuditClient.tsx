@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { logEvent } from "@/lib/analytics";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 import {
   ArrowRight,
   CheckCircle2,
@@ -531,13 +532,7 @@ export default function AuditClient({ locale }: AuditClientProps) {
       </main>
 
       {/* ─── Footer ─── */}
-      <footer className="border-t border-white/5 py-12 bg-[#070b14]">
-        <div className="max-w-2xl mx-auto px-4 text-center">
-          <p className="text-xs text-slate-600">
-            © 2026 SiteSafe by TheSift. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <PublicFooter locale={locale} />
     </div>
   );
 }

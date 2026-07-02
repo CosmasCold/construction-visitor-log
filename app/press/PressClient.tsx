@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 import {
   Download,
   ExternalLink,
@@ -337,13 +338,7 @@ export default function PressClient({ locale }: PressClientProps) {
       </main>
 
       {/* ─── Footer ─── */}
-      <footer className="border-t border-white/5 py-8 bg-[#070b14]">
-        <div className="max-w-5xl mx-auto px-4 text-center">
-          <p className="text-xs text-slate-600">
-            {copy.footer}
-          </p>
-        </div>
-      </footer>
+      <PublicFooter locale={locale} />
     </div>
   );
 }

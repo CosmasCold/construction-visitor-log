@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Mail, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import PublicHeader from "@/components/PublicHeader";
+import PublicFooter from "@/components/PublicFooter";
 
 interface ForgotPasswordClientProps {
   locale: "en" | "pt";
