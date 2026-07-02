@@ -27,6 +27,7 @@ model Company {
   blocklistEntries BlocklistEntry[]
   webhookUrl             String?
   locale           String?        @default("en")
+  region           String?        // "br" or "en"
 }
 
 model Plan {
