@@ -36,14 +36,6 @@ export default function PublicHeader({ locale, narrow = false }: PublicHeaderPro
   
   // Auto-detect /br prefix
   const prefix = pathname?.startsWith("/br") ? "/br" : "";
-  
-  // Check if user is likely logged in (has next-auth session cookie)
-  // This is a simple heuristic - checks for __Secure-next-auth.session-token or next-auth.session-token
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    if (typeof document === "undefined") return false;
-    return document.cookie.includes("next-auth.session-token") || 
-           document.cookie.includes("__Secure-next-auth.session-token");
-  });
 
   return (
     <header className="border-b border-white/5 bg-[#0a0f1c]/90 backdrop-blur-xl sticky top-0 z-50">
@@ -65,30 +57,24 @@ export default function PublicHeader({ locale, narrow = false }: PublicHeaderPro
             {copy.features}
           </Link>
           <LanguageSwitcher />
-          
-          {isLoggedIn ? (
-            <Link
-              href="/dashboard"
-              className="text-xs text-sky-400 hover:text-sky-300 transition-colors flex items-center gap-1"
-            >
-              <LayoutDashboard className="w-3.5 h-3.5" /> {copy.dashboard}
-            </Link>
-          ) : (
-            <>
-              <Link
-                href="/admin/login"
-                className="text-xs text-slate-500 hover:text-white transition-colors"
-              >
-                {copy.signIn}
-              </Link>
-              <Link
-                href={`${prefix}/signup`}
-                className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-lg text-slate-900 bg-white hover:bg-slate-100 transition-all active:scale-95"
-              >
-                {copy.startTrial}
-              </Link>
-            </>
-          )}
+          <Link
+            href="/dashboard"
+            className="text-xs text-sky-400 hover:text-sky-300 transition-colors flex items-center gap-1"
+          >
+            <LayoutDashboard className="w-3.5 h-3.5" /> {copy.dashboard}
+          </Link>
+          <Link
+            href="/admin/login"
+            className="text-xs text-slate-500 hover:text-white transition-colors"
+          >
+            {copy.signIn}
+          </Link>
+          <Link
+            href={`${prefix}/signup`}
+            className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium rounded-lg text-slate-900 bg-white hover:bg-slate-100 transition-all active:scale-95"
+          >
+            {copy.startTrial}
+          </Link>
         </div>
 
         {/* Mobile menu button */}
@@ -122,33 +108,27 @@ export default function PublicHeader({ locale, narrow = false }: PublicHeaderPro
             <div className="py-2">
               <LanguageSwitcher showLabel />
             </div>
-            
-            {isLoggedIn ? (
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileOpen(false)}
-                className="block text-sm text-sky-400 hover:text-sky-300 transition-colors py-2 flex items-center gap-1"
-              >
-                <LayoutDashboard className="w-3.5 h-3.5" /> {copy.dashboard}
-              </Link>
-            ) : (
-              <>
-                <Link
-                  href="/admin/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="block text-sm text-slate-300 hover:text-white transition-colors py-2"
-                >
-                  {copy.signIn}
-                </Link>
-                <Link
-                  href={`${prefix}/signup`}
-                  onClick={() => setMobileOpen(false)}
-                  className="block w-full text-center px-4 py-2.5 text-sm font-medium rounded-lg text-slate-900 bg-white hover:bg-slate-100 transition-all"
-                >
-                  {copy.startTrial}
-                </Link>
-              </>
-            )}
+            <Link
+              href="/dashboard"
+              onClick={() => setMobileOpen(false)}
+              className="block text-sm text-sky-400 hover:text-sky-300 transition-colors py-2 flex items-center gap-1"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" /> {copy.dashboard}
+            </Link>
+            <Link
+              href="/admin/login"
+              onClick={() => setMobileOpen(false)}
+              className="block text-sm text-slate-300 hover:text-white transition-colors py-2"
+            >
+              {copy.signIn}
+            </Link>
+            <Link
+              href={`${prefix}/signup`}
+              onClick={() => setMobileOpen(false)}
+              className="block w-full text-center px-4 py-2.5 text-sm font-medium rounded-lg text-slate-900 bg-white hover:bg-slate-100 transition-all"
+            >
+              {copy.startTrial}
+            </Link>
           </div>
         </div>
       )}
