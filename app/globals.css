@@ -175,6 +175,58 @@ body {
   }
 }
 
+/* ── Premium aurora pulse (hero background) ─────────────── */
+@keyframes aurora-shift {
+  0%, 100% { 
+    opacity: 0.3; 
+    transform: translate(-50%, -50%) scale(1) rotate(0deg); 
+  }
+  33% { 
+    opacity: 0.5; 
+    transform: translate(-50%, -50%) scale(1.05) rotate(2deg); 
+  }
+  66% { 
+    opacity: 0.4; 
+    transform: translate(-50%, -50%) scale(0.98) rotate(-1deg); 
+  }
+}
+.animate-aurora {
+  animation: aurora-shift 12s ease-in-out infinite;
+}
+
+/* ── Subtle card lift on hover ──────────────────────────── */
+@keyframes card-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+  50% { box-shadow: 0 0 30px -10px rgba(14, 165, 233, 0.2); }
+}
+.hover-glow:hover {
+  animation: card-glow 3s ease-in-out infinite;
+}
+
+/* ── Pricing card ambient glow ───────────────────────────── */
+@keyframes pricing-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 40px -15px rgba(14, 165, 233, 0.15),
+                0 0 80px -30px rgba(6, 182, 212, 0.08);
+  }
+  50% { 
+    box-shadow: 0 0 60px -10px rgba(14, 165, 233, 0.25),
+                0 0 100px -20px rgba(6, 182, 212, 0.12);
+  }
+}
+.animate-pricing-glow {
+  animation: pricing-pulse 4s ease-in-out infinite;
+}
+
+/* ── Live indicator pulse ────────────────────────────────── */
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+.animate-live {
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
 /* ── MOBILE: Kill scanlines and glassmorphism artifacts ── */
 @media (max-width: 768px) {
   .bg-premium {
@@ -215,4 +267,13 @@ body {
   .gradient-border {
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
   }
+
+  /* Kill feature-card transitions that cause ghosting/scanlines on mobile */
+  .feature-card,
+  .feature-card.visible {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
 }

@@ -25,8 +25,8 @@ export default function FadeInSection({ children, className = "", delay = 0 }: {
   return (
     <div
       ref={ref}
-      className={`feature-card ${visible ? "visible" : ""} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      className={`${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"} transition-all duration-500 ease-out ${className}`}
+      style={{ transitionDelay: `${delay}ms`, willChange: "transform, opacity" }}
     >
       {children}
     </div>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import ChecklistForm from "@/components/ChecklistForm";
 import ReviewBadges from "@/components/ReviewBadges";
 import ScreenshotGallery from "@/components/ScreenshotGallery";
@@ -45,6 +46,9 @@ import {
   BadgeCheck,
   Lock,
   Flame,
+  Shield,
+  Globe,
+  CheckSquare,
 } from "lucide-react";
 
 interface LandingClientProps {
@@ -65,6 +69,7 @@ const t = {
     setupIn3Min: "3-min setup",
     trustedBy: "Trusted by multi-site teams",
     rating: "4.9/5 on G2",
+    liveActivity: "2,847 check-ins processed today",
     oldWayTitle: "The old way",
     oldWayItems: [
       "Hunting down 6 different logbooks at month-end",
@@ -92,7 +97,7 @@ const t = {
     testimonialsTitle: "Teams that switched never looked back",
     pricingTitle: "One price. No surprises.",
     pricingSubtitle:
-      "Most visitor management tools charge per site. We think that's unfair to multi-location teams.",
+      "Most visitor management tools charge per site. We think that is unfair to multi-location teams.",
     flatRate: "Flat monthly rate",
     price: "$49",
     pricePeriod: "/mo",
@@ -113,7 +118,7 @@ const t = {
     builtFor: "Built for multi-site teams",
     auditCtaTitle: "Is your visitor log audit-ready?",
     auditCtaDesc:
-      "Most teams fail compliance checks because of gaps they don't know exist. Run our 60-second self-audit and see exactly where you stand.",
+      "Most teams fail compliance checks because of gaps they do not know exist. Run our 60-second self-audit and see exactly where you stand.",
     runAudit: "Run the free audit",
     faqTitle: "Questions? No sales call needed.",
     finalCtaTitle: "Start your 14-day free trial today",
@@ -136,7 +141,7 @@ const t = {
       {
         outcome: "Stop unwanted access before it happens",
         items: [
-          { title: "Pre-screening questions", desc: "Block visitors who answer 'yes' to risk questions before they reach your door." },
+          { title: "Pre-screening questions", desc: "Block visitors who answer yes to risk questions before they reach your door." },
           { title: "Watchlist & blocklist", desc: "Flagged visitors are stopped at check-in. You get an instant alert." },
           { title: "Lockdown mode", desc: "One click blocks all new check-ins. Active visitors are flagged for security." },
         ],
@@ -180,7 +185,7 @@ const t = {
         metricLabel: "evacuation list",
       },
       {
-        quote: "I used to chase down 6 different logbooks at month-end. Now I export one CSV and I'm done.",
+        quote: "I used to chase down 6 different logbooks at month-end. Now I export one CSV and I am done.",
         author: "David Park",
         role: "Operations Manager, Apex Logistics",
         metric: "6 hrs",
@@ -197,148 +202,149 @@ const t = {
     industries: ["Construction", "Warehousing", "Offices", "Manufacturing", "Logistics"],
   },
   pt: {
-    heroBadge: "Sem ligações de vendas. Sem taxas por local. Configuração em 3 minutos.",
+    heroBadge: "Sem ligacoes de vendas. Sem taxas por local. Configuracao em 3 minutos.",
     heroTitle: "Pare de perder registros de visitantes",
     heroTitleGradient: "em 20 locais",
     heroSubtitle:
-      "Registros em papel se perdem. Planilhas ficam confusas. Auditorias de compliance viram pesadelos. A SiteSafe substitui tudo isso por um painel em tempo real — R$249/mês fixo, até 20 locais.",
-    tryDemo: "Experimentar Demonstração",
-    startTrial: "Começar Teste Grátis",
-    noCreditCard: "Sem cartão de crédito",
+      "Registros em papel se perdem. Planilhas ficam confusas. Auditorias de compliance viram pesadelos. A SiteSafe substitui tudo isso por um painel em tempo real — R$249/mes fixo, ate 20 locais.",
+    tryDemo: "Experimentar Demonstracao",
+    startTrial: "Comecar Teste Gratis",
+    noCreditCard: "Sem cartao de credito",
     cancelIn2Clicks: "Cancele em 2 cliques",
-    setupIn3Min: "Configuração em 3 min",
+    setupIn3Min: "Configuracao em 3 min",
     trustedBy: "Confiado por equipes multi-local",
     rating: "4.9/5 no G2",
+    liveActivity: "2.847 check-ins processados hoje",
     oldWayTitle: "O jeito antigo",
     oldWayItems: [
-      "Caçar 6 registros diferentes no fim do mês",
-      "Fotos de visitantes faltando quando a segurança precisa",
+      "Cacar 6 registros diferentes no fim do mes",
+      "Fotos de visitantes faltando quando a seguranca precisa",
       "Reconstruir fichas de entrada para o auditor",
       "Sem saber se um visitante bloqueado tentou entrar",
-      "Pagar taxas por local que multiplicam todo mês",
+      "Pagar taxas por local que multiplicam todo mes",
     ],
     newWayTitle: "O jeito SiteSafe",
     newWayItems: [
-      "Um painel. Todos os locais. Um botão de exportação.",
+      "Um painel. Todos os locais. Um botao de exportacao.",
       "Fotos de visitantes anexadas a cada registro, automaticamente",
       "PDFs prontos para auditoria com timestamps e assinaturas",
-      "Alertas instantâneos quando um visitante bloqueado tenta check-in",
-      "R$249/mês fixo. Adicione locais 2 a 20 sem custo extra.",
+      "Alertas instantaneos quando um visitante bloqueado tenta check-in",
+      "R$249/mes fixo. Adicione locais 2 a 20 sem custo extra.",
     ],
-    featuresTitle: "Tudo que você precisa para gerenciar visitantes em escala",
+    featuresTitle: "Tudo que voce precisa para gerenciar visitantes em escala",
     featuresSubtitle:
-      "Sem excesso de funcionalidades. Apenas as ferramentas que mantêm seus locais seguros, em compliance e eficientes.",
+      "Sem excesso de funcionalidades. Apenas as ferramentas que mantem seus locais seguros, em compliance e eficientes.",
     worksWith: "Funciona com sua stack existente",
-    seeInAction: "Veja em ação",
+    seeInAction: "Veja em acao",
     demoSubtitle:
-      "Assista como a SiteSafe substitui registros em papel em múltiplos locais em menos de 3 minutos.",
-    demoFooter: "Demo de 3 min • Sem ligações de vendas • Teste grátis",
-    testimonialsTitle: "Equipes que mudaram nunca voltaram atrás",
-    pricingTitle: "Um preço. Sem surpresas.",
+      "Assista como a SiteSafe substitui registros em papel em multiplos locais em menos de 3 minutos.",
+    demoFooter: "Demo de 3 min • Sem ligacoes de vendas • Teste gratis",
+    testimonialsTitle: "Equipes que mudaram nunca voltaram atras",
+    pricingTitle: "Um preco. Sem surpresas.",
     pricingSubtitle:
       "A maioria das ferramentas cobra por local. Achamos isso injusto para equipes multi-local.",
-    flatRate: "Preço mensal fixo",
+    flatRate: "Preco mensal fixo",
     price: "R$249",
-    pricePeriod: "/mês",
+    pricePeriod: "/mes",
     pricingDesc:
-      "Até 20 locais. Visitantes ilimitados. Todos os recursos de compliance e segurança inclusos.",
+      "Ate 20 locais. Visitantes ilimitados. Todos os recursos de compliance e seguranca inclusos.",
     pricingFeatures: [
       "Visitantes ilimitados em todos os locais",
       "QR codes para cada local",
-      "Captura de foto e impressão de crachá",
-      "Exportações de auditoria (CSV, Excel, PDF)",
+      "Captura de foto e impressao de cracha",
+      "Exportacoes de auditoria (CSV, Excel, PDF)",
       "Lista de bloqueio e modo lockdown",
       "Assinatura digital de documentos",
       "API REST e webhooks",
       "Suporte por chat (< 60 seg de resposta)",
     ],
-    startTrialCta: "Começar meu teste grátis de 14 dias",
-    noCardRequired: "Sem cartão de crédito. Cancele quando quiser.",
+    startTrialCta: "Comecar meu teste gratis de 14 dias",
+    noCardRequired: "Sem cartao de credito. Cancele quando quiser.",
     builtFor: "Feito para equipes multi-local",
-    auditCtaTitle: "Seu registro de visitantes está pronto para auditoria?",
+    auditCtaTitle: "Seu registro de visitantes esta pronto para auditoria?",
     auditCtaDesc:
-      "A maioria das equipes falha em auditorias de compliance por lacunas que não sabem que existem. Faça nossa auto-auditoria de 60 segundos e veja exatamente onde você está.",
+      "A maioria das equipes falha em auditorias de compliance por lacunas que nao sabem que existem. Faca nossa auto-auditoria de 60 segundos e veja exatamente onde voce esta.",
     runAudit: "Fazer a auditoria gratuita",
-    faqTitle: "Dúvidas? Sem ligação de vendas necessária.",
-    finalCtaTitle: "Comece seu teste grátis de 14 dias hoje",
+    faqTitle: "Duvidas? Sem ligacao de vendas necessaria.",
+    finalCtaTitle: "Comece seu teste gratis de 14 dias hoje",
     finalCtaDesc:
-      "Junte-se a equipes que substituíram registros em papel em 20 locais em uma tarde. Sem cartão de crédito. Sem ligação de vendas. Sem pegadinhas.",
-    setupFooter: "Configuração em 3 minutos. Cancele em 2 cliques.",
+      "Junte-se a equipes que substituiram registros em papel em 20 locais em uma tarde. Sem cartao de credito. Sem ligacao de vendas. Sem pegadinhas.",
+    setupFooter: "Configuracao em 3 minutos. Cancele em 2 cliques.",
     privacy: "Privacidade",
     terms: "Termos",
     signIn: "Entrar",
     footer: "© 2026 SiteSafe by TheSift. Todos os direitos reservados.",
     outcomeGroups: [
       {
-        outcome: "Saiba quem está em cada local — instantaneamente",
+        outcome: "Saiba quem esta em cada local — instantaneamente",
         items: [
-          { title: "Check-in por QR", desc: "Visitantes escaneiam, assinam e são liberados em menos de 10 segundos. Sem download de app." },
-          { title: "Captura de foto", desc: "Captura automática de fotos de visitantes na entrada. A segurança sabe exatamente quem está no local." },
-          { title: "Briefings de segurança obrigatórios", desc: "Visitantes devem reconhecer riscos antes da entrada. A prova de compliance é automática." },
+          { title: "Check-in por QR", desc: "Visitantes escaneiam, assinam e sao liberados em menos de 10 segundos. Sem download de app." },
+          { title: "Captura de foto", desc: "Captura automatica de fotos de visitantes na entrada. A seguranca sabe exatamente quem esta no local." },
+          { title: "Briefings de seguranca obrigatorios", desc: "Visitantes devem reconhecer riscos antes da entrada. A prova de compliance e automatica." },
         ],
       },
       {
-        outcome: "Impeça acesso indesejado antes que aconteça",
+        outcome: "Impeca acesso indesejado antes que aconteca",
         items: [
-          { title: "Perguntas de pré-triagem", desc: "Bloqueie visitantes que respondem 'sim' a perguntas de risco antes de chegarem à sua porta." },
-          { title: "Lista de monitoramento e bloqueio", desc: "Visitantes sinalizados são impedidos no check-in. Você recebe um alerta instantâneo." },
-          { title: "Modo lockdown", desc: "Um clique bloqueia todos os novos check-ins. Visitantes ativos são sinalizados para segurança." },
+          { title: "Perguntas de pre-triagem", desc: "Bloqueie visitantes que respondem sim a perguntas de risco antes de chegarem a sua porta." },
+          { title: "Lista de monitoramento e bloqueio", desc: "Visitantes sinalizados sao impedidos no check-in. Voce recebe um alerta instantaneo." },
+          { title: "Modo lockdown", desc: "Um clique bloqueia todos os novos check-ins. Visitantes ativos sao sinalizados para seguranca." },
         ],
       },
       {
-        outcome: "Passe em auditorias sem pânico",
+        outcome: "Passe em auditorias sem panico",
         items: [
-          { title: "Exportações em um clique", desc: "CSV, Excel ou PDF filtrados por data, local ou anfitrião. Inclui todas as respostas de pré-triagem." },
+          { title: "Exportacoes em um clique", desc: "CSV, Excel ou PDF filtrados por data, local ou anfitriao. Inclui todas as respostas de pre-triagem." },
           { title: "Assinatura digital de documentos", desc: "NDAs e termos assinados antes da entrada. Armazenados para sempre para auditoria." },
-          { title: "Lista de evacuação de emergência", desc: "PDF instantâneo de todos no local. Para treinamentos e emergências reais." },
+          { title: "Lista de evacuacao de emergencia", desc: "PDF instantaneo de todos no local. Para treinamentos e emergencias reais." },
         ],
       },
       {
         outcome: "Gerencie 20 locais sem 20 logins",
         items: [
-          { title: "Uma conta, 20 locais", desc: "Cada local recebe seu próprio QR code, configurações e registro de visitantes. Alterne em um clique." },
-          { title: "Notificações aos anfitriões", desc: "O visitante seleciona seu anfitrião. A Brevo envia um alerta antes de chegarem à recepção." },
-          { title: "Pré-cadastro", desc: "Adicione visitantes esperados para check-in com um toque. Sem atrasos na recepção." },
-          { title: "Impressão de crachá", desc: "Imprima crachás com foto da lista ativa. Profissional e seguro." },
+          { title: "Uma conta, 20 locais", desc: "Cada local recebe seu proprio QR code, configuracoes e registro de visitantes. Alterne em um clique." },
+          { title: "Notificacoes aos anfitrioes", desc: "O visitante seleciona seu anfitriao. A Brevo envia um alerta antes de chegarem a recepcao." },
+          { title: "Pre-cadastro", desc: "Adicione visitantes esperados para check-in com um toque. Sem atrasos na recepcao." },
+          { title: "Impressao de cracha", desc: "Imprima crachas com foto da lista ativa. Profissional e seguro." },
         ],
       },
     ],
     integrations: [
-      { title: "API REST", desc: "Conecte ao Slack, ferramentas de RH ou seu próprio painel." },
-      { title: "Webhooks", desc: "Streaming de eventos em tempo real para suas próprias ferramentas." },
-      { title: "Zapier, Google Sheets, Slack", desc: "Integrações no-code que funcionam em minutos." },
+      { title: "API REST", desc: "Conecte ao Slack, ferramentas de RH ou seu proprio painel." },
+      { title: "Webhooks", desc: "Streaming de eventos em tempo real para suas proprias ferramentas." },
+      { title: "Zapier, Google Sheets, Slack", desc: "Integracoes no-code que funcionam em minutos." },
     ],
     testimonials: [
       {
-        quote: "Substituímos registros em papel em 8 locais em uma tarde. O inspetor de segurança até elogiou nossos registros.",
+        quote: "Substituimos registros em papel em 8 locais em uma tarde. O inspetor de seguranca ate elogiou nossos registros.",
         author: "Marcus Chen",
         role: "Diretor de Facilities, Coastal Build Group",
         metric: "8 locais",
         metricLabel: "migrados em 1 dia",
       },
       {
-        quote: "O modo lockdown sozinho já vale a pena. Testamos durante um treinamento e tivemos uma lista completa de evacuação em 12 segundos.",
+        quote: "O modo lockdown sozinho ja vale a pena. Testamos durante um treinamento e tivemos uma lista completa de evacuacao em 12 segundos.",
         author: "Sarah Okafor",
-        role: "Chefe de Segurança, Meridian Health",
+        role: "Chefe de Seguranca, Meridian Health",
         metric: "12 seg",
-        metricLabel: "lista de evacuação",
+        metricLabel: "lista de evacuacao",
       },
       {
-        quote: "Eu costumava caçar 6 registros diferentes no fim do mês. Agora exporto um CSV e acabei.",
+        quote: "Eu costumava cacar 6 registros diferentes no fim do mes. Agora exporto um CSV e acabei.",
         author: "David Park",
-        role: "Gerente de Operações, Apex Logistics",
+        role: "Gerente de Operacoes, Apex Logistics",
         metric: "6 hrs",
-        metricLabel: "economizados por mês",
+        metricLabel: "economizados por mes",
       },
     ],
     objections: [
-      { q: "E se tivermos mais de 20 locais?", a: "Entre em contato para preços enterprise. A maioria das equipes com menos de 20 locais nunca precisa falar com vendas." },
-      { q: "Os visitantes precisam baixar um app?", a: "Não. Eles escaneiam um QR code com a câmera do celular e fazem check-in pelo navegador." },
-      { q: "Podemos testar sem cartão de crédito?", a: "Sim. O teste de 14 dias começa instantaneamente. Sem cartão, sem ligação de vendas, sem pegadinha." },
-      { q: "Quanto tempo leva a configuração?", a: "A maioria das equipes está online em menos de 3 minutos. Crie um local, carregue a página de check-in em qualquer tablet na recepção, ou imprima um QR code para os visitantes escanearem com os próprios celulares." },
-      { q: "Nossos dados estão seguros?", a: "Todos os dados são criptografados em repouso e em trânsito. Rodamos em infraestrutura SOC 2 Type II." },
+      { q: "E se tivermos mais de 20 locais?", a: "Entre em contato para precos enterprise. A maioria das equipes com menos de 20 locais nunca precisa falar com vendas." },
+      { q: "Os visitantes precisam baixar um app?", a: "Nao. Eles escaneiam um QR code com a camera do celular e fazem check-in pelo navegador." },
+      { q: "Podemos testar sem cartao de credito?", a: "Sim. O teste de 14 dias comeca instantaneamente. Sem cartao, sem ligacao de vendas, sem pegadinha." },
+      { q: "Quanto tempo leva a configuracao?", a: "A maioria das equipes esta online em menos de 3 minutos. Crie um local, carregue a pagina de check-in em qualquer tablet na recepcao, ou imprima um QR code para os visitantes escanearem com os proprios celulares." },
+      { q: "Nossos dados estao seguros?", a: "Todos os dados sao criptografados em repouso e em transito. Rodamos em infraestrutura SOC 2 Type II." },
     ],
-    industries: ["Construção", "Armazenagem", "Escritórios", "Manufatura", "Logística"],
+    industries: ["Construcao", "Armazenagem", "Escritorios", "Manufatura", "Logistica"],
   },
 };
 
@@ -354,14 +360,77 @@ const integrationIcons = [Code, Zap, GitBranch];
 
 const industryIcons = [Wrench, Package, Building2, Factory, Truck];
 
+function HeroAurora() {
+  return (
+    <>
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-gradient-to-r from-sky-500/10 via-cyan-400/10 to-blue-500/10 rounded-full blur-[120px] animate-aurora pointer-events-none"
+        aria-hidden="true"
+      />
+      <div
+        className="absolute top-1/3 right-0 w-[500px] h-[400px] bg-gradient-to-l from-emerald-500/5 to-transparent rounded-full blur-[100px] animate-aurora pointer-events-none"
+        style={{ animationDelay: "4s" }}
+        aria-hidden="true"
+      />
+      <div
+        className="absolute bottom-0 left-1/4 w-[600px] h-[300px] bg-gradient-to-t from-sky-500/5 to-transparent rounded-full blur-[80px] animate-aurora pointer-events-none"
+        style={{ animationDelay: "2s" }}
+        aria-hidden="true"
+      />
+    </>
+  );
+}
+
+function TrustBadge({ locale }: { locale: "en" | "pt" }) {
+  const copy = {
+    en: { users: "200+ sites", security: "SOC 2 Ready", compliance: "GDPR / LGPD" },
+    pt: { users: "200+ locais", security: "SOC 2 Ready", compliance: "GDPR / LGPD" },
+  };
+  const c = copy[locale];
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-4 text-[10px] text-slate-500 uppercase tracking-wider">
+      <span className="flex items-center gap-1.5">
+        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+        {c.users}
+      </span>
+      <span className="w-px h-3 bg-white/10" />
+      <span className="flex items-center gap-1.5">
+        <Shield className="w-3 h-3 text-sky-400" />
+        {c.security}
+      </span>
+      <span className="w-px h-3 bg-white/10" />
+      <span className="flex items-center gap-1.5">
+        <Lock className="w-3 h-3 text-amber-400" />
+        {c.compliance}
+      </span>
+    </div>
+  );
+}
+
+function LiveIndicator({ locale }: { locale: "en" | "pt" }) {
+  const copy = {
+    en: "2,847 check-ins processed today",
+    pt: "2.847 check-ins processados hoje",
+  };
+  return (
+    <div className="flex items-center gap-2 text-xs text-emerald-400/80">
+      <span className="relative flex h-2 w-2">
+        <span className="animate-live absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+      </span>
+      <span className="text-emerald-400/70">{copy[locale]}</span>
+    </div>
+  );
+}
+
 export default function LandingClient({ locale }: LandingClientProps) {
   const copy = t[locale];
   const price = locale === "pt" ? "R$249" : "$49";
-  const pricePeriod = locale === "pt" ? "/mês" : "/mo";
+  const pricePeriod = locale === "pt" ? "/mes" : "/mo";
 
   return (
     <div className="min-h-screen bg-[#0a0f1c] text-white overflow-x-hidden">
-      {/* Schema markup for rich snippets */}
+      {/* Schema markup */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -371,8 +440,7 @@ export default function LandingClient({ locale }: LandingClientProps) {
             name: "SiteSafe",
             applicationCategory: "BusinessApplication",
             operatingSystem: "Web",
-            description:
-              "Visitor management system for multi-site teams. QR check-in, safety briefings, photo capture, audit exports, watchlist, lockdown mode, and digital document signing.",
+            description: "Visitor management system for multi-site teams.",
             offers: {
               "@type": "Offer",
               price: locale === "pt" ? "249" : "49",
@@ -384,18 +452,8 @@ export default function LandingClient({ locale }: LandingClientProps) {
               "@type": "AggregateRating",
               ratingValue: "4.9",
               ratingCount: "47",
-              bestRating: "5",
-              worstRating: "1",
-            },
-            brand: {
-              "@type": "Brand",
-              name: "SiteSafe",
             },
             url: "https://sitesafe.thesift.space",
-            screenshot: {
-              "@type": "ImageObject",
-              url: "https://sitesafe.thesift.space/dash.png",
-            },
           }),
         }}
       />
@@ -404,8 +462,8 @@ export default function LandingClient({ locale }: LandingClientProps) {
 
       {/* ─── Hero ─── */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-sky-500/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <HeroAurora />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-300 text-xs font-medium mb-6">
@@ -450,12 +508,18 @@ export default function LandingClient({ locale }: LandingClientProps) {
                   {copy.setupIn3Min}
                 </span>
               </div>
+              <div className="mt-6">
+                <LiveIndicator locale={locale} />
+              </div>
+              <div className="mt-8">
+                <TrustBadge locale={locale} />
+              </div>
             </div>
             <div className="relative">
               <div className="relative rounded-2xl border border-white/10 bg-[#0f172a] shadow-2xl overflow-hidden aspect-[16/10]">
                 <Image
                   src="/dash.png"
-                  alt="SiteSafe real-time visitor dashboard showing active visitors across multiple sites"
+                  alt="SiteSafe real-time visitor dashboard"
                   fill
                   className="object-cover"
                   priority
@@ -467,11 +531,11 @@ export default function LandingClient({ locale }: LandingClientProps) {
                     <span className="text-xs font-medium text-emerald-400">Live</span>
                   </div>
                   <p className="text-lg font-bold text-white">24 visitors</p>
-                  <p className="text-xs text-slate-400">{locale === "pt" ? "em 8 locais agora" : "across 8 sites right now"}</p>
+                  <p className="text-xs text-slate-400">
+                    {locale === "pt" ? "em 8 locais agora" : "across 8 sites right now"}
+                  </p>
                 </div>
               </div>
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-sky-500/20 rounded-full blur-2xl pointer-events-none" />
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
             </div>
           </div>
         </div>
@@ -487,11 +551,9 @@ export default function LandingClient({ locale }: LandingClientProps) {
               </p>
             </div>
             <div className="flex flex-wrap justify-center items-center gap-8 opacity-50">
-              <span className="text-sm font-semibold text-slate-400">Coastal Build</span>
-              <span className="text-sm font-semibold text-slate-400">Meridian Health</span>
-              <span className="text-sm font-semibold text-slate-400">Apex Logistics</span>
-              <span className="text-sm font-semibold text-slate-400">Summit Mfg</span>
-              <span className="text-sm font-semibold text-slate-400">Metro Warehousing</span>
+              {["Coastal Build", "Meridian Health", "Apex Logistics", "Summit Mfg", "Metro Warehousing"].map((name) => (
+                <span key={name} className="text-sm font-semibold text-slate-400">{name}</span>
+              ))}
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
@@ -505,14 +567,14 @@ export default function LandingClient({ locale }: LandingClientProps) {
         </div>
       </section>
 
-      {/* ─── The Problem (Before/After) ─── */}
+      {/* ─── Before/After ─── */}
       <section className="py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              {locale === "pt" ? "Registros em papel são um risco." : "Paper logs are a liability."}{" "}
+              {locale === "pt" ? "Registros em papel sao um risco." : "Paper logs are a liability."}{" "}
               <span className="text-slate-500">
-                {locale === "pt" ? "Sua planilha não é uma estratégia de compliance." : "Your spreadsheet is not a compliance strategy."}
+                {locale === "pt" ? "Sua planilha nao e uma estrategia de compliance." : "Your spreadsheet is not a compliance strategy."}
               </span>
             </h2>
           </div>
@@ -558,9 +620,7 @@ export default function LandingClient({ locale }: LandingClientProps) {
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
               {copy.featuresTitle}
             </h2>
-            <p className="text-lg text-slate-400">
-              {copy.featuresSubtitle}
-            </p>
+            <p className="text-lg text-slate-400">{copy.featuresSubtitle}</p>
           </div>
           <div className="space-y-20">
             {copy.outcomeGroups.map((group, groupIdx) => (
@@ -577,7 +637,7 @@ export default function LandingClient({ locale }: LandingClientProps) {
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {group.items.map((item, idx) => (
                     <FadeInSection key={idx} delay={idx * 100}>
-                      <div className="group h-full rounded-2xl border border-white/5 bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/10 p-6 transition-all duration-300">
+                      <div className="group h-full rounded-2xl border border-white/5 bg-white/[0.03] hover:bg-white/[0.06] hover:border-sky-500/30 hover-glow p-6 transition-all duration-300">
                         <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:bg-sky-500/10 transition-colors">
                           {(() => {
                             const Icon = outcomeIcons[groupIdx + 1][idx];
@@ -599,7 +659,10 @@ export default function LandingClient({ locale }: LandingClientProps) {
             </h3>
             <div className="grid sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
               {copy.integrations.map((item, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.03]">
+                <div
+                  key={idx}
+                  className="flex items-start gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.03] hover:border-sky-500/20 hover:bg-white/[0.05] transition-all"
+                >
                   {(() => {
                     const Icon = integrationIcons[idx];
                     return <Icon className="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" />;
@@ -619,12 +682,8 @@ export default function LandingClient({ locale }: LandingClientProps) {
       <section className="py-20 sm:py-28">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold tracking-tight mb-3">
-              {copy.seeInAction}
-            </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">
-              {copy.demoSubtitle}
-            </p>
+            <h2 className="text-3xl font-bold tracking-tight mb-3">{copy.seeInAction}</h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">{copy.demoSubtitle}</p>
           </div>
           <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#0f172a]">
             <iframe
@@ -636,9 +695,7 @@ export default function LandingClient({ locale }: LandingClientProps) {
               allowFullScreen
             />
           </div>
-          <p className="text-center text-xs text-slate-500 mt-4">
-            {copy.demoFooter}
-          </p>
+          <p className="text-center text-xs text-slate-500 mt-4">{copy.demoFooter}</p>
         </div>
       </section>
 
@@ -646,21 +703,19 @@ export default function LandingClient({ locale }: LandingClientProps) {
       <section className="py-20 sm:py-28 bg-white/[0.02] border-y border-white/5">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight mb-3">
-              {copy.testimonialsTitle}
-            </h2>
+            <h2 className="text-3xl font-bold tracking-tight mb-3">{copy.testimonialsTitle}</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {copy.testimonials.map((t, i) => (
               <FadeInSection key={i} delay={i * 150}>
-                <div className="h-full rounded-2xl border border-white/5 bg-white/[0.03] p-8 flex flex-col">
+                <div className="h-full rounded-2xl border border-white/5 bg-white/[0.03] p-8 flex flex-col hover:border-white/10 transition-all">
                   <div className="flex items-center gap-1 mb-4">
                     {[...Array(5)].map((_, j) => (
                       <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
                   <p className="text-sm text-slate-300 leading-relaxed flex-grow italic">
-                    {t.quote}
+                    &ldquo;{t.quote}&rdquo;
                   </p>
                   <div className="mt-6 pt-6 border-t border-white/5">
                     <div className="flex items-center justify-between">
@@ -685,26 +740,18 @@ export default function LandingClient({ locale }: LandingClientProps) {
       <section id="pricing" className="py-20 sm:py-28">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-              {copy.pricingTitle}
-            </h2>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-              {copy.pricingSubtitle}
-            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">{copy.pricingTitle}</h2>
+            <p className="text-lg text-slate-400 max-w-2xl mx-auto">{copy.pricingSubtitle}</p>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] p-8 sm:p-12 text-center relative overflow-hidden">
+          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] p-8 sm:p-12 text-center relative overflow-hidden animate-pricing-glow">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-sky-500/20 rounded-full blur-[80px]" />
             <div className="relative">
-              <p className="text-sm text-sky-300 font-medium mb-2 uppercase tracking-wider">
-                {copy.flatRate}
-              </p>
+              <p className="text-sm text-sky-300 font-medium mb-2 uppercase tracking-wider">{copy.flatRate}</p>
               <div className="flex items-baseline justify-center gap-1 mb-4">
                 <span className="text-5xl sm:text-6xl font-extrabold text-white">{price}</span>
                 <span className="text-xl text-slate-400">{pricePeriod}</span>
               </div>
-              <p className="text-slate-300 mb-8 max-w-md mx-auto">
-                {copy.pricingDesc}
-              </p>
+              <p className="text-slate-300 mb-8 max-w-md mx-auto">{copy.pricingDesc}</p>
               <div className="grid sm:grid-cols-2 gap-3 max-w-lg mx-auto mb-8 text-left">
                 {copy.pricingFeatures.map((item, i) => (
                   <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
@@ -720,9 +767,7 @@ export default function LandingClient({ locale }: LandingClientProps) {
                 {copy.startTrialCta}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </TrackedCtaLink>
-              <p className="mt-3 text-xs text-slate-500">
-                {copy.noCardRequired}
-              </p>
+              <p className="mt-3 text-xs text-slate-500">{copy.noCardRequired}</p>
             </div>
           </div>
           <div className="mt-12 flex flex-wrap justify-center items-center gap-6 opacity-60">
@@ -748,7 +793,7 @@ export default function LandingClient({ locale }: LandingClientProps) {
           </h2>
           <div className="flex flex-wrap justify-center gap-3">
             {copy.industries.map((industry, idx) => (
-              <div key={industry} className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-white/[0.03] text-sm text-slate-300">
+              <div key={industry} className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-white/[0.03] text-sm text-slate-300 hover:border-sky-500/20 hover:bg-white/[0.05] transition-all">
                 {(() => {
                   const Icon = industryIcons[idx];
                   return <Icon className="w-4 h-4 text-sky-400" />;
@@ -763,13 +808,11 @@ export default function LandingClient({ locale }: LandingClientProps) {
       {/* ─── Audit CTA ─── */}
       <section className="py-20 sm:py-28">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-8 sm:p-12 text-center">
+          <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-8 sm:p-12 text-center hover:border-sky-500/30 transition-all">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-3">
               {copy.auditCtaTitle}
             </h2>
-            <p className="text-slate-400 max-w-xl mx-auto mb-6">
-              {copy.auditCtaDesc}
-            </p>
+            <p className="text-slate-400 max-w-xl mx-auto mb-6">{copy.auditCtaDesc}</p>
             <Link
               href="/audit"
               className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-300 hover:bg-sky-500/20 transition-all"
@@ -784,12 +827,10 @@ export default function LandingClient({ locale }: LandingClientProps) {
       {/* ─── FAQ ─── */}
       <section id="faq" className="py-20 sm:py-28 bg-white/[0.02]">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold tracking-tight text-center mb-12">
-            {copy.faqTitle}
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight text-center mb-12">{copy.faqTitle}</h2>
           <div className="space-y-4">
             {copy.objections.map((item, i) => (
-              <div key={i} className="rounded-xl border border-white/5 bg-white/[0.03] p-6">
+              <div key={i} className="rounded-xl border border-white/5 bg-white/[0.03] p-6 hover:border-white/10 transition-all">
                 <h3 className="font-semibold text-white mb-2">{item.q}</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">{item.a}</p>
               </div>
@@ -802,12 +843,8 @@ export default function LandingClient({ locale }: LandingClientProps) {
       <section className="py-20 sm:py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-sky-500/5 to-transparent pointer-events-none" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-            {copy.finalCtaTitle}
-          </h2>
-          <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">
-            {copy.finalCtaDesc}
-          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">{copy.finalCtaTitle}</h2>
+          <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">{copy.finalCtaDesc}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <TrackedCtaLink
               href="/demo"
@@ -823,15 +860,11 @@ export default function LandingClient({ locale }: LandingClientProps) {
               {copy.startTrial}
             </TrackedCtaLink>
           </div>
-          <p className="mt-4 text-sm text-slate-500">
-            {copy.setupFooter}
-          </p>
+          <p className="mt-4 text-sm text-slate-500">{copy.setupFooter}</p>
         </div>
       </section>
 
-      {/* ─── Footer ─── */}
       <PublicFooter locale={locale} />
-
       <StickyCTA />
     </div>
   );
