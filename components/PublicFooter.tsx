@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface PublicFooterProps {
   locale: "en" | "pt";
@@ -51,6 +54,8 @@ const t = {
 
 export default function PublicFooter({ locale }: PublicFooterProps) {
   const copy = t[locale];
+  const pathname = usePathname();
+  const prefix = pathname?.startsWith("/br") ? "/br" : "";
 
   return (
     <footer className="bg-black/20 border-t border-white/5 text-slate-400 py-8">
@@ -60,20 +65,20 @@ export default function PublicFooter({ locale }: PublicFooterProps) {
         </div>
 
         <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm">
-          <Link href="/terms" className="hover:text-white transition-colors duration-150">{copy.terms}</Link>
-          <Link href="/privacy" className="hover:text-white transition-colors duration-150">{copy.privacy}</Link>
+          <Link href={`${prefix}/terms`} className="hover:text-white transition-colors duration-150">{copy.terms}</Link>
+          <Link href={`${prefix}/privacy`} className="hover:text-white transition-colors duration-150">{copy.privacy}</Link>
           <Link href="/blog" className="hover:text-white transition-colors duration-150">{copy.blog}</Link>
-          <Link href="/docs" className="hover:text-white transition-colors duration-150">{copy.apiDocs}</Link>
-          <Link href="/features" className="hover:text-white transition-colors duration-150">{copy.features}</Link>
-          <Link href="/integrations" className="hover:text-white transition-colors duration-150">{copy.integrations}</Link>
-          <Link href="/faq" className="text-sky-400 hover:text-sky-300 transition-colors duration-150 inline-flex items-center gap-1">
+          <Link href={`${prefix}/docs`} className="hover:text-white transition-colors duration-150">{copy.apiDocs}</Link>
+          <Link href={`${prefix}/features`} className="hover:text-white transition-colors duration-150">{copy.features}</Link>
+          <Link href={`${prefix}/integrations`} className="hover:text-white transition-colors duration-150">{copy.integrations}</Link>
+          <Link href={`${prefix}/faq`} className="text-sky-400 hover:text-sky-300 transition-colors duration-150 inline-flex items-center gap-1">
             <span className="text-lg leading-none">?</span> {copy.faq}
           </Link>
-          <Link href="/compare" className="hover:text-white transition-colors duration-150">{copy.compare}</Link>
+          <Link href={`${prefix}/compare`} className="hover:text-white transition-colors duration-150">{copy.compare}</Link>
           <Link href="/changelog" className="hover:text-white transition-colors duration-150">{copy.changelog}</Link>
-          <Link href="/pricing" className="hover:text-white transition-colors duration-150">{copy.pricing}</Link>
+          <Link href={`${prefix}/pricing`} className="hover:text-white transition-colors duration-150">{copy.pricing}</Link>
           <Link href="/locations" className="hover:text-white transition-colors duration-150">{copy.locations}</Link>
-          <Link href="/press" className="hover:text-white transition-colors duration-150">{copy.press}</Link>
+          <Link href={`${prefix}/press`} className="hover:text-white transition-colors duration-150">{copy.press}</Link>
           <a
             href="https://x.com/sitesafehq"
             target="_blank"
@@ -96,9 +101,9 @@ export default function PublicFooter({ locale }: PublicFooterProps) {
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
             </svg>
           </a>
-          <Link href="/about" className="hover:text-white transition-colors duration-150">{copy.about}</Link>
-          <Link href="/security" className="hover:text-white transition-colors duration-150">{copy.security}</Link>
-          <Link href="/contact" className="hover:text-white transition-colors duration-150">{copy.contact}</Link>
+          <Link href={`${prefix}/about`} className="hover:text-white transition-colors duration-150">{copy.about}</Link>
+          <Link href={`${prefix}/security`} className="hover:text-white transition-colors duration-150">{copy.security}</Link>
+          <Link href={`${prefix}/contact`} className="hover:text-white transition-colors duration-150">{copy.contact}</Link>
           <a
             href="mailto:hello@sitesafe.thesift.space"
             className="hover:text-white transition-colors duration-150"
