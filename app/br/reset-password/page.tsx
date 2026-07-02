@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ResetPasswordClient from "../../reset-password/ResetPasswordClient";
+import ResetPasswordClient from "../../forgot-password/reset/ResetPasswordClient";
 
 export const metadata: Metadata = {
   title: "Redefinir Senha – SiteSafe",
