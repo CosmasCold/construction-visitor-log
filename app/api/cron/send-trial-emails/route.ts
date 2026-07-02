@@ -21,6 +21,7 @@ export async function GET() {
         email: true,
         createdAt: true,
         trialEmailSequence: true,
+        region: true, // <-- add this if it exists in your schema
       },
     });
 
@@ -32,13 +33,18 @@ export async function GET() {
       );
 
       const sequence = company.trialEmailSequence || [];
+      
+      // Derive locale from region (br -> pt, everything else -> en)
+      const locale: "en" | "pt" = company.region === "br" ? "pt" : "en";
 
-      // Mid‑trial email (day 6‑7)
+      // Mid-trial email (day 6-7)
       if (!sequence.includes("mid_trial") && daysSinceCreation >= 6 && daysSinceCreation <= 8) {
+        const copy = locale === "pt" ? "Como esta indo seu teste?" : "Your trial is halfway — here's what you can do";
+        
         await sendEmail({
           to: company.email,
-          subject: "Your trial is halfway — here's what you can do",
-          htmlContent: midTrialEmailHtml(company.name),
+          subject: copy,
+          htmlContent: midTrialEmailHtml(company.name, locale),
         });
         await prisma.company.update({
           where: { id: company.id },
@@ -47,12 +53,14 @@ export async function GET() {
         sentCount++;
       }
 
-      // Final reminder (day 12‑13)
+      // Final reminder (day 12-13)
       if (!sequence.includes("final") && daysSinceCreation >= 12 && daysSinceCreation <= 14) {
+        const copy = locale === "pt" ? "Seu teste acaba amanha — assine para manter seus dados" : "Trial ends tomorrow — subscribe to keep your data";
+        
         await sendEmail({
           to: company.email,
-          subject: "Trial ends tomorrow — subscribe to keep your data",
-          htmlContent: finalTrialEmailHtml(company.name),
+          subject: copy,
+          htmlContent: finalTrialEmailHtml(company.name, locale),
         });
         await prisma.company.update({
           where: { id: company.id },

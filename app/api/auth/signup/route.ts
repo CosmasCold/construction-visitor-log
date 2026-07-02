@@ -2,30 +2,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { sendEmail } from "@/lib/email";
-import { welcomeEmailHtml } from "@/lib/trialEmails";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, region } = await request.json();
+    const { email, password, region, locale } = await request.json();
 
     if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email and password are required" },
+        { status: 400 }
+      );
     }
 
-    // Basic password strength (mirroring client side)
     if (password.length < 8) {
-      return NextResponse.json({ error: "Password must be at least 8 characters" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Password must be at least 8 characters" },
+        { status: 400 }
+      );
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+      return NextResponse.json(
+        { error: "Email already registered" },
+        { status: 409 }
+      );
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Generate a unique company slug from email
     const baseSlug = email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "-");
     let slug = baseSlug;
     let counter = 1;
@@ -33,11 +39,10 @@ export async function POST(request: NextRequest) {
       slug = `${baseSlug}-${counter++}`;
     }
 
-    // Create company + user in a transaction
     const result = await prisma.$transaction(async (tx) => {
       const company = await tx.company.create({
         data: {
-          name: email.split("@")[0], // temporary name, user can change later
+          name: email.split("@")[0],
           slug,
           email,
           trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
@@ -49,7 +54,7 @@ export async function POST(request: NextRequest) {
           email,
           passwordHash,
           name: null,
-          verified: false,   // you may want email verification
+          verified: false,
           role: "company_owner",
           companyId: company.id,
         },
@@ -58,12 +63,11 @@ export async function POST(request: NextRequest) {
       return { company, user };
     });
 
-    // Send welcome email
-    await sendEmail({
-      to: email,
-      subject: "Welcome to SiteSafe! Start your 14‑day trial",
-      htmlContent: welcomeEmailHtml(result.company.name),
-    });
+    // ── Localized welcome email ─────────────────────────────────────
+    const userLocale: "en" | "pt" = locale === "pt" ? "pt" : "en";
+    const dashboardUrl = `${process.env.NEXTAUTH_URL}/dashboard`;
+
+    await sendWelcomeEmail(email, dashboardUrl, userLocale);
 
     // Record the welcome email in the sequence
     await prisma.company.update({
@@ -74,6 +78,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Signup error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
