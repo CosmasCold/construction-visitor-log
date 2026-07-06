@@ -32,7 +32,7 @@ type ActiveVisitor = {
   company: string;
   hostName?: string | null;
   signedInAt: string;
-  photoUrl?: string | null;   // ← ADDED
+  photoUrl?: string | null;
 };
 
 type Host = {
@@ -157,6 +157,18 @@ const dict: Record<Locale, Record<string, string>> = {
     badgeFooter: "Registro de visitantes SiteSafe",
   },
 };
+
+/** Helper to convert a data URL to a Blob */
+function dataUrlToBlob(dataUrl: string): Blob {
+  const [header, base64] = dataUrl.split(",");
+  const mime = header.split(":")[1].split(";")[0];
+  const binary = atob(base64);
+  const array = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    array[i] = binary.charCodeAt(i);
+  }
+  return new Blob([array], { type: mime });
+}
 
 export default function CheckinClient({
   siteId,
@@ -308,27 +320,35 @@ export default function CheckinClient({
     }
   }
 
+  // ── UPDATED: Multipart upload (photo) ──────────────────
   async function uploadPhoto(dataUrl: string): Promise<string | null> {
     setUploading(true);
-    const fileName = `visitor-${Date.now()}.jpg`;
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        imageBase64: dataUrl,
-        fileName,
-      }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setPhotoUrl(data.url);
+    try {
+      const blob = dataUrlToBlob(dataUrl);
+      const formData = new FormData();
+      formData.append("file", blob, `visitor-${Date.now()}.jpg`);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,   // ← multipart, not JSON
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setPhotoUrl(data.url);
+        setCurrentStep(3);
+        return data.url;
+      } else {
+        const err = await res.json().catch(() => ({ error: "Upload failed" }));
+        alert(err.error || t.errUploadPhoto);
+        return null;
+      }
+    } catch (err) {
+      alert(t.errUploadPhoto);
+      return null;
+    } finally {
       setUploading(false);
-      setCurrentStep(3);
-      return data.url;
     }
-    setUploading(false);
-    alert(t.errUploadPhoto);
-    return null;
   }
 
   // Signature pad handlers
@@ -382,29 +402,39 @@ export default function CheckinClient({
     }
   }
 
+  // ── UPDATED: Multipart upload (signature) ──────────────
   async function uploadSignature(dataUrl: string): Promise<string | null> {
     setUploading(true);
-    // eslint-disable-next-line react-hooks/purity
-    const fileName = `sig-${Date.now()}.png`;
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        imageBase64: dataUrl,
-        fileName,
-      }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setSignatureUrl(data.url);
+    try {
+      const blob = dataUrlToBlob(dataUrl);
+      const formData = new FormData();
+      // eslint-disable-next-line react-hooks/purity
+const ts = Date.now();
+formData.append("file", blob, `sig-${ts}.png`);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setSignatureUrl(data.url);
+        clearSignature();
+        setShowSignaturePad(false);
+        setCurrentStep(4);
+        return data.url;
+      } else {
+        const err = await res.json().catch(() => ({ error: "Upload failed" }));
+        alert(err.error || t.errUploadPhoto);
+        return null;
+      }
+    } catch (err) {
+      alert(t.errUploadPhoto);
+      return null;
+    } finally {
       setUploading(false);
-      clearSignature();
-      setShowSignaturePad(false);
-      setCurrentStep(4);
-      return data.url;
     }
-    setUploading(false);
-    return null;
   }
 
   async function handleSignIn(e: React.FormEvent) {
