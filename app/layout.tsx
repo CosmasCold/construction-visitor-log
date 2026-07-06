@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
+import CookieBanner from "@/components/CookieBanner";
 
 export const metadata: Metadata = {
   title: "SiteSafe – Smart Visitor Management",
@@ -75,6 +76,8 @@ export default async function RootLayout({
         <Analytics />
         <Script src="/crisp-init.js" strategy="lazyOnload" />
         <ExitIntentPopup />
+        {children}
+  <CookieBanner />
       </body>
     </html>
   );
