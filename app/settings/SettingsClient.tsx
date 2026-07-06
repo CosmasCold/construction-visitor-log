@@ -4,6 +4,7 @@
 import { useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import DeleteAccountSection from "@/components/DeleteAccountSection";
 import {
   ArrowLeft,
   Building,
@@ -761,6 +762,8 @@ export default function SettingsClient({
             </form>
           </div>
         </section>
+        {/* Delete Account Section */}
+        <DeleteAccountSection locale={initialLocale} />
       </main>
     </div>
   );
