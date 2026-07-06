@@ -197,7 +197,7 @@ const t = {
       { q: "Do visitors need to download an app?", a: "No. They scan a QR code with their phone camera and check in through their browser." },
       { q: "Can we try it without a credit card?", a: "Yes. The 14-day trial starts instantly. No card, no sales call, no catch." },
       { q: "How long does setup take?", a: "Most teams are live in under 3 minutes. Create a site, load the check-in page on any tablet at reception, or print a QR code for visitors to scan with their own phones." },
-      { q: "Is our data secure?", a: "All data is encrypted at rest and in transit. We run on SOC 2 Type II infrastructure." },
+      { q: "Is our data secure?", a: "All data is encrypted at rest and in transit. SSL encryption." },
     ],
     industries: ["Construction", "Warehousing", "Offices", "Manufacturing", "Logistics"],
   },
@@ -342,7 +342,7 @@ const t = {
       { q: "Os visitantes precisam baixar um app?", a: "Nao. Eles escaneiam um QR code com a camera do celular e fazem check-in pelo navegador." },
       { q: "Podemos testar sem cartao de credito?", a: "Sim. O teste de 14 dias comeca instantaneamente. Sem cartao, sem ligacao de vendas, sem pegadinha." },
       { q: "Quanto tempo leva a configuracao?", a: "A maioria das equipes esta online em menos de 3 minutos. Crie um local, carregue a pagina de check-in em qualquer tablet na recepcao, ou imprima um QR code para os visitantes escanearem com os proprios celulares." },
-      { q: "Nossos dados estao seguros?", a: "Todos os dados sao criptografados em repouso e em transito. Rodamos em infraestrutura SOC 2 Type II." },
+      { q: "Nossos dados estao seguros?", a: "Todos os dados sao criptografados em repouso e em transito. Criptografia SSL." },
     ],
     industries: ["Construcao", "Armazenagem", "Escritorios", "Manufatura", "Logistica"],
   },
@@ -383,8 +383,8 @@ function HeroAurora() {
 
 function TrustBadge({ locale }: { locale: "en" | "pt" }) {
   const copy = {
-    en: { users: "200+ sites", security: "SOC 2 Ready", compliance: "GDPR / LGPD" },
-    pt: { users: "200+ locais", security: "SOC 2 Ready", compliance: "GDPR / LGPD" },
+    en: { users: "200+ sites", security: "SSL Encryption", compliance: "GDPR / LGPD" },
+    pt: { users: "200+ locais", security: "Criptografia SSL", compliance: "GDPR / LGPD" },
   };
   const c = copy[locale];
   return (
