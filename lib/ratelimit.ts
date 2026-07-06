@@ -33,3 +33,10 @@ export const loginLimiter = new Ratelimit({
   analytics: true,
   prefix: "ratelimit:login",
 });
+
+export const forgotPasswordLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(3, "1 h"),
+  analytics: true,
+  prefix: "ratelimit:forgotpassword",
+});

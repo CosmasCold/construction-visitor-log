@@ -47,3 +47,5 @@ next-env.d.ts
 
 *.cjs
 export-db.cjs
+# Sentry Config File
+.env.sentry-build-plugin

@@ -1,32 +1,19 @@
+// app/api/sites/[siteId]/lockdown/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { requireAuth, requireSiteAccess } from "@/lib/auth-guard";
 
 async function handler(
   req: NextRequest,
   { params }: { params: Promise<{ siteId: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { user, companyId, response } = await requireAuth(req);
+  if (response) return response;
 
   const { siteId } = await params;
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { company: { select: { id: true } } },
-  });
-
-  const site = await prisma.site.findUnique({
-    where: { id: siteId },
-    select: { companyId: true },
-  });
-
-  if (!site || !user?.company?.id || site.companyId !== user.company.id) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  const denied = await requireSiteAccess(siteId, companyId!);
+  if (denied) return denied;
 
   const { lockdownEnabled } = await req.json();
 

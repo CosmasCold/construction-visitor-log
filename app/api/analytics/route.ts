@@ -1,33 +1,25 @@
 // app/api/analytics/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { requireAuth, requireSiteAccess } from "@/lib/auth-guard";
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { user, companyId, response } = await requireAuth(req);
+  if (response) return response;
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { company: { select: { id: true } } },
-  });
-
-  if (!user || (!user.company && user.role !== "super_admin")) {
-    return NextResponse.json({ error: "No company found" }, { status: 404 });
-  }
-
-  const companyId = user.company?.id;
-  if (!companyId && user.role !== "super_admin") {
-    return NextResponse.json({ error: "No company found" }, { status: 404 });
-  }
+  // Super admin can access any company (optional — remove if you don't have super_admin)
+  const isSuperAdmin = user.role === "super_admin";
 
   const { searchParams } = req.nextUrl;
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const siteId = searchParams.get("siteId");
+
+  // If siteId provided, verify user owns it
+  if (siteId && !isSuperAdmin) {
+    const denied = await requireSiteAccess(siteId, companyId!);
+    if (denied) return denied;
+  }
 
   // Default: last 30 days
   let startDate: Date;
@@ -59,7 +51,7 @@ export async function GET(req: NextRequest) {
 
   if (siteId) {
     where.siteId = siteId;
-  } else if (companyId) {
+  } else if (companyId && !isSuperAdmin) {
     where.site = { companyId };
   }
 

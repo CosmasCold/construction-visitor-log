@@ -1,40 +1,32 @@
+// app/api/sites/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-guard";
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { user, companyId, response } = await requireAuth(req);
+  if (response) return response;
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { company: { select: { id: true } } },
-  });
-
-  const company = user?.company;
-  if (!company) {
+  if (!companyId) {
     return NextResponse.json({ error: "No company" }, { status: 400 });
   }
 
-  // Enforce 20‑site limit
+  // Enforce 20-site limit
   const siteCount = await prisma.site.count({
-    where: { companyId: company.id },
+    where: { companyId },
   });
 
   if (siteCount >= 20) {
     return NextResponse.json(
       {
         error:
-          "You’ve reached the 20‑site limit for your plan. Contact us if you need more sites.",
+          "You've reached the 20-site limit for your plan. Contact us if you need more sites.",
       },
       { status: 403 }
     );
   }
 
-  // Accept both JSON and form‑encoded data
+  // Accept both JSON and form-encoded data
   let name: string, slug: string, address: string | undefined;
 
   const contentType = req.headers.get("content-type") || "";
@@ -47,12 +39,17 @@ export async function POST(req: NextRequest) {
     const form = await req.formData();
     name = form.get("name") as string;
     slug = form.get("slug") as string;
-    address = form.get("address") as string || undefined;
-    // companyId is sent from the form but we already have the company from the session
+    address = (form.get("address") as string) || undefined;
   }
 
   if (!name || !slug) {
     return NextResponse.json({ error: "Name and slug required" }, { status: 400 });
+  }
+
+  // Reject if body tries to set companyId to something else
+  const body = await req.clone().json().catch(() => ({}));
+  if (body.companyId && body.companyId !== companyId) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   const site = await prisma.site.create({
@@ -60,7 +57,7 @@ export async function POST(req: NextRequest) {
       name,
       slug,
       address: address || null,
-      companyId: company.id,
+      companyId,
     },
   });
 

@@ -1,7 +1,7 @@
+// app/api/sites/[siteId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { requireAuth, requireSiteAccess } from "@/lib/auth-guard";
 
 export async function GET(
   req: NextRequest,
@@ -9,6 +9,8 @@ export async function GET(
 ) {
   const { siteId } = await params;
 
+  // Note: GET is public (used by QR code check-in), so no auth required
+  // But we should NOT expose sensitive fields
   const site = await prisma.site.findUnique({
     where: { id: siteId },
     select: {
@@ -18,7 +20,7 @@ export async function GET(
       documentTemplateData: true,
       showVisitorListOnCheckin: true,
       locale: true,
-      lockdownEnabled: true,  // ← ADD THIS
+      lockdownEnabled: true,
     },
   });
 
@@ -33,27 +35,13 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ siteId: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { user, companyId, response } = await requireAuth(req);
+  if (response) return response;
 
   const { siteId } = await params;
 
-  // Verify the user belongs to the company that owns this site
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { company: { select: { id: true } } },
-  });
-
-  const site = await prisma.site.findUnique({
-    where: { id: siteId },
-    select: { companyId: true },
-  });
-
-  if (!site || !user?.company?.id || site.companyId !== user.company.id) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  const denied = await requireSiteAccess(siteId, companyId!);
+  if (denied) return denied;
 
   const {
     name,
@@ -76,7 +64,7 @@ export async function PUT(
       questions,
       documentSigningEnabled,
       showVisitorListOnCheckin,
-      locale, 
+      locale,
     },
   });
 
@@ -87,29 +75,14 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ siteId: string }> }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const { user, companyId, response } = await requireAuth(req);
+  if (response) return response;
 
   const { siteId } = await params;
 
-  // Verify ownership
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { company: { select: { id: true } } },
-  });
+  const denied = await requireSiteAccess(siteId, companyId!);
+  if (denied) return denied;
 
-  const site = await prisma.site.findUnique({
-    where: { id: siteId },
-    select: { companyId: true },
-  });
-
-  if (!site || !user?.company?.id || site.companyId !== user.company.id) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  // Delete the site (cascading will remove related visitor logs, hosts, etc.)
   await prisma.site.delete({
     where: { id: siteId },
   });

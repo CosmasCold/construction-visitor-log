@@ -1,28 +1,14 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+// app/api/dashboard/data/route.ts
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth-guard";
 
-export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(req.url);
-  const companyId = searchParams.get("companyId");
+export async function GET(req: NextRequest) {
+  const { user, companyId, response } = await requireAuth(req);
+  if (response) return response;
 
   if (!companyId) {
-    return NextResponse.json({ error: "Missing companyId" }, { status: 400 });
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { company: { select: { id: true } } },
-  });
-
-  if (!user?.company || user.company.id !== companyId) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return NextResponse.json({ error: "No company" }, { status: 400 });
   }
 
   const sites = await prisma.site.findMany({
