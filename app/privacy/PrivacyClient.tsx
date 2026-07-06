@@ -78,7 +78,7 @@ const t = {
         paragraphs: [
           "All data is stored on secure servers provided by Vercel and Neon (PostgreSQL). Data is encrypted in transit using SSL/TLS and at rest using AES-256.",
         ],
-        tags: ["SSL/TLS Encryption", "AES-256 at Rest", "Content Security Policy", "HSTS", "SOC 2 Type II Infrastructure"],
+        tags: ["SSL/TLS Encryption", "AES-256 at Rest", "Content Security Policy", "HSTS"],
       },
       {
         id: "retention",
@@ -177,7 +177,7 @@ const t = {
         paragraphs: [
           "Todos os dados são armazenados em servidores seguros fornecidos pela Vercel e Neon (PostgreSQL). Os dados são criptografados em trânsito usando SSL/TLS e em repouso usando AES-256.",
         ],
-        tags: ["Criptografia SSL/TLS", "AES-256 em Repouso", "Política de Segurança de Conteúdo", "HSTS", "Infraestrutura SOC 2 Tipo II"],
+        tags: ["Criptografia SSL/TLS", "AES-256 em Repouso", "Política de Segurança de Conteúdo", "HSTS"],
       },
       {
         id: "retention",
@@ -246,7 +246,6 @@ export default function PrivacyClient({ locale }: PrivacyClientProps) {
           {[
             { label: copy.encryption, value: "AES-256", icon: Lock },
             { label: copy.compliance, value: "LGPD Ready", icon: ShieldCheck },
-            { label: copy.infrastructure, value: "SOC 2 Type II", icon: Database },
             { label: copy.responseTime, value: locale === "pt" ? "Em até 30 Dias" : "Within 30 Days", icon: Mail },
           ].map((item, i) => (
             <div key={i} className="rounded-xl border border-white/5 bg-white/[0.03] p-4 text-center">
