@@ -76,8 +76,7 @@ export default async function RootLayout({
         <Analytics />
         <Script src="/crisp-init.js" strategy="lazyOnload" />
         <ExitIntentPopup />
-        {children}
-  <CookieBanner />
+        <CookieBanner />
       </body>
     </html>
   );
