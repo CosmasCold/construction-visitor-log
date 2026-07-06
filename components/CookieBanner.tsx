@@ -16,12 +16,14 @@ export default function CookieBanner() {
 
   function accept() {
     localStorage.setItem("cookie-consent", "accepted");
-    setShow(false);
+    // Reload so AnalyticsLoader picks up the new value and scripts load
+    window.location.reload();
   }
 
   function decline() {
     localStorage.setItem("cookie-consent", "declined");
-    setShow(false);
+    // Reload so no tracking scripts are loaded
+    window.location.reload();
   }
 
   if (!show) return null;

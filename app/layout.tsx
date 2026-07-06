@@ -1,10 +1,9 @@
 // app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
-import Script from "next/script";
-import { Analytics } from "@vercel/analytics/react";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
 import CookieBanner from "@/components/CookieBanner";
+import AnalyticsLoader from "@/components/AnalyticsLoader";
 
 export const metadata: Metadata = {
   title: "SiteSafe – Smart Visitor Management",
@@ -69,12 +68,10 @@ export default async function RootLayout({
         <link rel="alternate" hrefLang="pt-BR" href="https://sitesafe.thesift.space/br" />
         <link rel="alternate" hrefLang="x-default" href="https://sitesafe.thesift.space/" />
       </head>
-      <script src="https://analytics.ahrefs.com/analytics.js" data-key="0KWpb4lQa7ZMwscJ/c+npA" async></script>
       <body className="relative flex flex-col min-h-screen">
         <div className="bg-premium" />
         <main className="flex-1">{children}</main>
-        <Analytics />
-        <Script src="/crisp-init.js" strategy="lazyOnload" />
+        <AnalyticsLoader />
         <ExitIntentPopup />
         <CookieBanner />
       </body>

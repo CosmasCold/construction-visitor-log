@@ -118,13 +118,13 @@ const t = {
           {
             icon: UserPlus,
             title: "Pre-registration",
-            desc: "Add expected visitors ahead of time. They sign in with one tap — no typing, no delays at the front desk or gate.",
-            highlight: "One-tap entry",
+            desc: "Add expected visitors ahead of time. No delays at the front desk or gate.",
+            highlight: "Expected visitors",
           },
           {
             icon: Printer,
             title: "Badge printing",
-            desc: "Print visitor badges with photo directly from the dashboard or check-in page. Compact, professional, and secure.",
+            desc: "Print visitor badges with photo directly from the check-in page. Compact, professional, and secure.",
             highlight: "Instant badges",
           },
           {
@@ -286,13 +286,13 @@ const t = {
           {
             icon: UserPlus,
             title: "Pré-cadastro",
-            desc: "Adicione visitantes esperados com antecedência. Eles fazem check-in com um toque — sem digitar, sem atrasos na recepção ou portaria.",
-            highlight: "Entrada com um toque",
+            desc: "Adicione visitantes esperados com antecedência. Sem atrasos na recepção ou portaria.",
+            highlight: "Pré-cadastro",
           },
           {
             icon: Printer,
             title: "Impressão de crachás",
-            desc: "Imprima crachás de visitantes com foto diretamente do painel ou página de check-in. Compacto, profissional e seguro.",
+            desc: "Imprima crachás de visitantes com foto diretamente da página de check-in. Compacto, profissional e seguro.",
             highlight: "Crachás instantâneos",
           },
           {

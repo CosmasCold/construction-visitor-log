@@ -25,7 +25,6 @@ const t = {
     about: "About",
     security: "Security",
     contact: "Contact",
-    email: "Email",
     builtWith: "Proudly built with",
     copyright: "All rights reserved.",
   },
@@ -46,7 +45,6 @@ const t = {
     about: "Sobre",
     security: "Segurança",
     contact: "Contato",
-    email: "E-mail",
     builtWith: "Desenvolvido com",
     copyright: "Todos os direitos reservados.",
   },
@@ -105,10 +103,9 @@ export default function PublicFooter({ locale }: PublicFooterProps) {
           <Link href={`${prefix}/security`} className="hover:text-white transition-colors duration-150">{copy.security}</Link>
           <Link href={`${prefix}/contact`} className="hover:text-white transition-colors duration-150">{copy.contact}</Link>
           <a
-            href="mailto:hello@sitesafe.thesift.space"
+            href="mailto:hello@thesift.space"
             className="hover:text-white transition-colors duration-150"
           >
-            {copy.email}
           </a>
         </div>
 
