@@ -1,15 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
-function getInitialConsent(): boolean {
-  if (typeof window === "undefined") return false;
-  return !!localStorage.getItem("cookie-consent");
-}
-
 export default function CookieBanner() {
-  const [show, setShow] = useState(() => !getInitialConsent());
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const consent = localStorage.getItem("cookie-consent");
+    if (!consent) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShow(true);
+    }
+  }, []);
 
   function accept() {
     localStorage.setItem("cookie-consent", "accepted");
