@@ -32,6 +32,7 @@ type ActiveVisitor = {
   company: string;
   hostName?: string | null;
   signedInAt: string;
+  photoUrl?: string | null;   // ← ADDED
 };
 
 type Host = {
@@ -381,7 +382,7 @@ export default function CheckinClient({
     }
   }
 
-    async function uploadSignature(dataUrl: string): Promise<string | null> {
+  async function uploadSignature(dataUrl: string): Promise<string | null> {
     setUploading(true);
     // eslint-disable-next-line react-hooks/purity
     const fileName = `sig-${Date.now()}.png`;
@@ -514,9 +515,9 @@ export default function CheckinClient({
       const data = await res.json().catch(() => ({}));
       if (data.blocked) {
         setErrorMessage(data.message);
-        } else {
-    setErrorMessage(data.error || t.errSignIn);  // ← ADD: shows lockdown message
-  }
+      } else {
+        setErrorMessage(data.error || t.errSignIn);
+      }
     }
   }
 
@@ -1020,7 +1021,7 @@ export default function CheckinClient({
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                       <button
-                        onClick={() => printBadgeForVisitor(v.fullName, v.company, v.hostName)}
+                        onClick={() => printBadgeForVisitor(v.fullName, v.company, v.hostName, v.photoUrl)}   // ← PASS PHOTO
                         className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
                         title="Print badge"
                       >

@@ -21,6 +21,7 @@ export async function GET(
         company: true,
         hostName: true,
         signedInAt: true,
+        photoUrl: true,   // ← ADDED
       },
     });
 
