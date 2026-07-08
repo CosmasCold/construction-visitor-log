@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CheckCircle2, XCircle } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 
@@ -296,35 +297,35 @@ export default function ModeloFichaVisitantesObra() {
               <h3 className="font-semibold text-slate-900 mb-3">Itens Obrigatórios na Ficha</h3>
               <ul className="space-y-2 text-sm text-slate-600">
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span>Nome completo do visitante</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span>Empresa ou organização</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span>Documento de identificação (CPF/RG)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span>Motivo da visita e área acessada</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span>Horário de entrada e saída</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span>Nome do responsável pelo acompanhamento</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span>Confirmação de uso de EPIs</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span>Assinatura confirmando briefing de segurança</span>
                 </li>
               </ul>
@@ -333,23 +334,23 @@ export default function ModeloFichaVisitantesObra() {
               <h3 className="font-semibold text-slate-900 mb-3">EPIs Obrigatórios para Visitantes</h3>
               <ul className="space-y-2 text-sm text-slate-600">
                 <li className="flex items-start gap-2">
-                  <span className="text-amber-500 font-bold">!</span>
+                  <XCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
                   <span>Capacete de segurança com aba frontal</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-amber-500 font-bold">!</span>
+                  <XCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
                   <span>Botina com biqueira de aço</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-amber-500 font-bold">!</span>
+                  <XCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
                   <span>Colete refletivo ou alta visibilidade</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-amber-500 font-bold">!</span>
+                  <XCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
                   <span>Óculos de proteção (quando necessário)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-amber-500 font-bold">!</span>
+                  <XCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
                   <span>Luvas de proteção (quando necessário)</span>
                 </li>
               </ul>

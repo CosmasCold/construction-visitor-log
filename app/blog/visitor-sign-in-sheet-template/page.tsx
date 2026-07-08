@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CheckCircle2, XCircle } from "lucide-react";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 
@@ -293,23 +294,23 @@ export default function VisitorSignInTemplatePage() {
               <h3 className="text-lg font-semibold text-slate-900 mb-3">The Problem with Paper</h3>
               <ul className="space-y-3 text-slate-600">
                 <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold mt-0.5">&times;</span>
+                  <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                   <span><strong>Privacy violation:</strong> Everyone can see who visited before them</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold mt-0.5">&times;</span>
+                  <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                   <span><strong>Illegible handwriting:</strong> Good luck reading that signature in 6 months</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold mt-0.5">&times;</span>
+                  <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                   <span><strong>No search:</strong> Finding a specific visitor means flipping through pages</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold mt-0.5">&times;</span>
+                  <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                   <span><strong>Easy to lose:</strong> Fire, water, or simple misplacement kills your records</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-red-500 font-bold mt-0.5">&times;</span>
+                  <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
                   <span><strong>Audit failure:</strong> Auditors want timestamps and proof &mdash; paper can&rsquo;t provide that</span>
                 </li>
               </ul>
@@ -318,23 +319,23 @@ export default function VisitorSignInTemplatePage() {
               <h3 className="text-lg font-semibold text-slate-900 mb-3">How Digital Fixes It</h3>
               <ul className="space-y-3 text-slate-600">
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold mt-0.5">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span><strong>Private:</strong> Each visitor sees only their own entry</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold mt-0.5">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span><strong>Searchable:</strong> Find any visitor by name, date, or company in seconds</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold mt-0.5">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span><strong>Automatic timestamps:</strong> No guessing when someone arrived or left</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold mt-0.5">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span><strong>Cloud backup:</strong> Records survive fires, floods, and office moves</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 font-bold mt-0.5">&check;</span>
+                  <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                   <span><strong>Audit-ready:</strong> Export PDF/CSV reports with one click</span>
                 </li>
               </ul>
