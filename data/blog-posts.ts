@@ -37,12 +37,12 @@ export const posts: BlogPost[] = [
   locale: "pt" as const,
 },
   {
-    slug: "visitor-log-book-template-free",
-    title: "Free Visitor Log Book Template (PDF) + Why Paper Logs Fail in 2026",
+    slug: "visitor-sign-in-sheet-template",
+    title: "Visitor Sign-In Sheet Template (Free) — Digital vs. Paper",
     date: "2026-06-25",
     lastModified: "2026-06-25",
     excerpt:
-      "Download a free printable visitor log template. Plus: why 73% of facilities still use paper logs, the hidden risks, and how to replace them in 10 minutes for $49/mo.",
+      "Free visitor sign-in sheet template you can use today. Plus: why digital visitor logs beat paper for security, audits, and compliance. Download the PDF.",
       locale: "en",
   },
   {
@@ -251,5 +251,13 @@ export const posts: BlogPost[] = [
     excerpt:
       "Paper visitor logs fail safety audits for six specific reasons. Learn why paper sign‑in sheets are a risk and how a digital check‑in system solves every one.",
       locale: "en",
+  },
+  {
+    slug: "modelo-ficha-visitantes-obra",
+    title: "Modelo Ficha de Visitantes para Obra [Gratis] — PDF para Imprimir",
+    date: "2026-07-08",
+    lastModified: "2026-07-08",
+    excerpt: "Baixe gratis o modelo de ficha de visitantes que atende a NR18. PDF pronto para imprimir. Inclui briefing de seguranca, EPI e assinatura.",
+    locale: "pt" as const,
   },
 ];

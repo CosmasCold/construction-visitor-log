@@ -57,6 +57,7 @@ const enOnlyPaths = [
   "/blog/visitor-log-book-template-free",
   "/blog/osha-visitor-log-requirements",
   "/blog/visitor-management-roi-calculator",
+  "/blog/visitor-sign-in-sheet-template",
   "/changelog",
   "/compare/sine",
   "/compare/proxyclick",
@@ -68,8 +69,13 @@ const enOnlyPaths = [
   "/admin/login",
 ];
 
-// PT-only landing page
-const ptOnlyPaths = ["/br"];
+// PT-only pages
+const ptOnlyPaths = [
+  "/br",
+  "/br/blog/melhor-sistema-controle-visitantes-2026",
+  "/br/blog/check-in-digital-obras",
+  "/br/blog/modelo-ficha-visitantes-obra",
+];
 
 function getPriority(path: string): string {
   if (path === "") return "1.0";
