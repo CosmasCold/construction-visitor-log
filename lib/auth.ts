@@ -5,8 +5,7 @@ import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 import { signInLimiter } from "./ratelimit";
-import { sendEmail } from "./email";
-import { welcomeEmailHtml } from "./trialEmails";
+import { sendWelcomeEmail } from "./email";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,7 +14,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     CredentialsProvider({
-      name: "Admin",
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
@@ -35,10 +34,6 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.passwordHash) return null;
-
-        if (!user.verified) {
-          throw new Error("Please verify your email before logging in. Check your inbox.");
-        }
 
         const passwordValid = await bcrypt.compare(
           credentials.password,
@@ -60,10 +55,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      console.log("signIn callback:", { provider: account?.provider, email: user.email });
-
       if (account?.provider !== "google" || !user.email) {
-        console.log("Not a Google sign-in or missing email, skipping");
         return true;
       }
 
@@ -73,24 +65,20 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (existingCompany) {
-          console.log("Found existing company:", existingCompany.name);
-
           // Reactivate trial if expired
           if (!existingCompany.trialEndsAt || existingCompany.trialEndsAt < new Date()) {
-            console.log("Reactivating trial for company");
             await prisma.company.update({
               where: { id: existingCompany.id },
               data: { trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000) },
             });
           }
 
-          // Ensure there is at least one default site (for tutorial)
+          // Ensure there is at least one default site
           const existingSites = await prisma.site.findMany({
             where: { companyId: existingCompany.id },
             take: 1,
           });
           if (existingSites.length === 0) {
-            console.log("Creating default site for existing company");
             await prisma.site.create({
               data: {
                 name: "Default Site",
@@ -118,8 +106,6 @@ export const authOptions: NextAuthOptions = {
               role: "company_owner",
             },
           });
-
-          console.log("User linked to existing company");
         } else {
           // Create new company with unique slug
           const baseSlug = user.email.split("@")[0].replace(/[^a-zA-Z0-9]/g, "-");
@@ -129,17 +115,16 @@ export const authOptions: NextAuthOptions = {
             slug = `${baseSlug}-${counter++}`;
           }
 
-          console.log("Creating new company with slug:", slug);
           const company = await prisma.company.create({
             data: {
               name: `${user.name || "My"} Company`,
               slug,
               email: user.email,
+              region: "en",
               trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
             },
           });
 
-          // Create default site (triggers tutorial & onboarding)
           await prisma.site.create({
             data: {
               name: "Default Site",
@@ -161,14 +146,8 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          console.log("New user, company, and default site created");
-
           // Send welcome email
-          await sendEmail({
-            to: user.email,
-            subject: "Welcome to SiteSafe! Start your 14‑day trial",
-            htmlContent: welcomeEmailHtml(company.name),
-          });
+          await sendWelcomeEmail(user.email, `${process.env.NEXTAUTH_URL}/dashboard`, "en");
 
           await prisma.company.update({
             where: { id: company.id },
@@ -184,8 +163,6 @@ export const authOptions: NextAuthOptions = {
     },
 
     async jwt({ token, user, account }) {
-      console.log("jwt callback:", { tokenEmail: token.email, userEmail: user?.email, provider: account?.provider });
-
       if (user && account) {
         const email = user.email ?? token.email;
         if (email) {
@@ -196,7 +173,6 @@ export const authOptions: NextAuthOptions = {
           if (dbUser) {
             token.role = dbUser.role;
             token.companyId = dbUser.companyId ?? undefined;
-            console.log("jwt token updated with companyId:", token.companyId);
           }
         }
       }
@@ -204,7 +180,6 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      console.log("session callback:", { tokenCompanyId: token.companyId });
       if (session.user) {
         session.user.role = token.role;
         session.user.companyId = token.companyId;
