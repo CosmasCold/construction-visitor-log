@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
           name: email.split("@")[0],
           slug,
           email,
+          region: region || "en",
           trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
         },
       });
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
           email,
           passwordHash,
           name: null,
-          verified: false,
+          verified: true,
           role: "company_owner",
           companyId: company.id,
         },
