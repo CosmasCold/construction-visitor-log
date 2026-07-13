@@ -155,8 +155,8 @@ const faqs = [
   },
 ];
 
-function FAQSchema({ faqs }: { faqs: { q: string; a: string }[] }) {
-  const schema = {
+export default function EnvoyAlternativePage() {
+  const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({
@@ -168,16 +168,8 @@ function FAQSchema({ faqs }: { faqs: { q: string; a: string }[] }) {
       },
     })),
   };
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
 
-function ArticleSchema() {
-  const schema = {
+  const articleSchema = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     headline: "7 Best Envoy Alternatives (2026) — Compared",
@@ -197,22 +189,20 @@ function ArticleSchema() {
         url: "https://sitesafe.thesift.space/logo.png",
       },
     },
-    datePublished: "2026-01-10",
-    dateModified: "2026-07-08",
+    datePublished: "2026-07-08T00:00:00+00:00",
+    dateModified: "2026-07-08T00:00:00+00:00",
   };
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
 
-export default function EnvoyAlternativePage() {
   return (
     <>
-      <FAQSchema faqs={faqs} />
-      <ArticleSchema />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <PublicHeader locale="en" />
       <div className="min-h-screen py-16 px-4">
         <article className="max-w-4xl mx-auto space-y-12 text-white">
