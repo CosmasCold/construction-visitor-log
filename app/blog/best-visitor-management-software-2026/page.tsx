@@ -146,12 +146,12 @@ const faqs = [
   },
   {
     q: "Is digital visitor tracking compliant with audits?",
-    a: "Digital logs are generally more audit-compliant than paper because they capture timestamps, photos, and signatures automatically. Look for systems that export to PDF/CSV with tamper-evident records. Specific compliance (like HIPAA or NR18) depends on the features offered.",
+    a: "Digital logs are generally more audit-compliant than paper because they capture timestamps, photos, and signatures automatically. Look for systems that export to PDF/CSV with tamper-evident records.",
   },
 ];
 
-function FAQSchema({ faqs }: { faqs: { q: string; a: string }[] }) {
-  const schema = {
+export default function BestVisitorManagement2026() {
+  const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({
@@ -163,16 +163,8 @@ function FAQSchema({ faqs }: { faqs: { q: string; a: string }[] }) {
       },
     })),
   };
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
 
-function ArticleSchema() {
-  const schema = {
+  const articleSchema = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     headline: "10 Best Visitor Management Systems (2026) — Compared",
@@ -192,22 +184,21 @@ function ArticleSchema() {
         url: "https://sitesafe.thesift.space/logo.png",
       },
     },
-    datePublished: "2026-01-15",
-    dateModified: "2026-07-08",
+    datePublished: "2026-07-08T00:00:00+00:00",
+    dateModified: "2026-07-08T00:00:00+00:00",
   };
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
 
-export default function BestVisitorManagement2026() {
   return (
     <>
-      <FAQSchema faqs={faqs} />
-      <ArticleSchema />
+      {/* Schema markup in head via dangerouslySetInnerHTML in JSX — Next.js will hoist to head */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <PublicHeader locale="en" />
       <main className="min-h-screen bg-white">
         {/* Hero */}
