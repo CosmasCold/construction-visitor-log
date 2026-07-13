@@ -84,8 +84,8 @@ const faqs = [
   },
 ];
 
-function FAQSchema({ faqs }: { faqs: { q: string; a: string }[] }) {
-  const schema = {
+export default function VisitorSignInTemplatePage() {
+  const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({
@@ -97,16 +97,8 @@ function FAQSchema({ faqs }: { faqs: { q: string; a: string }[] }) {
       },
     })),
   };
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
 
-function ArticleSchema() {
-  const schema = {
+  const articleSchema = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
     headline: "Visitor Sign-In Sheet Template (Free) — Digital vs. Paper",
@@ -126,19 +118,11 @@ function ArticleSchema() {
         url: "https://sitesafe.thesift.space/logo.png",
       },
     },
-    datePublished: "2026-07-08",
-    dateModified: "2026-07-08",
+    datePublished: "2026-07-08T00:00:00+00:00",
+    dateModified: "2026-07-08T00:00:00+00:00",
   };
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
 
-function HowToSchema() {
-  const schema = {
+  const howToSchema = {
     "@context": "https://schema.org",
     "@type": "HowTo",
     name: "How to Create a Visitor Sign-In Sheet",
@@ -173,20 +157,21 @@ function HowToSchema() {
       },
     ],
   };
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
 
-export default function VisitorSignInTemplatePage() {
   return (
     <>
-      <FAQSchema faqs={faqs} />
-      <ArticleSchema />
-      <HowToSchema />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+      />
       <PublicHeader locale="en" />
       <main className="min-h-screen bg-white">
         {/* Hero */}
