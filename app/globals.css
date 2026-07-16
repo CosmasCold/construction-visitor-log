@@ -39,6 +39,11 @@ body {
   color: white;
 }
 
+/* ── Spin (for gradient border animation) ────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ── Components ─────────────────────────────────────────── */
 @layer components {
   .glass-card {
@@ -232,7 +237,7 @@ body {
   .bg-premium {
     background: #0a0f1c;
   }
-  
+
   .bg-premium::before {
     display: none;
   }

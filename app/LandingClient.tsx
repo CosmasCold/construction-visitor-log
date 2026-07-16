@@ -2,8 +2,15 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect, useCallback } from "react";
+import {
+  motion,
+  useMotionValue,
+  useTransform,
+  useSpring,
+  AnimatePresence,
+  useScroll,
+} from "framer-motion";
 import ChecklistForm from "@/components/ChecklistForm";
 import ReviewBadges from "@/components/ReviewBadges";
 import ScreenshotGallery from "@/components/ScreenshotGallery";
@@ -14,56 +21,22 @@ import StickyCTA from "@/components/StickyCTA";
 import PublicHeader from "@/components/PublicHeader";
 import PublicFooter from "@/components/PublicFooter";
 import {
-  QrCode,
-  ShieldCheck,
-  Users,
-  Mail,
-  UserPlus,
-  Printer,
-  FileDown,
-  Building,
-  TrendingUp,
-  TrendingDown,
-  Code,
-  DollarSign,
-  ArrowRight,
-  CheckCircle2,
-  Camera,
-  ListChecks,
-  Zap,
-  Wrench,
-  Package,
-  Truck,
-  Factory,
-  Building2,
-  AlertTriangle,
-  ShieldAlert,
-  FileText,
-  Timer,
-  Clock,
-  GitBranch,
-  ChevronRight,
-  Play,
-  Star,
-  BadgeCheck,
-  Lock,
-  Flame,
-  Shield,
-  Globe,
-  CheckSquare,
-  XCircle,
-  ChevronDown,
-  Sparkles,
-  Download,
-  HardHat,
-  Warehouse,
-  BarChart3,
-  MousePointer2,
+  QrCode, ShieldCheck, Users, Mail, UserPlus, Printer, FileDown, Building,
+  TrendingUp, TrendingDown, Code, DollarSign, ArrowRight, CheckCircle2,
+  Camera, ListChecks, Zap, Wrench, Package, Truck, Factory, Building2,
+  AlertTriangle, ShieldAlert, FileText, Timer, Clock, GitBranch, ChevronRight,
+  Play, Star, BadgeCheck, Lock, Flame, Shield, Globe, CheckSquare, XCircle,
+  ChevronDown, Sparkles, Download, HardHat, Warehouse, BarChart3, MousePointer2,
+  ArrowUpRight, Minus, Plus, Activity, Radio, ScanLine, Layers, Fingerprint,
 } from "lucide-react";
 
 interface LandingClientProps {
   locale: "en" | "pt";
 }
+
+/* ═══════════════════════════════════════════════
+   COPY / TRANSLATIONS
+   ═══════════════════════════════════════════════ */
 
 const t = {
   en: {
@@ -210,7 +183,6 @@ const t = {
       { q: "Is our data secure?", a: "All data is encrypted at rest and in transit. SSL encryption." },
     ],
     industries: ["Construction", "Warehousing", "Offices", "Manufacturing", "Logistics"],
-    // NEW SECTIONS
     useCases: {
       title: "Built for your environment",
       subtitle: "One platform. Every industry.",
@@ -255,7 +227,7 @@ const t = {
       ],
     },
     roiCalculator: {
-      title: "See what you’ll save",
+      title: "See what you'll save",
       subtitle: "Most teams overpay for visitor management. One flat fee covers all your locations.",
       locationsLabel: "Locations",
       paperCost: "Paper & Manual",
@@ -409,7 +381,6 @@ const t = {
       { q: "Nossos dados estao seguros?", a: "Todos os dados sao criptografados em repouso e em transito. Criptografia SSL." },
     ],
     industries: ["Construcao", "Armazenagem", "Escritorios", "Manufatura", "Logistica"],
-    // NEW SECTIONS
     useCases: {
       title: "Feito para seu ambiente",
       subtitle: "Uma plataforma. Toda industria.",
@@ -479,9 +450,240 @@ const integrationIcons = [Code, Zap, GitBranch];
 const industryIcons = [Wrench, Package, Building2, Factory, Truck];
 
 
-/* ───────────────────────────────────────────────
-   ANIMATED COMPONENTS
-   ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   PREMIUM HOOKS & UTILITIES
+   ═══════════════════════════════════════════════ */
+
+function useMousePosition() {
+  const [pos, setPos] = useState({ x: 0.5, y: 0.5 });
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      setPos({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
+    };
+    window.addEventListener("mousemove", handler);
+    return () => window.removeEventListener("mousemove", handler);
+  }, []);
+  return pos;
+}
+
+/* ═══════════════════════════════════════════════
+   PREMIUM VISUAL COMPONENTS
+   ═══════════════════════════════════════════════ */
+
+/** Mouse-following ambient spotlight */
+function AmbientSpotlight() {
+  const { x, y } = useMousePosition();
+  return (
+    <div
+      className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700"
+      style={{
+        background: `radial-gradient(600px circle at ${x * 100}% ${y * 100}%, rgba(14,165,233,0.07), transparent 40%)`,
+      }}
+    />
+  );
+}
+
+/** Animated dot grid background */
+function DotGrid() {
+  return (
+    <div className="absolute inset-0 pointer-events-none opacity-[0.15]"
+      style={{
+        backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px)`,
+        backgroundSize: "32px 32px",
+      }}
+    />
+  );
+}
+
+/** Scroll progress bar at top */
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+  return (
+    <motion.div
+      className="fixed top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-sky-500 via-teal-400 to-emerald-400 origin-left z-[100]"
+      style={{ scaleX }}
+    />
+  );
+}
+
+/** Text that scrambles on hover */
+function ScrambleText({ text, className = "" }: { text: string; className?: string }) {
+  const [display, setDisplay] = useState(text);
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const scramble = useCallback(() => {
+    let iteration = 0;
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setDisplay(
+        text
+          .split("")
+          .map((char, idx) => {
+            if (char === " ") return " ";
+            if (idx < iteration) return text[idx];
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("")
+      );
+      iteration += 1 / 2;
+      if (iteration >= text.length) {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setDisplay(text);
+      }
+    }, 30);
+  }, [text]);
+
+  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
+
+  return (
+    <span className={className} onMouseEnter={scramble} style={{ cursor: "default" }}>
+      {display}
+    </span>
+  );
+}
+
+/** Word-by-word reveal animation */
+function WordReveal({ children, className = "", delay = 0 }: { children: string; className?: string; delay?: number }) {
+  const words = children.split(" ");
+  return (
+    <span className={className}>
+      {words.map((word, i) => (
+        <motion.span
+          key={i}
+          className="inline-block mr-[0.25em]"
+          initial={{ opacity: 0, y: 12, filter: "blur(8px)" }}
+          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          viewport={{ once: true }}
+          transition={{ delay: delay + i * 0.04, duration: 0.5, ease: "easeOut" }}
+        >
+          {word}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+/** Magnetic button that pulls toward cursor */
+function MagneticButton({ children, className = "", href = "#" }: { children: React.ReactNode; className?: string; href?: string }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 150, damping: 15 });
+  const springY = useSpring(y, { stiffness: 150, damping: 15 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set((e.clientX - centerX) * 0.25);
+    y.set((e.clientY - centerY) * 0.25);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.a
+      ref={ref}
+      href={href}
+      className={className}
+      style={{ x: springX, y: springY }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {children}
+    </motion.a>
+  );
+}
+
+/** 3D tilt card with spotlight glow */
+function TiltCard({ children, className = "", intensity = 8 }: { children: React.ReactNode; className?: string; intensity?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const rotateX = useMotionValue(0);
+  const rotateY = useMotionValue(0);
+  const springRotateX = useSpring(rotateX, { stiffness: 300, damping: 30 });
+  const springRotateY = useSpring(rotateY, { stiffness: 300, damping: 30 });
+  const [glowPos, setGlowPos] = useState({ x: 50, y: 50 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    rotateX.set((y - 0.5) * -intensity);
+    rotateY.set((x - 0.5) * intensity);
+    setGlowPos({ x: x * 100, y: y * 100 });
+  };
+
+  const handleMouseLeave = () => {
+    rotateX.set(0);
+    rotateY.set(0);
+    setGlowPos({ x: 50, y: 50 });
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      className={`relative group ${className}`}
+      style={{
+        perspective: 1000,
+        rotateX: springRotateX,
+        rotateY: springRotateY,
+        transformStyle: "preserve-3d",
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"
+        style={{
+          background: `radial-gradient(300px circle at ${glowPos.x}% ${glowPos.y}%, rgba(14,165,233,0.15), transparent 60%)`,
+        }}
+      />
+      {children}
+    </motion.div>
+  );
+}
+
+/** Animated gradient border */
+function GradientBorder({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`relative p-[1px] rounded-3xl overflow-hidden ${className}`}>
+      <div className="absolute inset-0 rounded-3xl"
+        style={{
+          background: "conic-gradient(from 0deg, transparent 0%, #0ea5e9 20%, #10b981 40%, #0ea5e9 60%, transparent 80%)",
+          filter: "blur(4px)",
+          opacity: 0.6,
+          animation: "spin 4s linear infinite",
+        }}
+      />
+      <div className="relative rounded-3xl bg-[#0a0f1c]">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/** Noise grain overlay */
+function NoiseOverlay() {
+  return (
+    <div
+      className="absolute inset-0 opacity-[0.025] pointer-events-none"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+      }}
+    />
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   ANIMATED COUNTER
+   ═══════════════════════════════════════════════ */
 
 function AnimatedCounter({ target, suffix = "", prefix = "" }: { target: number; suffix?: string; prefix?: string }) {
   const [count, setCount] = useState(0);
@@ -520,29 +722,19 @@ function AnimatedCounter({ target, suffix = "", prefix = "" }: { target: number;
   );
 }
 
-function NoiseOverlay() {
-  return (
-    <div
-      className="absolute inset-0 opacity-[0.025] pointer-events-none"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-      }}
-    />
-  );
-}
 
-/* ───────────────────────────────────────────────
-   HERO FLOATING CARDS
-   ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   HERO — FLOATING CARDS (ENHANCED)
+   ═══════════════════════════════════════════════ */
 
 function FloatingCards({ locale }: { locale: "en" | "pt" }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const mouseX = useSpring(x, { stiffness: 50, damping: 20 });
-  const mouseY = useSpring(y, { stiffness: 50, damping: 20 });
+  const mouseX = useSpring(x, { stiffness: 40, damping: 15 });
+  const mouseY = useSpring(y, { stiffness: 40, damping: 15 });
 
-  const rotateX = useTransform(mouseY, [-300, 300], [6, -6]);
-  const rotateY = useTransform(mouseX, [-300, 300], [-6, 6]);
+  const rotateX = useTransform(mouseY, [-300, 300], [8, -8]);
+  const rotateY = useTransform(mouseX, [-300, 300], [-8, 8]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -550,36 +742,33 @@ function FloatingCards({ locale }: { locale: "en" | "pt" }) {
     y.set(e.clientY - rect.top - rect.height / 2);
   };
 
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
+  const handleMouseLeave = () => { x.set(0); y.set(0); };
 
   return (
     <motion.div
-      className="relative w-full max-w-lg h-[400px] hidden lg:block"
+      className="relative w-full max-w-lg h-[420px] hidden lg:block"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ perspective: 1000 }}
+      style={{ perspective: 1200 }}
     >
-      {/* Card 1 — QR Code Check-in */}
+      {/* Card 1 — QR */}
       <motion.div
-        className="absolute top-4 left-0 w-64 rounded-2xl p-5 border border-white/10 shadow-2xl"
-        style={{ rotateX, rotateY, z: 30, background: "rgba(15, 23, 42, 0.8)", backdropFilter: "blur(12px)" }}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.8 }}
+        className="absolute top-0 left-0 w-64 rounded-2xl p-5 border border-white/[0.08] shadow-2xl backdrop-blur-xl"
+        style={{ rotateX, rotateY, z: 30, background: "rgba(15,23,42,0.6)" }}
+        initial={{ opacity: 0, y: 60, rotateZ: -8 }}
+        animate={{ opacity: 1, y: 0, rotateZ: -6 }}
+        transition={{ delay: 0.4, duration: 1, type: "spring" }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 rounded-xl bg-sky-500/20 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-sky-500/20 flex items-center justify-center ring-1 ring-sky-500/30">
             <QrCode className="w-4 h-4 text-sky-400" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">{locale === "pt" ? "Check-In" : "Check-In"}</p>
+            <p className="text-sm font-semibold text-white">Check-In</p>
             <p className="text-xs text-slate-400">{locale === "pt" ? "Portal do Visitante" : "Visitor Portal"}</p>
           </div>
         </div>
-        <div className="w-full h-28 bg-white rounded-xl flex items-center justify-center">
+        <div className="w-full h-28 bg-white rounded-xl flex items-center justify-center shadow-inner">
           <div className="grid grid-cols-5 gap-1">
             {Array.from({ length: 25 }).map((_, i) => (
               <div key={i} className={`w-3 h-3 rounded-sm ${i % 3 === 0 || i % 7 === 0 ? "bg-slate-900" : "bg-white"}`} />
@@ -591,15 +780,15 @@ function FloatingCards({ locale }: { locale: "en" | "pt" }) {
 
       {/* Card 2 — Dashboard */}
       <motion.div
-        className="absolute top-20 right-0 w-72 rounded-2xl p-5 border border-white/10 shadow-2xl"
-        style={{ rotateX, rotateY, z: 50, background: "rgba(15, 23, 42, 0.8)", backdropFilter: "blur(12px)" }}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.8 }}
+        className="absolute top-16 right-0 w-72 rounded-2xl p-5 border border-white/[0.08] shadow-2xl backdrop-blur-xl"
+        style={{ rotateX, rotateY, z: 60, background: "rgba(15,23,42,0.6)" }}
+        initial={{ opacity: 0, y: 60, rotateZ: 6 }}
+        animate={{ opacity: 1, y: 0, rotateZ: 4 }}
+        transition={{ delay: 0.6, duration: 1, type: "spring" }}
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-teal-500/20 flex items-center justify-center ring-1 ring-teal-500/30">
               <BarChart3 className="w-4 h-4 text-teal-400" />
             </div>
             <div>
@@ -607,46 +796,36 @@ function FloatingCards({ locale }: { locale: "en" | "pt" }) {
               <p className="text-xs text-slate-400">{locale === "pt" ? "Painel ao Vivo" : "Live Dashboard"}</p>
             </div>
           </div>
-          <span className="text-xs px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-medium">Live</span>
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-medium ring-1 ring-emerald-500/30">LIVE</span>
         </div>
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-slate-400">{locale === "pt" ? "Visitantes Hoje" : "Today’s Visitors"}</span>
+            <span className="text-xs text-slate-400">{locale === "pt" ? "Visitantes Hoje" : "Today's Visitors"}</span>
             <span className="text-sm font-bold text-white">47</span>
           </div>
-          <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-sky-500 to-teal-400 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: "65%" }}
-              transition={{ delay: 1, duration: 1.5, ease: "easeOut" }}
-            />
+          <div className="h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+            <motion.div className="h-full bg-gradient-to-r from-sky-500 to-teal-400 rounded-full" initial={{ width: 0 }} animate={{ width: "65%" }} transition={{ delay: 1.2, duration: 1.8, ease: "easeOut" }} />
           </div>
           <div className="flex justify-between items-center pt-1">
             <span className="text-xs text-slate-400">{locale === "pt" ? "Locais Ativos" : "Active Locations"}</span>
             <span className="text-sm font-bold text-white">12</span>
           </div>
-          <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: "82%" }}
-              transition={{ delay: 1.2, duration: 1.5, ease: "easeOut" }}
-            />
+          <div className="h-1.5 bg-slate-700/50 rounded-full overflow-hidden">
+            <motion.div className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full" initial={{ width: 0 }} animate={{ width: "82%" }} transition={{ delay: 1.5, duration: 1.8, ease: "easeOut" }} />
           </div>
         </div>
       </motion.div>
 
-      {/* Card 3 — Audit Report */}
+      {/* Card 3 — Audit */}
       <motion.div
-        className="absolute bottom-4 left-12 w-64 rounded-2xl p-5 border border-white/10 shadow-2xl"
-        style={{ rotateX, rotateY, z: 40, background: "rgba(15, 23, 42, 0.8)", backdropFilter: "blur(12px)" }}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7, duration: 0.8 }}
+        className="absolute bottom-0 left-12 w-64 rounded-2xl p-5 border border-white/[0.08] shadow-2xl backdrop-blur-xl"
+        style={{ rotateX, rotateY, z: 45, background: "rgba(15,23,42,0.6)" }}
+        initial={{ opacity: 0, y: 60, rotateZ: -3 }}
+        animate={{ opacity: 1, y: 0, rotateZ: -2 }}
+        transition={{ delay: 0.8, duration: 1, type: "spring" }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center ring-1 ring-amber-500/30">
             <FileText className="w-4 h-4 text-amber-400" />
           </div>
           <div>
@@ -661,24 +840,13 @@ function FloatingCards({ locale }: { locale: "en" | "pt" }) {
             locale === "pt" ? "Registros de Anfitriao" : "Host Records",
             locale === "pt" ? "Verificacao de Timestamp" : "Timestamp Verification",
           ].map((item, i) => (
-            <motion.div
-              key={item}
-              className="flex items-center gap-2"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.4 + i * 0.1 }}
-            >
+            <motion.div key={item} className="flex items-center gap-2" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.6 + i * 0.1 }}>
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               <span className="text-xs text-slate-300">{item}</span>
             </motion.div>
           ))}
         </div>
-        <motion.div
-          className="mt-4 flex items-center gap-2 text-xs text-sky-400 font-medium"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2 }}
-        >
+        <motion.div className="mt-4 flex items-center gap-2 text-xs text-sky-400 font-medium" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.2 }}>
           <Download className="w-3.5 h-3.5" />
           <span>{locale === "pt" ? "PDF exportado em 0.4s" : "PDF exported in 0.4s"}</span>
         </motion.div>
@@ -687,9 +855,9 @@ function FloatingCards({ locale }: { locale: "en" | "pt" }) {
   );
 }
 
-/* ───────────────────────────────────────────────
-   TRUST TICKER
-   ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   TRUST TICKER (VELOCITY-AWARE)
+   ═══════════════════════════════════════════════ */
 
 function TrustTicker({ locale }: { locale: "en" | "pt" }) {
   const industries = locale === "pt"
@@ -710,19 +878,21 @@ function TrustTicker({ locale }: { locale: "en" | "pt" }) {
         { icon: Shield, label: "Security" },
       ];
 
+  const duplicated = [...industries, ...industries, ...industries, ...industries];
+
   return (
-    <div className="relative py-6 border-y border-white/5 overflow-hidden">
-      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#0a0f1c] to-transparent z-10" />
-      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#0a0f1c] to-transparent z-10" />
+    <div className="relative py-8 border-y border-white/5 overflow-hidden">
+      <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0a0f1c] to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0a0f1c] to-transparent z-10" />
       <motion.div
-        className="flex gap-12 items-center"
-        animate={{ x: [0, -600] }}
-        transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+        className="flex gap-16 items-center"
+        animate={{ x: [0, -1200] }}
+        transition={{ repeat: Infinity, duration: 35, ease: "linear" }}
       >
-        {[...industries, ...industries, ...industries, ...industries].map((ind, i) => (
-          <div key={i} className="flex items-center gap-3 shrink-0">
-            <ind.icon className="w-4 h-4 text-slate-600" />
-            <span className="text-sm text-slate-500 font-medium whitespace-nowrap">{ind.label}</span>
+        {duplicated.map((ind, i) => (
+          <div key={i} className="flex items-center gap-3 shrink-0 group">
+            <ind.icon className="w-5 h-5 text-slate-600 group-hover:text-sky-400 transition-colors duration-300" />
+            <span className="text-sm text-slate-500 font-medium whitespace-nowrap group-hover:text-slate-300 transition-colors duration-300">{ind.label}</span>
           </div>
         ))}
       </motion.div>
@@ -730,9 +900,9 @@ function TrustTicker({ locale }: { locale: "en" | "pt" }) {
   );
 }
 
-/* ───────────────────────────────────────────────
-   BEFORE / AFTER SLIDER
-   ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   BEFORE / AFTER SLIDER (ENHANCED)
+   ═══════════════════════════════════════════════ */
 
 function BeforeAfterSlider({ locale }: { locale: "en" | "pt" }) {
   const [sliderValue, setSliderValue] = useState(50);
@@ -755,7 +925,7 @@ function BeforeAfterSlider({ locale }: { locale: "en" | "pt" }) {
       </p>
       <div
         ref={containerRef}
-        className="relative h-72 rounded-2xl overflow-hidden cursor-ew-resize select-none border border-white/10"
+        className="relative h-80 rounded-2xl overflow-hidden cursor-ew-resize select-none border border-white/[0.06] shadow-2xl"
         onMouseDown={() => (isDragging.current = true)}
         onMouseUp={() => (isDragging.current = false)}
         onMouseLeave={() => (isDragging.current = false)}
@@ -765,58 +935,59 @@ function BeforeAfterSlider({ locale }: { locale: "en" | "pt" }) {
         onTouchMove={handleMove}
       >
         {/* After (Digital) */}
-        <div className="absolute inset-0 bg-[#151b2b] p-5">
-          <div className="flex items-center gap-2 mb-3">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span className="text-xs font-semibold text-emerald-400">{locale === "pt" ? "REGISTRO DIGITAL" : "DIGITAL VISITOR LOG"}</span>
+        <div className="absolute inset-0 bg-[#0f172a] p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            </div>
+            <span className="text-[10px] font-bold tracking-widest text-emerald-400 uppercase">{locale === "pt" ? "Registro Digital" : "Digital Visitor Log"}</span>
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {[
-              { name: locale === "pt" ? "Carlos Silva" : "Carlos Silva", company: locale === "pt" ? "ABC Construtora" : "ABC Contractors", time: "08:32", host: locale === "pt" ? "Maria R." : "Maria R." },
-              { name: locale === "pt" ? "Ana Pereira" : "Ana Pereira", company: locale === "pt" ? "SafeGuard Inc" : "SafeGuard Inc", time: "09:15", host: locale === "pt" ? "João T." : "João T." },
-              { name: locale === "pt" ? "Roberto Lima" : "Roberto Lima", company: locale === "pt" ? "Inspect Ltd" : "Inspect Ltd", time: "10:01", host: locale === "pt" ? "Maria R." : "Maria R." },
+              { name: "Carlos Silva", company: locale === "pt" ? "ABC Construtora" : "ABC Contractors", time: "08:32", host: "Maria R." },
+              { name: "Ana Pereira", company: "SafeGuard Inc", time: "09:15", host: "João T." },
+              { name: "Roberto Lima", company: "Inspect Ltd", time: "10:01", host: "Maria R." },
+              { name: "James Wright", company: "BuildCore", time: "10:45", host: "David P." },
             ].map((row, i) => (
-              <div key={i} className="flex items-center gap-3 text-xs py-1.5 border-b border-white/5">
+              <div key={i} className="flex items-center gap-3 text-xs py-2 px-3 rounded-lg bg-white/[0.03] border border-white/[0.04]">
+                <div className="w-6 h-6 rounded-full bg-sky-500/20 flex items-center justify-center text-[9px] text-sky-400 font-bold">{row.name.charAt(0)}</div>
                 <span className="text-white font-medium w-24">{row.name}</span>
-                <span className="text-slate-400 w-24">{row.company}</span>
-                <span className="text-emerald-400 font-mono">{row.time}</span>
-                <span className="text-slate-500 text-xs">{row.host}</span>
+                <span className="text-slate-400 w-28">{row.company}</span>
+                <span className="text-emerald-400 font-mono text-[10px]">{row.time}</span>
+                <span className="text-slate-500 text-[10px] ml-auto">{row.host}</span>
               </div>
             ))}
           </div>
-          <div className="absolute bottom-3 right-3 flex items-center gap-2 text-xs text-emerald-400">
+          <div className="absolute bottom-4 right-4 flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
             <CheckCircle2 className="w-3 h-3" />
             <span>{locale === "pt" ? "Exportacao pronta para auditoria" : "Audit-ready export"}</span>
           </div>
         </div>
 
         {/* Before (Paper) */}
-        <div
-          className="absolute inset-0 bg-[#e8e4df] p-5"
-          style={{ clipPath: `inset(0 ${100 - sliderValue}% 0 0)` }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <XCircle className="w-4 h-4 text-red-500" />
-            <span className="text-xs font-semibold text-red-600">{locale === "pt" ? "FICHA DE PAPEL" : "PAPER SIGN-IN SHEET"}</span>
+        <div className="absolute inset-0 bg-[#e8e4df] p-6" style={{ clipPath: `inset(0 ${100 - sliderValue}% 0 0)` }}>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-6 h-6 rounded-md bg-red-500/20 flex items-center justify-center">
+              <XCircle className="w-3.5 h-3.5 text-red-500" />
+            </div>
+            <span className="text-[10px] font-bold tracking-widest text-red-600 uppercase">{locale === "pt" ? "Ficha de Papel" : "Paper Sign-In Sheet"}</span>
           </div>
-          <div className="space-y-2.5">
-            <div className="h-2.5 bg-red-200/50 rounded w-3/4" />
-            <div className="h-2.5 bg-red-200/50 rounded w-1/2" />
-            <div className="h-2.5 bg-red-200/50 rounded w-5/6" />
-            <div className="h-2.5 bg-red-200/50 rounded w-2/3" />
-            <div className="h-2.5 bg-red-200/50 rounded w-4/5" />
+          <div className="space-y-3">
+            <div className="h-3 bg-red-200/40 rounded w-3/4" />
+            <div className="h-3 bg-red-200/40 rounded w-1/2" />
+            <div className="h-3 bg-red-200/40 rounded w-5/6" />
+            <div className="h-3 bg-red-200/40 rounded w-2/3" />
+            <div className="h-3 bg-red-200/40 rounded w-4/5" />
+            <div className="h-3 bg-red-200/40 rounded w-1/3" />
           </div>
-          <div className="absolute bottom-3 left-3 text-xs text-red-600/80 italic">
+          <div className="absolute bottom-4 left-4 text-xs text-red-600/70 italic bg-red-500/5 px-3 py-1.5 rounded-full border border-red-500/10">
             {locale === "pt" ? "Letra ilegivel, sem timestamps, sem busca" : "Illegible handwriting, no timestamps, no search"}
           </div>
         </div>
 
         {/* Slider Handle */}
-        <div
-          className="absolute top-0 bottom-0 w-0.5 bg-white cursor-ew-resize z-20"
-          style={{ left: `${sliderValue}%` }}
-        >
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 bg-white rounded-full shadow-lg flex items-center justify-center">
+        <div className="absolute top-0 bottom-0 w-1 bg-white/80 cursor-ew-resize z-20 shadow-[0_0_20px_rgba(255,255,255,0.3)]" style={{ left: `${sliderValue}%` }}>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-xl flex items-center justify-center ring-4 ring-white/20">
             <ChevronRight className="w-3 h-3 text-slate-900 -ml-0.5" />
             <ChevronRight className="w-3 h-3 text-slate-900 -ml-1.5 rotate-180" />
           </div>
@@ -826,39 +997,19 @@ function BeforeAfterSlider({ locale }: { locale: "en" | "pt" }) {
   );
 }
 
-/* ───────────────────────────────────────────────
-   USE CASE TOGGLE
-   ─────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════
+   USE CASE TOGGLE (ENHANCED)
+   ═══════════════════════════════════════════════ */
 
 function UseCaseToggle({ locale }: { locale: "en" | "pt" }) {
   const [active, setActive] = useState<"construction" | "warehouse" | "manufacturing">("construction");
   const copy = t[locale].useCases;
 
   const cases = {
-    construction: {
-      icon: Wrench,
-      title: copy.construction.title,
-      pain: copy.construction.pain,
-      solution: copy.construction.solution,
-      stat: copy.construction.stat,
-      statLabel: copy.construction.statLabel,
-    },
-    warehouse: {
-      icon: Package,
-      title: copy.warehouse.title,
-      pain: copy.warehouse.pain,
-      solution: copy.warehouse.solution,
-      stat: copy.warehouse.stat,
-      statLabel: copy.warehouse.statLabel,
-    },
-    manufacturing: {
-      icon: Factory,
-      title: copy.manufacturing.title,
-      pain: copy.manufacturing.pain,
-      solution: copy.manufacturing.solution,
-      stat: copy.manufacturing.stat,
-      statLabel: copy.manufacturing.statLabel,
-    },
+    construction: { icon: Wrench, title: copy.construction.title, pain: copy.construction.pain, solution: copy.construction.solution, stat: copy.construction.stat, statLabel: copy.construction.statLabel, color: "sky" },
+    warehouse: { icon: Package, title: copy.warehouse.title, pain: copy.warehouse.pain, solution: copy.warehouse.solution, stat: copy.warehouse.stat, statLabel: copy.warehouse.statLabel, color: "teal" },
+    manufacturing: { icon: Factory, title: copy.manufacturing.title, pain: copy.manufacturing.pain, solution: copy.manufacturing.solution, stat: copy.manufacturing.stat, statLabel: copy.manufacturing.statLabel, color: "emerald" },
   };
 
   const current = cases[active];
@@ -868,18 +1019,27 @@ function UseCaseToggle({ locale }: { locale: "en" | "pt" }) {
     ? { construction: "Construcao", warehouse: "Armazenagem", manufacturing: "Manufatura" }
     : { construction: "Construction", warehouse: "Warehousing", manufacturing: "Manufacturing" };
 
+  const colorMap: Record<string, { bg: string; text: string; ring: string; glow: string }> = {
+    sky: { bg: "bg-sky-500/20", text: "text-sky-400", ring: "ring-sky-500/30", glow: "shadow-sky-500/10" },
+    teal: { bg: "bg-teal-500/20", text: "text-teal-400", ring: "ring-teal-500/30", glow: "shadow-teal-500/10" },
+    emerald: { bg: "bg-emerald-500/20", text: "text-emerald-400", ring: "ring-emerald-500/30", glow: "shadow-emerald-500/10" },
+  };
+  const c = colorMap[current.color];
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="flex justify-center gap-2 mb-10">
         {(Object.keys(cases) as Array<keyof typeof cases>).map((key) => {
           const CaseIcon = cases[key].icon;
+          const isActive = active === key;
+          const cc = colorMap[cases[key].color];
           return (
             <button
               key={key}
               onClick={() => setActive(key)}
               className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
-                active === key
-                  ? "bg-sky-500/20 text-sky-400 border border-sky-500/30 shadow-lg shadow-sky-500/10"
+                isActive
+                  ? `${cc.bg} ${cc.text} border ${cc.ring} shadow-lg ${cc.glow}`
                   : "bg-white/[0.03] text-slate-400 border border-white/5 hover:bg-white/[0.06]"
               }`}
             >
@@ -893,21 +1053,22 @@ function UseCaseToggle({ locale }: { locale: "en" | "pt" }) {
       <AnimatePresence mode="wait">
         <motion.div
           key={active}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -20, filter: "blur(4px)" }}
           transition={{ duration: 0.4 }}
-          className="rounded-2xl p-8 md:p-10 border border-white/10"
+          className="rounded-2xl p-8 md:p-10 border border-white/10 relative overflow-hidden"
           style={{ background: "rgba(255,255,255,0.03)" }}
         >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-sky-500/20 flex items-center justify-center">
-              <Icon className="w-6 h-6 text-sky-400" />
+          <div className={`absolute top-0 right-0 w-64 h-64 ${c.bg} rounded-full blur-[100px] opacity-20 pointer-events-none`} />
+          <div className="flex items-center gap-3 mb-6 relative">
+            <div className={`w-12 h-12 rounded-xl ${c.bg} flex items-center justify-center ring-1 ${c.ring}`}>
+              <Icon className={`w-6 h-6 ${c.text}`} />
             </div>
             <h3 className="text-xl font-bold text-white">{current.title}</h3>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 relative">
             <div>
               <p className="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2">
                 {locale === "pt" ? "O Problema" : "The Problem"}
@@ -922,7 +1083,7 @@ function UseCaseToggle({ locale }: { locale: "en" | "pt" }) {
             </div>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-white/5 flex items-center gap-8">
+          <div className="mt-8 pt-6 border-t border-white/5 flex items-center gap-8 relative">
             <div>
               <p className="text-2xl font-bold text-white">{current.stat}</p>
               <p className="text-xs text-slate-400">{current.statLabel}</p>
@@ -941,9 +1102,9 @@ function UseCaseToggle({ locale }: { locale: "en" | "pt" }) {
   );
 }
 
-/* ───────────────────────────────────────────────
-   ROI CALCULATOR
-   ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   ROI CALCULATOR (ENHANCED)
+   ═══════════════════════════════════════════════ */
 
 function ROICalculator({ locale }: { locale: "en" | "pt" }) {
   const [locations, setLocations] = useState(5);
@@ -955,16 +1116,19 @@ function ROICalculator({ locale }: { locale: "en" | "pt" }) {
   const annualSavings = savings * 12;
 
   return (
-    <div className="w-full max-w-3xl mx-auto rounded-2xl p-8 border border-white/10" style={{ background: "rgba(255,255,255,0.03)" }}>
-      <div className="text-center mb-8">
+    <div className="w-full max-w-3xl mx-auto rounded-2xl p-8 border border-white/10 relative overflow-hidden" style={{ background: "rgba(255,255,255,0.03)" }}>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-sky-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="text-center mb-8 relative">
         <p className="text-xs font-semibold text-sky-400 uppercase tracking-wider mb-2">{copy.title}</p>
         <h3 className="text-xl font-bold text-white">{copy.subtitle}</h3>
       </div>
 
-      <div className="mb-10">
+      <div className="mb-10 relative">
         <div className="flex justify-between items-center mb-4">
           <span className="text-sm text-slate-400">{copy.locationsLabel}</span>
-          <span className="text-2xl font-bold text-white">{locations}</span>
+          <motion.span className="text-2xl font-bold text-white" key={locations} initial={{ scale: 1.2, color: "#0ea5e9" }} animate={{ scale: 1, color: "#ffffff" }} transition={{ type: "spring", stiffness: 300 }}>
+            {locations}
+          </motion.span>
         </div>
         <input
           type="range"
@@ -972,9 +1136,9 @@ function ROICalculator({ locale }: { locale: "en" | "pt" }) {
           max={50}
           value={locations}
           onChange={(e) => setLocations(Number(e.target.value))}
-          className="w-full h-2 bg-slate-700 rounded-full appearance-none cursor-pointer"
+          className="w-full h-2 bg-slate-700/50 rounded-full appearance-none cursor-pointer"
           style={{
-            background: `linear-gradient(to right, #0ea5e9 0%, #0ea5e9 ${(locations / 50) * 100}%, #334155 ${(locations / 50) * 100}%, #334155 100%)`,
+            background: `linear-gradient(to right, #0ea5e9 0%, #0ea5e9 ${(locations / 50) * 100}%, #1e293b ${(locations / 50) * 100}%, #1e293b 100%)`,
           }}
         />
         <div className="flex justify-between text-xs text-slate-500 mt-2">
@@ -984,50 +1148,57 @@ function ROICalculator({ locale }: { locale: "en" | "pt" }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
-          <p className="text-xs text-slate-400 mb-1">{copy.paperCost}</p>
-          <p className="text-lg font-bold text-slate-300">{locale === "pt" ? `R$${paperCost.toLocaleString()}` : `$${paperCost.toLocaleString()}`}</p>
-          <p className="text-xs text-slate-500">{copy.perMonth}</p>
-          <TrendingDown className="w-4 h-4 text-red-400 mt-2" />
-        </div>
-        <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
-          <p className="text-xs text-slate-400 mb-1">{copy.competitorCost}</p>
-          <p className="text-lg font-bold text-slate-300">{locale === "pt" ? `R$${competitorCost.toLocaleString()}` : `$${competitorCost.toLocaleString()}`}</p>
-          <p className="text-xs text-slate-500">{copy.perMonth}</p>
-          <TrendingDown className="w-4 h-4 text-amber-400 mt-2" />
-        </div>
-        <div className="p-4 rounded-xl bg-sky-500/10 border border-sky-500/20 relative overflow-hidden">
-          <div className="absolute -top-4 -right-4 w-16 h-16 bg-sky-500/20 rounded-full blur-xl" />
-          <p className="text-xs text-sky-400 mb-1">{copy.sitesafeCost}</p>
-          <p className="text-lg font-bold text-white">{locale === "pt" ? `R$${sitesafeCost}` : `$${sitesafeCost}`}</p>
-          <p className="text-xs text-sky-300/70">{copy.perMonth} {locale === "pt" ? "fixo" : "flat"}</p>
-          <TrendingUp className="w-4 h-4 text-emerald-400 mt-2" />
-        </div>
+      <div className="grid grid-cols-3 gap-4 relative">
+        <TiltCard className="rounded-xl" intensity={4}>
+          <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 h-full">
+            <p className="text-xs text-slate-400 mb-1">{copy.paperCost}</p>
+            <p className="text-lg font-bold text-slate-300">{locale === "pt" ? `R$${paperCost.toLocaleString()}` : `$${paperCost.toLocaleString()}`}</p>
+            <p className="text-xs text-slate-500">{copy.perMonth}</p>
+            <TrendingDown className="w-4 h-4 text-red-400 mt-2" />
+          </div>
+        </TiltCard>
+        <TiltCard className="rounded-xl" intensity={4}>
+          <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 h-full">
+            <p className="text-xs text-slate-400 mb-1">{copy.competitorCost}</p>
+            <p className="text-lg font-bold text-slate-300">{locale === "pt" ? `R$${competitorCost.toLocaleString()}` : `$${competitorCost.toLocaleString()}`}</p>
+            <p className="text-xs text-slate-500">{copy.perMonth}</p>
+            <TrendingDown className="w-4 h-4 text-amber-400 mt-2" />
+          </div>
+        </TiltCard>
+        <TiltCard className="rounded-xl" intensity={4}>
+          <div className="p-4 rounded-xl bg-sky-500/10 border border-sky-500/20 relative overflow-hidden h-full">
+            <div className="absolute -top-4 -right-4 w-16 h-16 bg-sky-500/20 rounded-full blur-xl" />
+            <p className="text-xs text-sky-400 mb-1">{copy.sitesafeCost}</p>
+            <p className="text-lg font-bold text-white">{locale === "pt" ? `R$${sitesafeCost}` : `$${sitesafeCost}`}</p>
+            <p className="text-xs text-sky-300/70">{copy.perMonth} {locale === "pt" ? "fixo" : "flat"}</p>
+            <TrendingUp className="w-4 h-4 text-emerald-400 mt-2" />
+          </div>
+        </TiltCard>
       </div>
 
       <motion.div
-        className="mt-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between"
+        className="mt-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between relative overflow-hidden"
         key={annualSavings}
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 300 }}
       >
-        <div>
+        <div className="absolute -right-8 -top-8 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl" />
+        <div className="relative">
           <p className="text-xs text-emerald-400 font-medium">{copy.annualSavings}</p>
           <p className="text-xl font-bold text-emerald-400">
             {locale === "pt" ? `R$${annualSavings.toLocaleString()}` : `$${annualSavings.toLocaleString()}`}
           </p>
         </div>
-        <Sparkles className="w-5 h-5 text-emerald-400" />
+        <Sparkles className="w-5 h-5 text-emerald-400 relative" />
       </motion.div>
     </div>
   );
 }
 
-/* ───────────────────────────────────────────────
-   FAQ ACCORDION
-   ─────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════
+   FAQ ACCORDION (ENHANCED)
+   ═══════════════════════════════════════════════ */
 
 function FAQAccordion({ locale }: { locale: "en" | "pt" }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -1042,7 +1213,7 @@ function FAQAccordion({ locale }: { locale: "en" | "pt" }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: i * 0.05 }}
-          className="rounded-xl border border-white/5 overflow-hidden"
+          className="rounded-xl border border-white/5 overflow-hidden group hover:border-white/[0.08] transition-colors"
           style={{ background: "rgba(255,255,255,0.03)" }}
         >
           <button
@@ -1053,8 +1224,9 @@ function FAQAccordion({ locale }: { locale: "en" | "pt" }) {
             <motion.div
               animate={{ rotate: openIndex === i ? 180 : 0 }}
               transition={{ duration: 0.3 }}
+              className="shrink-0"
             >
-              <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />
+              <ChevronDown className="w-4 h-4 text-slate-400" />
             </motion.div>
           </button>
           <AnimatePresence>
@@ -1063,7 +1235,7 @@ function FAQAccordion({ locale }: { locale: "en" | "pt" }) {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
                 <p className="px-5 pb-5 text-sm text-slate-300 leading-relaxed">{faq.a}</p>
@@ -1077,9 +1249,9 @@ function FAQAccordion({ locale }: { locale: "en" | "pt" }) {
 }
 
 
-/* ───────────────────────────────────────────────
+/* ═══════════════════════════════════════════════
    MAIN PAGE
-   ─────────────────────────────────────────────── */
+   ═══════════════════════════════════════════════ */
 
 export default function LandingClient({ locale }: LandingClientProps) {
   const copy = t[locale];
@@ -1088,7 +1260,10 @@ export default function LandingClient({ locale }: LandingClientProps) {
   const stats = copy.stats;
 
   return (
-    <div className="min-h-screen bg-[#0a0f1c] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#0a0f1c] text-white overflow-x-hidden selection:bg-sky-500/30 selection:text-sky-100">
+      <AmbientSpotlight />
+      <ScrollProgress />
+
       {/* Schema markup */}
       <script
         type="application/ld+json"
@@ -1122,13 +1297,15 @@ export default function LandingClient({ locale }: LandingClientProps) {
       {/* ─── HERO ─── */}
       <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 overflow-hidden">
         <NoiseOverlay />
+        <DotGrid />
         <div
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-gradient-to-r from-sky-500/10 via-cyan-400/10 to-blue-500/10 rounded-full blur-[120px] animate-aurora pointer-events-none"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-gradient-to-r from-sky-500/10 via-cyan-400/10 to-blue-500/10 rounded-full blur-[120px] animate-pulse pointer-events-none"
           aria-hidden="true"
+          style={{ animationDuration: "8s" }}
         />
         <div
-          className="absolute top-1/3 right-0 w-[500px] h-[400px] bg-gradient-to-l from-emerald-500/5 to-transparent rounded-full blur-[100px] animate-aurora pointer-events-none"
-          style={{ animationDelay: "4s" }}
+          className="absolute top-1/3 right-0 w-[500px] h-[400px] bg-gradient-to-l from-emerald-500/5 to-transparent rounded-full blur-[100px] animate-pulse pointer-events-none"
+          style={{ animationDelay: "4s", animationDuration: "10s" }}
           aria-hidden="true"
         />
 
@@ -1143,40 +1320,55 @@ export default function LandingClient({ locale }: LandingClientProps) {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-medium mb-6"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-medium mb-6 hover:bg-sky-500/15 transition-colors cursor-default"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                {copy.heroBadge}
+                <ScrambleText text={copy.heroBadge} />
               </motion.div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]">
-                {copy.heroTitle}{" "}
+                <WordReveal delay={0.3}>{copy.heroTitle}</WordReveal>{" "}
                 <span className="bg-gradient-to-r from-sky-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">
-                  {copy.heroTitleGradient}
+                  <WordReveal delay={0.5}>{copy.heroTitleGradient}</WordReveal>
                 </span>
               </h1>
 
-              <p className="mt-6 text-lg text-slate-400 leading-relaxed max-w-xl">
+              <motion.p
+                className="mt-6 text-lg text-slate-400 leading-relaxed max-w-xl"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.6 }}
+              >
                 {copy.heroSubtitle}
-              </p>
+              </motion.p>
 
-              <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
-                <TrackedCtaLink
+              <motion.div
+                className="mt-8 flex flex-col sm:flex-row items-center gap-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.9, duration: 0.6 }}
+              >
+                <MagneticButton
                   href="/demo"
-                  className="group inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] active:scale-[0.98] hover:scale-[1.02]"
+                  className="group inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] active:scale-[0.98]"
                 >
                   {copy.tryDemo}
                   <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </TrackedCtaLink>
-                <TrackedCtaLink
+                </MagneticButton>
+                <MagneticButton
                   href="/signup"
-                  className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-slate-300 border border-white/10 hover:bg-white/5 transition-all hover:scale-[1.02]"
+                  className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-slate-300 border border-white/10 hover:bg-white/5 transition-all hover:border-white/20"
                 >
                   {copy.startTrial}
-                </TrackedCtaLink>
-              </div>
+                </MagneticButton>
+              </motion.div>
 
-              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500">
+              <motion.div
+                className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.1 }}
+              >
                 <span className="flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   {copy.noCreditCard}
@@ -1189,9 +1381,14 @@ export default function LandingClient({ locale }: LandingClientProps) {
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   {copy.setupIn3Min}
                 </span>
-              </div>
+              </motion.div>
 
-              <div className="mt-6">
+              <motion.div
+                className="mt-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.3 }}
+              >
                 <div className="flex items-center gap-2 text-xs text-emerald-400/80">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -1199,9 +1396,14 @@ export default function LandingClient({ locale }: LandingClientProps) {
                   </span>
                   <span className="text-emerald-400/70">{copy.liveActivity}</span>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="mt-6">
+              <motion.div
+                className="mt-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.4 }}
+              >
                 <div className="flex flex-wrap items-center justify-start gap-4 text-[10px] text-slate-500 uppercase tracking-wider">
                   <span className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3 h-3 text-emerald-400" />
@@ -1218,7 +1420,7 @@ export default function LandingClient({ locale }: LandingClientProps) {
                     GDPR / LGPD
                   </span>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
 
             <FloatingCards locale={locale} />
@@ -1245,31 +1447,32 @@ export default function LandingClient({ locale }: LandingClientProps) {
       <TrustTicker locale={locale} />
 
       {/* ─── AS FEATURED IN ─── */}
-<section className="py-6 border-b border-white/5">
-  <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
-      <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">
-        {locale === "pt" ? "Destaque em" : "As featured in"}
-      </span>
-      <a 
-        href="https://facilitiesmanagementadvisor.com/access-control/why-facilities-managers-are-replacing-paper-visitor-logs-with-smart-systems/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group flex items-center gap-3 px-4 py-2 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/10 transition-all"
-      >
-        <FileText className="w-4 h-4 text-sky-400" />
-        <span className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">
-          Facilities Management Advisor
-        </span>
-        <ArrowRight className="w-3 h-3 text-slate-600 group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all" />
-      </a>
-    </div>
-  </div>
-</section>
+      <section className="py-6 border-b border-white/5">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+            <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">
+              {locale === "pt" ? "Destaque em" : "As featured in"}
+            </span>
+            <a
+              href="https://facilitiesmanagementadvisor.com/access-control/why-facilities-managers-are-replacing-paper-visitor-logs-with-smart-systems/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 px-4 py-2 rounded-lg border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/10 transition-all"
+            >
+              <FileText className="w-4 h-4 text-sky-400" />
+              <span className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">
+                Facilities Management Advisor
+              </span>
+              <ArrowUpRight className="w-3 h-3 text-slate-600 group-hover:text-sky-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* ─── BEFORE/AFTER ─── */}
-      <section className="py-20 sm:py-28">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 sm:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1277,9 +1480,9 @@ export default function LandingClient({ locale }: LandingClientProps) {
             className="text-center max-w-3xl mx-auto mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              {locale === "pt" ? "Registros em papel sao um risco." : "Paper logs are a liability."}{" "}
+              <WordReveal>{locale === "pt" ? "Registros em papel sao um risco." : "Paper logs are a liability."}</WordReveal>{" "}
               <span className="text-slate-500">
-                {locale === "pt" ? "Sua planilha nao e uma estrategia de compliance." : "Your spreadsheet is not a compliance strategy."}
+                <WordReveal delay={0.2}>{locale === "pt" ? "Sua planilha nao e uma estrategia de compliance." : "Your spreadsheet is not a compliance strategy."}</WordReveal>
               </span>
             </h2>
           </motion.div>
@@ -1288,8 +1491,9 @@ export default function LandingClient({ locale }: LandingClientProps) {
       </section>
 
       {/* ─── USE CASE TOGGLE ─── */}
-      <section className="py-20 sm:py-28 bg-white/[0.02]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 sm:py-28 bg-white/[0.02] relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-teal-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1305,32 +1509,53 @@ export default function LandingClient({ locale }: LandingClientProps) {
         </div>
       </section>
 
-      {/* ─── FEATURES ─── */}
-      <section id="features" className="py-20 sm:py-28">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      {/* ─── FEATURES (BENTO GRID) ─── */}
+      <section id="features" className="py-20 sm:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-              {copy.featuresTitle}
-            </h2>
-            <p className="text-lg text-slate-400">{copy.featuresSubtitle}</p>
+            <motion.h2
+              className="text-3xl sm:text-4xl font-bold tracking-tight mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <WordReveal>{copy.featuresTitle}</WordReveal>
+            </motion.h2>
+            <motion.p
+              className="text-lg text-slate-400"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              {copy.featuresSubtitle}
+            </motion.p>
           </div>
+
           <div className="space-y-20">
             {copy.outcomeGroups.map((group, groupIdx) => (
               <div key={groupIdx}>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center">
+                <motion.div
+                  className="flex items-center gap-3 mb-8"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center ring-1 ring-sky-500/20">
                     {(() => {
                       const Icon = outcomeIcons[0][groupIdx];
                       return <Icon className="w-5 h-5 text-sky-400" />;
                     })()}
                   </div>
                   <h3 className="text-xl font-bold text-white">{group.outcome}</h3>
-                </div>
+                </motion.div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {group.items.map((item, idx) => (
-                    <FadeInSection key={idx} delay={idx * 100}>
-                      <div className="group h-full rounded-2xl border border-white/5 bg-white/[0.03] hover:bg-white/[0.06] hover:border-sky-500/30 p-6 transition-all duration-300">
-                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:bg-sky-500/10 transition-colors">
+                    <TiltCard key={idx} intensity={6} className="h-full">
+                      <div className="h-full rounded-2xl border border-white/5 bg-white/[0.03] hover:bg-white/[0.06] hover:border-sky-500/20 p-6 transition-all duration-300 group">
+                        <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center mb-4 group-hover:bg-sky-500/10 transition-colors ring-1 ring-white/5 group-hover:ring-sky-500/20">
                           {(() => {
                             const Icon = outcomeIcons[groupIdx + 1][idx];
                             return <Icon className="w-5 h-5 text-slate-300 group-hover:text-sky-400 transition-colors" />;
@@ -1339,31 +1564,41 @@ export default function LandingClient({ locale }: LandingClientProps) {
                         <h4 className="font-semibold text-white mb-2">{item.title}</h4>
                         <p className="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
                       </div>
-                    </FadeInSection>
+                    </TiltCard>
                   ))}
                 </div>
               </div>
             ))}
           </div>
+
           <div className="mt-20 pt-16 border-t border-white/5">
-            <h3 className="text-center text-lg font-semibold text-slate-300 mb-8">
+            <motion.h3
+              className="text-center text-lg font-semibold text-slate-300 mb-8"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
               {copy.worksWith}
-            </h3>
+            </motion.h3>
             <div className="grid sm:grid-cols-3 gap-5 max-w-3xl mx-auto">
               {copy.integrations.map((item, idx) => (
-                <div
+                <motion.div
                   key={idx}
-                  className="flex items-start gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.03] hover:border-sky-500/20 hover:bg-white/[0.05] transition-all"
+                  className="flex items-start gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.03] hover:border-sky-500/20 hover:bg-white/[0.05] transition-all group"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
                 >
                   {(() => {
                     const Icon = integrationIcons[idx];
-                    return <Icon className="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" />;
+                    return <Icon className="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5 group-hover:text-sky-400 transition-colors" />;
                   })()}
                   <div>
                     <h4 className="text-sm font-medium text-white">{item.title}</h4>
                     <p className="text-xs text-slate-500 mt-1">{item.desc}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -1371,8 +1606,9 @@ export default function LandingClient({ locale }: LandingClientProps) {
       </section>
 
       {/* ─── HOW IT WORKS ─── */}
-      <section className="py-20 sm:py-28 bg-white/[0.02]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 sm:py-28 bg-white/[0.02] relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1408,8 +1644,9 @@ export default function LandingClient({ locale }: LandingClientProps) {
       </section>
 
       {/* ─── STATS ─── */}
-      <section className="py-20 sm:py-28 border-y border-white/5">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 sm:py-28 border-y border-white/5 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1426,9 +1663,9 @@ export default function LandingClient({ locale }: LandingClientProps) {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="text-center"
+                className="text-center group"
               >
-                <p className="text-3xl md:text-4xl font-bold text-white mb-1">
+                <p className="text-3xl md:text-4xl font-bold text-white mb-1 group-hover:text-sky-400 transition-colors duration-300">
                   <AnimatedCounter target={stat.value} suffix={stat.suffix} prefix={stat.prefix} />
                 </p>
                 <p className="text-xs text-slate-500 uppercase tracking-wider">{stat.label}</p>
@@ -1439,8 +1676,9 @@ export default function LandingClient({ locale }: LandingClientProps) {
       </section>
 
       {/* ─── ROI CALCULATOR ─── */}
-      <section className="py-20 sm:py-28">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 sm:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-teal-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1458,13 +1696,36 @@ export default function LandingClient({ locale }: LandingClientProps) {
       </section>
 
       {/* ─── DEMO VIDEO ─── */}
-      <section className="py-20 sm:py-28 bg-white/[0.02]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 sm:py-28 bg-white/[0.02] relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold tracking-tight mb-3">{copy.seeInAction}</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto">{copy.demoSubtitle}</p>
+            <motion.h2
+              className="text-3xl font-bold tracking-tight mb-3"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              {copy.seeInAction}
+            </motion.h2>
+            <motion.p
+              className="text-slate-400 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              {copy.demoSubtitle}
+            </motion.p>
           </div>
-          <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#0f172a]">
+          <motion.div
+            className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-[#0f172a] group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-sky-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             <iframe
               src="https://www.youtube-nocookie.com/embed/ntRt1qVkLgo?si=BmRSpzC4Jeea1uij"
               title="SiteSafe Demo Video"
@@ -1473,140 +1734,210 @@ export default function LandingClient({ locale }: LandingClientProps) {
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             />
-          </div>
+          </motion.div>
           <p className="text-center text-xs text-slate-500 mt-4">{copy.demoFooter}</p>
         </div>
       </section>
 
+
       {/* ─── TESTIMONIALS ─── */}
-      <section className="py-20 sm:py-28 border-y border-white/5">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 sm:py-28 border-y border-white/5 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight mb-3">{copy.testimonialsTitle}</h2>
+            <motion.h2
+              className="text-3xl font-bold tracking-tight mb-3"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <WordReveal>{copy.testimonialsTitle}</WordReveal>
+            </motion.h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {copy.testimonials.map((t, i) => (
-              <FadeInSection key={i} delay={i * 150}>
-                <div className="h-full rounded-2xl border border-white/5 bg-white/[0.03] p-8 flex flex-col hover:border-white/10 transition-all">
+            {copy.testimonials.map((testimonial, i) => (
+              <TiltCard key={i} intensity={5} className="h-full">
+                <div className="h-full rounded-2xl border border-white/5 bg-white/[0.03] p-8 flex flex-col hover:border-white/10 transition-all group">
                   <div className="flex items-center gap-1 mb-4">
                     {[...Array(5)].map((_, j) => (
                       <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
                     ))}
                   </div>
                   <p className="text-sm text-slate-300 leading-relaxed flex-grow italic">
-                    “{t.quote}”
+                    {testimonial.quote}
                   </p>
                   <div className="mt-6 pt-6 border-t border-white/5">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-semibold text-white">{t.author}</p>
-                        <p className="text-xs text-slate-500">{t.role}</p>
+                        <p className="text-sm font-semibold text-white">{testimonial.author}</p>
+                        <p className="text-xs text-slate-500">{testimonial.role}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-sky-400">{t.metric}</p>
-                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">{t.metricLabel}</p>
+                        <p className="text-lg font-bold text-sky-400">{testimonial.metric}</p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-wider">{testimonial.metricLabel}</p>
                       </div>
                     </div>
                   </div>
                 </div>
-              </FadeInSection>
+              </TiltCard>
             ))}
           </div>
         </div>
       </section>
 
       {/* ─── PRICING ─── */}
-      <section id="pricing" className="py-20 sm:py-28">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="pricing" className="py-20 sm:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/[0.03] to-transparent pointer-events-none" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">{copy.pricingTitle}</h2>
-            <p className="text-lg text-slate-400 max-w-2xl mx-auto">{copy.pricingSubtitle}</p>
+            <motion.h2
+              className="text-3xl sm:text-4xl font-bold tracking-tight mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <WordReveal>{copy.pricingTitle}</WordReveal>
+            </motion.h2>
+            <motion.p
+              className="text-lg text-slate-400 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              {copy.pricingSubtitle}
+            </motion.p>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] p-8 sm:p-12 text-center relative overflow-hidden animate-pricing-glow">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-sky-500/20 rounded-full blur-[80px]" />
-            <div className="relative">
-              <p className="text-sm text-sky-300 font-medium mb-2 uppercase tracking-wider">{copy.flatRate}</p>
-              <div className="flex items-baseline justify-center gap-1 mb-4">
-                <span className="text-5xl sm:text-6xl font-extrabold text-white">{price}</span>
-                <span className="text-xl text-slate-400">{pricePeriod}</span>
-              </div>
-              <p className="text-slate-300 mb-8 max-w-md mx-auto">{copy.pricingDesc}</p>
-              <div className="grid sm:grid-cols-2 gap-3 max-w-lg mx-auto mb-8 text-left">
-                {copy.pricingFeatures.map((item, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    {item}
+
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <GradientBorder>
+              <div className="rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-sky-500/20 rounded-full blur-[80px]" />
+                <div className="relative">
+                  <p className="text-sm text-sky-300 font-medium mb-2 uppercase tracking-wider">{copy.flatRate}</p>
+                  <div className="flex items-baseline justify-center gap-1 mb-4">
+                    <span className="text-5xl sm:text-6xl font-extrabold text-white">{price}</span>
+                    <span className="text-xl text-slate-400">{pricePeriod}</span>
                   </div>
-                ))}
+                  <p className="text-slate-300 mb-8 max-w-md mx-auto">{copy.pricingDesc}</p>
+                  <div className="grid sm:grid-cols-2 gap-3 max-w-lg mx-auto mb-8 text-left">
+                    {copy.pricingFeatures.map((item, i) => (
+                      <motion.div
+                        key={i}
+                        className="flex items-center gap-2 text-sm text-slate-300"
+                        initial={{ opacity: 0, x: -10 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3 + i * 0.05 }}
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                        {item}
+                      </motion.div>
+                    ))}
+                  </div>
+                  <MagneticButton
+                    href="/signup"
+                    className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-lg active:scale-[0.98]"
+                  >
+                    {copy.startTrialCta}
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </MagneticButton>
+                  <p className="mt-3 text-xs text-slate-500">{copy.noCardRequired}</p>
+                </div>
               </div>
-              <TrackedCtaLink
-                href="/signup"
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-lg active:scale-[0.98] hover:scale-[1.02]"
-              >
-                {copy.startTrialCta}
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </TrackedCtaLink>
-              <p className="mt-3 text-xs text-slate-500">{copy.noCardRequired}</p>
-            </div>
-          </div>
-          <div className="mt-12 flex flex-wrap justify-center items-center gap-6 opacity-60">
-            <a href="https://saasdb.net" rel="noopener noreferrer" target="_blank">
+            </GradientBorder>
+          </motion.div>
+
+          <motion.div
+            className="mt-12 flex flex-wrap justify-center items-center gap-6 opacity-60"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <a href="https://saasdb.net" rel="noopener noreferrer" target="_blank" className="hover:opacity-100 transition-opacity">
               <Image src="https://saasdb.net/badge/featured-dark.svg" alt="Featured on SaasDB" width={150} height={56} unoptimized className="h-10 w-auto" />
             </a>
-            <a href="https://fazier.com/launches/sitesafe.thesift.space" target="_blank" rel="noopener noreferrer">
+            <a href="https://fazier.com/launches/sitesafe.thesift.space" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 transition-opacity">
               <Image src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=light" alt="Launched on Fazier" width={120} height={40} unoptimized className="h-8 w-auto" />
             </a>
-            <a href="https://www.saashub.com/sitesafe-by-thesift" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.saashub.com/sitesafe-by-thesift" target="_blank" rel="noopener noreferrer" className="hover:opacity-100 transition-opacity">
               <Image src="https://cdn-b.saashub.com/img/badges/approved-dark.png?v=1" alt="SiteSafe by TheSift badge" width={150} height={50} unoptimized className="h-8 w-auto" />
             </a>
             <ReviewBadges />
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ─── INDUSTRIES ─── */}
-      <section className="py-16 border-y border-white/5 bg-white/[0.02]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="py-16 border-y border-white/5 bg-white/[0.02] relative">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
           <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-6">
             {copy.builtFor}
           </h2>
           <div className="flex flex-wrap justify-center gap-3">
             {copy.industries.map((industry, idx) => (
-              <div key={industry} className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-white/[0.03] text-sm text-slate-300 hover:border-sky-500/20 hover:bg-white/[0.05] transition-all">
+              <motion.div
+                key={industry}
+                className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-white/[0.03] text-sm text-slate-300 hover:border-sky-500/20 hover:bg-white/[0.05] hover:text-white transition-all cursor-default"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05 }}
+              >
                 {(() => {
                   const Icon = industryIcons[idx];
                   return <Icon className="w-4 h-4 text-sky-400" />;
                 })()}
                 {industry}
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* ─── AUDIT CTA ─── */}
-      <section className="py-20 sm:py-28">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-8 sm:p-12 text-center hover:border-sky-500/30 transition-all">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-3">
+      <section className="py-20 sm:py-28 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <motion.div
+            className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-8 sm:p-12 text-center hover:border-sky-500/30 transition-all relative overflow-hidden group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-sky-500/10 rounded-full blur-3xl group-hover:bg-sky-500/15 transition-colors" />
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mb-3 relative">
               {copy.auditCtaTitle}
             </h2>
-            <p className="text-slate-400 max-w-xl mx-auto mb-6">{copy.auditCtaDesc}</p>
+            <p className="text-slate-400 max-w-xl mx-auto mb-6 relative">{copy.auditCtaDesc}</p>
             <Link
               href="/audit"
-              className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-300 hover:bg-sky-500/20 transition-all"
+              className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-300 hover:bg-sky-500/20 hover:border-sky-500/30 transition-all relative"
             >
               {copy.runAudit}
               <ChevronRight className="ml-1 w-4 h-4" />
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ─── FAQ ─── */}
-      <section id="faq" className="py-20 sm:py-28 bg-white/[0.02]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold tracking-tight text-center mb-12">{copy.faqTitle}</h2>
+      <section id="faq" className="py-20 sm:py-28 bg-white/[0.02] relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/[0.02] to-transparent pointer-events-none" />
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <motion.h2
+            className="text-3xl font-bold tracking-tight text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <WordReveal>{copy.faqTitle}</WordReveal>
+          </motion.h2>
           <FAQAccordion locale={locale} />
         </div>
       </section>
@@ -1614,26 +1945,55 @@ export default function LandingClient({ locale }: LandingClientProps) {
       {/* ─── FINAL CTA ─── */}
       <section className="py-20 sm:py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-sky-500/5 to-transparent pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: "6s" }} />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">{copy.finalCtaTitle}</h2>
-          <p className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto">{copy.finalCtaDesc}</p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <TrackedCtaLink
+          <motion.h2
+            className="text-3xl sm:text-4xl font-bold tracking-tight mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <WordReveal>{copy.finalCtaTitle}</WordReveal>
+          </motion.h2>
+          <motion.p
+            className="text-lg text-slate-400 mb-8 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            {copy.finalCtaDesc}
+          </motion.p>
+          <motion.div
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <MagneticButton
               href="/demo"
-              className="inline-flex items-center justify-center px-10 py-4 text-lg font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-[0_0_60px_-15px_rgba(255,255,255,0.3)] active:scale-[0.98] hover:scale-[1.02]"
+              className="inline-flex items-center justify-center px-10 py-4 text-lg font-semibold rounded-xl text-slate-900 bg-white hover:bg-slate-100 transition-all shadow-[0_0_60px_-15px_rgba(255,255,255,0.3)] active:scale-[0.98]"
             >
               {copy.tryDemo}
               <ChevronRight className="ml-2 w-5 h-5" />
-            </TrackedCtaLink>
-            <TrackedCtaLink
+            </MagneticButton>
+            <MagneticButton
               href="/signup"
-              className="inline-flex items-center justify-center px-10 py-4 text-lg font-medium rounded-xl text-slate-300 border border-white/10 hover:bg-white/5 transition-all hover:scale-[1.02]"
+              className="inline-flex items-center justify-center px-10 py-4 text-lg font-medium rounded-xl text-slate-300 border border-white/10 hover:bg-white/5 transition-all hover:border-white/20"
             >
               {copy.startTrial}
-            </TrackedCtaLink>
-          </div>
-          <p className="mt-4 text-sm text-slate-500">{copy.setupFooter}</p>
+            </MagneticButton>
+          </motion.div>
+          <motion.p
+            className="mt-4 text-sm text-slate-500"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            {copy.setupFooter}
+          </motion.p>
         </div>
       </section>
 
