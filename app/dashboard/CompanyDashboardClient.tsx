@@ -1,10 +1,17 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { logEvent } from "@/lib/analytics";
 import Image from "next/image";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  AnimatePresence,
+} from "framer-motion";
 import {
   RefreshCw,
   FileSpreadsheet,
@@ -63,6 +70,12 @@ import DashboardTutorial from "@/components/DashboardTutorial";
 import SkeletonTable from "@/components/SkeletonTable";
 import { useToast } from "@/components/Toast";
 
+/* ═══════════════════════════════════════════════════════════════
+   PREMIUM DASHBOARD — CompanyDashboardClient
+   Same logic, upgraded visuals
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Types ─── */
 type Visitor = {
   id: string;
   fullName: string;
@@ -115,6 +128,7 @@ type BlocklistEntry = {
 
 type Locale = "en" | "pt";
 
+/* ─── Translations (unchanged) ─── */
 const t: Record<Locale, Record<string, string>> = {
   en: {
     dashboard: "Dashboard",
@@ -698,6 +712,224 @@ const t: Record<Locale, Record<string, string>> = {
   },
 };
 
+/* ─── Premium Helper Components ─── */
+
+function AmbientSpotlight() {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 80, damping: 30 });
+  const springY = useSpring(mouseY, { stiffness: 80, damping: 30 });
+
+  useEffect(() => {
+    const handle = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+    };
+    window.addEventListener("mousemove", handle);
+    return () => window.removeEventListener("mousemove", handle);
+  }, [mouseX, mouseY]);
+
+  return (
+    <motion.div
+      className="pointer-events-none fixed inset-0 z-0"
+      style={{
+        background: useTransform(
+          [springX, springY],
+          ([x, y]) =>
+            `radial-gradient(600px circle at ${x}px ${y}px, rgba(14,165,233,0.06), transparent 40%)`
+        ),
+      }}
+    />
+  );
+}
+
+function ScrollProgress() {
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const handle = () => {
+      const h = document.documentElement;
+      setProgress(
+        h.scrollTop / (h.scrollHeight - h.clientHeight)
+      );
+    };
+    window.addEventListener("scroll", handle);
+    return () => window.removeEventListener("scroll", handle);
+  }, []);
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[60] h-[2px] bg-white/5">
+      <motion.div
+        className="h-full bg-gradient-to-r from-sky-500 via-teal-400 to-emerald-400"
+        style={{ width: `${progress * 100}%` }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      />
+    </div>
+  );
+}
+
+function NoiseOverlay() {
+  return (
+    <div
+      className="pointer-events-none fixed inset-0 z-[1] opacity-[0.015]"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        backgroundRepeat: "repeat",
+        backgroundSize: "256px 256px",
+      }}
+    />
+  );
+}
+
+function TiltCard({
+  children,
+  className = "",
+  glowColor = "rgba(14,165,233,0.15)",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  glowColor?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0.5);
+  const y = useMotionValue(0.5);
+  const rotateX = useSpring(useTransform(y, [0, 1], [8, -8]), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useTransform(x, [0, 1], [-8, 8]), { stiffness: 300, damping: 30 });
+  const bgX = useSpring(useTransform(x, [0, 1], ["0%", "100%"]), { stiffness: 300, damping: 30 });
+  const bgY = useSpring(useTransform(y, [0, 1], ["0%", "100%"]), { stiffness: 300, damping: 30 });
+
+  const handleMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      x.set((e.clientX - rect.left) / rect.width);
+      y.set((e.clientY - rect.top) / rect.height);
+    },
+    [x, y]
+  );
+
+  const handleLeave = useCallback(() => {
+    x.set(0.5);
+    y.set(0.5);
+  }, [x, y]);
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
+      className={`relative ${className}`}
+    >
+      <motion.div
+        className="absolute inset-0 rounded-[inherit] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: `radial-gradient(300px circle at ${bgX} ${bgY}, ${glowColor}, transparent 60%)`,
+        }}
+      />
+      {children}
+    </motion.div>
+  );
+}
+
+function MagneticButton({
+  children,
+  className = "",
+  onClick,
+  disabled,
+  type,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  type?: "button" | "submit" | "reset";
+}) {
+  const ref = useRef<HTMLButtonElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 150, damping: 15 });
+  const springY = useSpring(y, { stiffness: 150, damping: 15 });
+
+  const handleMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      x.set((e.clientX - cx) * 0.15);
+      y.set((e.clientY - cy) * 0.15);
+    },
+    [x, y]
+  );
+
+  const handleLeave = useCallback(() => {
+    x.set(0);
+    y.set(0);
+  }, [x, y]);
+
+  return (
+    <motion.button
+      ref={ref}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      style={{ x: springX, y: springY }}
+      className={className}
+      onClick={onClick}
+      disabled={disabled}
+      type={type}
+    >
+      {children}
+    </motion.button>
+  );
+}
+
+function AnimatedCounter({ value, suffix = "" }: { value: number; suffix?: string }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    const start = 0;
+    const end = value;
+    const duration = 800;
+    const startTime = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(start + (end - start) * eased));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [value]);
+  return <span>{display}{suffix}</span>;
+}
+
+function SectionReveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function GradientBorder({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`relative p-[1px] rounded-[inherit] overflow-hidden ${className}`}>
+      <div className="absolute inset-0 rounded-[inherit] animate-spin-slow"
+        style={{
+          background: "conic-gradient(from 0deg, transparent 0%, rgba(14,165,233,0.4) 20%, rgba(20,184,166,0.4) 40%, transparent 60%)",
+          animation: "spin 4s linear infinite",
+        }}
+      />
+      <div className="relative rounded-[inherit] bg-[#0a0f1c]">{children}</div>
+    </div>
+  );
+}
+
+/* ─── Main Component ─── */
 export default function CompanyDashboardClient({
   companyId,
   companySlug,
@@ -722,9 +954,7 @@ export default function CompanyDashboardClient({
   const copy = t[locale];
   const isPT = locale === "pt";
 
-  
-
-    /* ─── State ─── */
+  /* ─── State ─── */
   const [sites, setSites] = useState(initialSites);
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -812,11 +1042,8 @@ export default function CompanyDashboardClient({
   });
 
   const activeNow = visitors.filter((v) => !v.signedOutAt).length;
-
-  // todayCount from sites state (auto-refreshed, resets daily)
   const todayCount = sites.reduce((sum, site) => sum + (site.visitorsToday || 0), 0);
 
-  // avgDuration from today's completed visits only
   const avgDuration = useMemo(() => {
     const today = new Date().toDateString();
     const todayVisitors = visitors.filter((v) => {
@@ -826,14 +1053,13 @@ export default function CompanyDashboardClient({
     if (todayVisitors.length === 0) return 0;
     const totalMinutes = todayVisitors.reduce((acc, v) => {
       const diff =
-        new Date(v.signedOutAt!).getTime() -
-        new Date(v.signedInAt).getTime();
+        new Date(v.signedOutAt!).getTime() - new Date(v.signedInAt).getTime();
       return acc + diff / 60000;
     }, 0);
     return Math.round(totalMinutes / todayVisitors.length);
   }, [visitors]);
 
-  /* ─── Data fetchers (defined before effects) ─── */
+  /* ─── Data fetchers ─── */
   async function fetchVisitors() {
     setLoading(true);
     const params = new URLSearchParams();
@@ -884,7 +1110,6 @@ export default function CompanyDashboardClient({
     }
   }, [editingSiteId]);
 
-  /* ─── Auto-refresh dashboard data every 5 seconds ───────────── */
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -900,7 +1125,6 @@ export default function CompanyDashboardClient({
     return () => clearInterval(interval);
   }, [companyId]);
 
-  /* ─── Close language menu on click outside ─── */
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
@@ -1021,9 +1245,7 @@ export default function CompanyDashboardClient({
   async function handleDeleteSite() {
     if (!deleteSiteId) return;
     setDeleting(true);
-    const res = await fetch(`/api/sites/${deleteSiteId}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(`/api/sites/${deleteSiteId}`, { method: "DELETE" });
     if (res.ok) {
       setSites((prev) => prev.filter((s) => s.id !== deleteSiteId));
       addToast(copy.siteDeleted, "success");
@@ -1194,14 +1416,7 @@ export default function CompanyDashboardClient({
   }
 
   function exportCSV() {
-    const headers = [
-      copy.visitor,
-      copy.site,
-      copy.company,
-      copy.host,
-      copy.time,
-      copy.status,
-    ];
+    const headers = [copy.visitor, copy.site, copy.company, copy.host, copy.time, copy.status];
     const rows = filteredVisitors.map((v) => [
       v.fullName,
       v.siteName,
@@ -1211,7 +1426,7 @@ export default function CompanyDashboardClient({
       v.signedOutAt ? copy.out : copy.in,
     ]);
     const csv = [headers, ...rows]
-      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, "\"\"")}"`).join(","))
       .join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -1223,7 +1438,7 @@ export default function CompanyDashboardClient({
   }
 
   function exportExcel() {
-    exportCSV(); // Simplified — same CSV for now
+    exportCSV();
   }
 
   function exportPDF() {
@@ -1238,28 +1453,30 @@ export default function CompanyDashboardClient({
 
   /* ─── Render ─── */
   return (
-    <div className="min-h-screen bg-[#0a0f1c] text-slate-200">
+    <div className="min-h-screen bg-[#0a0f1c] text-slate-200 selection:bg-sky-500/30 selection:text-sky-100">
+      <AmbientSpotlight />
+      <NoiseOverlay />
+      <ScrollProgress />
+
       {/* Header */}
-      <header className="border-b border-white/5 bg-[#0a0f1c]/90 backdrop-blur-xl sticky top-0 z-40">
+      <header className="border-b border-white/5 bg-[#0a0f1c]/80 backdrop-blur-2xl sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-teal-500 flex items-center justify-center shadow-lg shadow-sky-500/20">
               <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-sm text-white">SiteSafe</h1>
-              <p className="text-[10px] text-slate-500">{copy.dashboard}</p>
+              <h1 className="font-bold text-sm text-white tracking-tight">SiteSafe</h1>
+              <p className="text-[10px] text-slate-500 font-medium">{copy.dashboard}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <Link
-  href={isPT ? "/br/faq" : "/faq"}
-  className="text-xs text-slate-500 hover:text-sky-400 transition-colors"
->
-  {copy.help}
-</Link>
-            
-            {/* Language Switcher */}
+              href={isPT ? "/br/faq" : "/faq"}
+              className="text-xs text-slate-500 hover:text-sky-400 transition-colors"
+            >
+              {copy.help}
+            </Link>
             <div className="relative" ref={langMenuRef}>
               <button
                 onClick={() => setShowLangMenu(!showLangMenu)}
@@ -1268,36 +1485,43 @@ export default function CompanyDashboardClient({
                 <Globe className="w-3.5 h-3.5" />
                 {locale === "pt" ? "PT" : "EN"}
               </button>
-              {showLangMenu && (
-                <div className="absolute right-0 mt-1 w-32 rounded-lg border border-white/10 bg-[#1a1f2e] shadow-xl py-1 z-50">
-                  <button
-                    onClick={() => {
-                      document.cookie = "sitesafe-locale=en; path=/; max-age=31536000; SameSite=Lax";
-                      router.refresh();
-                      setShowLangMenu(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 text-xs transition-colors ${
-                      locale === "en" ? "text-sky-400 bg-sky-500/10" : "text-slate-400 hover:text-white hover:bg-white/5"
-                    }`}
+              <AnimatePresence>
+                {showLangMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 mt-1 w-32 rounded-xl border border-white/10 bg-[#1a1f2e]/95 backdrop-blur-xl shadow-2xl py-1 z-50"
                   >
-                    English
-                  </button>
-                  <button
-                    onClick={() => {
-                      document.cookie = "sitesafe-locale=pt; path=/; max-age=31536000; SameSite=Lax";
-                      router.refresh();
-                      setShowLangMenu(false);
-                    }}
-                    className={`w-full text-left px-3 py-2 text-xs transition-colors ${
-                      locale === "pt" ? "text-sky-400 bg-sky-500/10" : "text-slate-400 hover:text-white hover:bg-white/5"
-                    }`}
-                  >
-                    Português
-                  </button>
-                </div>
-              )}
+                    <button
+                      onClick={() => {
+                        document.cookie = "sitesafe-locale=en; path=/; max-age=31536000; SameSite=Lax";
+                        router.refresh();
+                        setShowLangMenu(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                        locale === "en" ? "text-sky-400 bg-sky-500/10" : "text-slate-400 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      English
+                    </button>
+                    <button
+                      onClick={() => {
+                        document.cookie = "sitesafe-locale=pt; path=/; max-age=31536000; SameSite=Lax";
+                        router.refresh();
+                        setShowLangMenu(false);
+                      }}
+                      className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+                        locale === "pt" ? "text-sky-400 bg-sky-500/10" : "text-slate-400 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      Português
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-
             <Link
               href="/settings"
               className="text-xs text-slate-500 hover:text-white transition-colors flex items-center gap-1"
@@ -1316,708 +1540,836 @@ export default function CompanyDashboardClient({
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 relative z-10">
+
         {/* Welcome */}
-        {sites.length === 0 && (
-          <div className="rounded-2xl border border-white/5 bg-white/[0.03] p-8 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mx-auto mb-4">
-              <Building2 className="w-6 h-6 text-sky-400" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">{copy.welcomeTitle}</h2>
-            <p className="text-sm text-slate-400 max-w-md mx-auto">
-              {copy.welcomeDesc.replace("{edit}", copy.edit)}
-            </p>
-          </div>
-        )}
+        <AnimatePresence>
+          {sites.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="relative rounded-2xl border border-white/5 bg-white/[0.03] backdrop-blur-xl p-8 text-center overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sky-500/30 to-transparent" />
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sky-500/20 to-teal-500/20 border border-sky-500/20 flex items-center justify-center mx-auto mb-4">
+                <Building2 className="w-6 h-6 text-sky-400" />
+              </div>
+              <h2 className="text-xl font-bold text-white mb-2">{copy.welcomeTitle}</h2>
+              <p className="text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+                {copy.welcomeDesc.replace("{edit}", copy.edit)}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Users className="w-4 h-4 text-sky-400" />
-              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">{copy.activeNow}</span>
-            </div>
-            <p className="text-2xl font-bold text-white">{activeNow}</p>
-            <p className="text-xs text-slate-500">{copy.onSite}</p>
+        <SectionReveal>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { icon: Users, label: copy.activeNow, value: activeNow, sub: copy.onSite, color: "sky", glow: "rgba(14,165,233,0.15)" },
+              { icon: ClipboardList, label: copy.todayVisitors, value: todayCount, sub: copy.checkedIn, color: "emerald", glow: "rgba(16,185,129,0.15)" },
+              { icon: Clock, label: copy.avgVisit, value: avgDuration, sub: copy.minutes, color: "amber", glow: "rgba(245,158,11,0.15)" },
+              { icon: Building2, label: copy.totalSites, value: sites.length, sub: copy.locations, color: "violet", glow: "rgba(139,92,246,0.15)" },
+            ].map((stat, i) => (
+              <TiltCard key={stat.label} glowColor={stat.glow} className="group">
+                <div className="relative rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-xl p-5 overflow-hidden transition-colors hover:bg-white/[0.05] hover:border-white/10">
+                  <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-${stat.color}-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity`} />
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className={`w-8 h-8 rounded-lg bg-${stat.color}-500/10 border border-${stat.color}-500/20 flex items-center justify-center`}>
+                      <stat.icon className={`w-4 h-4 text-${stat.color}-400`} />
+                    </div>
+                    <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">{stat.label}</span>
+                  </div>
+                  <p className="text-3xl font-bold text-white tracking-tight">
+                    <AnimatedCounter value={stat.value} />
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">{stat.sub}</p>
+                </div>
+              </TiltCard>
+            ))}
           </div>
-          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <ClipboardList className="w-4 h-4 text-emerald-400" />
-              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">{copy.todayVisitors}</span>
-            </div>
-            <p className="text-2xl font-bold text-white">{todayCount}</p>
-            <p className="text-xs text-slate-500">{copy.checkedIn}</p>
-          </div>
-          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-4 h-4 text-amber-400" />
-              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">{copy.avgVisit}</span>
-            </div>
-            <p className="text-2xl font-bold text-white">{avgDuration}</p>
-            <p className="text-xs text-slate-500">{copy.minutes}</p>
-          </div>
-          <div className="rounded-xl border border-white/5 bg-white/[0.03] p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Building2 className="w-4 h-4 text-violet-400" />
-              <span className="text-[10px] uppercase tracking-wider text-slate-500 font-medium">{copy.totalSites}</span>
-            </div>
-            <p className="text-2xl font-bold text-white">{sites.length}</p>
-            <p className="text-xs text-slate-500">{copy.locations}</p>
-          </div>
-        </div>
+        </SectionReveal>
 
         {/* Sites */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-white">{copy.yourSites}</h2>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-500">{sites.length} {copy.sitesOf}</span>
-              <button
-                onClick={() => setShowCreate(true)}
-                className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 active:scale-[0.98]"
-              >
-                <Plus className="w-3.5 h-3.5" /> {copy.newSite}
-              </button>
-            </div>
-          </div>
+        <SectionReveal>
+          <div className="relative">
+            {/* Ambient orb */}
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-sky-500/5 rounded-full blur-[100px] pointer-events-none" />
 
-          {sites.length === 0 ? (
-            <div className="rounded-xl border border-white/5 bg-white/[0.03] p-8 text-center">
-              <p className="text-sm text-slate-400 mb-2">{copy.noSites}</p>
-              <p className="text-xs text-slate-600">{copy.noSitesDesc}</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {sites.map((site) => (
-                <div
-                  key={site.id}
-                  onClick={(e) => {
-                    if ((e.target as HTMLElement).closest("button")) return;
-                    window.open(`/checkin/${site.slug}`, "_blank");
-                  }}
-                  className={`rounded-xl border bg-white/[0.03] overflow-hidden transition-all hover:bg-white/[0.05] cursor-pointer ${
-                    site.lockdownEnabled
-                      ? "border-rose-500/30"
-                      : "border-white/5"
-                  }`}
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white tracking-tight">{copy.yourSites}</h2>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-500">{sites.length} {copy.sitesOf}</span>
+                <MagneticButton
+                  onClick={() => setShowCreate(true)}
+                  className="bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 text-white px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 shadow-lg shadow-sky-500/20 hover:shadow-sky-500/30"
                 >
-                  <div className="p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="min-w-0">
-                        <h3 className="font-semibold text-white text-sm truncate">{site.name}</h3>
-                        <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
-                          <span className="font-mono">/{site.slug}</span>
-                          <span className="text-slate-700">•</span>
-                          <span>{site.visitorsToday} {isPT ? "hoje" : "today"}</span>
-                          {site.locale === "pt" && (
-                            <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400">
-                              🇧🇷 PT
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      {site.lockdownEnabled && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-medium">
-                          <ShieldAlert className="w-3 h-3" /> {copy.lockdownActive}
-                        </span>
-                      )}
-                    </div>
+                  <Plus className="w-3.5 h-3.5" /> {copy.newSite}
+                </MagneticButton>
+              </div>
+            </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => startEdit(site)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-all"
-                      >
-                        <Pencil className="w-3 h-3" /> {copy.edit}
-                      </button>
-                      <button
-                        onClick={() => copyCheckinUrl(site.slug)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-all"
-                      >
-                        <Copy className="w-3 h-3" /> {copy.copyUrl}
-                      </button>
-                      <button
-                        onClick={() => setQrSite(site)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-all"
-                      >
-                        <QrCode className="w-3 h-3" /> {copy.qrCode}
-                      </button>
-                      <button
-                        onClick={() => handleToggleLockdown(site.id, !!site.lockdownEnabled)}
-                        disabled={togglingLockdown && lockdownSiteId === site.id}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all ${
+            {sites.length === 0 ? (
+              <div className="rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-xl p-8 text-center">
+                <p className="text-sm text-slate-400 mb-2">{copy.noSites}</p>
+                <p className="text-xs text-slate-600">{copy.noSitesDesc}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {sites.map((site, idx) => (
+                  <motion.div
+                    key={site.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <TiltCard glowColor={site.lockdownEnabled ? "rgba(244,63,94,0.15)" : "rgba(14,165,233,0.1)"} className="group">
+                      <div
+                        onClick={(e) => {
+                          if ((e.target as HTMLElement).closest("button")) return;
+                          window.open(`/checkin/${site.slug}`, "_blank");
+                        }}
+                        className={`relative rounded-xl border bg-white/[0.03] backdrop-blur-xl overflow-hidden transition-all hover:bg-white/[0.05] cursor-pointer ${
                           site.lockdownEnabled
-                            ? "bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20"
-                            : "bg-white/5 text-slate-300 hover:text-white hover:bg-white/10"
+                            ? "border-rose-500/30 hover:border-rose-500/50"
+                            : "border-white/5 hover:border-white/10"
                         }`}
                       >
-                        <DoorClosed className="w-3 h-3" />
-                        {site.lockdownEnabled ? copy.endLockdown : copy.lockdown}
-                      </button>
-                      <button
-                        onClick={() => setDeleteSiteId(site.id)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-rose-500/10 text-slate-300 hover:text-rose-400 text-xs transition-all"
-                      >
-                        <Trash2 className="w-3 h-3" /> {copy.delete}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                        {/* Top gradient line */}
+                        <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent ${site.lockdownEnabled ? "via-rose-500/40" : "via-sky-500/30"} to-transparent opacity-0 group-hover:opacity-100 transition-opacity`} />
 
-        {/* Visitor Log */}
-        <div>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-            <h2 className="text-lg font-bold text-white">{copy.visitorLog}</h2>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" />
-                <input
-                  type="text"
-                  placeholder={copy.search}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50 w-40"
-                />
-              </div>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as "all" | "in" | "out")}
-                className="bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-              >
-                <option value="all">{copy.allStatuses}</option>
-                <option value="in">{copy.signedInStatus}</option>
-                <option value="out">{copy.signedOutStatus}</option>
-              </select>
-              <select
-                value={siteFilter}
-                onChange={(e) => setSiteFilter(e.target.value)}
-                className="bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-              >
-                <option value="all">{copy.allSites}</option>
-                {sites.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
-              <div className="flex items-center gap-1">
-                <button onClick={exportCSV} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all" title={copy.csv}>
-                  <FileSpreadsheet className="w-3.5 h-3.5" />
-                </button>
-                <button onClick={exportExcel} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all" title={copy.excel}>
-                  <FileDown className="w-3.5 h-3.5" />
-                </button>
-                <button onClick={exportPDF} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all" title={copy.pdf}>
-                  <FileText className="w-3.5 h-3.5" />
-                </button>
-              </div>
-              <button
-                onClick={fetchVisitors}
-                disabled={loading}
-                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
-                title={copy.refresh}
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-              </button>
-            </div>
-          </div>
+                        {site.lockdownEnabled && (
+                          <div className="absolute inset-0 bg-rose-500/[0.02] pointer-events-none" />
+                        )}
 
-          <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-white/5 bg-white/[0.02]">
-                    <th className="px-4 py-3 font-medium text-slate-500">{copy.visitor}</th>
-                    <th className="px-4 py-3 font-medium text-slate-500">{copy.site}</th>
-                    <th className="px-4 py-3 font-medium text-slate-500">{copy.company}</th>
-                    <th className="px-4 py-3 font-medium text-slate-500">{copy.host}</th>
-                    <th className="px-4 py-3 font-medium text-slate-500">{copy.time}</th>
-                    <th className="px-4 py-3 font-medium text-slate-500">{copy.status}</th>
-                    <th className="px-4 py-3 font-medium text-slate-500">{copy.actions}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredVisitors.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center">
-                        <p className="text-sm text-slate-400">{copy.noVisitors}</p>
-                        <p className="text-xs text-slate-600 mt-1">{copy.noVisitorsDesc}</p>
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredVisitors.map((v) => (
-                      <tr key={v.id} className="hover:bg-white/[0.02] transition-colors">
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            {v.photoUrl ? (
-                              <img src={v.photoUrl} alt="" className="w-6 h-6 rounded-full object-cover" />
-                            ) : (
-                              <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-[10px] text-slate-500">
-                                {v.fullName.charAt(0)}
+                        <div className="p-5 relative">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="min-w-0">
+                              <h3 className="font-semibold text-white text-sm truncate">{site.name}</h3>
+                              <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1">
+                                <span className="font-mono">/{site.slug}</span>
+                                <span className="text-slate-700">•</span>
+                                <span>{site.visitorsToday} {isPT ? "hoje" : "today"}</span>
+                                {site.locale === "pt" && (
+                                  <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    🇧🇷 PT
+                                  </span>
+                                )}
                               </div>
-                            )}
-                            <span className="text-white font-medium">{v.fullName}</span>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-slate-400">{v.siteName}</td>
-                        <td className="px-4 py-3 text-slate-400">{v.company}</td>
-                        <td className="px-4 py-3 text-slate-400">{v.hostName || "—"}</td>
-                        <td className="px-4 py-3 text-slate-400">
-                          <div className="flex flex-col">
-                            <span>{new Date(v.signedInAt).toLocaleTimeString(isPT ? "pt-BR" : "en-US", { hour: "2-digit", minute: "2-digit" })}</span>
-                            {v.signedOutAt && (
-                              <span className="text-slate-600">
-                                {new Date(v.signedOutAt).toLocaleTimeString(isPT ? "pt-BR" : "en-US", { hour: "2-digit", minute: "2-digit" })}
-                              </span>
+                            </div>
+                            {site.lockdownEnabled && (
+                              <motion.span
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-medium"
+                              >
+                                <ShieldAlert className="w-3 h-3" /> {copy.lockdownActive}
+                              </motion.span>
                             )}
                           </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          {v.signedOutAt ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-slate-500/10 text-slate-400 text-[10px]">
-                              <CheckCircle2 className="w-3 h-3" /> {copy.completed}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px]">
-                              <Clock className="w-3 h-3" /> {copy.onSiteStatus}
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          {!v.signedOutAt && (
-                            <button
-                              onClick={() => handleSignOut(v.id)}
-                              className="text-xs text-slate-400 hover:text-rose-400 transition-colors"
-                            >
-                              {copy.signOut}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
 
-        {/* Blocklist */}
-        <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
-          <div className="bg-white/[0.02] border-b border-white/5 px-6 py-4 flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4 text-rose-400" />
-            <h2 className="text-sm font-bold text-white">{copy.watchlist}</h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <p className="text-xs text-slate-500">{copy.watchlistDesc}</p>
-            <form onSubmit={handleAddBlocklist} className="flex flex-wrap gap-2">
-              <select
-                value={blockType}
-                onChange={(e) => setBlockType(e.target.value)}
-                className="bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none"
-              >
-                <option value="name">{copy.visitor}</option>
-                <option value="email">{copy.hostEmail}</option>
-                <option value="phone">{copy.phone}</option>
-              </select>
-              <input
-                type="text"
-                placeholder={copy.nameEmailPhone}
-                value={blockValue}
-                onChange={(e) => setBlockValue(e.target.value)}
-                required
-                className="flex-1 min-w-[200px] bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-              />
-              <input
-                type="text"
-                placeholder={copy.noteOptional}
-                value={blockNote}
-                onChange={(e) => setBlockNote(e.target.value)}
-                className="flex-1 min-w-[200px] bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-              />
-              <button
-                type="submit"
-                disabled={addingBlock}
-                className="bg-rose-500 hover:bg-rose-600 disabled:bg-rose-500/30 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all"
-              >
-                {addingBlock ? copy.adding : copy.add}
-              </button>
-            </form>
-            {blocklist.length === 0 ? (
-              <p className="text-xs text-slate-600">{copy.noEntries}</p>
-            ) : (
-              <div className="divide-y divide-white/5">
-                {blocklist.map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between py-3">
-                    <div>
-                      <p className="text-sm text-white">{entry.value}</p>
-                      <p className="text-xs text-slate-500">
-                        {entry.type} {entry.note && `• ${entry.note}`}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveBlocklist(entry.id)}
-                      className="text-xs text-slate-500 hover:text-rose-400 transition-colors"
-                    >
-                      {copy.remove}
-                    </button>
-                  </div>
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() => startEdit(site)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-all border border-transparent hover:border-white/10"
+                            >
+                              <Pencil className="w-3 h-3" /> {copy.edit}
+                            </button>
+                            <button
+                              onClick={() => copyCheckinUrl(site.slug)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-all border border-transparent hover:border-white/10"
+                            >
+                              <Copy className="w-3 h-3" /> {copy.copyUrl}
+                            </button>
+                            <button
+                              onClick={() => setQrSite(site)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs transition-all border border-transparent hover:border-white/10"
+                            >
+                              <QrCode className="w-3 h-3" /> {copy.qrCode}
+                            </button>
+                            <button
+                              onClick={() => handleToggleLockdown(site.id, !!site.lockdownEnabled)}
+                              disabled={togglingLockdown && lockdownSiteId === site.id}
+                              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all border ${
+                                site.lockdownEnabled
+                                  ? "bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20"
+                                  : "bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 border-transparent hover:border-white/10"
+                              }`}
+                            >
+                              <DoorClosed className="w-3 h-3" />
+                              {site.lockdownEnabled ? copy.endLockdown : copy.lockdown}
+                            </button>
+                            <button
+                              onClick={() => setDeleteSiteId(site.id)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-rose-500/10 text-slate-300 hover:text-rose-400 text-xs transition-all border border-transparent hover:border-rose-500/20"
+                            >
+                              <Trash2 className="w-3 h-3" /> {copy.delete}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </TiltCard>
+                  </motion.div>
                 ))}
               </div>
             )}
           </div>
-        </div>
+        </SectionReveal>
 
-        {/* Webhooks */}
-        <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
-          <div className="bg-white/[0.02] border-b border-white/5 px-6 py-4 flex items-center gap-2">
-            <Zap className="w-4 h-4 text-amber-400" />
-            <h2 className="text-sm font-bold text-white">{copy.webhooks}</h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <p className="text-xs text-slate-500">{copy.webhooksDesc}</p>
-            <div className="flex gap-2">
-              <input
-                type="url"
-                placeholder={copy.webhookPlaceholder}
-                value={webhookUrl}
-                onChange={(e) => setWebhookUrl(e.target.value)}
-                className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-              />
-              <button
-                onClick={handleSaveWebhook}
-                disabled={savingWebhook}
-                className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all"
-              >
-                {savingWebhook ? copy.saving : copy.save}
-              </button>
-              <button
-                onClick={handleTestWebhook}
-                disabled={testingWebhook || !webhookUrl}
-                className="bg-white/5 hover:bg-white/10 border border-white/10 text-white px-4 py-2 rounded-lg text-xs font-medium transition-all"
-              >
-                {testingWebhook ? copy.sending : copy.testEvent}
-              </button>
+        {/* Visitor Log */}
+        <SectionReveal>
+          <div className="relative">
+            <div className="absolute -top-20 -left-20 w-64 h-64 bg-teal-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+              <h2 className="text-lg font-bold text-white tracking-tight">{copy.visitorLog}</h2>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="relative group">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600 group-focus-within:text-sky-400 transition-colors" />
+                  <input
+                    type="text"
+                    placeholder={copy.search}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-white/5 border border-white/10 rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 w-40 transition-all"
+                  />
+                </div>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as "all" | "in" | "out")}
+                  className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 cursor-pointer"
+                >
+                  <option value="all">{copy.allStatuses}</option>
+                  <option value="in">{copy.signedInStatus}</option>
+                  <option value="out">{copy.signedOutStatus}</option>
+                </select>
+                <select
+                  value={siteFilter}
+                  onChange={(e) => setSiteFilter(e.target.value)}
+                  className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 cursor-pointer"
+                >
+                  <option value="all">{copy.allSites}</option>
+                  {sites.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+                <div className="flex items-center gap-1">
+                  <button onClick={exportCSV} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-transparent hover:border-white/10" title={copy.csv}>
+                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                  </button>
+                  <button onClick={exportExcel} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-transparent hover:border-white/10" title={copy.excel}>
+                    <FileDown className="w-3.5 h-3.5" />
+                  </button>
+                  <button onClick={exportPDF} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-transparent hover:border-white/10" title={copy.pdf}>
+                    <FileText className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <button
+                  onClick={fetchVisitors}
+                  disabled={loading}
+                  className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-transparent hover:border-white/10"
+                  title={copy.refresh}
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+                </button>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-white/5 bg-white/[0.02]">
+                      <th className="px-4 py-3 font-medium text-slate-500">{copy.visitor}</th>
+                      <th className="px-4 py-3 font-medium text-slate-500">{copy.site}</th>
+                      <th className="px-4 py-3 font-medium text-slate-500">{copy.company}</th>
+                      <th className="px-4 py-3 font-medium text-slate-500">{copy.host}</th>
+                      <th className="px-4 py-3 font-medium text-slate-500">{copy.time}</th>
+                      <th className="px-4 py-3 font-medium text-slate-500">{copy.status}</th>
+                      <th className="px-4 py-3 font-medium text-slate-500">{copy.actions}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {filteredVisitors.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-8 text-center">
+                          <p className="text-sm text-slate-400">{copy.noVisitors}</p>
+                          <p className="text-xs text-slate-600 mt-1">{copy.noVisitorsDesc}</p>
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredVisitors.map((v, i) => (
+                        <motion.tr
+                          key={v.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.02, duration: 0.3 }}
+                          className="hover:bg-white/[0.02] transition-colors group"
+                        >
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              {v.photoUrl ? (
+                                <img src={v.photoUrl} alt="" className="w-7 h-7 rounded-full object-cover ring-2 ring-white/5" />
+                              ) : (
+                                <div className="w-7 h-7 rounded-full bg-white/5 ring-2 ring-white/5 flex items-center justify-center text-[10px] text-slate-500 font-medium">
+                                  {v.fullName.charAt(0)}
+                                </div>
+                              )}
+                              <span className="text-white font-medium">{v.fullName}</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-slate-400">{v.siteName}</td>
+                          <td className="px-4 py-3 text-slate-400">{v.company}</td>
+                          <td className="px-4 py-3 text-slate-400">{v.hostName || "—"}</td>
+                          <td className="px-4 py-3 text-slate-400">
+                            <div className="flex flex-col">
+                              <span>{new Date(v.signedInAt).toLocaleTimeString(isPT ? "pt-BR" : "en-US", { hour: "2-digit", minute: "2-digit" })}</span>
+                              {v.signedOutAt && (
+                                <span className="text-slate-600">
+                                  {new Date(v.signedOutAt).toLocaleTimeString(isPT ? "pt-BR" : "en-US", { hour: "2-digit", minute: "2-digit" })}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            {v.signedOutAt ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-500/10 border border-slate-500/20 text-slate-400 text-[10px] font-medium">
+                                <CheckCircle2 className="w-3 h-3" /> {copy.completed}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-medium">
+                                <Clock className="w-3 h-3" /> {copy.onSiteStatus}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            {!v.signedOutAt && (
+                              <button
+                                onClick={() => handleSignOut(v.id)}
+                                className="text-xs text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1"
+                              >
+                                <LogOut className="w-3 h-3" /> {copy.signOut}
+                              </button>
+                            )}
+                          </td>
+                        </motion.tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
+        </SectionReveal>
+
+        {/* Blocklist */}
+        <SectionReveal>
+          <div className="relative rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-xl overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-500/20 to-transparent" />
+            <div className="bg-white/[0.02] border-b border-white/5 px-6 py-4 flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4 text-rose-400" />
+              <h2 className="text-sm font-bold text-white tracking-tight">{copy.watchlist}</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-xs text-slate-500 leading-relaxed">{copy.watchlistDesc}</p>
+              <form onSubmit={handleAddBlocklist} className="flex flex-wrap gap-2">
+                <select
+                  value={blockType}
+                  onChange={(e) => setBlockType(e.target.value)}
+                  className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-rose-500/30 cursor-pointer"
+                >
+                  <option value="name">{copy.visitor}</option>
+                  <option value="email">{copy.hostEmail}</option>
+                  <option value="phone">{copy.phone}</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder={copy.nameEmailPhone}
+                  value={blockValue}
+                  onChange={(e) => setBlockValue(e.target.value)}
+                  required
+                  className="flex-1 min-w-[200px] bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-rose-500/30 transition-all"
+                />
+                <input
+                  type="text"
+                  placeholder={copy.noteOptional}
+                  value={blockNote}
+                  onChange={(e) => setBlockNote(e.target.value)}
+                  className="flex-1 min-w-[200px] bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-rose-500/30 transition-all"
+                />
+                <button
+                  type="submit"
+                  disabled={addingBlock}
+                  className="bg-gradient-to-r from-rose-500 to-orange-500 hover:from-rose-400 hover:to-orange-400 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-xs font-medium transition-all shadow-lg shadow-rose-500/20"
+                >
+                  {addingBlock ? copy.adding : copy.add}
+                </button>
+              </form>
+              {blocklist.length === 0 ? (
+                <p className="text-xs text-slate-600">{copy.noEntries}</p>
+              ) : (
+                <div className="divide-y divide-white/5">
+                  {blocklist.map((entry) => (
+                    <div key={entry.id} className="flex items-center justify-between py-3 group">
+                      <div>
+                        <p className="text-sm text-white font-medium">{entry.value}</p>
+                        <p className="text-xs text-slate-500">
+                          {entry.type} {entry.note && `• ${entry.note}`}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveBlocklist(entry.id)}
+                        className="text-xs text-slate-500 hover:text-rose-400 transition-colors flex items-center gap-1 opacity-0 group-hover:opacity-100"
+                      >
+                        <Trash2 className="w-3 h-3" /> {copy.remove}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </SectionReveal>
+
+        {/* Webhooks */}
+        <SectionReveal>
+          <div className="relative rounded-xl border border-white/5 bg-white/[0.03] backdrop-blur-xl overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+            <div className="bg-white/[0.02] border-b border-white/5 px-6 py-4 flex items-center gap-2">
+              <Zap className="w-4 h-4 text-amber-400" />
+              <h2 className="text-sm font-bold text-white tracking-tight">{copy.webhooks}</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-xs text-slate-500 leading-relaxed">{copy.webhooksDesc}</p>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  placeholder={copy.webhookPlaceholder}
+                  value={webhookUrl}
+                  onChange={(e) => setWebhookUrl(e.target.value)}
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/30 transition-all"
+                />
+                <button
+                  onClick={handleSaveWebhook}
+                  disabled={savingWebhook}
+                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-xs font-medium transition-all shadow-lg shadow-amber-500/20"
+                >
+                  {savingWebhook ? copy.saving : copy.save}
+                </button>
+                <button
+                  onClick={handleTestWebhook}
+                  disabled={testingWebhook || !webhookUrl}
+                  className="bg-white/5 hover:bg-white/10 border border-white/10 text-white px-4 py-2 rounded-xl text-xs font-medium transition-all disabled:opacity-50"
+                >
+                  {testingWebhook ? copy.sending : copy.testEvent}
+                </button>
+              </div>
+            </div>
+          </div>
+        </SectionReveal>
       </main>
 
       {/* Create Site Modal */}
-      {showCreate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f172a] p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-white">{copy.newSite}</h3>
-              <button onClick={() => setShowCreate(false)} className="text-slate-500 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <form onSubmit={handleCreateSite} className="space-y-3">
-              <div>
-                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.siteName}</label>
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  required
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.slug}</label>
-                <input
-                  type="text"
-                  value={newSlug}
-                  onChange={(e) => setNewSlug(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.address}</label>
-                <input
-                  type="text"
-                  value={newAddress}
-                  onChange={(e) => setNewAddress(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.safetyBriefing}</label>
-                <textarea
-                  value={newBriefing}
-                  onChange={(e) => setNewBriefing(e.target.value)}
-                  rows={3}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                />
-              </div>
-              <div className="flex gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreate(false)}
-                  className="flex-1 bg-white/5 hover:bg-white/10 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-                >
-                  {copy.cancel}
-                </button>
-                <button
-                  type="submit"
-                  disabled={creating}
-                  className="flex-1 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-                >
-                  {creating ? copy.creating : copy.createSite}
+      <AnimatePresence>
+        {showCreate && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="w-full max-w-md rounded-2xl border border-white/10 bg-[#0f172a]/95 backdrop-blur-2xl p-6 space-y-4 shadow-2xl"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-white tracking-tight">{copy.newSite}</h3>
+                <button onClick={() => setShowCreate(false)} className="text-slate-500 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/5">
+                  <X className="w-5 h-5" />
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+              <form onSubmit={handleCreateSite} className="space-y-3">
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{copy.siteName}</label>
+                  <input
+                    type="text"
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    required
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{copy.slug}</label>
+                  <input
+                    type="text"
+                    value={newSlug}
+                    onChange={(e) => setNewSlug(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{copy.address}</label>
+                  <input
+                    type="text"
+                    value={newAddress}
+                    onChange={(e) => setNewAddress(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{copy.safetyBriefing}</label>
+                  <textarea
+                    value={newBriefing}
+                    onChange={(e) => setNewBriefing(e.target.value)}
+                    rows={3}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 transition-all resize-none"
+                  />
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowCreate(false)}
+                    className="flex-1 bg-white/5 hover:bg-white/10 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all border border-white/10"
+                  >
+                    {copy.cancel}
+                  </button>
+                  <MagneticButton
+                    type="submit"
+                    disabled={creating}
+                    className="flex-1 bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 disabled:opacity-50 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg shadow-sky-500/20"
+                  >
+                    {creating ? copy.creating : copy.createSite}
+                  </MagneticButton>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Edit Site Modal */}
-      {editingSiteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0f172a] p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-white">{copy.editSite}</h3>
-              <button onClick={() => setEditingSiteId(null)} className="text-slate-500 hover:text-white">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {/* Basic Info */}
-              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
-                <button
-                  onClick={() => setOpenSection(openSection === "basic" ? null : "basic")}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left"
-                >
-                  <span className="text-sm font-medium text-white">{copy.basicInfo}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "basic" ? "rotate-180" : ""}`} />
+      <AnimatePresence>
+        {editingSiteId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0f172a]/95 backdrop-blur-2xl p-6 max-h-[90vh] overflow-y-auto shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-white tracking-tight">{copy.editSite}</h3>
+                <button onClick={() => setEditingSiteId(null)} className="text-slate-500 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/5">
+                  <X className="w-5 h-5" />
                 </button>
-                {openSection === "basic" && (
-                  <div className="px-4 pb-4 space-y-3">
-                    <div>
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.siteName}</label>
-                      <input
-                        type="text"
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">Slug</label>
-                        <input
-                          type="text"
-                          value={editSlug}
-                          onChange={(e) => setEditSlug(e.target.value)}
-                          className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.address}</label>
-                        <input
-                          type="text"
-                          value={editAddress}
-                          onChange={(e) => setEditAddress(e.target.value)}
-                          className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.safetyBriefing}</label>
-                      <textarea
-                        value={editBriefing}
-                        onChange={(e) => setEditBriefing(e.target.value)}
-                        rows={3}
-                        className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1 block">{copy.checkinLanguage}</label>
-                      <select
-                        value={editLocale}
-                        onChange={(e) => setEditLocale(e.target.value)}
-                        className="w-full bg-[#0f172a] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/50"
-                      >
-                        <option value="en" className="bg-[#0f172a]">{copy.english}</option>
-                        <option value="pt" className="bg-[#0f172a]">{copy.portuguese}</option>
-                      </select>
-                      <p className="text-[10px] text-slate-600 mt-1">{copy.checkinLanguageDesc}</p>
-                    </div>
-                  </div>
-                )}
               </div>
 
-              {/* Hosts */}
-              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
-                <button
-                  onClick={() => setOpenSection(openSection === "hosts" ? null : "hosts")}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left"
-                >
-                  <span className="text-sm font-medium text-white">{copy.hosts} ({hostsForEdit.length})</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "hosts" ? "rotate-180" : ""}`} />
-                </button>
-                {openSection === "hosts" && (
-                  <div className="px-4 pb-4 space-y-3">
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder={copy.hostName}
-                        value={newHostName}
-                        onChange={(e) => setNewHostName(e.target.value)}
-                        className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
-                      />
-                      <input
-                        type="email"
-                        placeholder={copy.hostEmail}
-                        value={newHostEmail}
-                        onChange={(e) => setNewHostEmail(e.target.value)}
-                        className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
-                      />
-                      <button
-                        onClick={handleAddHost}
-                        className="bg-sky-500 hover:bg-sky-600 text-white px-3 py-2 rounded-lg text-xs font-medium"
+              <div className="space-y-3">
+                {/* Basic Info */}
+                <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                  <button
+                    onClick={() => setOpenSection(openSection === "basic" ? null : "basic")}
+                    className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
+                  >
+                    <span className="text-sm font-medium text-white">{copy.basicInfo}</span>
+                    <motion.div animate={{ rotate: openSection === "basic" ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                      <ChevronDown className="w-4 h-4 text-slate-500" />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence>
+                    {openSection === "basic" && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
                       >
-                        {copy.add}
-                      </button>
-                    </div>
-                    {hostsForEdit.map((host) => (
-                      <div key={host.id} className="flex items-center justify-between py-2">
-                        <div>
-                          <p className="text-sm text-white">{host.name}</p>
-                          <p className="text-xs text-slate-500">{host.email}</p>
+                        <div className="px-4 pb-4 space-y-3">
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{copy.siteName}</label>
+                            <input
+                              type="text"
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              className="w-full bg-[#0f172a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 transition-all"
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">Slug</label>
+                              <input
+                                type="text"
+                                value={editSlug}
+                                onChange={(e) => setEditSlug(e.target.value)}
+                                className="w-full bg-[#0f172a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 transition-all"
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{copy.address}</label>
+                              <input
+                                type="text"
+                                value={editAddress}
+                                onChange={(e) => setEditAddress(e.target.value)}
+                                className="w-full bg-[#0f172a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 transition-all"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{copy.safetyBriefing}</label>
+                            <textarea
+                              value={editBriefing}
+                              onChange={(e) => setEditBriefing(e.target.value)}
+                              rows={3}
+                              className="w-full bg-[#0f172a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 transition-all resize-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1.5 block">{copy.checkinLanguage}</label>
+                            <select
+                              value={editLocale}
+                              onChange={(e) => setEditLocale(e.target.value)}
+                              className="w-full bg-[#0f172a] border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500/30 transition-all cursor-pointer"
+                            >
+                              <option value="en" className="bg-[#0f172a]">{copy.english}</option>
+                              <option value="pt" className="bg-[#0f172a]">{copy.portuguese}</option>
+                            </select>
+                            <p className="text-[10px] text-slate-600 mt-1">{copy.checkinLanguageDesc}</p>
+                          </div>
                         </div>
-                        <button
-                          onClick={() => handleRemoveHost(host.id)}
-                          className="text-xs text-slate-500 hover:text-rose-400"
-                        >
-                          {copy.remove}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-              {/* Pre-screening */}
-              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
-                <button
-                  onClick={() => setOpenSection(openSection === "screening" ? null : "screening")}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left"
-                >
-                  <span className="text-sm font-medium text-white">{copy.preScreening} ({editQuestions.length})</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "screening" ? "rotate-180" : ""}`} />
-                </button>
-                {openSection === "screening" && (
-                  <div className="px-4 pb-4 space-y-2">
-                    {editQuestions.map((q, i) => (
-                      <div key={i} className="flex gap-2">
-                        <input
-                          type="text"
-                          value={q}
-                          onChange={(e) => {
-                            const next = [...editQuestions];
-                            next[i] = e.target.value;
-                            setEditQuestions(next);
-                          }}
-                          placeholder={copy.questionPlaceholder}
-                          className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none"
-                        />
-                        <button
-                          onClick={() => handleRemoveQuestion(i)}
-                          className="text-xs text-slate-500 hover:text-rose-400"
-                        >
-                          {copy.remove}
-                        </button>
-                      </div>
-                    ))}
-                    <button
-                      onClick={handleAddQuestion}
-                      className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1"
-                    >
-                      <Plus className="w-3 h-3" /> {copy.add}
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Document Signing */}
-              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
-                <button
-                  onClick={() => setOpenSection(openSection === "docs" ? null : "docs")}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left"
-                >
-                  <span className="text-sm font-medium text-white">{copy.docSigning}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "docs" ? "rotate-180" : ""}`} />
-                </button>
-                {openSection === "docs" && (
-                  <div className="px-4 pb-4 space-y-3">
-                    <label className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={docSigningEnabled}
-                        onChange={(e) => setDocSigningEnabled(e.target.checked)}
-                        className="mt-0.5"
-                      />
-                      <span className="text-sm text-slate-300">{copy.requireDocSign}</span>
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="file"
-                        accept=".pdf,.doc,.docx"
-                        onChange={(e) => setTemplateFile(e.target.files?.[0] || null)}
-                        className="flex-1 text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-white/5 file:text-white hover:file:bg-white/10"
-                      />
-                      <button
-                        onClick={handleUploadTemplate}
-                        disabled={!templateFile || uploadingTemplate}
-                        className="bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-3 py-2 rounded-lg text-xs font-medium"
+                {/* Hosts */}
+                <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                  <button
+                    onClick={() => setOpenSection(openSection === "hosts" ? null : "hosts")}
+                    className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
+                  >
+                    <span className="text-sm font-medium text-white">{copy.hosts} ({hostsForEdit.length})</span>
+                    <motion.div animate={{ rotate: openSection === "hosts" ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                      <ChevronDown className="w-4 h-4 text-slate-500" />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence>
+                    {openSection === "hosts" && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
                       >
-                        {uploadingTemplate ? copy.uploading : copy.uploadTemplate}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+                        <div className="px-4 pb-4 space-y-3">
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              placeholder={copy.hostName}
+                              value={newHostName}
+                              onChange={(e) => setNewHostName(e.target.value)}
+                              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/30 transition-all"
+                            />
+                            <input
+                              type="email"
+                              placeholder={copy.hostEmail}
+                              value={newHostEmail}
+                              onChange={(e) => setNewHostEmail(e.target.value)}
+                              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/30 transition-all"
+                            />
+                            <button
+                              onClick={handleAddHost}
+                              className="bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 text-white px-3 py-2 rounded-xl text-xs font-medium transition-all shadow-lg shadow-sky-500/20"
+                            >
+                              {copy.add}
+                            </button>
+                          </div>
+                          {hostsForEdit.map((host) => (
+                            <div key={host.id} className="flex items-center justify-between py-2 group">
+                              <div>
+                                <p className="text-sm text-white">{host.name}</p>
+                                <p className="text-xs text-slate-500">{host.email}</p>
+                              </div>
+                              <button
+                                onClick={() => handleRemoveHost(host.id)}
+                                className="text-xs text-slate-500 hover:text-rose-400 transition-colors opacity-0 group-hover:opacity-100"
+                              >
+                                {copy.remove}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-              {/* Privacy */}
-              <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
-                <button
-                  onClick={() => setOpenSection(openSection === "privacy" ? null : "privacy")}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left"
+                {/* Pre-screening */}
+                <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                  <button
+                    onClick={() => setOpenSection(openSection === "screening" ? null : "screening")}
+                    className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
+                  >
+                    <span className="text-sm font-medium text-white">{copy.preScreening} ({editQuestions.length})</span>
+                    <motion.div animate={{ rotate: openSection === "screening" ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                      <ChevronDown className="w-4 h-4 text-slate-500" />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence>
+                    {openSection === "screening" && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-4 pb-4 space-y-2">
+                          {editQuestions.map((q, i) => (
+                            <div key={i} className="flex gap-2">
+                              <input
+                                type="text"
+                                value={q}
+                                onChange={(e) => {
+                                  const next = [...editQuestions];
+                                  next[i] = e.target.value;
+                                  setEditQuestions(next);
+                                }}
+                                placeholder={copy.questionPlaceholder}
+                                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-sky-500/30 transition-all"
+                              />
+                              <button
+                                onClick={() => handleRemoveQuestion(i)}
+                                className="text-xs text-slate-500 hover:text-rose-400 transition-colors px-2"
+                              >
+                                {copy.remove}
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            onClick={handleAddQuestion}
+                            className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1 transition-colors"
+                          >
+                            <Plus className="w-3 h-3" /> {copy.add}
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Document Signing */}
+                <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                  <button
+                    onClick={() => setOpenSection(openSection === "docs" ? null : "docs")}
+                    className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
+                  >
+                    <span className="text-sm font-medium text-white">{copy.docSigning}</span>
+                    <motion.div animate={{ rotate: openSection === "docs" ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                      <ChevronDown className="w-4 h-4 text-slate-500" />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence>
+                    {openSection === "docs" && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-4 pb-4 space-y-3">
+                          <label className="flex items-start gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={docSigningEnabled}
+                              onChange={(e) => setDocSigningEnabled(e.target.checked)}
+                              className="mt-0.5 rounded border-white/20 bg-white/5 text-sky-500 focus:ring-sky-500/30"
+                            />
+                            <span className="text-sm text-slate-300">{copy.requireDocSign}</span>
+                          </label>
+                          <div className="flex gap-2">
+                            <input
+                              type="file"
+                              accept=".pdf,.doc,.docx"
+                              onChange={(e) => setTemplateFile(e.target.files?.[0] || null)}
+                              className="flex-1 text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-white/5 file:text-white hover:file:bg-white/10 transition-all"
+                            />
+                            <button
+                              onClick={handleUploadTemplate}
+                              disabled={!templateFile || uploadingTemplate}
+                              className="bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 disabled:opacity-50 text-white px-3 py-2 rounded-xl text-xs font-medium transition-all shadow-lg shadow-sky-500/20"
+                            >
+                              {uploadingTemplate ? copy.uploading : copy.uploadTemplate}
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Privacy */}
+                <div className="rounded-xl border border-white/5 bg-white/[0.03] overflow-hidden">
+                  <button
+                    onClick={() => setOpenSection(openSection === "privacy" ? null : "privacy")}
+                    className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
+                  >
+                    <span className="text-sm font-medium text-white">{copy.privacy}</span>
+                    <motion.div animate={{ rotate: openSection === "privacy" ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                      <ChevronDown className="w-4 h-4 text-slate-500" />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence>
+                    {openSection === "privacy" && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-4 pb-4">
+                          <label className="flex items-start gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={showVisitorList}
+                              onChange={(e) => setShowVisitorList(e.target.checked)}
+                              className="mt-0.5 rounded border-white/20 bg-white/5 text-sky-500 focus:ring-sky-500/30"
+                            />
+                            <span className="text-sm text-slate-300">{copy.showVisitorList}</span>
+                          </label>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <MagneticButton
+                  onClick={saveEdit}
+                  disabled={savingEdit}
+                  className="w-full bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-400 hover:to-teal-400 disabled:opacity-50 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all shadow-lg shadow-sky-500/20"
                 >
-                  <span className="text-sm font-medium text-white">{copy.privacy}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openSection === "privacy" ? "rotate-180" : ""}`} />
-                </button>
-                {openSection === "privacy" && (
-                  <div className="px-4 pb-4">
-                    <label className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={showVisitorList}
-                        onChange={(e) => setShowVisitorList(e.target.checked)}
-                        className="mt-0.5"
-                      />
-                      <span className="text-sm text-slate-300">{copy.showVisitorList}</span>
-                    </label>
-                  </div>
-                )}
+                  {savingEdit ? copy.saving : copy.saveChanges}
+                </MagneticButton>
               </div>
-
-              <button
-                onClick={saveEdit}
-                disabled={savingEdit}
-                className="w-full bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/30 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all"
-              >
-                {savingEdit ? copy.saving : copy.saveChanges}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Delete Confirmation */}
       <ConfirmModal
